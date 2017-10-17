@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Kika全語音鍵盤</string>
+
+    <string name="tap_to_start">点击麦克风开始说话</string>
+    <string name="repeating">复读中…</string>
+    <string name="sending">发送中…如果需要取消这次发送，可以使用\"取消\"指令</string>
+    <string name="has_been_send">发送成功</string>
+    <string name="has_been_erased">消息已删除</string>
+    <string name="not_supported_app">不支持语音发送，请使用发送键。</string>
+    <string name="content_empty">没有可发送的内容</string>
+    <string name="content_updated">内容修改完成</string>
+    <string name="not_altered">内容修改失败</string>
+    <string name="init_hint">可用语音命令: \"发送\"，\"重复\"，\"取消\"，\"删除\"</string>
+    <string name="unsent_hint">您还有尚未发送的内容，可以使用\"发送\"，\"重复\"，或\"取消\"命令进行操作</string>
+
+    <string name="debug_session_id">Server Session id : %1$s</string>
+    <string name="debug_client_record_id">Client record id : %1$s</string>
+    <string name="debug_recognize_time">Server first event time : %1$dms</string>
+    <string name="debug_server_response_time">Server event time : %1$dms</string>
+    <string name="debug_command_to_tts_time">Command to TTS time : %1$dms</string>
+    <string name="debug_tts_prepare_time">TTS prepare time : %1$dms</string>
+</resources>

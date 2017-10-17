@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@android:color/white">
+
+        <!--<com.kikatech.vkb.view.Visualizer-->
+        <!--android:id="@+id/voice_visualizer"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="90dp"-->
+        <!--android:layout_gravity="center"-->
+        <!--app:aw_color_uniform="@color/voice_primary_color"-->
+        <!--app:aw_gravity="center"-->
+        <!--app:aw_line_border_radius="20"-->
+        <!--app:aw_line_min_height="6"-->
+        <!--app:aw_line_min_width="6"-->
+        <!--app:aw_line_spacing="6"-->
+        <!--app:aw_line_width="6"-->
+        <!--app:aw_num_waves="15" />-->
+        <TextView
+            android:id="@+id/voice_hint"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            android:maxLines="3"
+            android:padding="25dp"
+            android:textColor="#FF0097FE"
+            android:textSize="14sp" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/voice_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:background="@drawable/ic_mic_up" />
+
+        <LinearLayout
+            android:id="@+id/debug_info_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:gravity="left"
+            android:orientation="vertical"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-Debug info-"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/debug_client_record_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/debug_session_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp" />
+
+            <!--<TextView-->
+                <!--android:id="@+id/debug_response_time"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="10sp" />-->
+
+            <TextView
+                android:id="@+id/debug_server_response_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/debug_command_to_tts_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/debug_tts_prepare_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+    </FrameLayout>
+</FrameLayout>
