@@ -20,9 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kikatech.go.util.log.Logger;
-import com.kikatech.go.engine.interfaces.IVoiceManager;
-import com.kikatech.go.engine.interfaces.IVoiceView;
-import com.kikatech.go.engine.websocket.VoiceManagerWs;
+import com.kikatech.voice.engine.interfaces.IVoiceManager;
+import com.kikatech.voice.engine.interfaces.IVoiceView;
+import com.kikatech.voice.engine.websocket.VoiceManagerWs;
 
 import java.util.Locale;
 

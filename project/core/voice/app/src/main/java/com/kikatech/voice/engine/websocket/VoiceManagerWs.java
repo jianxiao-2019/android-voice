@@ -19,7 +19,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kikatech.voice.KikaVoiceService;
 import com.kikatech.voice.R;
-import com.kikatech.voice.access.SendInfoManager;
 import com.kikatech.voice.engine.interfaces.IVoiceManager;
 import com.kikatech.voice.engine.interfaces.IVoiceView;
 import com.kikatech.voice.engine.recorder.VoiceDetectorListener;
@@ -249,19 +248,19 @@ public class VoiceManagerWs implements IVoiceManager, VoiceDetectorListener,
             mVoiceView.onUpdateRecognizedResult("", IVoiceView.RESULT_FINAL);
             CharSequence content = mVoiceView.getTextOnEditor();
 
-            if (SendInfoManager.getInstance().getSendInfo() == null
-                    && !SNAPCHAT_PKG_NAME.equals(mVoiceView.getCurrentEditorPackageName())) {
-                mVoiceView.updateHintStr(R.string.not_supported_app);
-                playLocalTts(R.raw.not_supported_app);
-            } else if (!TextUtils.isEmpty(content)) {
-                mDataSender.sendCommand("SEND", content.toString());
-                mIsSendingMsgWhenTtsOnComplete = true;
-                mHintTextResId = R.string.sending;
-            } else {
-                mVoiceView.updateHintStr(R.string.content_empty);
-                playLocalTts(R.raw.content_empty);
-            }
-            mShouldPassDataToServer.set(false);
+//            if (SendInfoManager.getInstance().getSendInfo() == null
+//                    && !SNAPCHAT_PKG_NAME.equals(mVoiceView.getCurrentEditorPackageName())) {
+//                mVoiceView.updateHintStr(R.string.not_supported_app);
+//                playLocalTts(R.raw.not_supported_app);
+//            } else if (!TextUtils.isEmpty(content)) {
+//                mDataSender.sendCommand("SEND", content.toString());
+//                mIsSendingMsgWhenTtsOnComplete = true;
+//                mHintTextResId = R.string.sending;
+//            } else {
+//                mVoiceView.updateHintStr(R.string.content_empty);
+//                playLocalTts(R.raw.content_empty);
+//            }
+//            mShouldPassDataToServer.set(false);
         } else if (result.resultType == KikaVoiceMessage.ResultType.SEND) {
             mVoiceView.onUpdateRecognizedResult("", IVoiceView.RESULT_FINAL);
             sendMessage();
@@ -310,24 +309,24 @@ public class VoiceManagerWs implements IVoiceManager, VoiceDetectorListener,
 
     @UiThread
     private void sendMessage() {
-        AccessibilityNodeInfo info = SendInfoManager.getInstance().getSendInfo();
-        Logger.d("SendMessage SendInfo = " + info);
-        if (mVoiceView == null) {
-            Logger.w("sendMessage, but not active.");
-            return;
-        }
-        if (SNAPCHAT_PKG_NAME.equals(mVoiceView.getCurrentEditorPackageName())) {
-            mVoiceView.sendKeyEvent(KeyEvent.KEYCODE_ENTER);
-            mVoiceView.updateHintStr(R.string.has_been_send);
-            playLocalTts(R.raw.has_been_send);
-        } else if (info != null) {
-            info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            mVoiceView.updateHintStr(R.string.has_been_send);
-            playLocalTts(R.raw.has_been_send);
-        } else {
-            mVoiceView.updateHintStr(R.string.not_supported_app);
-            playLocalTts(R.raw.not_supported_app);
-        }
+//        AccessibilityNodeInfo info = SendInfoManager.getInstance().getSendInfo();
+//        Logger.d("SendMessage SendInfo = " + info);
+//        if (mVoiceView == null) {
+//            Logger.w("sendMessage, but not active.");
+//            return;
+//        }
+//        if (SNAPCHAT_PKG_NAME.equals(mVoiceView.getCurrentEditorPackageName())) {
+//            mVoiceView.sendKeyEvent(KeyEvent.KEYCODE_ENTER);
+//            mVoiceView.updateHintStr(R.string.has_been_send);
+//            playLocalTts(R.raw.has_been_send);
+//        } else if (info != null) {
+//            info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+//            mVoiceView.updateHintStr(R.string.has_been_send);
+//            playLocalTts(R.raw.has_been_send);
+//        } else {
+//            mVoiceView.updateHintStr(R.string.not_supported_app);
+//            playLocalTts(R.raw.not_supported_app);
+//        }
     }
 
     private static final int MSG_VOICE_RESULT = 0;

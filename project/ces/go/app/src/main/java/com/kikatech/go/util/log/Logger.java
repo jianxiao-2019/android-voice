@@ -2,7 +2,7 @@ package com.kikatech.go.util.log;
 
 import android.util.Log;
 
-import com.kikatech.go.engine.interfaces.IVoiceManager;
+import com.kikatech.voice.engine.interfaces.IVoiceManager;
 
 /**
  * Created by ryanlin on 06/10/2017.
