@@ -1,4 +1,4 @@
-package com.kikatech.go.accessibility;
+package com.kikatech.go.accessibility.scene;
 
 /**
  * Created by tianli on 17-10-20.

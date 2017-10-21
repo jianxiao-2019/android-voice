@@ -1,4 +1,4 @@
-package com.kikatech.go.accessibility.message;
+package com.kikatech.go.accessibility.im;
 
 /**
  * Created by tianli on 17-10-20.

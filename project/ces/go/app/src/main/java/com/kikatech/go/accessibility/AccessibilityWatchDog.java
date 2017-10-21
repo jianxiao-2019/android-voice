@@ -3,14 +3,15 @@ package com.kikatech.go.accessibility;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.kikatech.go.accessibility.message.MessageEventDispatcher;
+import com.kikatech.go.accessibility.im.MessageEventDispatcher;
 import com.kikatech.go.util.log.Logger;
 
-public class WatchDogService extends AccessibilityService {
+public class AccessibilityWatchDog extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        new MessageEventDispatcher().dispatchAccessibilityEvent(event);
+        AccessibilityEventDispatcher dispatcher = new MessageEventDispatcher().dispatchAccessibilityEvent(event);
+
 //        Logger.d("-------------------------------");
 //        Logger.d("onAccessibilityEvent event.package name = " + event.getPackageName());
 //        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {

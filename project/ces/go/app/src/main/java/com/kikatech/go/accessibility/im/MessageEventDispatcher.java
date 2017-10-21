@@ -1,15 +1,15 @@
-package com.kikatech.go.accessibility.message;
+package com.kikatech.go.accessibility.im;
 
 import android.view.accessibility.AccessibilityEvent;
 
-import com.kikatech.go.accessibility.EventDispatcher;
+import com.kikatech.go.accessibility.AccessibilityEventDispatcher;
 import com.kikatech.go.util.log.Logger;
 
 /**
  * Created by tianli on 17-10-20.
  */
 
-public class MessageEventDispatcher extends EventDispatcher {
+public class MessageEventDispatcher extends AccessibilityEventDispatcher {
 
     @Override
     protected boolean onAccessibilityEvent(AccessibilityEvent event) {
