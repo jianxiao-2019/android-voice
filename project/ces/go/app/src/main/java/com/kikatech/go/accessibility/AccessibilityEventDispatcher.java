@@ -14,16 +14,12 @@ public abstract class AccessibilityEventDispatcher {
 
     final public static AccessibilityEventDispatcher NULL = new NullDispatcher();
 
-    private Scene mScene = null;
+    Scene mScene = null;
 
-    private AccessibilityEventDispatcher mChain;
+    AccessibilityEventDispatcher mChain = null;
 
     public AccessibilityEventDispatcher(){
     }
-
-//    public AccessibilityEventDispatcher(AccessibilityEventDispatcher dispatcher){
-//        mChild = dispatcher;
-//    }
 
     final public AccessibilityEventDispatcher chain(AccessibilityEventDispatcher dispatcher){
         mChain = dispatcher;
@@ -46,10 +42,6 @@ public abstract class AccessibilityEventDispatcher {
             dispatcher = NULL;
         }
         return dispatcher;
-    }
-
-    final public Scene scene(){
-        return mScene;
     }
 
     protected abstract SceneRecognition onCreateRecognition();

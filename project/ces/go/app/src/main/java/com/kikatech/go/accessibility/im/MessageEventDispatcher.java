@@ -1,9 +1,7 @@
 package com.kikatech.go.accessibility.im;
 
-import android.view.accessibility.AccessibilityEvent;
-
 import com.kikatech.go.accessibility.AccessibilityEventDispatcher;
-import com.kikatech.go.util.log.Logger;
+import com.kikatech.go.accessibility.scene.SceneRecognition;
 
 /**
  * Created by tianli on 17-10-20.
@@ -12,33 +10,7 @@ import com.kikatech.go.util.log.Logger;
 public class MessageEventDispatcher extends AccessibilityEventDispatcher {
 
     @Override
-    protected boolean onAccessibilityEvent(AccessibilityEvent event) {
-        Logger.d("--------------onAccessibilityEvent -----------------------");
-        boolean consumed = false;
-        Logger.d("onAccessibilityEvent event.package name = " + event.getPackageName());
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            Logger.i("onAccessibilityEvent TYPE_WINDOW_STATE_CHANGED");
-            if (MessageApps.PACKAGE_NAME_FACEBOOK.equals(event.getPackageName())) {
-                Logger.d("onAccessibilityEvent enter Facebook");
-                consumed = true;
-            } else if (MessageApps.PACKAGE_NAME_WECHAT.equals(event.getPackageName())) {
-                Logger.d("onAccessibilityEvent enter WeChat");
-                consumed = true;
-            } else if (MessageApps.PACKAGE_NAME_SMS.equals(event.getPackageName())) {
-                Logger.d("onAccessibilityEvent enter SMS");
-                consumed = true;
-            } else if (MessageApps.PACKAGE_NAME_INSTAGRAM.equals(event.getPackageName())) {
-                Logger.d("onAccessibilityEvent enter Instagram");
-                consumed = true;
-            } else if (MessageApps.PACKAGE_NAME_WHATSAPP.equals(event.getPackageName())) {
-                Logger.d("onAccessibilityEvent enter WhatsApp");
-                consumed = true;
-            }
-//            else if (!this.getPackageName().equals(event.getPackageName())) {
-//                mEventHandler = null;
-//                SendInfoManager.getInstance().setSEndInfo(null);
-//            }
-        }
-        return consumed;
+    protected SceneRecognition onCreateRecognition() {
+        return new IMSceneRecognition();
     }
 }

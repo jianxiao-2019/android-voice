@@ -19,10 +19,10 @@ import android.view.inputmethod.InputConnection;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kikatech.go.util.log.Logger;
 import com.kikatech.voice.engine.interfaces.IVoiceManager;
 import com.kikatech.voice.engine.interfaces.IVoiceView;
 import com.kikatech.voice.engine.websocket.VoiceManagerWs;
+import com.kikatech.voice.util.log.Logger;
 
 import java.util.Locale;
 

@@ -4,7 +4,7 @@ import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.kikatech.go.util.log.Logger;
+import com.kikatech.voice.util.log.Logger;
 
 
 /**
