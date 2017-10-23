@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.kikatech.go.ui.KikaVoiceActivity">
+        <activity android:name="com.kikatech.go.ui.KikaGoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,20 +21,7 @@
         </activity>
 
         <service
-            android:id="@+id/kika_voice"
-            android:name="com.kikatech.go.KikaVoiceService"
-            android:label="Kika voice"
-            android:permission="android.permission.BIND_INPUT_METHOD">
-            <intent-filter>
-                <action android:name="android.view.InputMethod" />
-            </intent-filter>
-            <meta-data
-                android:name="android.view.im"
-                android:resource="@xml/method" />
-        </service>
-
-        <service
-            android:name="com.kikatech.go.access.DetectionService"
+            android:name="com.kikatech.go.accessibility.AccessibilityWatchDog"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
 
             <intent-filter>
