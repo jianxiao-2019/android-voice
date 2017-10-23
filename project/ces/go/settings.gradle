@@ -1,5 +1,7 @@
 include ':app'
 include ':voice'
+include ':usb'
 
 project(":voice").projectDir = new File("../../core/voice/app");
+project(":usb").projectDir = new File("../../core/usb/app");
 
