@@ -1,0 +1,63 @@
+package com.kikatech.go.message;
+
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
+import com.kikatech.go.accessibility.scene.Scene;
+import com.kikatech.go.ui.KikaGoActivity;
+import com.kikatech.go.utils.LogUtil;
+
+/**
+ * @author jasonli Created on 2017/10/23.
+ */
+// 处理Accessibility执行事件的流程
+public abstract class AccessibilityProcessor {
+
+    private static final String TAG = AccessibilityProcessor.class.getSimpleName();
+
+    protected Context mContext;
+    protected boolean mRunning = false;
+    protected String mStage;
+
+    public AccessibilityProcessor(Context context) {
+        mContext = context;
+    }
+
+    abstract public void start();
+    abstract public void stop();
+    abstract public boolean onSceneShown(Scene scene);
+
+    protected void setRunning(boolean running) {
+        mRunning = running;
+    }
+
+    public boolean isRunning() {
+        return mRunning;
+    }
+
+    protected void updateStage(String stage) {
+        LogUtil.logw(TAG, "Update Processing Stage: " + stage);
+        mStage = stage;
+    }
+
+    protected String getStage() {
+        return mStage;
+    }
+
+    protected void returnToApp() {
+        try {
+            Intent intent = new Intent(mContext, KikaGoActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+            mContext.startActivity(intent);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void showToast(String message) {
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+    }
+
+}

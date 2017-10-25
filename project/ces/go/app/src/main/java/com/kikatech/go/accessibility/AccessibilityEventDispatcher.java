@@ -1,6 +1,7 @@
 package com.kikatech.go.accessibility;
 
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.accessibility.scene.SceneRecognition;
@@ -26,15 +27,15 @@ public abstract class AccessibilityEventDispatcher {
         return this;
     }
 
-    final public AccessibilityEventDispatcher dispatchAccessibilityEvent(AccessibilityEvent event){
+    final public AccessibilityEventDispatcher dispatchAccessibilityEvent(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo){
         AccessibilityEventDispatcher dispatcher = null;
         if(mChain != null){
-            dispatcher = mChain.dispatchAccessibilityEvent(event);
+            dispatcher = mChain.dispatchAccessibilityEvent(event, rootNodeInfo);
         }
         if(dispatcher == null){
             SceneRecognition r = onCreateRecognition();
             if(r != null){
-                mScene = r.recognize(event);
+                mScene = r.recognize(event, rootNodeInfo);
                 return this;
             }
         }

@@ -2,7 +2,9 @@ package com.kikatech.go.accessibility;
 
 import com.kikatech.go.accessibility.scene.Scene;
 
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +13,8 @@ import java.util.List;
  */
 
 public class AccessibilityManager {
+
+    private static final String TAG = AccessibilityManager.class.getSimpleName();
 
     private static AccessibilityManager sInstance = new AccessibilityManager();
 
@@ -61,10 +65,12 @@ public class AccessibilityManager {
         }
     }
 
-    public void register(Class<Scene> clazz, Object object){
+    public void register(Class<?> clazz, Object object){
         if(clazz != null && object != null){
             if(mSubscribers.get(clazz.getName()) == null){
-                mSubscribers.put(clazz.getName(), Arrays.asList(object));
+                List<Object> objectList = new ArrayList<>();
+                objectList.add(object);
+                mSubscribers.put(clazz.getName(), objectList);
             }else{
                 if(!mSubscribers.get(clazz.getName()).contains(object)){
                     mSubscribers.get(clazz.getName()).add(object);
@@ -73,7 +79,7 @@ public class AccessibilityManager {
         }
     }
 
-    public void unregister(Class<Scene> clazz, Object object){
+    public void unregister(Class<?> clazz, Object object){
         if(clazz != null){
             if(mSubscribers.get(clazz.getName()) != null){
                 mSubscribers.get(clazz.getName()).remove(object);
@@ -81,11 +87,24 @@ public class AccessibilityManager {
         }
     }
 
-    public void onScene(Scene scene){
-        if(scene != null){
+    public void onScene(Scene scene) {
+        if(scene != null) {
             String name = scene.getClass().getName();
-            if(mSubscribers.get(name) != null){
+            List<Object> subscribers = mSubscribers.get(name);
+            for(Object subscriber : subscribers) {
                 // notify all
+                Method[] methods = subscriber.getClass().getMethods();
+                for(Method method : methods) {
+                    if("onSceneShown".equals(method.getName())) {
+                        try {
+                            method.invoke(subscriber, scene);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         }
     }
