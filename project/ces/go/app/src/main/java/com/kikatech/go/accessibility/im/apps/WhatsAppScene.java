@@ -46,7 +46,6 @@ public class WhatsAppScene extends IMScene {
         return findNodeByViewId(mRootNodeInfo, VIEWID_LAYOUT_INPUT_CHATROOM) != null;
     }
 
-    @Override
     public AccessibilityNodeInfo findUserItem(String userName) {
         AccessibilityNodeInfo nodeInfo = mRootNodeInfo;
         return findNodeByTextAndClass(nodeInfo, userName, AccessibilityUtils.AccessibilityConstants.CLASSNAME_TEXT_VIEW);

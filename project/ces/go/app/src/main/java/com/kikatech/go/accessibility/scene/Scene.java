@@ -25,7 +25,7 @@ public class Scene {
 
     protected AccessibilityNodeInfo findNodeByViewId(AccessibilityNodeInfo parentNode, String viewId) {
         List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByViewId(viewId);
-        if(results.size() > 0) {
+        if (results.size() > 0) {
             return results.get(0);
         }
         return null;
@@ -33,7 +33,7 @@ public class Scene {
 
     protected AccessibilityNodeInfo findNodeByText(AccessibilityNodeInfo parentNode, String text) {
         List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByText(text);
-        if(results.size() > 0) {
+        if (results.size() > 0) {
             return results.get(0);
         }
         return null;
@@ -45,18 +45,26 @@ public class Scene {
 
     protected AccessibilityNodeInfo findNodeByTextAndClass(AccessibilityNodeInfo parentNode, String text, String className) {
         List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByText(text);
-        if(results != null) {
-            for(AccessibilityNodeInfo nodeInfo : results) {
-                if(className.equals(nodeInfo.getClassName())) {
-                    return nodeInfo;
-                }
+        for (AccessibilityNodeInfo nodeInfo : results) {
+            if (className.equals(nodeInfo.getClassName())) {
+                return nodeInfo;
+            }
+        }
+        return null;
+    }
+
+    protected AccessibilityNodeInfo findNodeByTextAndId(AccessibilityNodeInfo parentNode, String text, String viewId) {
+        List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByViewId(viewId);
+        for (AccessibilityNodeInfo nodeInfo : results) {
+            if (text != null && text.equalsIgnoreCase(nodeInfo.getText().toString())) {
+                return nodeInfo;
             }
         }
         return null;
     }
 
     protected void clickView(AccessibilityNodeInfo nodeInfo) {
-        if(nodeInfo == null) {
+        if (nodeInfo == null) {
             return;
         }
 
@@ -65,7 +73,7 @@ public class Scene {
     }
 
     protected void longClickView(AccessibilityNodeInfo nodeInfo) {
-        if(nodeInfo == null) {
+        if (nodeInfo == null) {
             return;
         }
 
@@ -74,11 +82,11 @@ public class Scene {
     }
 
     protected void fillUpEditText(AccessibilityNodeInfo nodeInfo, String text) {
-        if(nodeInfo == null) {
+        if (nodeInfo == null) {
             return;
         }
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle arguments = new Bundle();
             arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text);
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
@@ -97,7 +105,8 @@ public class Scene {
     protected void waitForView(long millisecond) {
         try {
             Thread.sleep(millisecond);
-        } catch (InterruptedException ignore) {}
+        } catch (InterruptedException ignore) {
+        }
     }
 
     public void printView() {

@@ -35,7 +35,6 @@ public class MessengerScene extends IMScene {
         return false;
     }
 
-    @Override
     public AccessibilityNodeInfo findUserItem(String userName) {
         waitForView(1500);
         AccessibilityNodeInfo nodeInfo = mRootNodeInfo;

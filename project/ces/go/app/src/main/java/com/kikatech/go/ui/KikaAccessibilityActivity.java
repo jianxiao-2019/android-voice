@@ -31,6 +31,7 @@ public class KikaAccessibilityActivity extends BaseActivity {
     private AppInfo[] mSupportIM = new AppInfo[]{
             AppInfo.MESSENGER,
             AppInfo.WHATSAPP,
+            AppInfo.WECHAT,
     };
 
     @Override
