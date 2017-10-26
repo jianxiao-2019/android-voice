@@ -15,7 +15,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.extreamsd.usbtester.USBControl;
-import com.kikatech.usb.util.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -247,7 +247,7 @@ public class USBDeviceManager
 				}
 				else
 				{
-					Logger.w( "Silently skipping device!" );
+					if( LogUtil.DEBUG ) LogUtil.logw( TAG, "Silently skipping device!" );
 					mUsbDriverHandler.sendMsg( UsbDriverHandler.MsgCommands.USB_INITIALIZED_FAILED );
 				}
 			}
@@ -259,7 +259,7 @@ public class USBDeviceManager
 		}
 		else
 		{
-			Logger.e( "Failed to open USB device" );
+			if( LogUtil.DEBUG ) LogUtil.logw( TAG, "Failed to open USB device" );
 			mUsbDriverHandler.sendMsg( UsbDriverHandler.MsgCommands.USB_OPEN_FAILED );
 		}
 	}
@@ -299,11 +299,11 @@ public class USBDeviceManager
 		}
 
 		int possibleAudioDevices = 0;
-		Logger.i( "getUSBAudioDevices" );
+		if( LogUtil.DEBUG ) LogUtil.log( TAG, "getUSBAudioDevices" );
 
 		if( mUsbDevice == null )
 		{
-			Logger.i( "getDevices" );
+			if( LogUtil.DEBUG ) LogUtil.log( TAG, "getDevices" );
 
 			PendingIntent mPermissionIntent = PendingIntent.getBroadcast( mContext, 0, new Intent( ACTION_USB_PERMISSION ), 0 );
 			IntentFilter filter = new IntentFilter( ACTION_USB_PERMISSION );
@@ -314,7 +314,7 @@ public class USBDeviceManager
 			if( devices.size() == 0 )
 			{
 				Log.v( "USBTester", "NO devices found!" );
-				Logger.e( "NO devices found, calling initUSBDevice() in hope for root access" );
+				if( LogUtil.DEBUG ) LogUtil.logw( TAG, "NO devices found, calling initUSBDevice() in hope for root access" );
 				/*
 				boolean linuxSeesAudioDevice = mUsbControl.isAudioDevicePresentForLinux();
 				if (linuxSeesAudioDevice)
@@ -356,7 +356,7 @@ public class USBDeviceManager
 					}
 				}
 			}
-			Logger.i( "Devices to query = " + m_devicesToQuery + ", hasClass2Vendor5401 = " + hasClass2Vendor5401 );
+			if( LogUtil.DEBUG ) LogUtil.log( TAG, "Devices to query = " + m_devicesToQuery + ", hasClass2Vendor5401 = " + hasClass2Vendor5401 );
 
 			it = devices.entrySet().iterator();
 			while( it.hasNext() )
@@ -368,14 +368,14 @@ public class USBDeviceManager
 				{
 					int deviceClass = dev.getDeviceClass();
 					//Log.v(TAG, "deviceClass = " + deviceClass + ", dev.getVendorId() = " + dev.getVendorId());
-					Logger.i( "deviceClass = " + deviceClass + ", dev.getVendorId() = " + dev.getVendorId() );
+					if( LogUtil.DEBUG ) LogUtil.log( TAG, "deviceClass = " + deviceClass + ", dev.getVendorId() = " + dev.getVendorId() );
 
 					if( ( ( deviceClass == 1 ) || ( deviceClass == 0 ) || ( deviceClass == 239 ) || ( deviceClass == 255 ) ) && dev.getVendorId() != 0x05C6 && dev.getVendorId() != 0x05E1 && // Symantec bluetooth and video cameras
 						dev.getVendorId() != 0x0A5C )
 					{
 						if( hasClass2Vendor5401 && dev.getVendorId() == 0x8BB && m_devicesToQuery >= 2 )
 						{
-							Logger.w( "Skipping dock audio!" );
+							if( LogUtil.DEBUG ) LogUtil.logw( TAG, "Skipping dock audio!" );
 							continue;
 						}
 						else
@@ -385,7 +385,7 @@ public class USBDeviceManager
 
 						possibleAudioDevices++;
 						//Log.v(TAG, "----> requestPermission");
-						Logger.i( "requestPermission" );
+						if( LogUtil.DEBUG ) LogUtil.log( TAG, "requestPermission" );
 
 						if( manager.hasPermission( dev ) == false )
 						{

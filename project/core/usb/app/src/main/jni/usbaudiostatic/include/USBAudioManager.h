@@ -8,7 +8,6 @@
 
 #include <string>
 #include <pthread.h>
-#include <sys/timeb.h>
 #include <libusb/libusb.h>
 #include <vector>
 
