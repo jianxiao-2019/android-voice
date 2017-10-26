@@ -22,11 +22,6 @@ public abstract class AccessibilityEventDispatcher {
     public AccessibilityEventDispatcher(){
     }
 
-    final public AccessibilityEventDispatcher chain(AccessibilityEventDispatcher dispatcher){
-        mChain = dispatcher;
-        return this;
-    }
-
     final public AccessibilityEventDispatcher dispatchAccessibilityEvent(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo){
         AccessibilityEventDispatcher dispatcher = null;
         if(mChain != null){

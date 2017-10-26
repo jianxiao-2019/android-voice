@@ -98,9 +98,7 @@ public class AccessibilityManager {
                     if("onSceneShown".equals(method.getName())) {
                         try {
                             method.invoke(subscriber, scene);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
