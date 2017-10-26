@@ -16,7 +16,7 @@ import com.kikatech.go.util.LogUtil;
 
 public abstract class IMProcessor extends AccessibilityProcessor {
 
-    private static final String TAG = IMProcessor.class.getSimpleName();
+    private static final String TAG = "IMProcessor";
     private static final int TIMEOUT = 15000;
 
     protected String mTarget;

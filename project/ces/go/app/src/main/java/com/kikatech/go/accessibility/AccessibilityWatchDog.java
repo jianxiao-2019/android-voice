@@ -6,7 +6,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class AccessibilityWatchDog extends AccessibilityService {
 
-    private static final String TAG = AccessibilityWatchDog.class.getSimpleName();
+    private static final String TAG = "AccessibilityWatchDog";
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {

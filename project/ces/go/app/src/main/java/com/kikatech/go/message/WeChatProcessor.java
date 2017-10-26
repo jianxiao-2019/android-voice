@@ -23,8 +23,6 @@ public class WeChatProcessor extends IMProcessor {
     public void start() {
         AccessibilityManager.getInstance().register(WeChatScene.class, this);
         super.start();
-        //setRunning(true);
-        //mContext.startActivity(getShareIntent("XX", "Hi WeChat!!"));
     }
 
     @Override
