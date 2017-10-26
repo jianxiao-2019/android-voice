@@ -17,6 +17,7 @@ import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.MessageEventDispatcher;
 import com.kikatech.go.message.IMProcessor;
 import com.kikatech.go.util.AppInfo;
+import com.kikatech.go.util.AppUtil;
 
 /**
  * @author jasonli Created on 2017/10/24.
@@ -26,6 +27,11 @@ public class KikaAccessibilityActivity extends BaseActivity {
 
     MessageEventDispatcher mMessageEventDispatcher;
     AppInfo mAppInfo = AppInfo.MESSENGER;
+
+    private AppInfo[] mSupportIM = new AppInfo[]{
+            AppInfo.MESSENGER,
+            AppInfo.WHATSAPP,
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,14 +55,24 @@ public class KikaAccessibilityActivity extends BaseActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String packageName = mAppInfo.getPackageName();
+                if (!AppUtil.isAppInstalled(context, packageName)) {
+                    showToast("App not installed!");
+                    return;
+                }
+
                 String target = editTarget.getText().toString();
                 String message = editMessage.getText().toString();
-                if(TextUtils.isEmpty(target) || TextUtils.isEmpty(message)) {
+                if (TextUtils.isEmpty(target) || TextUtils.isEmpty(message)) {
                     showToast("Empty target or message!");
                     return;
                 }
 
-                String packageName = mAppInfo.getPackageName();
+                if (!AccessibilityUtils.isSettingsOn(context)) {
+                    showToast("Please enable Accessibility permission!");
+                    return;
+                }
+
                 IMProcessor processor = IMProcessor.createIMProcessor(context, packageName, target, message);
                 if (processor != null) {
                     processor.start();
@@ -67,7 +83,7 @@ public class KikaAccessibilityActivity extends BaseActivity {
         buttonCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(AccessibilityUtils.isSettingsOn(context)) {
+                if (AccessibilityUtils.isSettingsOn(context)) {
                     showToast("The Accessibility setting is ON.");
                 } else {
                     AccessibilityUtils.openAccessibilitySettings(context);
@@ -76,10 +92,10 @@ public class KikaAccessibilityActivity extends BaseActivity {
         });
 
         String[] imNames = new String[mSupportIM.length];
-        for(int i = 0; i < imNames.length; i++) {
+        for (int i = 0; i < imNames.length; i++) {
             imNames[i] = mSupportIM[i].getAppName();
         }
-        ArrayAdapter dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, imNames);
+        ArrayAdapter dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, imNames);
         spinnerIM.setAdapter(dataAdapter);
         spinnerIM.setOnItemSelectedListener(mSpinnerSelectedListener);
 
@@ -103,13 +119,6 @@ public class KikaAccessibilityActivity extends BaseActivity {
         super.onPause();
     }
 
-    private AppInfo[] mSupportIM = new AppInfo[] {
-            AppInfo.MESSENGER,
-            AppInfo.WHATSAPP,
-    };
-
-
-
 
     private Spinner.OnItemSelectedListener mSpinnerSelectedListener = new Spinner.OnItemSelectedListener() {
         @Override
@@ -118,8 +127,6 @@ public class KikaAccessibilityActivity extends BaseActivity {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
+        public void onNothingSelected(AdapterView<?> parent) {}
     };
 }
