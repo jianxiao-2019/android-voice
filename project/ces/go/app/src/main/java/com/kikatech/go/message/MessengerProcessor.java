@@ -5,7 +5,7 @@ import android.content.Context;
 import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.im.apps.MessengerScene;
 import com.kikatech.go.accessibility.scene.Scene;
-import com.kikatech.go.utils.AppConstants;
+import com.kikatech.go.util.AppConstants;
 
 /**
  * @author jasonli Created on 2017/10/24.

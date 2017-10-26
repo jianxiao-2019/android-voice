@@ -1,4 +1,4 @@
-package com.kikatech.go.utils;
+package com.kikatech.go.util;
 
 /**
  * @author jasonli Created on 2017/10/19.

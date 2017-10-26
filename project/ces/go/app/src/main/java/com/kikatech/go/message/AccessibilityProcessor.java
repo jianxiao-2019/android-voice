@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.ui.KikaGoActivity;
-import com.kikatech.go.utils.LogUtil;
+import com.kikatech.go.util.LogUtil;
 
 /**
  * @author jasonli Created on 2017/10/23.

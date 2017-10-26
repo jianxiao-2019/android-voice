@@ -7,8 +7,8 @@ import android.text.TextUtils;
 
 import com.kikatech.go.accessibility.im.IMScene;
 import com.kikatech.go.accessibility.scene.Scene;
-import com.kikatech.go.utils.AppConstants;
-import com.kikatech.go.utils.LogUtil;
+import com.kikatech.go.util.AppConstants;
+import com.kikatech.go.util.LogUtil;
 
 /**
  * @author jasonli Created on 2017/10/25.

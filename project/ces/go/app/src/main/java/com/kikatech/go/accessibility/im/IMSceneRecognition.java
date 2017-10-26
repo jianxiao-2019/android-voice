@@ -7,7 +7,7 @@ import com.kikatech.go.accessibility.im.apps.MessengerScene;
 import com.kikatech.go.accessibility.im.apps.WhatsAppScene;
 import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.accessibility.scene.SceneRecognition;
-import com.kikatech.go.utils.AppConstants;
+import com.kikatech.go.util.AppConstants;
 import com.kikatech.voice.util.log.Logger;
 
 /**

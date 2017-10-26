@@ -1,4 +1,4 @@
-package com.kikatech.go.utils;
+package com.kikatech.go.util;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
