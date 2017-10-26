@@ -1,4 +1,4 @@
-package com.kikatech.go.message;
+package com.kikatech.go.message.processor;
 
 import android.content.Context;
 import android.content.Intent;

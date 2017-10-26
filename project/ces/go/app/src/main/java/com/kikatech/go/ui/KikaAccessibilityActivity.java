@@ -15,7 +15,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.MessageEventDispatcher;
-import com.kikatech.go.message.IMProcessor;
+import com.kikatech.go.message.processor.IMProcessor;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.AppUtil;
 
