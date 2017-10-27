@@ -9,4 +9,10 @@
         android:layout_height="wrap_content"
         android:text="ACCESSIBILITY IM"/>
 
+    <Button
+        android:id="@+id/button_telephony"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TELEPHONY"/>
+
 </LinearLayout>
