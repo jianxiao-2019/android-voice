@@ -1,4 +1,4 @@
-package com.kikatech.go.telephony;
+package com.kikatech.go.telephony.services;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +9,9 @@ import com.kikatech.go.util.LogUtil;
 /**
  * @author SkeeterWang Created on 2017/10/26.
  */
-public class TelephonyHeadset extends BaseTelephonyService
+public class TelephonyServiceHeadset extends BaseTelephonyService
 {
-	private static final String TAG = "TelephonyHeadset";
+	private static final String TAG = "TelephonyServiceHeadset";
 
 	private static final String PERMISSION_CALL_PRIVILEGED = "android.permission.CALL_PRIVILEGED";
 

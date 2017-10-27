@@ -1,4 +1,4 @@
-package com.kikatech.go.telephony;
+package com.kikatech.go.telephony.services;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  */
 public abstract class BaseTelephonyService
 {
-	private static final String TAG = "BaseTelephony";
+	private static final String TAG = "BaseTelephonyService";
 
 	public abstract void answerPhoneCall( Context context );
 

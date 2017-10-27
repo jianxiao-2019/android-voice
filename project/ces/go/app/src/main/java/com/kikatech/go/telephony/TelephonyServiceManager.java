@@ -3,6 +3,9 @@ package com.kikatech.go.telephony;
 import android.content.Context;
 import android.media.AudioManager;
 
+import com.kikatech.go.telephony.services.BaseTelephonyService;
+import com.kikatech.go.telephony.services.TelephonyServiceHeadset;
+import com.kikatech.go.telephony.services.TelephonyServiceHeadsetNLS;
 import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.LogUtil;
 
@@ -11,9 +14,7 @@ import com.kikatech.go.util.LogUtil;
  */
 public class TelephonyServiceManager
 {
-	private static final String TAG = "TelephonyManager";
-
-	public static final String TEST_PHONE_NUMBER = "18516894507";
+	private static final String TAG = "TelephonyServiceManager";
 
 	private static TelephonyServiceManager sIns;
 	private static BaseTelephonyService mTelephonyService;
@@ -29,10 +30,10 @@ public class TelephonyServiceManager
 	private TelephonyServiceManager()
 	{
 		if( DeviceUtil.overLollipop() ) {
-			mTelephonyService = new TelephonyHeadsetNLS();
+			mTelephonyService = new TelephonyServiceHeadsetNLS();
 		}
 		else {
-			mTelephonyService = new TelephonyHeadset();
+			mTelephonyService = new TelephonyServiceHeadset();
 		}
 	}
 

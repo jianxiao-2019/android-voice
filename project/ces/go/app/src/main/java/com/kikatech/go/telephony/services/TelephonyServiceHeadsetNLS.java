@@ -1,4 +1,4 @@
-package com.kikatech.go.telephony;
+package com.kikatech.go.telephony.services;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,9 +18,9 @@ import java.util.List;
  * @author SkeeterWang Created on 2017/10/26.
  */
 @RequiresApi( api = Build.VERSION_CODES.LOLLIPOP )
-public class TelephonyHeadsetNLS extends BaseTelephonyService
+public class TelephonyServiceHeadsetNLS extends BaseTelephonyService
 {
-	private static final String TAG = "TelephonyHeadsetNLS";
+	private static final String TAG = "TelephonyServiceHeadsetNLS";
 
 	private static final String PACKAGE_TELECOM_SERVER = "com.android.server.telecom";
 
