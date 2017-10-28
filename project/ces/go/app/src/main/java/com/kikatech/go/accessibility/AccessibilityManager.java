@@ -101,6 +101,7 @@ public class AccessibilityManager {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        break;
                     }
                 }
             }
