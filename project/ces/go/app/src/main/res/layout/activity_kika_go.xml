@@ -21,4 +21,10 @@
         android:layout_height="wrap_content"
         android:text="NOTIFICATION IM"/>
 
+    <Button
+        android:id="@+id/button_sms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SMS Message"/>
+
 </LinearLayout>

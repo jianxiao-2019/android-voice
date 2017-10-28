@@ -33,6 +33,13 @@ public class PermissionUtil
 			Permission.READ_PHONE_STATE
 	};
 
+	private static final Permission[] SMS_PERMISSIONS = new Permission[] {
+			Permission.RECEIVE_SMS,
+			Permission.READ_SMS,
+			Permission.SEND_SMS,
+			Permission.READ_CONTACTS,
+	};
+
 	public enum Permission
 	{
 		// STORAGE
@@ -41,7 +48,14 @@ public class PermissionUtil
 		// PHONE
 		CALL_PHONE( Manifest.permission.CALL_PHONE ),
 		READ_PHONE_STATE( Manifest.permission.READ_PHONE_STATE ),
-		PROCESS_OUTGOING_CALLS( Manifest.permission.PROCESS_OUTGOING_CALLS );
+		PROCESS_OUTGOING_CALLS( Manifest.permission.PROCESS_OUTGOING_CALLS ),
+		// CONTACTS
+		GET_ACCOUNTS( Manifest.permission.GET_ACCOUNTS ),
+		READ_CONTACTS( Manifest.permission.READ_CONTACTS ),
+		// SMS
+		RECEIVE_SMS( Manifest.permission.RECEIVE_SMS ),
+		READ_SMS( Manifest.permission.READ_SMS ),
+		SEND_SMS( Manifest.permission.SEND_SMS );
 
 		private String permission;
 
@@ -88,6 +102,19 @@ public class PermissionUtil
 	public static boolean hasPermissionPhone( Context context )
 	{
 		return hasPermissions( context, PHONE_PERMISSIONS );
+	}
+
+	public static void checkPermissionsSMS( Activity activity )
+	{
+		checkPermission( activity, Permission.RECEIVE_SMS,
+				Permission.READ_SMS,
+				Permission.SEND_SMS,
+				Permission.READ_CONTACTS );
+	}
+
+	public static boolean hasPermissionsSMS( Context context )
+	{
+		return hasPermissions( context, SMS_PERMISSIONS );
 	}
 
 	public static boolean shouldShowRequestRationale( Activity activity, Permission permission )

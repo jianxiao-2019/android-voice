@@ -9,6 +9,12 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_MMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,6 +34,7 @@
         <activity android:name=".ui.TelephonyActivity"
                   android:launchMode="singleTask"/>
         <activity android:name=".ui.KikaIMReplyActivity" />
+        <activity android:name=".ui.KikaSMSActivity" />
 
         <receiver android:name="telephony.PhoneStateReceiver">
             <intent-filter>
@@ -56,6 +63,14 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+        <receiver android:name=".message.sms.SmsBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"
+                    android:priority="999"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
