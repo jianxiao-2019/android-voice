@@ -13,6 +13,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
+import com.kikatech.go.message.im.IMManager;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.LogUtil;
 
@@ -59,7 +60,7 @@ public class NotificationWatchDog extends NotificationListenerService
 					case AppConstants.PACKAGE_ALLO:
 					case AppConstants.PACKAGE_PLUS:
 					case AppConstants.PACKAGE_WECHAT:
-					    // TODO process IM notification
+                        IMManager.getInstance().processNotification(this, statusBarNotification);
 						break;
 					default:
 						return;

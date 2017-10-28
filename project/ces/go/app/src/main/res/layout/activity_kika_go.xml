@@ -15,4 +15,10 @@
         android:layout_height="wrap_content"
         android:text="TELEPHONY"/>
 
+    <Button
+        android:id="@+id/button_notification_im"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NOTIFICATION IM"/>
+
 </LinearLayout>

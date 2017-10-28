@@ -37,5 +37,14 @@ public class KikaGoActivity extends Activity{
 				startActivity(intent);
 			}
 		} );
+
+        findViewById(R.id.button_notification_im).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaIMReplyActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -27,6 +27,7 @@
         <activity android:name=".ui.KikaAccessibilityActivity" />
         <activity android:name=".ui.TelephonyActivity"
                   android:launchMode="singleTask"/>
+        <activity android:name=".ui.KikaIMReplyActivity" />
 
         <receiver android:name="telephony.PhoneStateReceiver">
             <intent-filter>
