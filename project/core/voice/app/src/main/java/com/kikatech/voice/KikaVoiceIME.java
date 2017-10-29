@@ -30,7 +30,7 @@ import java.util.Locale;
  * Created by ryanlin on 18/09/2017.
  */
 
-public class KikaVoiceService extends InputMethodService implements IVoiceView {
+public class KikaVoiceIME extends InputMethodService implements IVoiceView {
 
     public static final String PREF_KEY_DEBUG = "pref_debug";
 

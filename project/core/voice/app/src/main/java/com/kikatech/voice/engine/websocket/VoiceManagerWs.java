@@ -14,10 +14,8 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.SuggestionSpan;
-import android.view.KeyEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.kikatech.voice.KikaVoiceService;
+import com.kikatech.voice.KikaVoiceIME;
 import com.kikatech.voice.R;
 import com.kikatech.voice.engine.interfaces.IVoiceManager;
 import com.kikatech.voice.engine.interfaces.IVoiceView;
@@ -223,8 +221,8 @@ public class VoiceManagerWs implements IVoiceManager, VoiceDetectorListener,
 
         Logger.i("VoiceManagerWs handleResult seqId = " + result.seqId + " type = " + result.resultType + " payload = " + result.payload);
         // TODO : UI Thread?
-        if (!TextUtils.isEmpty(result.sessionId) && mVoiceView instanceof KikaVoiceService) {
-            ((KikaVoiceService) mVoiceView).setServerSessionId(result.sessionId);
+        if (!TextUtils.isEmpty(result.sessionId) && mVoiceView instanceof KikaVoiceIME) {
+            ((KikaVoiceIME) mVoiceView).setServerSessionId(result.sessionId);
         }
         if (result.seqId > 0) {
             mVoiceView.onUpdateRecognizedResult(result.payload, IVoiceView.RESULT_INTERMEDIATE);
@@ -436,8 +434,8 @@ public class VoiceManagerWs implements IVoiceManager, VoiceDetectorListener,
         Date resultDate = new Date(System.currentTimeMillis());
         String timeStr = sdf.format(resultDate);
 
-        if (mVoiceView instanceof KikaVoiceService) {
-            ((KikaVoiceService) mVoiceView).setClientRecordId(timeStr);
+        if (mVoiceView instanceof KikaVoiceIME) {
+            ((KikaVoiceIME) mVoiceView).setClientRecordId(timeStr);
         }
 
         return getCacheDir(context).toString() + "/kika_voice_" + timeStr;

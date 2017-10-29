@@ -21,7 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kikatech.voice.KikaVoiceService;
+import com.kikatech.voice.KikaVoiceIME;
 import com.kikatech.voice.R;
 
 import java.util.List;
@@ -67,7 +67,7 @@ public class KikaVoiceActivity extends AppCompatActivity implements View.OnClick
         }
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Boolean isDebugMode = preferences.getBoolean(KikaVoiceService.PREF_KEY_DEBUG, false);
+        Boolean isDebugMode = preferences.getBoolean(KikaVoiceIME.PREF_KEY_DEBUG, false);
         String text = isDebugMode ? "Close debug mode" : "Enable debug mode";
         showToast(isDebugMode ? "Debug mode is enabled." : "Debug mode is closed.");
 
@@ -118,8 +118,8 @@ public class KikaVoiceActivity extends AppCompatActivity implements View.OnClick
             inputMethodManager.showInputMethodPicker();
         } else if (v.getId() == R.id.debug_button) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            preferences.edit().putBoolean(KikaVoiceService.PREF_KEY_DEBUG,
-                    !preferences.getBoolean(KikaVoiceService.PREF_KEY_DEBUG, false)).apply();
+            preferences.edit().putBoolean(KikaVoiceIME.PREF_KEY_DEBUG,
+                    !preferences.getBoolean(KikaVoiceIME.PREF_KEY_DEBUG, false)).apply();
 
             updateDebugButtonText();
         }
