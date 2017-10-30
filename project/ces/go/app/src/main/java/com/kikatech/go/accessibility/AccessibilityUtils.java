@@ -18,7 +18,7 @@ import java.util.List;
 
 public class AccessibilityUtils {
 
-    final static String TAG = AccessibilityUtils.class.getSimpleName();
+    final static String TAG = "AccessibilityUtils";
 
     // 此方法用来判断当前应用的辅助功能服务是否开启
     public static boolean isSettingsOn(Context context) {

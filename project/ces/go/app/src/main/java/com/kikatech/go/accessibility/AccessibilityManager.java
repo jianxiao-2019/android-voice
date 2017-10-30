@@ -14,7 +14,7 @@ import java.util.List;
 
 public class AccessibilityManager {
 
-    private static final String TAG = AccessibilityManager.class.getSimpleName();
+    private static final String TAG = "AccessibilityManager";
 
     private static AccessibilityManager sInstance = new AccessibilityManager();
 
@@ -101,6 +101,7 @@ public class AccessibilityManager {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        break;
                     }
                 }
             }

@@ -44,13 +44,6 @@ public class IMScene extends Scene {
         return true;
     }
 
-    /**
-     * Find the contact item with send button
-     */
-    public AccessibilityNodeInfo findUserItem(String userName) {
-        return null;
-    }
-
     protected String getSearchButtonId() {
         return VIEWID_TO_BE_DEFINED;
     }

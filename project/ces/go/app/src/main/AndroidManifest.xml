@@ -5,6 +5,16 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_MMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,6 +31,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.KikaAccessibilityActivity" />
+        <activity android:name=".ui.TelephonyActivity"
+                  android:launchMode="singleTask"/>
+        <activity android:name=".ui.KikaIMReplyActivity" />
+        <activity android:name=".ui.KikaSMSActivity" />
+
+        <receiver android:name="telephony.PhoneStateReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name="com.kikatech.go.accessibility.AccessibilityWatchDog"
@@ -35,6 +55,22 @@
                 android:resource="@xml/detection_service_config" />
 
         </service>
+        <service android:name=".notification.NotificationWatchDog"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+        <receiver android:name=".message.sms.SmsBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"
+                    android:priority="999"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

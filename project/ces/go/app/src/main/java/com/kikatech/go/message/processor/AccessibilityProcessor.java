@@ -1,4 +1,4 @@
-package com.kikatech.go.message;
+package com.kikatech.go.message.processor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import com.kikatech.go.util.LogUtil;
 // 处理Accessibility执行事件的流程
 public abstract class AccessibilityProcessor {
 
-    private static final String TAG = AccessibilityProcessor.class.getSimpleName();
+    private static final String TAG = "AccessibilityProcessor";
 
     protected Context mContext;
     protected boolean mRunning = false;

@@ -1,4 +1,4 @@
-package com.kikatech.go.message;
+package com.kikatech.go.message.processor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import com.kikatech.go.util.LogUtil;
 
 public abstract class IMProcessor extends AccessibilityProcessor {
 
-    private static final String TAG = IMProcessor.class.getSimpleName();
+    private static final String TAG = "IMProcessor";
     private static final int TIMEOUT = 15000;
 
     protected String mTarget;
@@ -88,16 +88,21 @@ public abstract class IMProcessor extends AccessibilityProcessor {
         }
         LogUtil.logd(TAG, "Open intent = " + packageName);
         try {
-            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-            sharingIntent.setPackage(packageName);
-            sharingIntent.setType("text/plain");
-            sharingIntent.putExtra(Intent.EXTRA_TEXT, mMessage);
+            Intent sharingIntent = getShareIntent(packageName, mMessage);
             mContext.startActivity(sharingIntent);
         } catch (Exception e) {
             LogUtil.logwtf(TAG, "Open intent with error: " + e.getMessage());
             return false;
         }
         return true;
+    }
+
+    protected Intent getShareIntent(String packageName, String message) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setPackage(packageName);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, message);
+        return intent;
     }
 
     protected void checkStage() {
@@ -116,6 +121,10 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
     @Override
     public boolean onSceneShown(Scene sceneShown) {
+        if (!isRunning()) {
+            LogUtil.logwtf(TAG, "onSceneShown called while it has been stopped.");
+            return true;
+        }
         String stage = getStage();
         IMScene scene = (IMScene) sceneShown;
         String target = mTarget;
@@ -151,6 +160,9 @@ public abstract class IMProcessor extends AccessibilityProcessor {
                 break;
             case AppConstants.PACKAGE_WHATSAPP:
                 processor = new WhatsAppProcessor(context);
+                break;
+            case AppConstants.PACKAGE_WECHAT:
+                processor = new WeChatProcessor(context);
                 break;
             default:
                 break;

@@ -1,4 +1,4 @@
-package com.kikatech.go.message;
+package com.kikatech.go.message.processor;
 
 import android.content.Context;
 
@@ -12,8 +12,6 @@ import com.kikatech.go.util.AppConstants;
  */
 
 public class MessengerProcessor extends IMProcessor {
-
-    private static final String TAG = MessengerProcessor.class.getSimpleName();
 
     public MessengerProcessor(Context context) {
         super(context);

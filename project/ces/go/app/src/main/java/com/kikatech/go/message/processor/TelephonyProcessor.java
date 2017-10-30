@@ -1,4 +1,4 @@
-package com.kikatech.go.message;
+package com.kikatech.go.message.processor;
 
 /**
  * @author jasonli Created on 2017/10/23.
