@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.chatbot.intent;
+package com.kikatech.voice.core.dialogflow.intent;
 
 /**
  * Created by tianli on 17-10-27.

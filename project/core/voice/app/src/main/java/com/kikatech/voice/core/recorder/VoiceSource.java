@@ -1,5 +1,6 @@
 package com.kikatech.voice.core.recorder;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -12,7 +13,7 @@ import com.kikatech.voice.util.log.Logger;
  * Created by tianli on 17-10-29.
  */
 
-public class DefaultVoiceSource implements IVoiceSource{
+public class VoiceSource implements IVoiceSource{
 
     public final static int AUDIO_INPUT = MediaRecorder.AudioSource.VOICE_COMMUNICATION;
     public final static int AUDIO_SAMPLE_RATE = 16000;
@@ -22,7 +23,7 @@ public class DefaultVoiceSource implements IVoiceSource{
 
     private AcousticEchoCanceler mCanceler;
 
-    public DefaultVoiceSource(){
+    public VoiceSource(){
         mBufferSizeInBytes = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
     }
