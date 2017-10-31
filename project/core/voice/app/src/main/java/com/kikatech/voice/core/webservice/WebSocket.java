@@ -3,8 +3,6 @@ package com.kikatech.voice.core.webservice;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.core.webservice.message.MessageType;
-import com.kikatech.voice.engine.websocket.KikaVoiceMessage;
 import com.kikatech.voice.util.log.Logger;
 
 import org.java_websocket.client.WebSocketClient;
