@@ -24,7 +24,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.message.Message;
 import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.message.im.IMManager;
-import com.kikatech.go.notification.NotificationUtil;
+import com.kikatech.go.notification.NotificationListenerUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.DeviceUtil;
 
@@ -197,7 +197,7 @@ public class KikaIMReplyActivity extends BaseActivity {
         filter.addAction(IMManager.ACTION_IM_MESSAGE_UPDATED);
         registerReceiver(mBroadcastReceiver, filter);
 
-        boolean isPermissionNLOn = NotificationUtil.isPermissionNLEnabled(this);
+        boolean isPermissionNLOn = NotificationListenerUtil.isPermissionNLEnabled(this);
         mPermissionStatus.setText(isPermissionNLOn ? "Permission ON" : "No Permission!");
         mPermissionStatus.setTextColor(isPermissionNLOn ? Color.GREEN : Color.RED);
     }
