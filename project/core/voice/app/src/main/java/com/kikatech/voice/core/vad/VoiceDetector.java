@@ -7,7 +7,6 @@ import android.os.Message;
 
 import com.kikatech.androidspeex.Speex;
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.engine.vad.VadUtil;
 import com.kikatech.voice.util.log.Logger;
 
 /**
@@ -86,7 +85,7 @@ public class VoiceDetector implements IDataPath {
 
                 float[] sample = ByteToFloat(data, data.length / 2);
                 float prob = VadUtil.speechProbability(sample, 0, sample.length,
-                        VadUtil.sFilterFrameInfo);
+                        VadUtil.sConf);
                 // TODO: 17-10-30
 //                if (mListener != null && mPrevProb != prob) {
 //                    mListener.onSpeechProbabilityChanged(prob);

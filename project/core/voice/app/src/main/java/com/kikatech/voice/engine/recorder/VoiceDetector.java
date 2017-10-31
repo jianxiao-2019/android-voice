@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import com.kikatech.androidspeex.Speex;
 import com.kikatech.voice.util.log.Logger;
-import com.kikatech.voice.engine.vad.VadUtil;
+import com.kikatech.voice.core.vad.VadUtil;
 import com.kikatech.voice.engine.interfaces.IVoiceManager;
 
 import java.io.BufferedOutputStream;
@@ -98,7 +98,7 @@ public class VoiceDetector {
 
                 float[] sample = ByteToFloat(data, data.length / 2);
                 float prob = VadUtil.speechProbability(sample, 0, sample.length,
-                        VadUtil.sFilterFrameInfo);
+                        VadUtil.sConf);
                 if (mListener != null && mPrevProb != prob) {
                     mListener.onSpeechProbabilityChanged(prob);
                 }

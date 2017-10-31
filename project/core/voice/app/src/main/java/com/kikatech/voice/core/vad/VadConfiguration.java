@@ -1,13 +1,14 @@
-package com.kikatech.voice.engine.vad;
+package com.kikatech.voice.core.vad;
 
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 /**
- * Created by xm009 on 17/6/13.
+ * Created by tianli on 17-10-31.
  */
 
 @JsonObject(fieldDetectionPolicy = JsonObject.FieldDetectionPolicy.NONPRIVATE_FIELDS)
-public class FilterFrameInfo {
+public class VadConfiguration {
+
     public int filterWindowMs = 20;  // 过滤窗长ms
     public int shortPauseLenMs = 1000;  // 短暂停时间ms
     public int silenceFilterLenMs = 100;  // 长静音时间ms
@@ -24,4 +25,5 @@ public class FilterFrameInfo {
     public float minSpeechFrequencyWeightPercent = 0.3f;  // 最低基频语音强度比例
     public float speechJudgementProbability = 0.3f;  // 语音评判概率
     public float totalFrequencyZero = 40;
+
 }
