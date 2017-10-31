@@ -1,9 +1,9 @@
 package com.kikatech.voice.core.webservice;
 
-import android.os.Looper;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.MessageType;
 import com.kikatech.voice.engine.websocket.KikaVoiceMessage;
 import com.kikatech.voice.util.log.Logger;
 
@@ -46,13 +46,15 @@ public class WebSocket {
     private String mSign;
     private String mLocale;
 
-    public static WebSocket openConnection(OnWebSocketListener l){
+    public static WebSocket openConnection(OnWebSocketListener l) {
         return new WebSocket(l);
     }
 
     public interface OnWebSocketListener {
         void onMessage(Message message);
+
         void onWebSocketClosed();
+
         void onWebSocketError();
     }
 
@@ -96,21 +98,21 @@ public class WebSocket {
         });
     }
 
-    private boolean reconnect(){
-        if(mReconnectTimes < MAX_RECONNECT_TIME){
+    private boolean reconnect() {
+        if (mReconnectTimes < MAX_RECONNECT_TIME) {
             mReconnectTimes++;
-            connect(mLocale,mSign, mUserAgent);
+            connect(mLocale, mSign, mUserAgent);
             return true;
         }
         return false;
     }
 
     public void release() {
-        if(mReleased.compareAndSet(false, true)){
+        if (mReleased.compareAndSet(false, true)) {
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if(mClient != null){
+                    if (mClient != null) {
                         mClient.close();
                     }
                     mClient = null;
@@ -190,6 +192,21 @@ public class WebSocket {
         return null;
     }
 
+    private Message handleMessage(String msg) {
+        try {
+            JSONObject json = new JSONObject(msg);
+            Message message = Message.create(json.optString("type"));
+            if(message != null) {
+                message.fromJson(json);
+            }
+            return message;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logger.i("WebSocket parseMessage error: " + e.getMessage());
+        }
+        return null;
+    }
+
     private class VoiceWebSocketClient extends WebSocketClient {
 
         VoiceWebSocketClient(URI serverUri, Draft protocolDraft,
@@ -207,18 +224,17 @@ public class WebSocket {
         @Override
         public void onMessage(String message) {
             Logger.i("VoiceWebSocketClient onMessage message = " + message);
-            // TODO: 17-10-31 parse message
-//            final KikaVoiceMessage result = parseMessage(message);
-//            if (mOnDataReceiveListener != null) {
-//                mOnDataReceiveListener.onResult(result);
-//            }
+            final Message msg = handleMessage(message);
+            if (msg != null && mListener != null) {
+                mListener.onMessage(msg);
+            }
         }
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
             Logger.i("VoiceWebSocketClient onClose");
             mOpened = false;
-            if(!reconnect()){
+            if (!reconnect()) {
                 if (mListener != null) {
                     mListener.onWebSocketClosed();
                 }
@@ -230,37 +246,11 @@ public class WebSocket {
             Logger.w("VoiceWebSocketClient onError ex = " + ex);
             ex.printStackTrace();
             mOpened = false;
-            if(!reconnect()){
+            if (!reconnect()) {
                 if (mListener != null) {
                     mListener.onWebSocketError();
                 }
             }
         }
-
-        private KikaVoiceMessage parseMessage(String s) {
-            try {
-                JSONObject msgObj = new JSONObject(s);
-                KikaVoiceMessage voiceMessage = new KikaVoiceMessage();
-
-                // TODO : some of these name changed;
-                voiceMessage.state = msgObj.optInt("state");
-                voiceMessage.payload = msgObj.optString("payload");
-                voiceMessage.serverEngine = msgObj.optString("engine");
-                voiceMessage.sessionId = msgObj.optString("cid");
-                voiceMessage.seqId = msgObj.optInt("seq");
-                voiceMessage.url = msgObj.optString("url");
-                voiceMessage.text = msgObj.optString("text");
-                voiceMessage.alterStart = msgObj.optInt("alterStart", 0);
-                voiceMessage.alterEnd = msgObj.optInt("alterEnd", 0);
-                String type = msgObj.optString("type");
-//                voiceMessage.resultType = getResultType(type);
-                return voiceMessage;
-            } catch (Exception e) {
-                e.printStackTrace();
-                Logger.i("DataSender parseMessage error: " + e.getMessage());
-            }
-            return null;
-        }
-
     }
 }

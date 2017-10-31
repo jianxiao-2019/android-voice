@@ -16,6 +16,7 @@ public enum MessageType {
     TTSMARKS("TTS-MARKS");
 
     private String name;
+
     MessageType(String name) {
         this.name = name;
     }

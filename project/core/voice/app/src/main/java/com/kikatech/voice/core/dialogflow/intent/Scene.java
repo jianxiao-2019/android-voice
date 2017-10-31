@@ -8,7 +8,7 @@ public class Scene {
 
     private String mType;
 
-    public Scene(String type){
+    public Scene(String type) {
         mType = type;
     }
 
