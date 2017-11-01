@@ -70,5 +70,14 @@ public class KikaGoActivity extends Activity{
 				}
 			}
 		} );
+
+        findViewById(R.id.button_apiai).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaApiAiActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
     }
 }

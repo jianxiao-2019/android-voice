@@ -39,6 +39,7 @@
         <activity android:name=".ui.KikaIMReplyActivity" />
         <activity android:name=".ui.KikaSMSActivity" />
         <activity android:name=".ui.HotWordActivity"/>
+        <activity android:name=".ui.KikaApiAiActivity" />
 
         <receiver android:name="telephony.PhoneStateReceiver">
             <intent-filter>

@@ -33,4 +33,10 @@
         android:layout_height="wrap_content"
         android:text="HOTWORD DETECTION"/>
 
+    <Button
+        android:id="@+id/button_apiai"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="API.AI"/>
+
 </LinearLayout>
