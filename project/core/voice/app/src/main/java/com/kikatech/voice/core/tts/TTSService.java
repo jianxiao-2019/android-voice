@@ -5,4 +5,8 @@ package com.kikatech.voice.core.tts;
  */
 
 public class TTSService {
+
+    public static TTSSpeaker getSpeaker(){
+        return null;
+    }
 }
