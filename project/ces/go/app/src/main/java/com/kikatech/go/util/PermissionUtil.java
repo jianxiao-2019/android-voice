@@ -55,7 +55,9 @@ public class PermissionUtil
 		// SMS
 		RECEIVE_SMS( Manifest.permission.RECEIVE_SMS ),
 		READ_SMS( Manifest.permission.READ_SMS ),
-		SEND_SMS( Manifest.permission.SEND_SMS );
+		SEND_SMS( Manifest.permission.SEND_SMS ),
+		// MICROPHONE
+		RECORD_AUDIO( Manifest.permission.RECORD_AUDIO );
 
 		private String permission;
 

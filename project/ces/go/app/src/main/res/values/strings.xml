@@ -19,4 +19,9 @@
     <string name="debug_server_response_time">Server event time : %1$dms</string>
     <string name="debug_command_to_tts_time">Command to TTS time : %1$dms</string>
     <string name="debug_tts_prepare_time">TTS prepare time : %1$dms</string>
+
+    <string name="btn1_start">Start</string>
+    <string name="btn1_stop">Stop</string>
+    <string name="btn2_start">Play</string>
+    <string name="btn2_stop">Stop</string>
 </resources>

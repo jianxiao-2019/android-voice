@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.kikatech.go.R;
+import com.kikatech.go.util.PermissionUtil;
 
 /**
  * Created by tianli on 17-10-23.
@@ -55,5 +56,19 @@ public class KikaGoActivity extends Activity{
                 startActivity(intent);
             }
         });
+
+		findViewById( R.id.button_hotword ).setOnClickListener( new View.OnClickListener() {
+			@Override
+			public void onClick( View v )
+			{
+				if( !PermissionUtil.hasPermissions( KikaGoActivity.this, PermissionUtil.Permission.WRITE_EXTERNAL_STORAGE, PermissionUtil.Permission.RECORD_AUDIO ) ) {
+					PermissionUtil.checkPermission( KikaGoActivity.this, PermissionUtil.Permission.WRITE_EXTERNAL_STORAGE, PermissionUtil.Permission.RECORD_AUDIO );
+				}
+				else {
+					Intent intent = new Intent( KikaGoActivity.this, HotWordActivity.class );
+					startActivity( intent );
+				}
+			}
+		} );
     }
 }
