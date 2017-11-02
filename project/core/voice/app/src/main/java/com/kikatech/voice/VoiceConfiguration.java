@@ -1,5 +1,6 @@
 package com.kikatech.voice;
 
+import com.kikatech.voice.core.dialogflow.AgentCreator;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 
 /**
@@ -10,6 +11,8 @@ public class VoiceConfiguration {
 
     private IVoiceSource mVoiceRecorder;
 
+    private AgentCreator mAgentCreator;
+
     public VoiceConfiguration(){
     }
 
@@ -18,5 +21,12 @@ public class VoiceConfiguration {
         return this;
     }
 
+    public VoiceConfiguration dialogAgent(AgentCreator creator){
+        mAgentCreator = creator;
+        return this;
+    }
 
+    public AgentCreator getAgentCreator(){
+        return mAgentCreator;
+    }
 }
