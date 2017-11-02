@@ -26,11 +26,17 @@ public class PermissionUtil
 
 	private static final String[] SPECIAL_PERMISSIONS = new String[] {
 			Manifest.permission.SYSTEM_ALERT_WINDOW,
-			Manifest.permission.WRITE_SETTINGS };
+			Manifest.permission.WRITE_SETTINGS
+	};
 
 	private static final Permission[] PHONE_PERMISSIONS = new Permission[] {
 			Permission.CALL_PHONE,
 			Permission.READ_PHONE_STATE
+	};
+
+	private static final Permission[] LOCATION_PERMISSIONS = new Permission[] {
+			Permission.ACCESS_COARSE_LOCATION,
+			Permission.ACCESS_FINE_LOCATION
 	};
 
 	private static final Permission[] SMS_PERMISSIONS = new Permission[] {
@@ -57,7 +63,10 @@ public class PermissionUtil
 		READ_SMS( Manifest.permission.READ_SMS ),
 		SEND_SMS( Manifest.permission.SEND_SMS ),
 		// MICROPHONE
-		RECORD_AUDIO( Manifest.permission.RECORD_AUDIO );
+		RECORD_AUDIO( Manifest.permission.RECORD_AUDIO ),
+		// LOCATION
+		ACCESS_COARSE_LOCATION( Manifest.permission.ACCESS_COARSE_LOCATION ),
+		ACCESS_FINE_LOCATION( Manifest.permission.ACCESS_FINE_LOCATION );
 
 		private String permission;
 
@@ -104,6 +113,16 @@ public class PermissionUtil
 	public static boolean hasPermissionPhone( Context context )
 	{
 		return hasPermissions( context, PHONE_PERMISSIONS );
+	}
+
+	public static void checkPermissionsLocation( Activity activity )
+	{
+		checkPermission( activity, LOCATION_PERMISSIONS );
+	}
+
+	public static boolean hasPermissionLocation( Context context )
+	{
+		return hasPermissions( context, LOCATION_PERMISSIONS );
 	}
 
 	public static void checkPermissionsSMS( Activity activity )
