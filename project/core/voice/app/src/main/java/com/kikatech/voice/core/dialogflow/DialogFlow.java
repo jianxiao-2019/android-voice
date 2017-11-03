@@ -1,12 +1,10 @@
 package com.kikatech.voice.core.dialogflow;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.voice.VoiceConfiguration;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
