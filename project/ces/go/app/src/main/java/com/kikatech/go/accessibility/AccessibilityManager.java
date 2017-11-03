@@ -1,9 +1,7 @@
 package com.kikatech.go.accessibility;
 
 import com.kikatech.go.accessibility.scene.Scene;
-import com.kikatech.voice.core.dialogflow.DialogObserver;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,7 +80,7 @@ public class AccessibilityManager {
 
     public void unregister(Class<?> clazz, Object object) {
         if (clazz != null) {
-            List<Object> list = mSubscribers.get(clazz.getName();
+            List<Object> list = mSubscribers.get(clazz.getName());
             if (list != null) {
                 list.remove(object);
                 if (list.isEmpty()) {
