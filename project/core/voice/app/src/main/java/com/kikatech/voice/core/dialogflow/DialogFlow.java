@@ -47,7 +47,7 @@ public class DialogFlow {
         }
     }
 
-    public void register(String scene, DialogObserver observer) {
+    public synchronized void register(String scene, DialogObserver observer) {
         if (!TextUtils.isEmpty(scene) && observer != null) {
             if (mSubscribers.get(scene) == null) {
                 List<DialogObserver> objectList = new ArrayList<>();
@@ -61,17 +61,26 @@ public class DialogFlow {
         }
     }
 
-    public void unregister(String scene, DialogObserver object) {
+    public synchronized void unregister(String scene, DialogObserver object) {
         if (!TextUtils.isEmpty(scene) && object != null) {
-            if (mSubscribers.get(scene) != null) {
-                mSubscribers.get(scene).remove(object);
+            List<DialogObserver> list = mSubscribers.get(scene);
+            if (list != null) {
+                list.remove(object);
+                if(list.isEmpty()){
+                    mSubscribers.remove(scene);
+                }
             }
         }
     }
 
     private void onIntent(Intent intent) {
         String scene = intent.getScene();
-        List<DialogObserver> subscribers = mSubscribers.get(scene);
+        List<DialogObserver> subscribers = new ArrayList<>();
+        synchronized (this){
+            if(mSubscribers.containsKey(scene)){
+                subscribers.addAll(mSubscribers.get(scene));
+            }
+        }
         for(DialogObserver subscriber : subscribers) {
             subscriber.onIntent(intent);
         }

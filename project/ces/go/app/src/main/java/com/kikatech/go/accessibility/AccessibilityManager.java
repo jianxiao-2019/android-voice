@@ -1,6 +1,7 @@
 package com.kikatech.go.accessibility;
 
 import com.kikatech.go.accessibility.scene.Scene;
+import com.kikatech.voice.core.dialogflow.DialogObserver;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,23 +23,23 @@ public class AccessibilityManager {
 
     AccessibilityEventDispatcher mRoot;
 
-    public static AccessibilityManager getInstance(){
+    public static AccessibilityManager getInstance() {
         return sInstance;
     }
 
-    private AccessibilityManager(){
+    private AccessibilityManager() {
     }
 
-    public void registerDispatcher(AccessibilityEventDispatcher dispatcher){
-        if(mRoot == null){
+    public void registerDispatcher(AccessibilityEventDispatcher dispatcher) {
+        if (mRoot == null) {
             mRoot = dispatcher;
-        }else{
+        } else {
             AccessibilityEventDispatcher iterator = mRoot;
-            while (iterator != null){
-                if(dispatcher == iterator){
+            while (iterator != null) {
+                if (dispatcher == iterator) {
                     return;
                 }
-                if(iterator.mChain == null){
+                if (iterator.mChain == null) {
                     iterator.mChain = dispatcher;
                     dispatcher.mChain = null;
                     return;
@@ -48,14 +49,14 @@ public class AccessibilityManager {
         }
     }
 
-    public void unregisterDispatcher(AccessibilityEventDispatcher dispatcher){
+    public void unregisterDispatcher(AccessibilityEventDispatcher dispatcher) {
         AccessibilityEventDispatcher iterator = mRoot;
         AccessibilityEventDispatcher parent = null;
-        while (iterator != null){
-            if(dispatcher == iterator){
-                if(parent != null){
+        while (iterator != null) {
+            if (dispatcher == iterator) {
+                if (parent != null) {
                     parent.mChain = iterator.mChain;
-                }else{
+                } else {
                     mRoot = null;
                 }
                 return;
@@ -65,37 +66,41 @@ public class AccessibilityManager {
         }
     }
 
-    public void register(Class<?> clazz, Object object){
-        if(clazz != null && object != null){
-            if(mSubscribers.get(clazz.getName()) == null){
+    public void register(Class<?> clazz, Object object) {
+        if (clazz != null && object != null) {
+            if (mSubscribers.get(clazz.getName()) == null) {
                 List<Object> objectList = new ArrayList<>();
                 objectList.add(object);
                 mSubscribers.put(clazz.getName(), objectList);
-            }else{
-                if(!mSubscribers.get(clazz.getName()).contains(object)){
+            } else {
+                if (!mSubscribers.get(clazz.getName()).contains(object)) {
                     mSubscribers.get(clazz.getName()).add(object);
                 }
             }
         }
     }
 
-    public void unregister(Class<?> clazz, Object object){
-        if(clazz != null){
-            if(mSubscribers.get(clazz.getName()) != null){
-                mSubscribers.get(clazz.getName()).remove(object);
+    public void unregister(Class<?> clazz, Object object) {
+        if (clazz != null) {
+            List<Object> list = mSubscribers.get(clazz.getName();
+            if (list != null) {
+                list.remove(object);
+                if (list.isEmpty()) {
+                    mSubscribers.remove(clazz.getName());
+                }
             }
         }
     }
 
     public void onScene(Scene scene) {
-        if(scene != null) {
+        if (scene != null) {
             String name = scene.getClass().getName();
             List<Object> subscribers = mSubscribers.get(name);
-            for(Object subscriber : subscribers) {
+            for (Object subscriber : subscribers) {
                 // notify all
                 Method[] methods = subscriber.getClass().getMethods();
-                for(Method method : methods) {
-                    if("onSceneShown".equals(method.getName())) {
+                for (Method method : methods) {
+                    if ("onSceneShown".equals(method.getName())) {
                         try {
                             method.invoke(subscriber, scene);
                         } catch (Exception e) {
