@@ -9,24 +9,24 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
 
 public class VoiceConfiguration {
 
-    private IVoiceSource mVoiceRecorder;
+    private IVoiceSource mVoiceSource;
 
     private AgentCreator mAgentCreator;
 
     public VoiceConfiguration(){
     }
 
-    public VoiceConfiguration recorder(IVoiceSource recorder){
-        mVoiceRecorder = recorder;
+    public VoiceConfiguration source(IVoiceSource source){
+        mVoiceSource = source;
         return this;
     }
 
-    public VoiceConfiguration dialogAgent(AgentCreator creator){
+    public VoiceConfiguration agent(AgentCreator creator){
         mAgentCreator = creator;
         return this;
     }
 
-    public AgentCreator getAgentCreator(){
+    public AgentCreator getAgent(){
         return mAgentCreator;
     }
 }

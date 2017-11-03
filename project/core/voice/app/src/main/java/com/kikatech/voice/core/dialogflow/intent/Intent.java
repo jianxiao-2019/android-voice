@@ -8,18 +8,37 @@ import android.os.Bundle;
 
 public class Intent {
 
+    private String mScene;
     private String mAction;
     private Bundle mExtra = new Bundle();
+
+    public Intent(String scene) {
+        mScene = scene;
+    }
+
+    public Intent(String scene, String action) {
+        mScene = scene;
+        mAction = action;
+    }
 
     public String getAction() {
         return mAction;
     }
 
-    public void setAction(String mAction) {
-        this.mAction = mAction;
+    public void setAction(String action) {
+        this.mAction = action;
     }
 
-    public Bundle getExtra(){
+    public void putExtra(String key, String value) {
+        mExtra.putString(key, value);
+    }
+
+    public Bundle getExtra() {
         return mExtra;
     }
+
+    public String getScene() {
+        return mScene;
+    }
+
 }

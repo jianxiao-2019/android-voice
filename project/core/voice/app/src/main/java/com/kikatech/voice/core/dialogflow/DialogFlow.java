@@ -1,7 +1,6 @@
 package com.kikatech.voice.core.dialogflow;
 
 import com.kikatech.voice.VoiceConfiguration;
-import com.kikatech.voice.core.dialogflow.intent.Scene;
 
 /**
  * Created by tianli on 17-10-28.
@@ -16,14 +15,14 @@ public class DialogFlow {
     }
 
     public static DialogFlow getInstance(VoiceConfiguration conf){
-        DialogFlow flow = new DialogFlow(conf.getAgentCreator().create());
+        DialogFlow flow = new DialogFlow(conf.getAgent().create());
         return flow;
     }
 
-    public void talk(String text){
+    public void talk(String words){
     }
 
-    public void register(Class<? extends Scene> clazz, Object object) {
+    public void register(String scene, DialogObserver observer) {
     }
 
 }
