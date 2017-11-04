@@ -6,18 +6,15 @@ import android.text.TextUtils;
 import com.google.gson.JsonElement;
 import com.kikatech.voice.core.dialogflow.Agent;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.util.log.LogUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
-import ai.api.model.AIContext;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Entity;
@@ -31,7 +28,9 @@ public class ApiAiAgent extends Agent {
 
     private static final String TAG = "ApiAiAgent";
 
-    private static final String CLIENT_ACCESS_TOKEN = "cda255c3a7284b6e927eec6a06d086ea";
+    private static final String CLIENT_ACCESS_TOKEN_JASON = "cda255c3a7284b6e927eec6a06d086ea";
+    private static final String CLIENT_ACCESS_TOKEN_BRAD = "cf718669b9534bb1a89b37a2e0f5fc46";
+    private static final String CLIENT_ACCESS_TOKEN = CLIENT_ACCESS_TOKEN_BRAD;
 
     private AIService mAIService;
 
@@ -44,6 +43,8 @@ public class ApiAiAgent extends Agent {
 
     @Override
     public Intent query(final String words, final Map<String, List<String>> entities) {
+
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "query, words: " + words);
 
         final List<Entity> customEntities = createEntities(entities);
 
@@ -67,13 +68,15 @@ public class ApiAiAgent extends Agent {
         try {
             aiResponse = mAIService.textRequest(request);
         } catch (final AIServiceException e) {
-            e.printStackTrace();
+            if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
         }
 
         return fromResponse(aiResponse);
     }
 
     private Intent fromResponse(AIResponse response) {
+
+        if( LogUtil.DEBUG ) LogUtil.log( TAG, "fromResponse" );
 
         if (response == null || response.isError()) {
             return null;
@@ -87,6 +90,8 @@ public class ApiAiAgent extends Agent {
 
         String apiAiAction = result.getAction();
 
+        if( LogUtil.DEBUG ) LogUtil.logd( TAG, "apiAiAction: " + apiAiAction );
+
         if (TextUtils.isEmpty(apiAiAction)) {
             return null;
         }
@@ -95,17 +100,26 @@ public class ApiAiAgent extends Agent {
         try {
             if (apiAiAction.contains(".")) {
                 sceneAndAction = apiAiAction.split("\\.");
+            } else if (apiAiAction.contains("-")) {
+                sceneAndAction = apiAiAction.split("-");
             } else if (apiAiAction.contains(" ")) {
                 sceneAndAction = apiAiAction.split(" ");
             } else if (apiAiAction.contains("_")) {
                 sceneAndAction = apiAiAction.split("_");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
         }
 
         String scene = sceneAndAction[0];
         String action = sceneAndAction[1];
+
+        if (!TextUtils.isEmpty(scene)) {
+            scene = scene.trim();
+        }
+        if (!TextUtils.isEmpty(action)) {
+            action = action.trim();
+        }
 
         Intent intent = new Intent(scene, action);
 
@@ -123,7 +137,7 @@ public class ApiAiAgent extends Agent {
                     intent.putExtra(key, value);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
         }
 
