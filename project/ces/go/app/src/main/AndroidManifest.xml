@@ -48,6 +48,7 @@
         <activity android:name=".ui.KikaNavigationActivity"
                   android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.VoiceTestingActivity" />
+        <activity android:name=".ui.KikaDialogFlowActivity"/>
 
         <receiver android:name="telephony.PhoneStateReceiver">
             <intent-filter>
