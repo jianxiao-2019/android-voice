@@ -13,4 +13,6 @@ public abstract class Agent {
 
     public abstract Intent query(final String words, final Map<String, List<String>> entities);
 
+    public abstract void resetContexts();
+
 }

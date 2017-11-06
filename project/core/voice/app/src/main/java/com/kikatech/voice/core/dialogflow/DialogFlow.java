@@ -51,6 +51,15 @@ public class DialogFlow {
         }
     }
 
+    public void resetContexts() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mAgent.resetContexts();
+            }
+        });
+    }
+
     public synchronized void register(String scene, DialogObserver observer) {
         if (!TextUtils.isEmpty(scene) && observer != null) {
             if (mSubscribers.get(scene) == null) {

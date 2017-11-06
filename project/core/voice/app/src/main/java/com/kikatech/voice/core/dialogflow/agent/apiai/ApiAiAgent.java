@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.google.gson.JsonElement;
 import com.kikatech.voice.core.dialogflow.Agent;
+import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.util.log.LogUtil;
 
@@ -19,6 +20,7 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Entity;
 import ai.api.model.EntityEntry;
+import ai.api.model.Metadata;
 import ai.api.model.Result;
 
 /**
@@ -74,77 +76,10 @@ public class ApiAiAgent extends Agent {
         return fromResponse(aiResponse);
     }
 
-    private Intent fromResponse(AIResponse response) {
-
-        if( LogUtil.DEBUG ) LogUtil.log( TAG, "fromResponse" );
-
-        if (response == null || response.isError()) {
-            return null;
-        }
-
-        Result result = response.getResult();
-
-        if (result == null) {
-            return null;
-        }
-
-        String apiAiAction = result.getAction();
-
-        if( LogUtil.DEBUG ) LogUtil.logd( TAG, "apiAiAction: " + apiAiAction );
-
-        if (TextUtils.isEmpty(apiAiAction)) {
-            return null;
-        }
-
-        String[] sceneAndAction = new String[]{apiAiAction, null};
-        try {
-            if (apiAiAction.contains(".")) {
-                sceneAndAction = apiAiAction.split("\\.");
-            } else if (apiAiAction.contains("-")) {
-                sceneAndAction = apiAiAction.split("-");
-            } else if (apiAiAction.contains(" ")) {
-                sceneAndAction = apiAiAction.split(" ");
-            } else if (apiAiAction.contains("_")) {
-                sceneAndAction = apiAiAction.split("_");
-            }
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
-        }
-
-        String scene = sceneAndAction[0];
-        String action = sceneAndAction[1];
-
-        if (!TextUtils.isEmpty(scene)) {
-            scene = scene.trim();
-        }
-        if (!TextUtils.isEmpty(action)) {
-            action = action.trim();
-        }
-
-        Intent intent = new Intent(scene, action);
-
-        final Map<String, JsonElement> params = result.getParameters();
-
-        if (params == null || params.isEmpty()){
-            return intent;
-        }
-
-        for (final Map.Entry<String, JsonElement> entry : params.entrySet()) {
-            try {
-                String key = entry.getKey();
-                String value = entry.getValue().toString();
-                if (!TextUtils.isEmpty(value)) {
-                    intent.putExtra(key, value);
-                }
-            } catch (Exception e) {
-                if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
-        }
-
-        return intent;
+    @Override
+    public void resetContexts() {
+        mAIService.resetContexts();
     }
-
-
 
 
 
@@ -178,5 +113,68 @@ public class ApiAiAgent extends Agent {
             entityList.add(entity);
         }
         return entityList;
+    }
+
+    private Intent fromResponse(AIResponse response) {
+
+        if( LogUtil.DEBUG ) LogUtil.log( TAG, "fromResponse" );
+
+        if (response == null || response.isError()) {
+            return null;
+        }
+
+        Result result = response.getResult();
+
+        if (result == null) {
+            return null;
+        }
+
+        final Metadata metadata = result.getMetadata();
+
+        if (metadata == null) {
+            return null;
+        }
+
+        String name = metadata.getIntentName();
+
+        if (TextUtils.isEmpty(name)) {
+            return null;
+        }
+
+        if (LogUtil.DEBUG) LogUtil.logd(TAG, "name: " + name);
+
+        String scene = Scene.getScene(name);
+
+        if (TextUtils.isEmpty(scene)) {
+            return null;
+        }
+
+        if (LogUtil.DEBUG) LogUtil.logd(TAG, "scene: " + scene);
+
+        String action = result.getAction();
+
+        if (LogUtil.DEBUG) LogUtil.logd(TAG, "action: " + action);
+
+        Intent intent = new Intent(scene, name, action);
+
+        final Map<String, JsonElement> params = result.getParameters();
+
+        if (params == null || params.isEmpty()){
+            return intent;
+        }
+
+        for (final Map.Entry<String, JsonElement> entry : params.entrySet()) {
+            try {
+                String key = entry.getKey();
+                String value = entry.getValue().toString();
+                if (!TextUtils.isEmpty(value)) {
+                    intent.putExtra(key, value);
+                }
+            } catch (Exception e) {
+                if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
+
+        return intent;
     }
 }
