@@ -31,7 +31,7 @@ public class UsbAudioService {
 
     private UsbAudioService(Context context) {
         mContext = context.getApplicationContext();
-        mDeviceReceiver = new UsbDeviceReceiver(this);
+        mDeviceReceiver = new UsbDeviceReceiver(mDeviceListener);
         mDeviceReceiver.register(context);
         mDeviceManager = new UsbDeviceManager(mContext);
     }
@@ -43,19 +43,23 @@ public class UsbAudioService {
     public void startForegroundService() {
     }
 
-    void onUsbAttached(UsbDevice device) {
-        if (device != null) {
+    private UsbDeviceReceiver.UsbDeviceListener mDeviceListener = new UsbDeviceReceiver.UsbDeviceListener() {
+        @Override
+        public void onUsbAttached(UsbDevice device) {
+            if (device != null) {
+            }
         }
-    }
 
-    void onUsbDetached(UsbDevice device) {
-        if (device != null) {
+        @Override
+        public void onUsbDetached(UsbDevice device) {
+            if (device != null) {
+            }
         }
-    }
 
-    void onUsbPermissionGrant(UsbDevice device) {
-        if (device != null) {
+        @Override
+        public void onUsbPermissionGrant(UsbDevice device) {
+            if (device != null) {
+            }
         }
-    }
-
+    };
 }

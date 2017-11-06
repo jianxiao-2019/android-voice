@@ -20,10 +20,10 @@ class UsbDeviceReceiver extends BroadcastReceiver {
     private static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     private static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
 
-    private UsbAudioService mService;
+    private UsbDeviceListener mListener;
 
-    public UsbDeviceReceiver(UsbAudioService service){
-        mService = service;
+    public UsbDeviceReceiver(UsbDeviceListener l){
+        mListener = l;
     }
 
     public void register(Context context){
@@ -65,15 +65,23 @@ class UsbDeviceReceiver extends BroadcastReceiver {
     }
 
     private void onUsbAttached(UsbDevice device){
-        mService.onUsbAttached(device);
+        mListener.onUsbAttached(device);
     }
 
     private void onUsbDetached(UsbDevice device){
-        mService.onUsbDetached(device);
+        mListener.onUsbDetached(device);
     }
 
     private void onUsbPermissionGrant(UsbDevice device){
-        mService.onUsbPermissionGrant(device);
+        mListener.onUsbPermissionGrant(device);
     }
 
+    interface UsbDeviceListener {
+
+        void onUsbAttached(UsbDevice device);
+
+        void onUsbDetached(UsbDevice device);
+
+        void onUsbPermissionGrant(UsbDevice device);
+    }
 }

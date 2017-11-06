@@ -51,8 +51,8 @@ public class ExtreamAudioDriver implements UsbAudioDriver {
     }
 
     @Override
-    public void read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
-
+    public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
+        return 0;
     }
 
     @Override

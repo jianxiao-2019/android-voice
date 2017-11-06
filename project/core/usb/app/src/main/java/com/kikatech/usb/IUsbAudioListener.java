@@ -6,7 +6,7 @@ package com.kikatech.usb;
 
 public interface IUsbAudioListener {
 
-    void onDeviceAttached(UsbAudioRecord audioRecord);
+    void onDeviceAttached(UsbAudioSource audioSource);
 
     void onDeviceDetached();
 }

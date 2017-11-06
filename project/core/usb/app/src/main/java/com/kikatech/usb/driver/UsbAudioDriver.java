@@ -1,6 +1,5 @@
 package com.kikatech.usb.driver;
 
-import android.hardware.usb.UsbDevice;
 import android.support.annotation.NonNull;
 
 /**
@@ -13,7 +12,7 @@ public interface UsbAudioDriver {
 
     void startRecording();
 
-    void read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes);
+    int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes);
 
     void stopRecording();
 

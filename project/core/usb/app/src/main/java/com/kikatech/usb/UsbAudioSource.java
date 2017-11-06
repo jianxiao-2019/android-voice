@@ -9,27 +9,27 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
  * Created by tianli on 17-11-6.
  */
 
-public class UsbAudioRecord implements IVoiceSource{
+public class UsbAudioSource implements IVoiceSource{
 
     private UsbAudioDriver mAudioDriver;
 
-    public UsbAudioRecord(UsbAudioDriver driver){
+    public UsbAudioSource(UsbAudioDriver driver){
         mAudioDriver = driver;
     }
 
     @Override
     public void start() {
-
+        mAudioDriver.startRecording();
     }
 
     @Override
     public void stop() {
-
+        mAudioDriver.stopRecording();
     }
 
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
-        return 0;
+        return mAudioDriver.read(audioData, offsetInBytes, sizeInBytes);
     }
 
     @Override
