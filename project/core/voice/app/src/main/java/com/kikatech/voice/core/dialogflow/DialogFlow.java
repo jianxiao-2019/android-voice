@@ -1,5 +1,6 @@
 package com.kikatech.voice.core.dialogflow;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.kikatech.voice.VoiceConfiguration;
@@ -8,6 +9,7 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,27 +24,44 @@ public class DialogFlow {
     private HashMap<String, List<DialogObserver>> mSubscribers = new HashMap<>();
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
+    private static DialogFlow sDialogFlow = null;
+
     private DialogFlow(Agent agent) {
         mAgent = agent;
     }
 
-    public static DialogFlow getInstance(VoiceConfiguration conf) {
-        DialogFlow flow = new DialogFlow(conf.getAgent().create());
-        return flow;
+    public static synchronized DialogFlow getInstance(Context context,VoiceConfiguration conf) {
+        if(sDialogFlow == null) {
+            sDialogFlow = new DialogFlow(conf.getAgent().create(context.getApplicationContext()));
+        }
+        return sDialogFlow;
     }
 
     public void talk(final String words) {
+        talk(words, null);
+    }
+
+    public void talk(final String words, final Map<String, List<String>> entities) {
         if (!TextUtils.isEmpty(words)) {
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = mAgent.query(words);
-                    if(intent != null) {
+                    Intent intent = mAgent.query(words,entities);
+                    if (intent != null) {
                         onIntent(intent);
                     }
                 }
             });
         }
+    }
+
+    public void resetContexts() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mAgent.resetContexts();
+            }
+        });
     }
 
     public synchronized void register(String scene, DialogObserver observer) {

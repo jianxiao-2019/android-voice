@@ -9,15 +9,18 @@ import android.os.Bundle;
 public class Intent {
 
     private String mScene;
+    private String mName;
     private String mAction;
     private Bundle mExtra = new Bundle();
 
-    public Intent(String scene) {
+    public Intent(String scene, String name) {
         mScene = scene;
+        mName = name;
     }
 
-    public Intent(String scene, String action) {
+    public Intent(String scene, String name, String action) {
         mScene = scene;
+        mName = name;
         mAction = action;
     }
 
@@ -27,6 +30,14 @@ public class Intent {
 
     public void setAction(String action) {
         this.mAction = action;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        this.mName = name;
     }
 
     public void putExtra(String key, String value) {

@@ -87,5 +87,21 @@ public class KikaGoActivity extends Activity{
 				startActivity(intent);
 			}
 		});
+
+        findViewById(R.id.button_voice).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, VoiceTestingActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.button_dialog_flow).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaDialogFlowActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

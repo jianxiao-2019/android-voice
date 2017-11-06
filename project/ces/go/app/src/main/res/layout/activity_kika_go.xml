@@ -45,4 +45,16 @@
         android:layout_height="wrap_content"
         android:text="NAVIGATION"/>
 
+    <Button
+        android:id="@+id/button_voice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Voice Api"/>
+
+    <Button
+        android:id="@+id/button_dialog_flow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dialog Flow"/>
+
 </LinearLayout>
