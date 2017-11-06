@@ -1,8 +1,9 @@
-package com.kikatech.usb.device;
+package com.kikatech.usb;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
@@ -11,13 +12,27 @@ import android.util.Log;
  * Created by tianli on 17-11-6.
  */
 
-public class UsbDeviceReceiver extends BroadcastReceiver {
+class UsbDeviceReceiver extends BroadcastReceiver {
 
     final static String TAG = "UsbDeviceReceiver";
 
-    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.kikatech.usb.USB_PERMISSION";
     private static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     private static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
+
+    private UsbAudioService mService;
+
+    public UsbDeviceReceiver(UsbAudioService service){
+        mService = service;
+    }
+
+    public void register(Context context){
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_USB_PERMISSION);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        context.registerReceiver(this, filter);
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -50,18 +65,15 @@ public class UsbDeviceReceiver extends BroadcastReceiver {
     }
 
     private void onUsbAttached(UsbDevice device){
-        if(device != null){
-        }
+        mService.onUsbAttached(device);
     }
 
     private void onUsbDetached(UsbDevice device){
-        if(device != null){
-        }
+        mService.onUsbDetached(device);
     }
 
     private void onUsbPermissionGrant(UsbDevice device){
-        if(device != null){
-        }
+        mService.onUsbPermissionGrant(device);
     }
 
 }

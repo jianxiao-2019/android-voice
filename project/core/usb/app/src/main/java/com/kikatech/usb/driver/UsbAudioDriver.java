@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 
 public interface UsbAudioDriver {
 
-    boolean open(UsbDevice device);
+    boolean open();
 
     void startRecording();
 

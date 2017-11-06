@@ -22,22 +22,22 @@ public class ExtreamAudioDriver implements UsbAudioDriver {
     private UsbDevice mDevice;
     private Context mContext;
 
-    public ExtreamAudioDriver(Context context) {
+    public ExtreamAudioDriver(Context context, UsbDevice device) {
         mContext = context.getApplicationContext();
+        mDevice = device;
     }
 
     @Override
-    public boolean open(UsbDevice device) {
-        mDevice = device;
+    public boolean open() {
         if (mConnection != null) {
             int fileDescriptor = mConnection.getFileDescriptor();
 
             boolean initUSBOk;
             if (android.os.Build.VERSION.SDK_INT >= 24) {
-                initUSBOk = mUsbControl.initUSBDeviceByName(fileDescriptor, device.getDeviceName(), device.getProductId(),
-                        device.getVendorId(), mConnection.getRawDescriptors(), mConnection.getRawDescriptors().length);
+                initUSBOk = mUsbControl.initUSBDeviceByName(fileDescriptor, mDevice.getDeviceName(), mDevice.getProductId(),
+                        mDevice.getVendorId(), mConnection.getRawDescriptors(), mConnection.getRawDescriptors().length);
             } else {
-                initUSBOk = mUsbControl.initUSBDevice(fileDescriptor, device.getProductId(), device.getVendorId());
+                initUSBOk = mUsbControl.initUSBDevice(fileDescriptor, mDevice.getProductId(), mDevice.getVendorId());
             }
             if (!initUSBOk) {
                 // TODO: 17-11-6 handle init error

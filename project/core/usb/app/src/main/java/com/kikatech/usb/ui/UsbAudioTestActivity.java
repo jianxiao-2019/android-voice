@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.kikatech.usb.R;
-import com.kikatech.usb.UsbAudioService;
+import com.kikatech.usb.UsbForegroundService;
 import com.kikatech.usb.driver.interfaces.IUsbAudioTransferListener;
 import com.kikatech.usb.driver.interfaces.IUsbStatusListener;
 
@@ -35,7 +35,7 @@ public class UsbAudioTestActivity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UsbAudioService.processStartAudioTransfer(UsbAudioTestActivity.this, new IUsbAudioTransferListener() {
+                UsbForegroundService.processStartAudioTransfer(UsbAudioTestActivity.this, new IUsbAudioTransferListener() {
                     @Override
                     public void onAudioTransferStart() {
                         btnStart.setEnabled(false);
@@ -60,11 +60,11 @@ public class UsbAudioTestActivity extends AppCompatActivity {
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UsbAudioService.processStopAudioTransfer(UsbAudioTestActivity.this);
+                UsbForegroundService.processStopAudioTransfer(UsbAudioTestActivity.this);
             }
         });
 
-        UsbAudioService.processStart(UsbAudioTestActivity.this, new IUsbStatusListener() {
+        UsbForegroundService.processStart(UsbAudioTestActivity.this, new IUsbStatusListener() {
             @Override
             public void onAttached() {
             }
