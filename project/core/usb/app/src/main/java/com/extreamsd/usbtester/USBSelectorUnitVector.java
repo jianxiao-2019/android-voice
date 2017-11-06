@@ -9,71 +9,71 @@
 package com.extreamsd.usbtester;
 
 public class USBSelectorUnitVector {
-  private transient long swigCPtr;
-  protected transient boolean swigCMemOwn;
+    private transient long swigCPtr;
+    protected transient boolean swigCMemOwn;
 
-  protected USBSelectorUnitVector(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
-
-  protected static long getCPtr(USBSelectorUnitVector obj ) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if (swigCPtr != 0) {
-      if (swigCMemOwn) {
-        swigCMemOwn = false;
-        USBTestNativeJNI.delete_USBSelectorUnitVector( swigCPtr );
-      }
-      swigCPtr = 0;
+    protected USBSelectorUnitVector(long cPtr, boolean cMemoryOwn) {
+        swigCMemOwn = cMemoryOwn;
+        swigCPtr = cPtr;
     }
-  }
 
-  public USBSelectorUnitVector() {
-    this( USBTestNativeJNI.new_USBSelectorUnitVector__SWIG_0(), true );
-  }
+    protected static long getCPtr(USBSelectorUnitVector obj) {
+        return (obj == null) ? 0 : obj.swigCPtr;
+    }
 
-  public USBSelectorUnitVector(long n) {
-    this( USBTestNativeJNI.new_USBSelectorUnitVector__SWIG_1( n ), true );
-  }
+    protected void finalize() {
+        delete();
+    }
 
-  public long size() {
-    return USBTestNativeJNI.USBSelectorUnitVector_size( swigCPtr, this );
-  }
+    public synchronized void delete() {
+        if (swigCPtr != 0) {
+            if (swigCMemOwn) {
+                swigCMemOwn = false;
+                USBTestNativeJNI.delete_USBSelectorUnitVector(swigCPtr);
+            }
+            swigCPtr = 0;
+        }
+    }
 
-  public long capacity() {
-    return USBTestNativeJNI.USBSelectorUnitVector_capacity( swigCPtr, this );
-  }
+    public USBSelectorUnitVector() {
+        this(USBTestNativeJNI.new_USBSelectorUnitVector__SWIG_0(), true);
+    }
 
-  public void reserve(long n) {
-    USBTestNativeJNI.USBSelectorUnitVector_reserve( swigCPtr, this, n );
-  }
+    public USBSelectorUnitVector(long n) {
+        this(USBTestNativeJNI.new_USBSelectorUnitVector__SWIG_1(n), true);
+    }
 
-  public boolean isEmpty() {
-    return USBTestNativeJNI.USBSelectorUnitVector_isEmpty( swigCPtr, this );
-  }
+    public long size() {
+        return USBTestNativeJNI.USBSelectorUnitVector_size(swigCPtr, this);
+    }
 
-  public void clear() {
-    USBTestNativeJNI.USBSelectorUnitVector_clear( swigCPtr, this );
-  }
+    public long capacity() {
+        return USBTestNativeJNI.USBSelectorUnitVector_capacity(swigCPtr, this);
+    }
 
-  public void add(USBSelectorUnit x ) {
-    USBTestNativeJNI.USBSelectorUnitVector_add( swigCPtr, this, USBSelectorUnit.getCPtr( x ), x );
-  }
+    public void reserve(long n) {
+        USBTestNativeJNI.USBSelectorUnitVector_reserve(swigCPtr, this, n);
+    }
 
-  public USBSelectorUnit get( int i ) {
-    long cPtr = USBTestNativeJNI.USBSelectorUnitVector_get( swigCPtr, this, i );
-    return (cPtr == 0) ? null : new USBSelectorUnit( cPtr, false);
-  }
+    public boolean isEmpty() {
+        return USBTestNativeJNI.USBSelectorUnitVector_isEmpty(swigCPtr, this);
+    }
 
-  public void set(int i, USBSelectorUnit val ) {
-    USBTestNativeJNI.USBSelectorUnitVector_set( swigCPtr, this, i, USBSelectorUnit.getCPtr( val ), val );
-  }
+    public void clear() {
+        USBTestNativeJNI.USBSelectorUnitVector_clear(swigCPtr, this);
+    }
+
+    public void add(USBSelectorUnit x) {
+        USBTestNativeJNI.USBSelectorUnitVector_add(swigCPtr, this, USBSelectorUnit.getCPtr(x), x);
+    }
+
+    public USBSelectorUnit get(int i) {
+        long cPtr = USBTestNativeJNI.USBSelectorUnitVector_get(swigCPtr, this, i);
+        return (cPtr == 0) ? null : new USBSelectorUnit(cPtr, false);
+    }
+
+    public void set(int i, USBSelectorUnit val) {
+        USBTestNativeJNI.USBSelectorUnitVector_set(swigCPtr, this, i, USBSelectorUnit.getCPtr(val), val);
+    }
 
 }

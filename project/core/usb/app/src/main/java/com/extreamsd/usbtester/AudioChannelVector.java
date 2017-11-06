@@ -9,71 +9,71 @@
 package com.extreamsd.usbtester;
 
 public class AudioChannelVector {
-  private transient long swigCPtr;
-  protected transient boolean swigCMemOwn;
+    private transient long swigCPtr;
+    protected transient boolean swigCMemOwn;
 
-  protected AudioChannelVector(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
-
-  protected static long getCPtr(AudioChannelVector obj ) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if (swigCPtr != 0) {
-      if (swigCMemOwn) {
-        swigCMemOwn = false;
-        USBTestNativeJNI.delete_AudioChannelVector(swigCPtr);
-      }
-      swigCPtr = 0;
+    protected AudioChannelVector(long cPtr, boolean cMemoryOwn) {
+        swigCMemOwn = cMemoryOwn;
+        swigCPtr = cPtr;
     }
-  }
 
-  public AudioChannelVector() {
-    this(USBTestNativeJNI.new_AudioChannelVector__SWIG_0(), true);
-  }
+    protected static long getCPtr(AudioChannelVector obj) {
+        return (obj == null) ? 0 : obj.swigCPtr;
+    }
 
-  public AudioChannelVector(long n) {
-    this(USBTestNativeJNI.new_AudioChannelVector__SWIG_1(n), true);
-  }
+    protected void finalize() {
+        delete();
+    }
 
-  public long size() {
-    return USBTestNativeJNI.AudioChannelVector_size(swigCPtr, this);
-  }
+    public synchronized void delete() {
+        if (swigCPtr != 0) {
+            if (swigCMemOwn) {
+                swigCMemOwn = false;
+                USBTestNativeJNI.delete_AudioChannelVector(swigCPtr);
+            }
+            swigCPtr = 0;
+        }
+    }
 
-  public long capacity() {
-    return USBTestNativeJNI.AudioChannelVector_capacity(swigCPtr, this);
-  }
+    public AudioChannelVector() {
+        this(USBTestNativeJNI.new_AudioChannelVector__SWIG_0(), true);
+    }
 
-  public void reserve(long n) {
-    USBTestNativeJNI.AudioChannelVector_reserve(swigCPtr, this, n);
-  }
+    public AudioChannelVector(long n) {
+        this(USBTestNativeJNI.new_AudioChannelVector__SWIG_1(n), true);
+    }
 
-  public boolean isEmpty() {
-    return USBTestNativeJNI.AudioChannelVector_isEmpty(swigCPtr, this);
-  }
+    public long size() {
+        return USBTestNativeJNI.AudioChannelVector_size(swigCPtr, this);
+    }
 
-  public void clear() {
-    USBTestNativeJNI.AudioChannelVector_clear(swigCPtr, this);
-  }
+    public long capacity() {
+        return USBTestNativeJNI.AudioChannelVector_capacity(swigCPtr, this);
+    }
 
-  public void add(AudioChannel x) {
-    USBTestNativeJNI.AudioChannelVector_add(swigCPtr, this, AudioChannel.getCPtr(x), x);
-  }
+    public void reserve(long n) {
+        USBTestNativeJNI.AudioChannelVector_reserve(swigCPtr, this, n);
+    }
 
-  public AudioChannel get(int i) {
-    long cPtr = USBTestNativeJNI.AudioChannelVector_get(swigCPtr, this, i);
-    return (cPtr == 0) ? null : new AudioChannel(cPtr, false);
-  }
+    public boolean isEmpty() {
+        return USBTestNativeJNI.AudioChannelVector_isEmpty(swigCPtr, this);
+    }
 
-  public void set(int i, AudioChannel val) {
-    USBTestNativeJNI.AudioChannelVector_set(swigCPtr, this, i, AudioChannel.getCPtr(val), val);
-  }
+    public void clear() {
+        USBTestNativeJNI.AudioChannelVector_clear(swigCPtr, this);
+    }
+
+    public void add(AudioChannel x) {
+        USBTestNativeJNI.AudioChannelVector_add(swigCPtr, this, AudioChannel.getCPtr(x), x);
+    }
+
+    public AudioChannel get(int i) {
+        long cPtr = USBTestNativeJNI.AudioChannelVector_get(swigCPtr, this, i);
+        return (cPtr == 0) ? null : new AudioChannel(cPtr, false);
+    }
+
+    public void set(int i, AudioChannel val) {
+        USBTestNativeJNI.AudioChannelVector_set(swigCPtr, this, i, AudioChannel.getCPtr(val), val);
+    }
 
 }

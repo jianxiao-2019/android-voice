@@ -9,67 +9,67 @@
 package com.extreamsd.usbtester;
 
 public class USBAudioManager {
-  private transient long swigCPtr;
-  protected transient boolean swigCMemOwn;
+    private transient long swigCPtr;
+    protected transient boolean swigCMemOwn;
 
-  protected USBAudioManager(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
-
-  protected static long getCPtr(USBAudioManager obj ) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if (swigCPtr != 0) {
-      if (swigCMemOwn) {
-        swigCMemOwn = false;
-        USBTestNativeJNI.delete_USBAudioManager(swigCPtr);
-      }
-      swigCPtr = 0;
+    protected USBAudioManager(long cPtr, boolean cMemoryOwn) {
+        swigCMemOwn = cMemoryOwn;
+        swigCPtr = cPtr;
     }
-  }
 
-  public String getOpenDeviceErrorMessage() {
-    return USBTestNativeJNI.USBAudioManager_getOpenDeviceErrorMessage(swigCPtr, this);
-  }
+    protected static long getCPtr(USBAudioManager obj) {
+        return (obj == null) ? 0 : obj.swigCPtr;
+    }
 
-  public boolean isAudioDevicePresentForLinux() {
-    return USBTestNativeJNI.USBAudioManager_isAudioDevicePresentForLinux(swigCPtr, this);
-  }
+    protected void finalize() {
+        delete();
+    }
 
-  public boolean isMidiOutputDevicePresent() {
-    return USBTestNativeJNI.USBAudioManager_isMidiOutputDevicePresent(swigCPtr, this);
-  }
+    public synchronized void delete() {
+        if (swigCPtr != 0) {
+            if (swigCMemOwn) {
+                swigCMemOwn = false;
+                USBTestNativeJNI.delete_USBAudioManager(swigCPtr);
+            }
+            swigCPtr = 0;
+        }
+    }
 
-  public AudioDevice getCurrentAudioDeviceAsAudioDevice() {
-    long cPtr = USBTestNativeJNI.USBAudioManager_getCurrentAudioDeviceAsAudioDevice(swigCPtr, this);
-    return (cPtr == 0) ? null : new AudioDevice( cPtr, false);
-  }
+    public String getOpenDeviceErrorMessage() {
+        return USBTestNativeJNI.USBAudioManager_getOpenDeviceErrorMessage(swigCPtr, this);
+    }
 
-  public boolean isAudioDevicePresent() {
-    return USBTestNativeJNI.USBAudioManager_isAudioDevicePresent(swigCPtr, this);
-  }
+    public boolean isAudioDevicePresentForLinux() {
+        return USBTestNativeJNI.USBAudioManager_isAudioDevicePresentForLinux(swigCPtr, this);
+    }
 
-  public boolean isMidiDevicePresent() {
-    return USBTestNativeJNI.USBAudioManager_isMidiDevicePresent(swigCPtr, this);
-  }
+    public boolean isMidiOutputDevicePresent() {
+        return USBTestNativeJNI.USBAudioManager_isMidiOutputDevicePresent(swigCPtr, this);
+    }
 
-  public void setFirmwareDirectory(String i_firmwareDirectory) {
-    USBTestNativeJNI.USBAudioManager_setFirmwareDirectory(swigCPtr, this, i_firmwareDirectory);
-  }
+    public AudioDevice getCurrentAudioDeviceAsAudioDevice() {
+        long cPtr = USBTestNativeJNI.USBAudioManager_getCurrentAudioDeviceAsAudioDevice(swigCPtr, this);
+        return (cPtr == 0) ? null : new AudioDevice(cPtr, false);
+    }
 
-  public void doThreadMagic(int s) {
-    USBTestNativeJNI.USBAudioManager_doThreadMagic(swigCPtr, this, s);
-  }
+    public boolean isAudioDevicePresent() {
+        return USBTestNativeJNI.USBAudioManager_isAudioDevicePresent(swigCPtr, this);
+    }
 
-  public boolean isUltraLowLatency() {
-    return USBTestNativeJNI.USBAudioManager_isUltraLowLatency(swigCPtr, this);
-  }
+    public boolean isMidiDevicePresent() {
+        return USBTestNativeJNI.USBAudioManager_isMidiDevicePresent(swigCPtr, this);
+    }
+
+    public void setFirmwareDirectory(String i_firmwareDirectory) {
+        USBTestNativeJNI.USBAudioManager_setFirmwareDirectory(swigCPtr, this, i_firmwareDirectory);
+    }
+
+    public void doThreadMagic(int s) {
+        USBTestNativeJNI.USBAudioManager_doThreadMagic(swigCPtr, this, s);
+    }
+
+    public boolean isUltraLowLatency() {
+        return USBTestNativeJNI.USBAudioManager_isUltraLowLatency(swigCPtr, this);
+    }
 
 }

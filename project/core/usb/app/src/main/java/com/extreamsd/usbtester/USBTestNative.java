@@ -9,8 +9,8 @@
 package com.extreamsd.usbtester;
 
 public class USBTestNative {
-  public static void setLogFileName(String i_logFileName) {
-    USBTestNativeJNI.setLogFileName( i_logFileName );
-  }
+    public static void setLogFileName(String i_logFileName) {
+        USBTestNativeJNI.setLogFileName(i_logFileName);
+    }
 
 }

@@ -9,74 +9,74 @@
 package com.extreamsd.usbtester;
 
 public class IVolumeController {
-  private transient long swigCPtr;
-  protected transient boolean swigCMemOwn;
+    private transient long swigCPtr;
+    protected transient boolean swigCMemOwn;
 
-  protected IVolumeController(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
-
-  protected static long getCPtr(IVolumeController obj ) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if (swigCPtr != 0) {
-      if (swigCMemOwn) {
-        swigCMemOwn = false;
-        USBTestNativeJNI.delete_IVolumeController( swigCPtr );
-      }
-      swigCPtr = 0;
+    protected IVolumeController(long cPtr, boolean cMemoryOwn) {
+        swigCMemOwn = cMemoryOwn;
+        swigCPtr = cPtr;
     }
-  }
 
-  public int getCurrentVolume(boolean[] OUTPUT) {
-    return USBTestNativeJNI.IVolumeController_getCurrentVolume( swigCPtr, this, OUTPUT );
-  }
+    protected static long getCPtr(IVolumeController obj) {
+        return (obj == null) ? 0 : obj.swigCPtr;
+    }
 
-  public int getMinVolume(boolean[] OUTPUT) {
-    return USBTestNativeJNI.IVolumeController_getMinVolume( swigCPtr, this, OUTPUT );
-  }
+    protected void finalize() {
+        delete();
+    }
 
-  public int getMaxVolume(boolean[] OUTPUT) {
-    return USBTestNativeJNI.IVolumeController_getMaxVolume( swigCPtr, this, OUTPUT );
-  }
+    public synchronized void delete() {
+        if (swigCPtr != 0) {
+            if (swigCMemOwn) {
+                swigCMemOwn = false;
+                USBTestNativeJNI.delete_IVolumeController(swigCPtr);
+            }
+            swigCPtr = 0;
+        }
+    }
 
-  public void setCurrentVolume(int i_volume) {
-    USBTestNativeJNI.IVolumeController_setCurrentVolume( swigCPtr, this, i_volume );
-  }
+    public int getCurrentVolume(boolean[] OUTPUT) {
+        return USBTestNativeJNI.IVolumeController_getCurrentVolume(swigCPtr, this, OUTPUT);
+    }
 
-  public boolean getMute() {
-    return USBTestNativeJNI.IVolumeController_getMute( swigCPtr, this );
-  }
+    public int getMinVolume(boolean[] OUTPUT) {
+        return USBTestNativeJNI.IVolumeController_getMinVolume(swigCPtr, this, OUTPUT);
+    }
 
-  public void setMute(boolean i_on) {
-    USBTestNativeJNI.IVolumeController_setMute( swigCPtr, this, i_on );
-  }
+    public int getMaxVolume(boolean[] OUTPUT) {
+        return USBTestNativeJNI.IVolumeController_getMaxVolume(swigCPtr, this, OUTPUT);
+    }
 
-  public String getName() {
-    return USBTestNativeJNI.IVolumeController_getName( swigCPtr, this );
-  }
+    public void setCurrentVolume(int i_volume) {
+        USBTestNativeJNI.IVolumeController_setCurrentVolume(swigCPtr, this, i_volume);
+    }
 
-  public boolean hasMute() {
-    return USBTestNativeJNI.IVolumeController_hasMute( swigCPtr, this );
-  }
+    public boolean getMute() {
+        return USBTestNativeJNI.IVolumeController_getMute(swigCPtr, this);
+    }
 
-  public boolean hasVolume() {
-    return USBTestNativeJNI.IVolumeController_hasVolume( swigCPtr, this );
-  }
+    public void setMute(boolean i_on) {
+        USBTestNativeJNI.IVolumeController_setMute(swigCPtr, this, i_on);
+    }
 
-  public short getID() {
-    return USBTestNativeJNI.IVolumeController_getID( swigCPtr, this );
-  }
+    public String getName() {
+        return USBTestNativeJNI.IVolumeController_getName(swigCPtr, this);
+    }
 
-  public short getLastVolumeSet() {
-    return USBTestNativeJNI.IVolumeController_getLastVolumeSet( swigCPtr, this );
-  }
+    public boolean hasMute() {
+        return USBTestNativeJNI.IVolumeController_hasMute(swigCPtr, this);
+    }
+
+    public boolean hasVolume() {
+        return USBTestNativeJNI.IVolumeController_hasVolume(swigCPtr, this);
+    }
+
+    public short getID() {
+        return USBTestNativeJNI.IVolumeController_getID(swigCPtr, this);
+    }
+
+    public short getLastVolumeSet() {
+        return USBTestNativeJNI.IVolumeController_getLastVolumeSet(swigCPtr, this);
+    }
 
 }

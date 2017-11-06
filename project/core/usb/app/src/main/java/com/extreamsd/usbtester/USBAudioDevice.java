@@ -8,88 +8,87 @@
 
 package com.extreamsd.usbtester;
 
-public class USBAudioDevice extends AudioDevice
-{
-  private transient long swigCPtr;
+public class USBAudioDevice extends AudioDevice {
+    private transient long swigCPtr;
 
-  protected USBAudioDevice(long cPtr, boolean cMemoryOwn) {
-    super( USBTestNativeJNI.USBAudioDevice_SWIGUpcast( cPtr ), cMemoryOwn );
-    swigCPtr = cPtr;
-  }
-
-  protected static long getCPtr(USBAudioDevice obj ) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if (swigCPtr != 0) {
-      if (swigCMemOwn) {
-        swigCMemOwn = false;
-        USBTestNativeJNI.delete_USBAudioDevice( swigCPtr );
-      }
-      swigCPtr = 0;
+    protected USBAudioDevice(long cPtr, boolean cMemoryOwn) {
+        super(USBTestNativeJNI.USBAudioDevice_SWIGUpcast(cPtr), cMemoryOwn);
+        swigCPtr = cPtr;
     }
-    super.delete();
-  }
 
-  public boolean hasAudioInput() {
-    return USBTestNativeJNI.USBAudioDevice_hasAudioInput( swigCPtr, this );
-  }
+    protected static long getCPtr(USBAudioDevice obj) {
+        return (obj == null) ? 0 : obj.swigCPtr;
+    }
 
-  public boolean hasAudioOutput() {
-    return USBTestNativeJNI.USBAudioDevice_hasAudioOutput( swigCPtr, this );
-  }
+    protected void finalize() {
+        delete();
+    }
 
-  public boolean hasMIDIInput() {
-    return USBTestNativeJNI.USBAudioDevice_hasMIDIInput( swigCPtr, this );
-  }
+    public synchronized void delete() {
+        if (swigCPtr != 0) {
+            if (swigCMemOwn) {
+                swigCMemOwn = false;
+                USBTestNativeJNI.delete_USBAudioDevice(swigCPtr);
+            }
+            swigCPtr = 0;
+        }
+        super.delete();
+    }
 
-  public boolean hasMIDIOutput() {
-    return USBTestNativeJNI.USBAudioDevice_hasMIDIOutput( swigCPtr, this );
-  }
+    public boolean hasAudioInput() {
+        return USBTestNativeJNI.USBAudioDevice_hasAudioInput(swigCPtr, this);
+    }
 
-  public boolean isMIDIOnly() {
-    return USBTestNativeJNI.USBAudioDevice_isMIDIOnly( swigCPtr, this );
-  }
+    public boolean hasAudioOutput() {
+        return USBTestNativeJNI.USBAudioDevice_hasAudioOutput(swigCPtr, this);
+    }
 
-  public boolean startAllTransfers(boolean i_playAudio, boolean i_recordAudio, boolean i_recordMidi) {
-    return USBTestNativeJNI.USBAudioDevice_startAllTransfers( swigCPtr, this, i_playAudio, i_recordAudio, i_recordMidi );
-  }
+    public boolean hasMIDIInput() {
+        return USBTestNativeJNI.USBAudioDevice_hasMIDIInput(swigCPtr, this);
+    }
 
-  public int stopAllTransfers() {
-    return USBTestNativeJNI.USBAudioDevice_stopAllTransfers( swigCPtr, this );
-  }
+    public boolean hasMIDIOutput() {
+        return USBTestNativeJNI.USBAudioDevice_hasMIDIOutput(swigCPtr, this);
+    }
 
-  public IVolumeControllerVector getAllVolumeControllers() {
-    return new IVolumeControllerVector( USBTestNativeJNI.USBAudioDevice_getAllVolumeControllers( swigCPtr, this ), true);
-  }
+    public boolean isMIDIOnly() {
+        return USBTestNativeJNI.USBAudioDevice_isMIDIOnly(swigCPtr, this);
+    }
 
-  public USBSelectorUnitVector getAllSelectorUnits() {
-    return new USBSelectorUnitVector( USBTestNativeJNI.USBAudioDevice_getAllSelectorUnits( swigCPtr, this ), true);
-  }
+    public boolean startAllTransfers(boolean i_playAudio, boolean i_recordAudio, boolean i_recordMidi) {
+        return USBTestNativeJNI.USBAudioDevice_startAllTransfers(swigCPtr, this, i_playAudio, i_recordAudio, i_recordMidi);
+    }
 
-  public int getVendorID() {
-    return USBTestNativeJNI.USBAudioDevice_getVendorID( swigCPtr, this );
-  }
+    public int stopAllTransfers() {
+        return USBTestNativeJNI.USBAudioDevice_stopAllTransfers(swigCPtr, this);
+    }
 
-  public int getProductID() {
-    return USBTestNativeJNI.USBAudioDevice_getProductID( swigCPtr, this );
-  }
+    public IVolumeControllerVector getAllVolumeControllers() {
+        return new IVolumeControllerVector(USBTestNativeJNI.USBAudioDevice_getAllVolumeControllers(swigCPtr, this), true);
+    }
 
-  public String getManufacturerString() {
-    return USBTestNativeJNI.USBAudioDevice_getManufacturerString( swigCPtr, this );
-  }
+    public USBSelectorUnitVector getAllSelectorUnits() {
+        return new USBSelectorUnitVector(USBTestNativeJNI.USBAudioDevice_getAllSelectorUnits(swigCPtr, this), true);
+    }
 
-  public String getProductString() {
-    return USBTestNativeJNI.USBAudioDevice_getProductString( swigCPtr, this );
-  }
+    public int getVendorID() {
+        return USBTestNativeJNI.USBAudioDevice_getVendorID(swigCPtr, this);
+    }
 
-  public String getSerialNumberString() {
-    return USBTestNativeJNI.USBAudioDevice_getSerialNumberString( swigCPtr, this );
-  }
+    public int getProductID() {
+        return USBTestNativeJNI.USBAudioDevice_getProductID(swigCPtr, this);
+    }
+
+    public String getManufacturerString() {
+        return USBTestNativeJNI.USBAudioDevice_getManufacturerString(swigCPtr, this);
+    }
+
+    public String getProductString() {
+        return USBTestNativeJNI.USBAudioDevice_getProductString(swigCPtr, this);
+    }
+
+    public String getSerialNumberString() {
+        return USBTestNativeJNI.USBAudioDevice_getSerialNumberString(swigCPtr, this);
+    }
 
 }

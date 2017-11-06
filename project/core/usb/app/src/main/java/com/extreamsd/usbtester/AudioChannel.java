@@ -9,42 +9,42 @@
 package com.extreamsd.usbtester;
 
 public class AudioChannel {
-  private transient long swigCPtr;
-  protected transient boolean swigCMemOwn;
+    private transient long swigCPtr;
+    protected transient boolean swigCMemOwn;
 
-  protected AudioChannel(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
-
-  protected static long getCPtr(AudioChannel obj ) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if (swigCPtr != 0) {
-      if (swigCMemOwn) {
-        swigCMemOwn = false;
-        USBTestNativeJNI.delete_AudioChannel( swigCPtr );
-      }
-      swigCPtr = 0;
+    protected AudioChannel(long cPtr, boolean cMemoryOwn) {
+        swigCMemOwn = cMemoryOwn;
+        swigCPtr = cPtr;
     }
-  }
 
-  public String getName() {
-    return USBTestNativeJNI.AudioChannel_getName( swigCPtr, this );
-  }
+    protected static long getCPtr(AudioChannel obj) {
+        return (obj == null) ? 0 : obj.swigCPtr;
+    }
 
-  public int getTracks() {
-    return USBTestNativeJNI.AudioChannel_getTracks( swigCPtr, this );
-  }
+    protected void finalize() {
+        delete();
+    }
 
-  public int getTrackOffset() {
-    return USBTestNativeJNI.AudioChannel_getTrackOffset( swigCPtr, this );
-  }
+    public synchronized void delete() {
+        if (swigCPtr != 0) {
+            if (swigCMemOwn) {
+                swigCMemOwn = false;
+                USBTestNativeJNI.delete_AudioChannel(swigCPtr);
+            }
+            swigCPtr = 0;
+        }
+    }
+
+    public String getName() {
+        return USBTestNativeJNI.AudioChannel_getName(swigCPtr, this);
+    }
+
+    public int getTracks() {
+        return USBTestNativeJNI.AudioChannel_getTracks(swigCPtr, this);
+    }
+
+    public int getTrackOffset() {
+        return USBTestNativeJNI.AudioChannel_getTrackOffset(swigCPtr, this);
+    }
 
 }

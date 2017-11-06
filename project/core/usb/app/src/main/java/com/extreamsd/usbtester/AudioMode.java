@@ -9,55 +9,55 @@
 package com.extreamsd.usbtester;
 
 public class AudioMode {
-  private transient long swigCPtr;
-  protected transient boolean swigCMemOwn;
+    private transient long swigCPtr;
+    protected transient boolean swigCMemOwn;
 
-  protected AudioMode(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
-
-  protected static long getCPtr(AudioMode obj ) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if (swigCPtr != 0) {
-      if (swigCMemOwn) {
-        swigCMemOwn = false;
-        USBTestNativeJNI.delete_AudioMode( swigCPtr );
-      }
-      swigCPtr = 0;
+    protected AudioMode(long cPtr, boolean cMemoryOwn) {
+        swigCMemOwn = cMemoryOwn;
+        swigCPtr = cPtr;
     }
-  }
 
-  public int getNumberOfChannels() {
-    return USBTestNativeJNI.AudioMode_getNumberOfChannels( swigCPtr, this );
-  }
+    protected static long getCPtr(AudioMode obj) {
+        return (obj == null) ? 0 : obj.swigCPtr;
+    }
 
-  public String getName() {
-    return USBTestNativeJNI.AudioMode_getName( swigCPtr, this );
-  }
+    protected void finalize() {
+        delete();
+    }
 
-  public int getNumberOfAudioChannelCombinations() {
-    return USBTestNativeJNI.AudioMode_getNumberOfAudioChannelCombinations( swigCPtr, this );
-  }
+    public synchronized void delete() {
+        if (swigCPtr != 0) {
+            if (swigCMemOwn) {
+                swigCMemOwn = false;
+                USBTestNativeJNI.delete_AudioMode(swigCPtr);
+            }
+            swigCPtr = 0;
+        }
+    }
 
-  public AudioChannel getAudioChannelCombination( int i_index ) {
-    long cPtr = USBTestNativeJNI.AudioMode_getAudioChannelCombination( swigCPtr, this, i_index );
-    return (cPtr == 0) ? null : new AudioChannel( cPtr, false);
-  }
+    public int getNumberOfChannels() {
+        return USBTestNativeJNI.AudioMode_getNumberOfChannels(swigCPtr, this);
+    }
 
-  public int getIndexOfAudioChannel(AudioChannel i_audioChannel ) {
-    return USBTestNativeJNI.AudioMode_getIndexOfAudioChannel( swigCPtr, this, AudioChannel.getCPtr( i_audioChannel ), i_audioChannel );
-  }
+    public String getName() {
+        return USBTestNativeJNI.AudioMode_getName(swigCPtr, this);
+    }
 
-  public AudioChannelVector getChannels( int i_exactTrackCount ) {
-    return new AudioChannelVector( USBTestNativeJNI.AudioMode_getChannels( swigCPtr, this, i_exactTrackCount ), true);
-  }
+    public int getNumberOfAudioChannelCombinations() {
+        return USBTestNativeJNI.AudioMode_getNumberOfAudioChannelCombinations(swigCPtr, this);
+    }
+
+    public AudioChannel getAudioChannelCombination(int i_index) {
+        long cPtr = USBTestNativeJNI.AudioMode_getAudioChannelCombination(swigCPtr, this, i_index);
+        return (cPtr == 0) ? null : new AudioChannel(cPtr, false);
+    }
+
+    public int getIndexOfAudioChannel(AudioChannel i_audioChannel) {
+        return USBTestNativeJNI.AudioMode_getIndexOfAudioChannel(swigCPtr, this, AudioChannel.getCPtr(i_audioChannel), i_audioChannel);
+    }
+
+    public AudioChannelVector getChannels(int i_exactTrackCount) {
+        return new AudioChannelVector(USBTestNativeJNI.AudioMode_getChannels(swigCPtr, this, i_exactTrackCount), true);
+    }
 
 }
