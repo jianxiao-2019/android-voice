@@ -14,6 +14,8 @@ import android.view.View;
 import com.kikatech.go.R;
 import com.kikatech.voice.VoiceConfiguration;
 import com.kikatech.voice.VoiceService;
+import com.kikatech.voice.util.PreferenceUtil;
+import com.kikatech.voice.util.request.RequestManager;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -25,6 +27,13 @@ import java.util.Locale;
  */
 
 public class VoiceTestingActivity extends BaseActivity {
+
+    private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
+
+    private static final Locale[] LOCALE_LIST = new Locale[] {
+            new Locale("en", "US"),
+            new Locale("zh", "CN"),
+    };
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean mPermissionToRecordAccepted = false;
@@ -39,6 +48,12 @@ public class VoiceTestingActivity extends BaseActivity {
 
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setDebugFilePath(getDebugFilePath(this));
+        conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
+                .setUrl(WEB_SOCKET_URL_DEV)
+                .setLocale(getCurrentLocale())
+                .setSign(RequestManager.getSign(this))
+                .setUserAgent(RequestManager.generateUserAgent(this))
+                .build());
         mVoiceService = VoiceService.getService(this, conf);
 
         findViewById(R.id.button_permission).setOnClickListener(new View.OnClickListener() {
@@ -123,5 +138,13 @@ public class VoiceTestingActivity extends BaseActivity {
             return true;
         }
         return false;
+    }
+
+    public String getCurrentLocale() {
+        int current = PreferenceUtil.getInt(this, PreferenceUtil.KEY_LANGUAGE, 0);
+        if (current >= LOCALE_LIST.length) {
+            return LOCALE_LIST[0].toString();
+        }
+        return LOCALE_LIST[current].toString();
     }
 }

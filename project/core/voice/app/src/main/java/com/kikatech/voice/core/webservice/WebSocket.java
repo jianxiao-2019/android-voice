@@ -2,6 +2,7 @@ package com.kikatech.voice.core.webservice;
 
 import android.text.TextUtils;
 
+import com.kikatech.voice.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.log.Logger;
 
@@ -12,6 +13,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -23,15 +25,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 public class WebSocket {
-
-    private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
-
     private static final String VERSION = "2";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
     private static final int MAX_RECONNECT_TIME = 3;
 
-    private URI mUri;
     private VoiceWebSocketClient mClient;
     private OnWebSocketListener mListener;
 
@@ -40,9 +38,7 @@ public class WebSocket {
     private boolean mOpened = false;
     private int mReconnectTimes = 0;
 
-    private String mUserAgent;
-    private String mSign;
-    private String mLocale;
+    private ConnectionConfiguration mConf;
 
     public static WebSocket openConnection(OnWebSocketListener l) {
         return new WebSocket(l);
@@ -57,16 +53,10 @@ public class WebSocket {
     }
 
     private WebSocket(OnWebSocketListener l) {
-        try {
-            mListener = l;
-            // TODO: 17-10-31 url由外面传
-            mUri = new URI(WEB_SOCKET_URL_DEV);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mListener = l;
     }
 
-    public void connect(final String locale, final String sign, final String userAgent) {
+    public void connect(final ConnectionConfiguration conf) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, can not connect again");
             return;
@@ -78,28 +68,32 @@ public class WebSocket {
                     Logger.i("WebSocket is connecting.");
                     return;
                 }
-                mUserAgent = locale;
-                mSign = sign;
-                mLocale = locale;
-                Logger.i("connect mUri = " + mUri);
-                Logger.i("connect locale = " + locale + " sign = " + sign + " userAgent = " + userAgent);
+                mConf = conf;
                 Map<String, String> httpHeaders = new HashMap<String, String>();
-                httpHeaders.put("sign", sign);
                 httpHeaders.put("version", VERSION);
-                httpHeaders.put("lang", locale);
-                httpHeaders.put("locale", locale);
-                httpHeaders.put("User-Agent", userAgent);
+                httpHeaders.put("sign", conf.sign);
+                httpHeaders.put("User-Agent", conf.userAgent);
+                httpHeaders.put("lang", conf.locale);
+                httpHeaders.put("locale", conf.locale);
+                for (String key : conf.bundle.keySet()) {
+                    httpHeaders.put(key, conf.bundle.getString(key));
+                }
                 Draft draft = new Draft_6455();
-                mClient = new VoiceWebSocketClient(mUri, draft, httpHeaders, WEB_SOCKET_CONNECT_TIMEOUT);
+                try {
+                    mClient = new VoiceWebSocketClient(new URI(conf.url), draft,
+                            httpHeaders, WEB_SOCKET_CONNECT_TIMEOUT);
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
                 mClient.connect();
             }
         });
     }
 
     private boolean reconnect() {
-        if (mReconnectTimes < MAX_RECONNECT_TIME) {
+        if (mReconnectTimes < MAX_RECONNECT_TIME && !mReleased.get()) {
             mReconnectTimes++;
-            connect(mLocale, mSign, mUserAgent);
+            connect(mConf);
             return true;
         }
         return false;
@@ -128,7 +122,7 @@ public class WebSocket {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                Logger.v("DataSender sendData, data.length = " + data.length + " isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen());
+                Logger.v("WebSocket sendData, data.length = " + data.length + " isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen() + " mOpened = " + mOpened);
                 if (mClient != null && mOpened) {
                     try {
                         mClient.send(data);
@@ -193,8 +187,8 @@ public class WebSocket {
     private Message handleMessage(String msg) {
         try {
             JSONObject json = new JSONObject(msg);
-            Message message = Message.create(json.optString("type"));
-            if(message != null) {
+            Message message = Message.create(json.optString("type", "NONE"));
+            if (message != null) {
                 message.fromJson(json);
             }
             return message;
@@ -230,7 +224,7 @@ public class WebSocket {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            Logger.i("VoiceWebSocketClient onClose");
+            Logger.i("VoiceWebSocketClient onClose code = [" + code + "]");
             mOpened = false;
             if (!reconnect()) {
                 if (mListener != null) {
@@ -251,4 +245,5 @@ public class WebSocket {
             }
         }
     }
+
 }
