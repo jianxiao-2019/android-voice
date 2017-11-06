@@ -8,8 +8,8 @@ import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.util.log.LogUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by bradchang on 2017/11/3.
@@ -25,26 +25,32 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
     private final static String ACTION_NAV_CHANGE = "Navigation.Navigation-change";
     private final static String ACTION_NAV_CANCEL = "Navigation.Navigation-cancel";
 
-
     private final static String PRM_ADDRESS = "address";
     private final static String PRM_ATTRACTION_US = "place-attraction-us";
     private final static String PRM_SPECIFIC_LOC = "specific-loc";
     private final static String[] PRM_ARRAY = {PRM_ADDRESS, PRM_ATTRACTION_US, PRM_SPECIFIC_LOC};
 
-    public final static byte NAVI_CMD_ERR = 0;
-    public final static byte NAVI_CMD_ASK_ADDRESS = 1;
-    public final static byte NAVI_CMD_CONFIRM_ADDRESS = 2;
-    public final static byte NAVI_CMD_START_NAVI = 3;
-    public final static byte NAVI_CMD_ASK_ADDRESS_AGAIN = 4;
-
-    public final static String NAVI_CMD_ADDRESS = PRM_ADDRESS;
-
+    private final static String KEY_STREET_ADDR = "street-address";
+    private final static String KEY_BUSINESS_NAME = "business-name";
+    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME};
 
     private boolean mStateNaviStart = false;
     private boolean mStateNaviConfirm = false;
     private String mStateNaviAddress = "";
 
     private final Bundle mCmdParms = new Bundle();
+
+
+    public final static byte NAVI_CMD_ERR               = 0x00;
+    public final static byte NAVI_CMD_STOP_NAVIGATION   = 0x01;
+    public final static byte NAVI_CMD_ASK_ADDRESS       = 0x10;
+    public final static byte NAVI_CMD_ASK_ADDRESS_AGAIN = 0x11;
+    public final static byte NAVI_CMD_CONFIRM_ADDRESS   = 0x12;
+    public final static byte NAVI_CMD_DONT_UNDERSTAND   = 0x13;
+    public final static byte NAVI_CMD_START_NAVI        = 0x20;
+
+    public final static String NAVI_CMD_ADDRESS = PRM_ADDRESS;
+
 
     public SceneNavigation(ISceneCallback callback) {
         super(callback);
@@ -76,11 +82,13 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
             case ACTION_NAV_CANCEL:
                 resetContext();
                 break;
+            case ACTION_UNKNOWN:
+                break;
             default:
                 break;
         }
 
-        byte naviAction = checkState();
+        byte naviAction = checkState(action);
         if (LogUtil.DEBUG) LogUtil.log(TAG, "processIntent, naviAction:" + naviAction);
 
         if (mCallback != null) {
@@ -111,13 +119,33 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
             String addr = parm.getString(key);
             LogUtil.log(TAG, key + ":" + addr);
             if (!TextUtils.isEmpty(addr)) {
-                mStateNaviAddress = addr;
+                String location = "";
+                try {
+                    JSONObject json = new JSONObject(addr);
+                    for (String locKey : LOC_KEYS) {
+                        if (json.has(locKey)) location = json.getString(locKey);
+                    }
+                } catch (JSONException e) {
+                }
+                mStateNaviAddress = TextUtils.isEmpty(location) ? addr : location;
                 return;
             }
         }
     }
 
-    private byte checkState() {
+    private byte checkState(String action) {
+        // Check special cases first
+        if(action.equals(ACTION_NAV_NO)) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Ask address again");
+            return NAVI_CMD_ASK_ADDRESS_AGAIN;
+        } else if(action.equals(ACTION_NAV_CANCEL)) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Stop navigation");
+            return NAVI_CMD_STOP_NAVIGATION;
+        } else if(action.equals(ACTION_UNKNOWN)) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
+            return NAVI_CMD_DONT_UNDERSTAND;
+        }
+
         if (!mStateNaviStart) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[Err] Navigation is not started yet");
             return NAVI_CMD_ERR;

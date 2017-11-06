@@ -30,6 +30,8 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private EditText mWordsInput;
     private View mBtnResetContexts;
     private View mBtnQuery;
+    private View mBtnResetAll;
+    private View mBtnClearInputs;
     private TextView mTvScene;
     private TextView mTvName;
     private TextView mTvAction;
@@ -100,17 +102,26 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     case SceneNavigation.NAVI_CMD_CONFIRM_ADDRESS:
                         //
                         log = "NAVI_CMD_CONFIRM_ADDRESS";
-                        toast = "Is your address " + address + " correct ?";
+                        toast = "Is your address '" + address + "' correct ?";
                         break;
                     case SceneNavigation.NAVI_CMD_START_NAVI:
                         //
                         log = "NAVI_CMD_START_NAVI";
-                        toast = "[Send Intent to Start Navigation to " + address + "]";
+                        toast = "[Send Intent to Start Navigation to '" + address + "']";
                         break;
                     case SceneNavigation.NAVI_CMD_ASK_ADDRESS_AGAIN:
                         //
                         log = "NAVI_CMD_ASK_ADDRESS_AGAIN";
                         toast = "Please tell me the address again";
+                        break;
+                    case SceneNavigation.NAVI_CMD_STOP_NAVIGATION:
+                        //
+                        log = "NAVI_CMD_STOP_NAVIGATION";
+                        toast = "Stop Navigation, bye bye";
+                        break;
+                    case SceneNavigation.NAVI_CMD_DONT_UNDERSTAND:
+                        log = "NAVI_CMD_DONT_UNDERSTAND";
+                        toast = "Sorry I don't get it, would you say that again ?";
                         break;
                     default:
                         //
@@ -127,7 +138,12 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 });
             }
         });
+
+        // Debug
         mDialogFlow.register(Scene.DEFAULT.toString(), mDialogObserver);
+        mDialogFlow.register(Scene.NAVIGATION.toString(), mDialogObserver);
+
+        // Scenario Demo
         mDialogFlow.register(Scene.NAVIGATION.toString(), sn);
         mDialogFlow.register(Scene.DEFAULT.toString(), sn);
 
@@ -170,6 +186,8 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
         mBtnResetContexts = findViewById(R.id.btn_reset_contexts);
         mBtnQuery = findViewById(R.id.btn_query);
+        mBtnResetAll = findViewById(R.id.btn_reset_all);
+        mBtnClearInputs = findViewById(R.id.btn_clear_words);
 
         mTvScene = (TextView) findViewById(R.id.log_tv_scene);
         mTvName = (TextView) findViewById(R.id.log_tv_name);
@@ -190,6 +208,22 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(words)) {
                     mDialogFlow.talk(words);
                 }
+            }
+        });
+
+        mBtnClearInputs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mWordsInput.setText("");
+            }
+        });
+
+        mBtnResetAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mWordsInput.setText("");
+                resetLogs();
+                mDialogFlow.resetContexts();
             }
         });
     }

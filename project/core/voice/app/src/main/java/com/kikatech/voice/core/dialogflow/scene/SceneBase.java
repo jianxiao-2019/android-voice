@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 public abstract class SceneBase {
 
+    final static String ACTION_UNKNOWN = "input.unknown";
+
     public interface ISceneCallback {
         void resetContextImpl();
 
