@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kikatech.go.R;
 import com.kikatech.go.util.LogUtil;
@@ -14,6 +15,10 @@ import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.agent.apiai.ApiAiAgentCreator;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.core.dialogflow.scene.SceneBase;
+import com.kikatech.voice.core.dialogflow.scene.SceneNavigation;
+
+import java.util.Map;
 
 /**
  * @author SkeeterWang Created on 2017/11/4.
@@ -42,8 +47,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
         bindView();
     }
 
-    private void initDialogFlow()
-    {
+    private void initDialogFlow() {
         VoiceConfiguration config = new VoiceConfiguration();
         config.agent(new ApiAiAgentCreator());
         mDialogFlow = DialogFlow.getInstance(KikaDialogFlowActivity.this, config);
@@ -68,8 +72,66 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 }
             }
         };
+
+
+
+        SceneNavigation sn = new SceneNavigation(new SceneBase.ISceneCallback() {
+            @Override
+            public void resetContextImpl() {
+                mDialogFlow.resetContexts();
+            }
+
+            @Override
+            public void onCommand(byte cmd, Bundle parameters) {
+                String toast = "UNKNOWN";
+                String log = "UNKNOWN";
+                String address = parameters.getString(SceneNavigation.NAVI_CMD_ADDRESS);
+                switch (cmd) {
+                    case SceneNavigation.NAVI_CMD_ERR:
+                        //
+                        log = "NAVI_CMD_ERR";
+                        toast = "Error occurs, please contact RD";
+                        break;
+                    case SceneNavigation.NAVI_CMD_ASK_ADDRESS:
+                        //
+                        log = "NAVI_CMD_ASK_ADDRESS";
+                        toast = "Please tell me your address";
+                        break;
+                    case SceneNavigation.NAVI_CMD_CONFIRM_ADDRESS:
+                        //
+                        log = "NAVI_CMD_CONFIRM_ADDRESS";
+                        toast = "Is your address " + address + " correct ?";
+                        break;
+                    case SceneNavigation.NAVI_CMD_START_NAVI:
+                        //
+                        log = "NAVI_CMD_START_NAVI";
+                        toast = "[Send Intent to Start Navigation to " + address + "]";
+                        break;
+                    case SceneNavigation.NAVI_CMD_ASK_ADDRESS_AGAIN:
+                        //
+                        log = "NAVI_CMD_ASK_ADDRESS_AGAIN";
+                        toast = "Please tell me the address again";
+                        break;
+                    default:
+                        //
+                        break;
+                }
+
+                if (LogUtil.DEBUG) LogUtil.log(TAG, log);
+                final String t = toast;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(KikaDialogFlowActivity.this, t, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
         mDialogFlow.register(Scene.DEFAULT.toString(), mDialogObserver);
-        mDialogFlow.register(Scene.NAVIGATION.toString(), mDialogObserver);
+        mDialogFlow.register(Scene.NAVIGATION.toString(), sn);
+        mDialogFlow.register(Scene.DEFAULT.toString(), sn);
+
+        mDialogFlow.resetContexts();
     }
 
     private void handleLog(final Intent intent) {

@@ -24,13 +24,17 @@ public class DialogFlow {
     private HashMap<String, List<DialogObserver>> mSubscribers = new HashMap<>();
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
+    private static DialogFlow sDialogFlow = null;
+
     private DialogFlow(Agent agent) {
         mAgent = agent;
     }
 
-    public static DialogFlow getInstance(Context context,VoiceConfiguration conf) {
-        DialogFlow flow = new DialogFlow(conf.getAgent().create(context.getApplicationContext()));
-        return flow;
+    public static synchronized DialogFlow getInstance(Context context,VoiceConfiguration conf) {
+        if(sDialogFlow == null) {
+            sDialogFlow = new DialogFlow(conf.getAgent().create(context.getApplicationContext()));
+        }
+        return sDialogFlow;
     }
 
     public void talk(final String words) {
