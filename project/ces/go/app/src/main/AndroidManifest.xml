@@ -50,7 +50,7 @@
         <activity android:name=".ui.VoiceTestingActivity" />
         <activity android:name=".ui.KikaDialogFlowActivity"/>
 
-        <receiver android:name="telephony.PhoneStateReceiver">
+        <receiver android:name=".telephony.MyPhoneStateReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
