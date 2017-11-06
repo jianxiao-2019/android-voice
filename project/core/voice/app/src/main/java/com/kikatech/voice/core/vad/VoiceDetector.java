@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.kikatech.androidspeex.Speex;
+import com.kikatech.voice.VadUtil;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.log.Logger;
 
@@ -51,6 +52,7 @@ public class VoiceDetector implements IDataPath {
 
     @Override
     public void onData(byte[] data) {
+        Logger.d("VoiceDetector onData");
         if (mDetectorHandler == null) {
             Logger.e("Can't add data while VoiceDetector is stopped.");
             return;
@@ -95,10 +97,9 @@ public class VoiceDetector implements IDataPath {
                 handleVoiceData(data);
             } else if (msg.what == MSG_SEND_REMAIN_DATA) {
                 while (mBufLen > 0) {
-                    // TODO: 17-10-30
-//                    if (mListener != null) {
-//                        mListener.onRecorded(Speex_Encode_Func(mBuf, mBufLen));
-//                    }
+                    if (mDataPath != null) {
+                        mDataPath.onData(Speex_Encode_Func(mBuf, mBufLen));
+                    }
                     mBufLen = 0;
                 }
                 // Thread.currentThread().interrupt();
@@ -111,10 +112,6 @@ public class VoiceDetector implements IDataPath {
         private void handleVoiceData(byte[] data) {
             short[] vadData = ByteToShort(data, data.length / 2);
             int vadSize = vadData.length;
-            // TODO: 17-10-30
-//            if (IVoiceManager.DEBUG) {
-//                writeToFile(data, "");
-//            }
             if (vadSize + mBufLen < FRAME_LENGTH) {
                 System.arraycopy(vadData, 0, mBuf, mBufLen, vadSize);
                 mBufLen += vadSize;
@@ -124,10 +121,9 @@ public class VoiceDetector implements IDataPath {
                     System.arraycopy(vadData, 0, mBuf, mBufLen, FRAME_LENGTH - mBufLen);
                     short[] temp_data = new short[temp_len];
                     System.arraycopy(vadData, FRAME_LENGTH - mBufLen, temp_data, 0, temp_len);
-                    // TODO: 17-10-30
-//                    if (mListener != null) {
-//                        mListener.onRecorded(Speex_Encode_Func(mBuf, FRAME_LENGTH));
-//                    }
+                    if (mDataPath != null) {
+                        mDataPath.onData(Speex_Encode_Func(mBuf, FRAME_LENGTH));
+                    }
                     System.arraycopy(temp_data, 0, mBuf, 0, temp_len);
                 }
                 mBufLen = temp_len;
@@ -164,10 +160,6 @@ public class VoiceDetector implements IDataPath {
                 speex_bytes = data.length;
             }
             System.arraycopy(data, 0, tempData, 0, speex_bytes);
-            // TODO: 17-10-30
-//            if (IVoiceManager.DEBUG) {
-//                writeToFile(tempData, "_websocket");
-//            }
             return tempData;
         }
 
@@ -186,49 +178,6 @@ public class VoiceDetector implements IDataPath {
             }
             return floats;
         }
-
-//        private void writeToFile(byte[] data, String additional) {
-//            // Logger.d("VoiceDetector writeToFile mDebugFileName = " + mDebugFileName + " additional = " + additional);
-//            if (TextUtils.isEmpty(mDebugFileName)) {
-//                return;
-//            }
-//
-//            // Create file
-//            File file = new File(mDebugFileName + additional);
-//            if (!file.exists()) {
-//                try {
-//                    file.createNewFile();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return;
-//                }
-//            }
-//
-//            boolean append = true;
-//            OutputStream os = null;
-//            try {
-//                os = new BufferedOutputStream(new FileOutputStream(file, append));
-//                int len = data.length;
-//                os.write(data, 0, len);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } finally {
-//                closeIO(os);
-//            }
-//        }
-//
-//        private void closeIO(Closeable... closeables) {
-//            if (closeables == null) return;
-//            try {
-//                for (Closeable closeable : closeables) {
-//                    if (closeable != null) {
-//                        closeable.close();
-//                    }
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
 }

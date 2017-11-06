@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import com.kikatech.androidspeex.Speex;
 import com.kikatech.voice.util.log.Logger;
-import com.kikatech.voice.core.vad.VadUtil;
+import com.kikatech.voice.VadUtil;
 import com.kikatech.voice.engine.interfaces.IVoiceManager;
 
 import java.io.BufferedOutputStream;

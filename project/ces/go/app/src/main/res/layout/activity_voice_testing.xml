@@ -8,4 +8,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Voice testing activity." />
+
+    <Button
+        android:id="@+id/button_permission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Audio permission" />
+
+    <Button
+        android:id="@+id/button_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start listening" />
+
+    <Button
+        android:id="@+id/button_stop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop listening" />
 </LinearLayout>

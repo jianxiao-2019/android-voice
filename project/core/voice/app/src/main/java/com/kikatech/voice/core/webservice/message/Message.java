@@ -38,11 +38,11 @@ public abstract class Message {
         seqId = json.optInt("seq");
     }
 
-    public static Message create(String type){
+    public static Message create(String type) {
         Class<?> clazz = TYPE_CLASS.get(type);
-        if(clazz != null){
+        if (clazz != null) {
             try {
-                return (Message)clazz.newInstance();
+                return (Message) clazz.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -50,8 +50,8 @@ public abstract class Message {
         return null;
     }
 
-    public static void register(String type, Class<? extends Message> clazz){
-        if(!TextUtils.isEmpty(type) && clazz != null){
+    public static void register(String type, Class<? extends Message> clazz) {
+        if (!TextUtils.isEmpty(type) && clazz != null) {
             TYPE_CLASS.put(type, clazz);
         }
     }

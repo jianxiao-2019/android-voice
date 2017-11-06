@@ -13,6 +13,8 @@ public class VoiceConfiguration {
 
     private AgentCreator mAgentCreator;
 
+    private String mDebugFilePath;
+
     public VoiceConfiguration(){
     }
 
@@ -28,5 +30,13 @@ public class VoiceConfiguration {
 
     public AgentCreator getAgent(){
         return mAgentCreator;
+    }
+
+    public void setDebugFilePath(String filePath) {
+        mDebugFilePath = filePath;
+    }
+
+    public String getDebugFilePath() {
+        return mDebugFilePath;
     }
 }

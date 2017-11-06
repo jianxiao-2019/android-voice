@@ -1,5 +1,6 @@
-package com.kikatech.voice.core.vad;
+package com.kikatech.voice;
 
+import com.kikatech.voice.core.vad.VadConfiguration;
 import com.kikatech.voice.engine.interfaces.IVoiceManager;
 
 public class VadUtil {

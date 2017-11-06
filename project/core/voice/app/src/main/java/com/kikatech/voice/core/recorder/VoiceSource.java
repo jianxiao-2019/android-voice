@@ -69,6 +69,7 @@ public class VoiceSource implements IVoiceSource {
     }
 
     private AudioRecord createAudioRecord() {
+        Logger.d("createAudioRecord mBufferSizeInBytes = " + mBufferSizeInBytes);
         if (mBufferSizeInBytes <= 0) {
             return null;
         }
