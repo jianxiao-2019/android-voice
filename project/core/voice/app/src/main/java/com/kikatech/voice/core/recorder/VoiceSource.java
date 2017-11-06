@@ -51,7 +51,7 @@ public class VoiceSource implements IVoiceSource {
             mCanceler.release();
             mCanceler = null;
         }
-        if (mAudioRecord != null) {
+        if (mAudioRecord != null && mAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
             mAudioRecord.stop();
             mAudioRecord.release();
             mAudioRecord = null;

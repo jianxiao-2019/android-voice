@@ -25,9 +25,15 @@ public class VoiceDetector implements IDataPath {
     private /*final*/ HandlerThread mHandlerThread;
     private DetectorHandler mDetectorHandler;
 
+    private OnVadProbabilityChangeListener mListener;
 
-    public VoiceDetector(IDataPath dataPath) {
+    public interface OnVadProbabilityChangeListener {
+        void onSpeechProbabilityChanged(float speechProbability);
+    }
+
+    public VoiceDetector(IDataPath dataPath, OnVadProbabilityChangeListener listener) {
         mDataPath = dataPath;
+        mListener = listener;
     }
 
     public void startDetecting() {
@@ -89,9 +95,9 @@ public class VoiceDetector implements IDataPath {
                 float prob = VadUtil.speechProbability(sample, 0, sample.length,
                         VadUtil.sConf);
                 // TODO: 17-10-30
-//                if (mListener != null && mPrevProb != prob) {
-//                    mListener.onSpeechProbabilityChanged(prob);
-//                }
+                if (mListener != null && mPrevProb != prob) {
+                    mListener.onSpeechProbabilityChanged(prob);
+                }
                 mPrevProb = prob;
 
                 handleVoiceData(data);

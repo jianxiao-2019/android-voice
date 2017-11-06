@@ -83,7 +83,8 @@ public class VoiceRecorder {
             int readSize;
             while (mIsRunning.get()) {
                 readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
-                if (AudioRecord.ERROR_INVALID_OPERATION != readSize /*&& fos != null*/) {
+//                if (AudioRecord.ERROR_INVALID_OPERATION != readSize /*&& fos != null*/) {
+                if (readSize > 0) {
                     copy(audioData, readSize);
                 }
             }

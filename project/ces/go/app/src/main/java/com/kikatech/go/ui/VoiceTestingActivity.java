@@ -10,11 +10,15 @@ import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.EditText;
 
 import com.kikatech.go.R;
 import com.kikatech.voice.VoiceConfiguration;
 import com.kikatech.voice.VoiceService;
+import com.kikatech.voice.core.webservice.WebSocket;
+import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.PreferenceUtil;
+import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 
 import java.io.File;
@@ -26,7 +30,8 @@ import java.util.Locale;
  * Created by ryanlin on 03/11/2017.
  */
 
-public class VoiceTestingActivity extends BaseActivity {
+public class VoiceTestingActivity extends BaseActivity
+        implements VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener {
 
     private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
 
@@ -34,6 +39,8 @@ public class VoiceTestingActivity extends BaseActivity {
             new Locale("en", "US"),
             new Locale("zh", "CN"),
     };
+
+    private EditText mEditText;
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean mPermissionToRecordAccepted = false;
@@ -55,6 +62,7 @@ public class VoiceTestingActivity extends BaseActivity {
                 .setUserAgent(RequestManager.generateUserAgent(this))
                 .build());
         mVoiceService = VoiceService.getService(this, conf);
+        mVoiceService.setVoiceRecognitionListener(this);
 
         findViewById(R.id.button_permission).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +95,17 @@ public class VoiceTestingActivity extends BaseActivity {
                 }
             }
         });
+
+        findViewById(R.id.button_alter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mVoiceService != null && mEditText != null) {
+                    mVoiceService.alterViaVoice(mEditText.getText().toString());
+                }
+            }
+        });
+
+        mEditText = (EditText) findViewById(R.id.edit_text);
     }
 
     @Override
@@ -146,5 +165,33 @@ public class VoiceTestingActivity extends BaseActivity {
             return LOCALE_LIST[0].toString();
         }
         return LOCALE_LIST[current].toString();
+    }
+
+    @Override
+    public void onRecognitionResult(final Message message) {
+        Logger.i("onMessage message = " + message.text);
+        if (mEditText != null) {
+            mEditText.post(new Runnable() {
+                @Override
+                public void run() {
+                    mEditText.setText(message.text);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStartListening() {
+
+    }
+
+    @Override
+    public void onStopListening() {
+
+    }
+
+    @Override
+    public void onSpeechProbabilityChanged(float prob) {
+
     }
 }

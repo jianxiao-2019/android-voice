@@ -32,7 +32,7 @@ public abstract class Message {
 
     public void fromJson(JSONObject json) {
         status = json.optInt("state");
-        text = json.optString("text");
+        text = json.optString("payload");
         engine = json.optString("engine");
         sessionId = json.optString("cid");
         seqId = json.optInt("seq");

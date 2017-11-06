@@ -188,6 +188,7 @@ public class WebSocket {
         try {
             JSONObject json = new JSONObject(msg);
             Message message = Message.create(json.optString("type", "NONE"));
+            Logger.i("handleMessage message = " + message);
             if (message != null) {
                 message.fromJson(json);
             }
