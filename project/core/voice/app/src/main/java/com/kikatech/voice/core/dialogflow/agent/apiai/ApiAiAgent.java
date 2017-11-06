@@ -16,6 +16,7 @@ import java.util.Map;
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
+import ai.api.model.AIOutputContext;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Entity;
@@ -29,6 +30,8 @@ import ai.api.model.Result;
 public class ApiAiAgent extends Agent {
 
     private static final String TAG = "ApiAiAgent";
+
+    private static final boolean DEBUG_ORIGINAL_DATA = true;
 
     private static final String CLIENT_ACCESS_TOKEN_JASON = "cda255c3a7284b6e927eec6a06d086ea";
     private static final String CLIENT_ACCESS_TOKEN_BRAD = "cf718669b9534bb1a89b37a2e0f5fc46";
@@ -119,6 +122,10 @@ public class ApiAiAgent extends Agent {
 
         if( LogUtil.DEBUG ) LogUtil.log( TAG, "fromResponse" );
 
+        if (DEBUG_ORIGINAL_DATA) {
+            printOriginalData(response);
+        }
+
         if (response == null || response.isError()) {
             return null;
         }
@@ -176,5 +183,65 @@ public class ApiAiAgent extends Agent {
         }
 
         return intent;
+    }
+
+    private void printOriginalData(AIResponse response) {
+        if (DEBUG_ORIGINAL_DATA) {
+            final String TAG = "ApiAiOriginalData";
+            if (response == null) {
+                LogUtil.logw(TAG, "response is null");
+            } else if (response.isError()) {
+                LogUtil.logw(TAG, "response with error");
+            } else {
+                Result result = response.getResult();
+                if (result == null) {
+                    LogUtil.logw(TAG, "result is null");
+                } else {
+                    LogUtil.log(TAG, "Source: " + result.getSource());
+                    LogUtil.log(TAG, "Resolved Query: " + result.getResolvedQuery());
+                    LogUtil.log(TAG, "Action: " + result.getAction());
+                    LogUtil.log(TAG, "Score: " + result.getScore());
+
+                    final Metadata metadata = result.getMetadata();
+                    if( metadata != null ) {
+                        LogUtil.log(TAG, "IntentId: " + metadata.getIntentId());
+                        LogUtil.log(TAG, "IntentName: " + metadata.getIntentName());
+                    }
+
+                    final Map<String, JsonElement> params = result.getParameters();
+                    if (params != null && !params.isEmpty()) {
+                        for (final Map.Entry<String, JsonElement> entry : params.entrySet()) {
+                            try {
+                                String key = entry.getKey();
+                                String value = entry.getValue().toString();
+                                LogUtil.logd(TAG, "[params] key: " + key + ", value: " + value);
+                            } catch (Exception e) {
+                                if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
+                            }
+                        }
+                    }
+
+                    final List<AIOutputContext> contexts = result.getContexts();
+                    if (contexts != null && !contexts.isEmpty()) {
+                        for (AIOutputContext outputContext : contexts) {
+                            LogUtil.log(TAG, "[Context] name: " + outputContext.getName() + ", lifespan: " + outputContext.getLifespan());
+                            final Map<String, JsonElement> contextParams = outputContext.getParameters();
+                            if (contextParams != null && !contextParams.isEmpty()) {
+                                for (final Map.Entry<String, JsonElement> entry : contextParams.entrySet()) {
+                                    try {
+                                        String key = entry.getKey();
+                                        String value = entry.getValue().toString();
+                                        LogUtil.logv(TAG, "[Context params] key: " + key + ", value: " + value);
+                                    } catch (Exception e) {
+                                        if (LogUtil.DEBUG)
+                                            LogUtil.printStackTrace(TAG, e.getMessage(), e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
