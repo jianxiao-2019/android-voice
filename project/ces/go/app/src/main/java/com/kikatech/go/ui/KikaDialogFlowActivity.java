@@ -10,15 +10,17 @@ import android.widget.TextView;
 import com.kikatech.go.R;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
+import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.agent.apiai.ApiAiAgentCreator;
 import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
+import com.kikatech.voice.core.dialogflow.constant.Scene;
+import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.service.DialogFlowDemoConfig;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.core.dialogflow.agent.apiai.ApiAiAgentCreator;
-import com.kikatech.voice.core.dialogflow.constant.Scene;
-import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 import java.util.ArrayList;
 
@@ -72,8 +74,13 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
                     @Override
                     public void onCommand(Scene scene, byte cmd, Bundle parameters) {
-                        if (scene == Scene.NAVIGATION) {
-                            processNavigationCommand(cmd, parameters);
+                        switch (scene) {
+                            case NAVIGATION:
+                                processNavigationCommand(cmd, parameters);
+                                break;
+                            case TELEPHONY_INCOMING:
+                                processTelephonyIncomingCommand(cmd, parameters);
+                                break;
                         }
                     }
 
@@ -137,6 +144,61 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
         showLongToast(toast);
+    }
+
+    private void processTelephonyIncomingCommand(byte cmd, Bundle parameters) {
+        String toast = "UNKNOWN";
+        String log = "UNKNOWN";
+        switch (cmd) {
+            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ERR:
+                log = "TELEPHONY_INCOMING_CMD_ERR";
+                toast = "Error occurs, please contact RD";
+                break;
+            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_START:
+                String name = parameters.getString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME);
+                log = "TELEPHONY_INCOMING_CMD_START";
+                toast = String.format("%s is calling you, answer the phone?", name);
+                startSelf();
+                break;
+            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ANSWER:
+                log = "TELEPHONY_INCOMING_CMD_ANSWER";
+                toast = "You've answered this call.";
+                TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
+                break;
+            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_REJECT:
+                log = "TELEPHONY_INCOMING_CMD_REJECT";
+                toast = "You've rejected this call.";
+                // toast = "Error occurs, please contact RD";
+                TelephonyServiceManager.getIns().killPhoneCall(KikaDialogFlowActivity.this);
+                break;
+            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_IGNORE:
+                log = "TELEPHONY_INCOMING_CMD_IGNORE";
+                toast = "You've ignore this call.";
+                break;
+
+        }
+
+        if (LogUtil.DEBUG) LogUtil.log(TAG, log);
+        showLongToast(toast);
+    }
+
+    private void startSelf() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mWordsInput.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            android.content.Intent intent = new android.content.Intent(KikaDialogFlowActivity.this, KikaDialogFlowActivity.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(KikaDialogFlowActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            pendingIntent.send();
+                        } catch (Exception ignore) {
+                        }
+                    }
+                }, 1000);
+            }
+        });
     }
 
     /**

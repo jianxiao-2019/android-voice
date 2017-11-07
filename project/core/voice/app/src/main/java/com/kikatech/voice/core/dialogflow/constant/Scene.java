@@ -6,7 +6,8 @@ package com.kikatech.voice.core.dialogflow.constant;
 public enum Scene {
 
     DEFAULT("Default"), //default scene, un-know intents will go through
-    NAVIGATION("Navigation");
+    NAVIGATION("Navigation"),
+    TELEPHONY_INCOMING("Telephony - Incoming");
 
     Scene(String scene) {
         this.scene = scene;

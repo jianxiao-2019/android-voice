@@ -8,12 +8,13 @@ import android.text.TextUtils;
 import com.kikatech.voice.core.dialogflow.DialogFlow;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
+import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneNavigation;
+import com.kikatech.voice.core.dialogflow.scene.SceneTelephonyIncoming;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.log.LogUtil;
-import com.kikatech.voice.util.log.Logger;
 
 import java.util.List;
 
@@ -28,34 +29,41 @@ public class DialogFlowService implements
 
     private static final String TAG = "DialogFlowService";
 
+    private Context mContext;
+
     private final IServiceCallback mCallback;
     private VoiceService mVoiceService;
     private DialogFlow mDialogFlow;
 
+    private SceneNavigation mSceneNavigation;
+    private SceneTelephonyIncoming mSceneTelephonyIncoming;
+    private DialogObserver debugLogger;
 
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
+        mContext = ctx;
+
         mCallback = callback;
 
-        initDialogFlow(ctx, conf);
+        initDialogFlow(conf);
 
-        initVoiceService(ctx, conf);
+        initVoiceService(conf);
 
         callback.onInitComplete();
     }
 
-    private void initDialogFlow(@NonNull Context ctx, @NonNull VoiceConfiguration conf) {
-        mDialogFlow = new DialogFlow(ctx, conf);
+    private void initDialogFlow(@NonNull VoiceConfiguration conf) {
+        mDialogFlow = new DialogFlow(mContext, conf);
 
         registerScenes();
 
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "init DialogFlow ... Done");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "init DialogFlow ... Done");
     }
 
-    private void initVoiceService(@NonNull Context ctx, @NonNull VoiceConfiguration conf) {
-        mVoiceService = VoiceService.getService(ctx, conf);
+    private void initVoiceService(@NonNull VoiceConfiguration conf) {
+        mVoiceService = VoiceService.getService(mContext, conf);
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.start();
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "init VoiceService ... Done");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "init VoiceService ... Done");
     }
 
     private void debugDumpIntent(Intent intent) {
@@ -79,7 +87,7 @@ public class DialogFlowService implements
         mDialogFlow.register(Scene.DEFAULT.toString(), this);
 
         // 1. Navigation
-        mDialogFlow.register(Scene.NAVIGATION.toString(), new SceneNavigation(new SceneBase.ISceneCallback() {
+        mSceneNavigation = new SceneNavigation(new SceneBase.ISceneCallback() {
             @Override
             public void resetContextImpl() {
                 mDialogFlow.resetContexts();
@@ -91,12 +99,38 @@ public class DialogFlowService implements
                     mCallback.onCommand(Scene.NAVIGATION, cmd, parameters);
                 }
             }
-        }));
+        });
+        mDialogFlow.register(Scene.NAVIGATION.toString(), mSceneNavigation);
+
+        // 2. Telephony Incoming
+        mSceneTelephonyIncoming = new SceneTelephonyIncoming(mContext, new SceneBase.ISceneCallback() {
+            @Override
+            public void resetContextImpl() {
+                mDialogFlow.resetContexts();
+            }
+
+            @Override
+            public void onCommand(byte cmd, Bundle parameters) {
+                switch (cmd) {
+                    case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_PRE_START:
+                        String phoneNumber = parameters.getString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME);
+                        startTelephonyIncoming(phoneNumber);
+                        break;
+                    default:
+                        if (mCallback != null) {
+                            mCallback.onCommand(Scene.TELEPHONY_INCOMING, cmd, parameters);
+                        }
+                        break;
+                }
+            }
+        });
+        mDialogFlow.register(Scene.TELEPHONY_INCOMING.toString(), mSceneTelephonyIncoming);
+        mDialogFlow.register(Scene.DEFAULT.toString(), mSceneTelephonyIncoming);
 
 
         // Debug
         if (LogUtil.DEBUG) {
-            DialogObserver debugLogger = new DialogObserver() {
+            debugLogger = new DialogObserver() {
                 @Override
                 public void onIntent(Intent intent) {
                     debugDumpIntent(intent);
@@ -107,6 +141,11 @@ public class DialogFlowService implements
         }
 
         mDialogFlow.resetContexts();
+    }
+
+    private void startTelephonyIncoming(String phoneNumber) {
+        String cmdIntoTelephonyIntent = String.format(SceneTelephonyIncoming.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
+        mDialogFlow.talk(cmdIntoTelephonyIntent);
     }
 
     public static synchronized DialogFlowService queryService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
@@ -122,8 +161,8 @@ public class DialogFlowService implements
 
     @Override
     public void talk(String words) {
-        if(mDialogFlow != null && !TextUtils.isEmpty(words)) {
-            if(LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
+        if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
             mDialogFlow.talk(words);
         }
     }
@@ -134,19 +173,30 @@ public class DialogFlowService implements
         if (mVoiceService != null) {
             mVoiceService.stop();
         }
+        try {
+            mDialogFlow.unregister(Scene.NAVIGATION.toString(), mSceneNavigation);
+            mSceneTelephonyIncoming.unregisterBroadcastReceiver(mContext);
+            mDialogFlow.unregister(Scene.TELEPHONY_INCOMING.toString(), mSceneTelephonyIncoming);
+            mDialogFlow.unregister(Scene.DEFAULT.toString(), mSceneTelephonyIncoming);
+            if (LogUtil.DEBUG) {
+                mDialogFlow.unregister(Scene.DEFAULT.toString(), debugLogger);
+                mDialogFlow.unregister(Scene.NAVIGATION.toString(), debugLogger);
+            }
+        } catch (Exception ignore) {
+        }
     }
 
     @Override
     public void onRecognitionResult(Message message) {
-        Logger.i("onMessage message = " + message.text);
-        if(message.seqId < 0 && !TextUtils.isEmpty(message.text)) {
-            if(LogUtil.DEBUG) LogUtil.log(TAG, "Speech spoken : " + message.text);
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "onMessage message = " + message.text);
+        if (message.seqId < 0 && !TextUtils.isEmpty(message.text)) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "Speech spoken : " + message.text);
 
-            if(mDialogFlow != null) {
+            if (mDialogFlow != null) {
                 mDialogFlow.talk(message.text);
             }
 
-            if(mCallback != null) {
+            if (mCallback != null) {
                 mCallback.onSpeechSpokenDone(message.text);
             }
         }
@@ -154,17 +204,17 @@ public class DialogFlowService implements
 
     @Override
     public void onStartListening() {
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onStartListening");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onStartListening");
     }
 
     @Override
     public void onStopListening() {
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onStopListening");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onStopListening");
     }
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onSpeechProbabilityChanged:" + prob);
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onSpeechProbabilityChanged:" + prob);
     }
 
     @Override
