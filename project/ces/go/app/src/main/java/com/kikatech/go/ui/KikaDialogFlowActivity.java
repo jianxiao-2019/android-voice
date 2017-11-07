@@ -6,11 +6,9 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kikatech.go.R;
 import com.kikatech.go.navigation.NavigationManager;
-import com.kikatech.go.navigation.NavigationService;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
@@ -66,7 +64,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(KikaDialogFlowActivity.this, "Dialog Service Init Completed", Toast.LENGTH_LONG).show();
+                                showLongToast("Dialog Service Init Completed");
                                 setViewEnable(true);
                             }
                         });
@@ -138,27 +136,32 @@ public class KikaDialogFlowActivity extends BaseActivity {
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
-        final String t = toast;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(KikaDialogFlowActivity.this, t, Toast.LENGTH_LONG).show();
-            }
-        });
+        showLongToast(toast);
     }
 
+    /**
+     * This is a workaround ...
+     */
     private void stopNavigation() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 NavigationManager.getIns().stopNavigation(KikaDialogFlowActivity.this);
-                try {
-                    android.content.Intent intent = new android.content.Intent(KikaDialogFlowActivity.this, KikaDialogFlowActivity.class);
-                    intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(KikaDialogFlowActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    pendingIntent.send();
-                } catch (Exception ignore) {
-                }
+
+                showLongToast("Stopping Navigation ...");
+
+                mWordsInput.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            android.content.Intent intent = new android.content.Intent(KikaDialogFlowActivity.this, KikaDialogFlowActivity.class);
+                            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(KikaDialogFlowActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            pendingIntent.send();
+                        } catch (Exception ignore) {
+                        }
+                    }
+                }, 4000);
             }
         });
     }

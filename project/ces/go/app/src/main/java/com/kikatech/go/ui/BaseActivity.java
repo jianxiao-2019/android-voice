@@ -9,7 +9,21 @@ import android.widget.Toast;
 
 public class BaseActivity extends Activity {
 
-    protected void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    protected void showToast(final String message) {
+        __showToast(message, Toast.LENGTH_SHORT);
     }
+
+    protected void showLongToast(final String message) {
+        __showToast(message, Toast.LENGTH_LONG);
+    }
+
+    private void __showToast(final String message, final int len) {
+        BaseActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(BaseActivity.this, message, len).show();
+            }
+        });
+    }
+
 }
