@@ -32,6 +32,9 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
             mTts = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
                 @Override
                 public void onInit(int arg0) {
+                    if (mTts == null) {
+                        return;
+                    }
                     // TTS 初始化成功
                     if (arg0 == TextToSpeech.SUCCESS) {
                         // 指定的語系: 英文(美國)

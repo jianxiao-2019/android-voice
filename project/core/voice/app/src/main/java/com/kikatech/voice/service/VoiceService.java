@@ -99,7 +99,9 @@ public class VoiceService {
     }
 
     public void alterViaVoice(String toBeAltered) {
-        mWebService.sendCommand("ALTER", toBeAltered);
+        if (mWebService != null) {
+            mWebService.sendCommand("ALTER", toBeAltered);
+        }
     }
 
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
