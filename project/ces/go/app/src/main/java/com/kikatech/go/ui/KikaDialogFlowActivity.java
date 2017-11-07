@@ -1,5 +1,6 @@
 package com.kikatech.go.ui;
 
+import android.app.PendingIntent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -8,6 +9,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kikatech.go.R;
+import com.kikatech.go.navigation.NavigationManager;
+import com.kikatech.go.navigation.NavigationService;
+import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
 import com.kikatech.voice.service.DialogFlowDemoConfig;
@@ -17,6 +21,8 @@ import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.core.dialogflow.agent.apiai.ApiAiAgentCreator;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+
+import java.util.ArrayList;
 
 /**
  * @author SkeeterWang Created on 2017/11/4.
@@ -34,6 +40,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private TextView mTvName;
     private TextView mTvAction;
     private TextView mTvExtras;
+    private View[] mInteractiveViews;
 
 
     private DialogFlowService mDialogFlowService;
@@ -42,21 +49,44 @@ public class KikaDialogFlowActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_dialog_flow);
-        initDialogFlow();
         bindView();
+        setViewEnable(false);
+
+        initDialogFlowService();
     }
 
-    private void initDialogFlow() {
+    private void initDialogFlowService() {
         VoiceConfiguration config = new VoiceConfiguration();
         config.agent(new ApiAiAgentCreator());
         mDialogFlowService = DialogFlowService.queryService(this,
                 DialogFlowDemoConfig.queryDemoConfig(this),
-                new IDialogFlowService.ICommandCallback() {
+                new IDialogFlowService.IServiceCallback() {
+                    @Override
+                    public void onInitComplete() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(KikaDialogFlowActivity.this, "Dialog Service Init Completed", Toast.LENGTH_LONG).show();
+                                setViewEnable(true);
+                            }
+                        });
+                    }
+
                     @Override
                     public void onCommand(Scene scene, byte cmd, Bundle parameters) {
                         if (scene == Scene.NAVIGATION) {
                             processNavigationCommand(cmd, parameters);
                         }
+                    }
+
+                    @Override
+                    public void onSpeechSpokenDone(final String speechText) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mWordsInput.setText(speechText);
+                            }
+                        });
                     }
                 });
     }
@@ -85,6 +115,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 //
                 log = "NAVI_CMD_START_NAVI";
                 toast = "[Send Intent to Start Navigation to '" + address + "']";
+                navigateToLocation(address);
                 break;
             case NavigationCommand.NAVI_CMD_ASK_ADDRESS_AGAIN:
                 //
@@ -95,6 +126,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 //
                 log = "NAVI_CMD_STOP_NAVIGATION";
                 toast = "Stop Navigation, bye bye";
+                stopNavigation();
                 break;
             case NavigationCommand.NAVI_CMD_DONT_UNDERSTAND:
                 log = "NAVI_CMD_DONT_UNDERSTAND";
@@ -113,6 +145,28 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 Toast.makeText(KikaDialogFlowActivity.this, t, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void stopNavigation() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                NavigationManager.getIns().stopNavigation(KikaDialogFlowActivity.this);
+                try {
+                    android.content.Intent intent = new android.content.Intent(KikaDialogFlowActivity.this, KikaDialogFlowActivity.class);
+                    intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(KikaDialogFlowActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    pendingIntent.send();
+                } catch (Exception ignore) {
+                }
+            }
+        });
+    }
+
+    private void navigateToLocation(String loc) {
+        ArrayList<BaseNavigationProvider.NavigationAvoid> avoidList = new ArrayList<>();
+        final BaseNavigationProvider.NavigationAvoid[] avoids = avoidList.toArray(new BaseNavigationProvider.NavigationAvoid[0]);
+        NavigationManager.getIns().startNavigation(this, loc, BaseNavigationProvider.NavigationMode.DRIVE, avoids);
     }
 
     private void handleLog(final Intent intent) {
@@ -189,5 +243,15 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 mDialogFlowService.resetContexts();
             }
         });
+
+        mInteractiveViews = new View[]{mWordsInput, mBtnResetContexts, mBtnQuery, mBtnResetAll, mBtnClearInputs};
+    }
+
+    private void setViewEnable(boolean enable) {
+        if (mInteractiveViews != null) {
+            for (View v : mInteractiveViews) {
+                v.setEnabled(enable);
+            }
+        }
     }
 }

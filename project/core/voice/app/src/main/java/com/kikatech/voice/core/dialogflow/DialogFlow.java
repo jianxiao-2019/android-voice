@@ -23,9 +23,11 @@ public class DialogFlow {
 
     private HashMap<String, List<DialogObserver>> mSubscribers = new HashMap<>();
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    private final List<DialogObserver> mListeningSubscribers;
 
     public DialogFlow(Context context, VoiceConfiguration conf) {
         mAgent = conf.getAgent().create(context.getApplicationContext());
+        mListeningSubscribers = new ArrayList<>();
     }
 
     public void talk(final String words) {
@@ -37,7 +39,7 @@ public class DialogFlow {
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = mAgent.query(words,entities);
+                    Intent intent = mAgent.query(words, entities);
                     if (intent != null) {
                         onIntent(intent);
                     }
@@ -81,17 +83,20 @@ public class DialogFlow {
         }
     }
 
+    public List<DialogObserver> getListeningSubscribers() {
+        return mListeningSubscribers;
+    }
+
     private void onIntent(Intent intent) {
         String scene = intent.getScene();
-        List<DialogObserver> subscribers = new ArrayList<>();
+        mListeningSubscribers.clear();
         synchronized (this){
             if(mSubscribers.containsKey(scene)){
-                subscribers.addAll(mSubscribers.get(scene));
+                mListeningSubscribers.addAll(mSubscribers.get(scene));
             }
         }
-        for(DialogObserver subscriber : subscribers) {
+        for(DialogObserver subscriber : mListeningSubscribers) {
             subscriber.onIntent(intent);
         }
     }
-
 }

@@ -28,13 +28,15 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
     private final static String ACTION_NAV_CANCEL = "Navigation.Navigation-cancel";
 
     private final static String PRM_ADDRESS = "address";
+    private final static String PRM_LOCATION = "location";
     private final static String PRM_ATTRACTION_US = "place-attraction-us";
     private final static String PRM_SPECIFIC_LOC = "specific-loc";
-    private final static String[] PRM_ARRAY = {PRM_ADDRESS, PRM_ATTRACTION_US, PRM_SPECIFIC_LOC};
+    private final static String[] PRM_ARRAY = {PRM_LOCATION, PRM_ADDRESS, PRM_ATTRACTION_US, PRM_SPECIFIC_LOC};
 
     private final static String KEY_STREET_ADDR = "street-address";
     private final static String KEY_BUSINESS_NAME = "business-name";
-    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME};
+    private final static String KEY_SHORTCUT = "shortcut";
+    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT};
 
     private boolean mStateNaviStart = false;
     private boolean mStateNaviConfirm = false;
@@ -89,7 +91,8 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
         }
 
         if(NavigationCommand.NAVI_CMD_START_NAVI == naviAction) {
-            resetContext();
+            mStateNaviConfirm = false;
+            mStateNaviAddress = "";
         }
     }
 

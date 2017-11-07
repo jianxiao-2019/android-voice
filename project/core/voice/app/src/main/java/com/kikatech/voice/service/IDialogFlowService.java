@@ -10,9 +10,14 @@ import com.kikatech.voice.core.dialogflow.constant.Scene;
 
 public interface IDialogFlowService {
 
-    interface ICommandCallback {
+    interface IServiceCallback {
+
+        void onInitComplete();
+
         // Please do your task in your own thread
         void onCommand(Scene scene, byte cmd, Bundle parameters);
+
+        void onSpeechSpokenDone(String speechText);
     }
 
     void resetContexts();
