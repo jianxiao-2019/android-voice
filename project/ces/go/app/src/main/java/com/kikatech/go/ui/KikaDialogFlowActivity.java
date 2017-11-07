@@ -163,6 +163,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 log = "TELEPHONY_INCOMING_CMD_ANSWER";
                 toast = "You've answered this call.";
                 TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
+                TelephonyServiceManager.getIns().turnOnSpeaker(KikaDialogFlowActivity.this);
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_REJECT:
                 log = "TELEPHONY_INCOMING_CMD_REJECT";
