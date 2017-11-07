@@ -9,10 +9,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
 import com.kikatech.go.R;
+import com.kikatech.voice.core.tts.TtsService;
+import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.core.tts.impl.AndroidTtsSpeaker;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -30,7 +34,8 @@ import java.util.Locale;
  */
 
 public class VoiceTestingActivity extends BaseActivity
-        implements VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener {
+        implements VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener,
+        TtsSpeaker.TtsStateChangedListener {
 
     private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
 
@@ -46,6 +51,7 @@ public class VoiceTestingActivity extends BaseActivity
     private String[] mPermissions = {Manifest.permission.RECORD_AUDIO};
 
     private VoiceService mVoiceService;
+    private TtsSpeaker mTtsSpeaker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,7 +110,32 @@ public class VoiceTestingActivity extends BaseActivity
             }
         });
 
+        findViewById(R.id.button_tts).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mEditText == null || TextUtils.isEmpty(mEditText.getText())) {
+                    return;
+                }
+                if (mTtsSpeaker == null) {
+                    mTtsSpeaker = TtsService.getInstance().getSpeaker();
+                    if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
+                        ((AndroidTtsSpeaker) mTtsSpeaker).setContext(VoiceTestingActivity.this);
+                    }
+                    mTtsSpeaker.setTtsStateChangedListener(VoiceTestingActivity.this);
+                }
+                mTtsSpeaker.speak(mEditText.getText().toString());
+            }
+        });
+
         mEditText = (EditText) findViewById(R.id.edit_text);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
+            ((AndroidTtsSpeaker) mTtsSpeaker).setContext(null);
+        }
     }
 
     @Override
@@ -181,16 +212,33 @@ public class VoiceTestingActivity extends BaseActivity
 
     @Override
     public void onStartListening() {
-
     }
 
     @Override
     public void onStopListening() {
-
     }
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
+    }
 
+    @Override
+    public void onTtsStart() {
+        Logger.d("Tts onTtsStart");
+    }
+
+    @Override
+    public void onTtsComplete() {
+        Logger.d("Tts onTtsComplete");
+    }
+
+    @Override
+    public void onTtsInterrupted() {
+        Logger.d("Tts onTtsInterrupted");
+    }
+
+    @Override
+    public void onTtsError() {
+        Logger.d("Tts onTtsError");
     }
 }

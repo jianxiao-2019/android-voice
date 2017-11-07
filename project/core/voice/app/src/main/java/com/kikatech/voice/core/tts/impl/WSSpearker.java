@@ -2,7 +2,7 @@ package com.kikatech.voice.core.tts.impl;
 
 import android.text.TextUtils;
 
-import com.kikatech.voice.core.tts.TTSSpeaker;
+import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.util.log.Logger;
 
@@ -17,7 +17,7 @@ import java.util.List;
  * Created by tianli on 17-10-31.
  */
 
-public class WSSpearker extends TTSSpeaker{
+public class WSSpearker implements TtsSpeaker {
 
     private WebSocket mSocket;
 
@@ -34,12 +34,15 @@ public class WSSpearker extends TTSSpeaker{
 
     @Override
     public void speak(String text) {
-        super.speak(text);
     }
 
     @Override
     public void interrupt() {
-        super.interrupt();
+    }
+
+    @Override
+    public void setTtsStateChangedListener(TtsStateChangedListener listener) {
+
     }
 
     private List<Mark> parseMarks(String json) {

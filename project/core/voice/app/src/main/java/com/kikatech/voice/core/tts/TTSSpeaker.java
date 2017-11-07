@@ -4,11 +4,16 @@ package com.kikatech.voice.core.tts;
  * Created by tianli on 17-10-31.
  */
 
-public class TTSSpeaker {
+public interface TtsSpeaker {
 
-    public void speak(String text){
+    interface TtsStateChangedListener {
+        void onTtsStart();
+        void onTtsComplete();
+        void onTtsInterrupted();
+        void onTtsError();
     }
 
-    public void interrupt(){
-    }
+    void speak(String text);
+    void interrupt();
+    void setTtsStateChangedListener(TtsStateChangedListener listener);
 }
