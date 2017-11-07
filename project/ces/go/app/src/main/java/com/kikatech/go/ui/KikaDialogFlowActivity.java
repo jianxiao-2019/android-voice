@@ -2,6 +2,8 @@ package com.kikatech.go.ui;
 
 import android.app.PendingIntent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeechService;
 import android.text.TextUtils;
 import android.view.View;
@@ -210,29 +212,42 @@ public class KikaDialogFlowActivity extends BaseActivity {
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_START:
                 String name = parameters.getString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME);
                 log = "TELEPHONY_INCOMING_CMD_START";
-                toast = String.format("%s is calling you, answer the phone?", name);
+                toast = String.format("%s is calling you", name);
+                tts(toast);
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ANSWER:
                 log = "TELEPHONY_INCOMING_CMD_ANSWER";
-                toast = "You've answered this call.";
-                TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
-                TelephonyServiceManager.getIns().turnOnSpeaker(KikaDialogFlowActivity.this);
+                toast = "Ok, answered this call.";
+                tts(toast);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
+                        TelephonyServiceManager.getIns().turnOnSpeaker(KikaDialogFlowActivity.this);
+                    }
+                }, 2000);
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_REJECT:
                 log = "TELEPHONY_INCOMING_CMD_REJECT";
-                toast = "You've rejected this call.";
+                toast = "Ok, rejected this call.";
                 TelephonyServiceManager.getIns().killPhoneCall(KikaDialogFlowActivity.this);
+                tts(toast);
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_IGNORE:
                 log = "TELEPHONY_INCOMING_CMD_IGNORE";
-                toast = "You've ignore this call.";
-                TelephonyServiceManager.getIns().turnOnSilentMode(KikaDialogFlowActivity.this);
+                toast = "Ok, ignore this call.";
+                tts(toast);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        TelephonyServiceManager.getIns().turnOnSilentMode(KikaDialogFlowActivity.this);
+                    }
+                }, 2000);
                 break;
 
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
-        tts(toast);
     }
 
     /**
