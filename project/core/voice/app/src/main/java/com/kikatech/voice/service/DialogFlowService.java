@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
+import com.kikatech.voice.core.dialogflow.constant.GeneralCommand;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
@@ -16,7 +17,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneTelephonyIncoming;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.log.LogUtil;
 
-import java.util.List;
 
 
 /**
@@ -220,6 +220,7 @@ public class DialogFlowService implements
     @Override
     public void onIntent(Intent intent) {
         // Process Default Fallback Intent
-        List<DialogObserver> subs = mDialogFlow.getListeningSubscribers();
+        // List<DialogObserver> subs = mDialogFlow.getListeningSubscribers();
+        mCallback.onCommand(Scene.DEFAULT, GeneralCommand.GENERAL_CMD_UNKNOWN, null);
     }
 }

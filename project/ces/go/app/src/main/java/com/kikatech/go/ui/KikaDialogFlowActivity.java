@@ -2,6 +2,7 @@ package com.kikatech.go.ui;
 
 import android.app.PendingIntent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeechService;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -13,10 +14,14 @@ import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.agent.apiai.ApiAiAgentCreator;
+import com.kikatech.voice.core.dialogflow.constant.GeneralCommand;
 import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.core.tts.TtsService;
+import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.core.tts.impl.AndroidTtsSpeaker;
 import com.kikatech.voice.service.DialogFlowDemoConfig;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
@@ -81,6 +86,9 @@ public class KikaDialogFlowActivity extends BaseActivity {
                             case TELEPHONY_INCOMING:
                                 processTelephonyIncomingCommand(cmd, parameters);
                                 break;
+                            case DEFAULT:
+                                processGeneralCommand(cmd);
+                                break;
                         }
                     }
 
@@ -94,6 +102,51 @@ public class KikaDialogFlowActivity extends BaseActivity {
                         });
                     }
                 });
+    }
+
+    private void processGeneralCommand(byte cmd) {
+        switch (cmd) {
+            case GeneralCommand.GENERAL_CMD_UNKNOWN:
+                tts("I cannot get what you mean, What's the message ?");
+                break;
+            default:
+                break;
+        }
+    }
+
+    private AndroidTtsSpeaker mTtsSpeaker;
+    // new AndroidTtsSpeaker()
+    private void tts(String words) {
+        try {
+            if (mTtsSpeaker == null) {
+                mTtsSpeaker = new AndroidTtsSpeaker();
+                mTtsSpeaker.setContext(this);
+//            mTtsSpeaker.setTtsStateChangedListener(new TtsSpeaker.TtsStateChangedListener() {
+//                @Override
+//                public void onTtsStart() {
+//
+//                }
+//
+//                @Override
+//                public void onTtsComplete() {
+//
+//                }
+//
+//                @Override
+//                public void onTtsInterrupted() {
+//
+//                }
+//
+//                @Override
+//                public void onTtsError() {
+//
+//                }
+//            });
+            }
+            mTtsSpeaker.speak(words);
+        } catch (Exception e) {
+            showLongToast(words);
+        }
     }
 
     private void processNavigationCommand(byte cmd, Bundle parameters) {
@@ -143,7 +196,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
-        showLongToast(toast);
+        tts(toast);
     }
 
     private void processTelephonyIncomingCommand(byte cmd, Bundle parameters) {
@@ -179,7 +232,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
-        showLongToast(toast);
+        tts(toast);
     }
 
     /**
@@ -191,7 +244,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
             public void run() {
                 NavigationManager.getIns().stopNavigation(KikaDialogFlowActivity.this);
 
-                showLongToast("Stopping Navigation ...");
+                tts("Stopping Navigation ...");
 
                 mWordsInput.postDelayed(new Runnable() {
                     @Override

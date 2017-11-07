@@ -26,6 +26,12 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
     private final static String ACTION_NAV_YES = "Navigation.Navigation-yes";
     private final static String ACTION_NAV_CHANGE = "Navigation.Navigation-change";
     private final static String ACTION_NAV_CANCEL = "Navigation.Navigation-cancel";
+    private final static String ACTION_NAV_YES_CANCEL = "Navigation.Navigation-yes.Navigation-yes-cancel";
+
+    private final static String ACTION_NAV_CHANGE_YES = "Navigation.Navigation-change.Navigation-change-yes";
+    private final static String ACTION_NAV_CHANGE_NO = "Navigation.Navigation-change.Navigation-change-no";
+    private final static String ACTION_NAV_CHANGE_CANCEL = "Navigation.Navigation-change.Navigation-change-cancel";
+
 
     private final static String PRM_ADDRESS = "address";
     private final static String PRM_LOCATION = "location";
@@ -63,16 +69,20 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
                 parseAddress(intent.getExtra());
                 break;
             case ACTION_NAV_YES:
+            case ACTION_NAV_CHANGE_YES:
                 if (mStateNaviStart)
                     mStateNaviConfirm = true;
                 break;
             case ACTION_NAV_NO:
+            case ACTION_NAV_CHANGE_NO:
                 resetContext();
                 break;
             case ACTION_NAV_CHANGE:
                 parseAddress(intent.getExtra());
                 break;
             case ACTION_NAV_CANCEL:
+            case ACTION_NAV_CHANGE_CANCEL:
+            case ACTION_NAV_YES_CANCEL:
                 resetContext();
                 break;
             case ACTION_UNKNOWN:
@@ -90,9 +100,15 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
             mCallback.onCommand(naviAction, mCmdParms);
         }
 
-        if(NavigationCommand.NAVI_CMD_START_NAVI == naviAction) {
+        if (NavigationCommand.NAVI_CMD_START_NAVI == naviAction) {
             mStateNaviConfirm = false;
             mStateNaviAddress = "";
+        } else if (NavigationCommand.NAVI_CMD_ASK_ADDRESS == naviAction) {
+            if (action.equals(ACTION_NAV_START) && TextUtils.isEmpty(mStateNaviAddress)) {
+                // https://docs.google.com/spreadsheets/d/1_0l6SBaUOBvUqU3rvl1HscqBIB8wZ4x8wUM0Ks9xr9E/edit#gid=0
+                // Test case 3-E
+                resetContext();
+            }
         }
     }
 
@@ -129,15 +145,21 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
 
     private byte checkState(String action) {
         // Check special cases first
-        if(action.equals(ACTION_NAV_NO)) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Ask address again");
-            return NavigationCommand.NAVI_CMD_ASK_ADDRESS_AGAIN;
-        } else if(action.equals(ACTION_NAV_CANCEL)) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Stop navigation");
-            return NavigationCommand.NAVI_CMD_STOP_NAVIGATION;
-        } else if(action.equals(ACTION_UNKNOWN)) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
-            return NavigationCommand.NAVI_CMD_DONT_UNDERSTAND;
+        switch (action) {
+            case ACTION_NAV_NO:
+            case ACTION_NAV_CHANGE_NO:
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Ask address again");
+                return NavigationCommand.NAVI_CMD_ASK_ADDRESS_AGAIN;
+            case ACTION_NAV_CANCEL:
+            case ACTION_NAV_CHANGE_CANCEL:
+            case ACTION_NAV_YES_CANCEL:
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Stop navigation");
+                return NavigationCommand.NAVI_CMD_STOP_NAVIGATION;
+            case ACTION_UNKNOWN:
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
+                return NavigationCommand.NAVI_CMD_DONT_UNDERSTAND;
+            default:
+                break;
         }
 
         if (!mStateNaviStart) {
