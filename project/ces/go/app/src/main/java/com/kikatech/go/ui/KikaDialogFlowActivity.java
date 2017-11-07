@@ -158,7 +158,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 String name = parameters.getString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME);
                 log = "TELEPHONY_INCOMING_CMD_START";
                 toast = String.format("%s is calling you, answer the phone?", name);
-                startSelf();
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ANSWER:
                 log = "TELEPHONY_INCOMING_CMD_ANSWER";
@@ -168,37 +167,18 @@ public class KikaDialogFlowActivity extends BaseActivity {
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_REJECT:
                 log = "TELEPHONY_INCOMING_CMD_REJECT";
                 toast = "You've rejected this call.";
-                // toast = "Error occurs, please contact RD";
                 TelephonyServiceManager.getIns().killPhoneCall(KikaDialogFlowActivity.this);
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_IGNORE:
                 log = "TELEPHONY_INCOMING_CMD_IGNORE";
                 toast = "You've ignore this call.";
+                TelephonyServiceManager.getIns().turnOnSilentMode(KikaDialogFlowActivity.this);
                 break;
 
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
         showLongToast(toast);
-    }
-
-    private void startSelf() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWordsInput.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            android.content.Intent intent = new android.content.Intent(KikaDialogFlowActivity.this, KikaDialogFlowActivity.class);
-                            PendingIntent pendingIntent = PendingIntent.getActivity(KikaDialogFlowActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                            pendingIntent.send();
-                        } catch (Exception ignore) {
-                        }
-                    }
-                }, 1000);
-            }
-        });
     }
 
     /**
