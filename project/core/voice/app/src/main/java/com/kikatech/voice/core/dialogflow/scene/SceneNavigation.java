@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
+import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.util.log.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 /**
  * Created by bradchang on 2017/11/3.
@@ -39,17 +41,6 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
     private String mStateNaviAddress = "";
 
     private final Bundle mCmdParms = new Bundle();
-
-
-    public final static byte NAVI_CMD_ERR               = 0x00;
-    public final static byte NAVI_CMD_STOP_NAVIGATION   = 0x01;
-    public final static byte NAVI_CMD_ASK_ADDRESS       = 0x10;
-    public final static byte NAVI_CMD_ASK_ADDRESS_AGAIN = 0x11;
-    public final static byte NAVI_CMD_CONFIRM_ADDRESS   = 0x12;
-    public final static byte NAVI_CMD_DONT_UNDERSTAND   = 0x13;
-    public final static byte NAVI_CMD_START_NAVI        = 0x20;
-
-    public final static String NAVI_CMD_ADDRESS = PRM_ADDRESS;
 
 
     public SceneNavigation(ISceneCallback callback) {
@@ -93,11 +84,11 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
 
         if (mCallback != null) {
             mCmdParms.clear();
-            mCmdParms.putString(NAVI_CMD_ADDRESS, mStateNaviAddress);
+            mCmdParms.putString(NavigationCommand.NAVI_CMD_ADDRESS, mStateNaviAddress);
             mCallback.onCommand(naviAction, mCmdParms);
         }
 
-        if(NAVI_CMD_START_NAVI == naviAction) {
+        if(NavigationCommand.NAVI_CMD_START_NAVI == naviAction) {
             resetContext();
         }
     }
@@ -137,31 +128,31 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
         // Check special cases first
         if(action.equals(ACTION_NAV_NO)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Ask address again");
-            return NAVI_CMD_ASK_ADDRESS_AGAIN;
+            return NavigationCommand.NAVI_CMD_ASK_ADDRESS_AGAIN;
         } else if(action.equals(ACTION_NAV_CANCEL)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Stop navigation");
-            return NAVI_CMD_STOP_NAVIGATION;
+            return NavigationCommand.NAVI_CMD_STOP_NAVIGATION;
         } else if(action.equals(ACTION_UNKNOWN)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
-            return NAVI_CMD_DONT_UNDERSTAND;
+            return NavigationCommand.NAVI_CMD_DONT_UNDERSTAND;
         }
 
         if (!mStateNaviStart) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[Err] Navigation is not started yet");
-            return NAVI_CMD_ERR;
+            return NavigationCommand.NAVI_CMD_ERR;
         }
 
         if (TextUtils.isEmpty(mStateNaviAddress)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[action] Ask address");
-            return NAVI_CMD_ASK_ADDRESS;
+            return NavigationCommand.NAVI_CMD_ASK_ADDRESS;
         }
 
         if (mStateNaviConfirm) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[action] Start navigation");
-            return NAVI_CMD_START_NAVI;
+            return NavigationCommand.NAVI_CMD_START_NAVI;
         } else {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "[action] Confirm if given address is correct");
-            return NAVI_CMD_CONFIRM_ADDRESS;
+            return NavigationCommand.NAVI_CMD_CONFIRM_ADDRESS;
         }
     }
 }

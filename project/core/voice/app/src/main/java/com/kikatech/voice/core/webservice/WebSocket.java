@@ -2,7 +2,7 @@ package com.kikatech.voice.core.webservice;
 
 import android.text.TextUtils;
 
-import com.kikatech.voice.VoiceConfiguration.ConnectionConfiguration;
+import com.kikatech.voice.service.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.log.Logger;
 

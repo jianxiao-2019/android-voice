@@ -3,7 +3,7 @@ package com.kikatech.voice.core.dialogflow;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.kikatech.voice.VoiceConfiguration;
+import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 import java.util.ArrayList;
@@ -24,17 +24,8 @@ public class DialogFlow {
     private HashMap<String, List<DialogObserver>> mSubscribers = new HashMap<>();
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
-    private static DialogFlow sDialogFlow = null;
-
-    private DialogFlow(Agent agent) {
-        mAgent = agent;
-    }
-
-    public static synchronized DialogFlow getInstance(Context context,VoiceConfiguration conf) {
-        if(sDialogFlow == null) {
-            sDialogFlow = new DialogFlow(conf.getAgent().create(context.getApplicationContext()));
-        }
-        return sDialogFlow;
+    public DialogFlow(Context context, VoiceConfiguration conf) {
+        mAgent = conf.getAgent().create(context.getApplicationContext());
     }
 
     public void talk(final String words) {

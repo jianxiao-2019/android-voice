@@ -13,9 +13,8 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.kikatech.go.R;
-import com.kikatech.voice.VoiceConfiguration;
-import com.kikatech.voice.VoiceService;
-import com.kikatech.voice.core.webservice.WebSocket;
+import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.PreferenceUtil;
 import com.kikatech.voice.util.log.Logger;
