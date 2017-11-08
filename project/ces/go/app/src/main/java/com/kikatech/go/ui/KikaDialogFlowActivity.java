@@ -63,8 +63,12 @@ public class KikaDialogFlowActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        if (mDialogFlowService != null) {
+            mDialogFlowService.quitService();
+        }
+
         if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
-            ((AndroidTtsSpeaker) mTtsSpeaker).setContext(this);
+            ((AndroidTtsSpeaker) mTtsSpeaker).setContext(null);
         }
     }
 
@@ -487,14 +491,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
             for (View v : mInteractiveViews) {
                 v.setEnabled(enable);
             }
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mDialogFlowService != null) {
-            mDialogFlowService.quitService();
         }
     }
 }
