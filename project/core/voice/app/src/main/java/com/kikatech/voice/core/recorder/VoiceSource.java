@@ -31,7 +31,9 @@ public class VoiceSource implements IVoiceSource {
     @Override
     public void start() {
         if (mAudioRecord != null) {
-            mAudioRecord.stop();
+            if (mAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
+                mAudioRecord.stop();
+            }
             mAudioRecord.release();
         }
         mAudioRecord = createAudioRecord();
@@ -51,8 +53,10 @@ public class VoiceSource implements IVoiceSource {
             mCanceler.release();
             mCanceler = null;
         }
-        if (mAudioRecord != null && mAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
-            mAudioRecord.stop();
+        if (mAudioRecord != null) {
+            if (mAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
+                mAudioRecord.stop();
+            }
             mAudioRecord.release();
             mAudioRecord = null;
         }
