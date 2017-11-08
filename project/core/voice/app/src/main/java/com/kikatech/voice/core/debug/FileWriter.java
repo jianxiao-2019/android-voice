@@ -36,6 +36,7 @@ public class FileWriter implements IDataPath {
     }
 
     private void writeToFile(byte[] data) {
+        // TODO : should write the data to file in the other thread.
         Logger.d("FileWriter writeToFile mFilePath = " + mFilePath + " data.length = " + data.length);
         if (TextUtils.isEmpty(mFilePath)) {
             return;

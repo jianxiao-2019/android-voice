@@ -1,7 +1,8 @@
 package com.kikatech.voice.util;
 
 import android.os.SystemClock;
-import android.util.Log;
+
+import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by ryanlin on 25/09/2017.
@@ -23,9 +24,9 @@ public class TimerUtil {
 
     public static void logTag(String tag) {
         if (sBeginTime == -1) {
-            Log.e("Ryan", "logTag error : sBeginTime == -1");
+            Logger.e("logTag error : sBeginTime == -1");
             return;
         }
-        Log.w("Ryan", "[" + tag + "] duration = " + (SystemClock.elapsedRealtime() - sBeginTime));
+        Logger.w("[" + tag + "] duration = " + (SystemClock.elapsedRealtime() - sBeginTime));
     }
 }

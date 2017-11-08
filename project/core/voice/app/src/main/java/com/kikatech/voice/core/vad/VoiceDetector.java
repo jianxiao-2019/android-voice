@@ -49,6 +49,9 @@ public class VoiceDetector implements IDataPath {
 
     public void stopDetecting() {
         Logger.d("VoiceDetector stopDetecting");
+        if (mDetectorHandler == null) {
+            return;
+        }
         mDetectorHandler.sendEmptyMessage(MSG_SEND_REMAIN_DATA);
 
         boolean isQuit = mHandlerThread.quitSafely();
