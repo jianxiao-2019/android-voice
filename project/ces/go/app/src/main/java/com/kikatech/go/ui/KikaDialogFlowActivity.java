@@ -59,6 +59,15 @@ public class KikaDialogFlowActivity extends BaseActivity {
         initDialogFlowService();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
+            ((AndroidTtsSpeaker) mTtsSpeaker).setContext(this);
+        }
+    }
+
     private void initDialogFlowService() {
         VoiceConfiguration config = new VoiceConfiguration();
         config.agent(new ApiAiAgentCreator());

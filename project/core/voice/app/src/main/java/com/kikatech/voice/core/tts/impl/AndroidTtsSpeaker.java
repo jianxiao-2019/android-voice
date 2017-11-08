@@ -5,6 +5,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 
 import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.util.log.Logger;
 
 import java.util.Locale;
 
@@ -71,6 +72,7 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
 
     @Override
     public void speak(final String text) {
+        Logger.d("Android TtsSpeaker speak text = " + text + " mTts = " + mTts);
         if (mTts == null) {
             return;
         }
