@@ -20,6 +20,9 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     private TextToSpeech mTts;
     private TtsStateChangedListener mListener;
 
+    private boolean mIsInitialized = false;
+    private Runnable mDelayTts = null;
+
     public void setContext(Context context) {
         endTts();
         if (context == null) {
@@ -35,12 +38,17 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
                 }
                 // TTS 初始化成功
                 if (arg0 == TextToSpeech.SUCCESS) {
+                    mIsInitialized = true;
                     // 指定的語系: 英文(美國)
                     Locale l = Locale.US;  // 不要用 Locale.ENGLISH, 會預設用英文(印度)
 
                     // 目前指定的【語系+國家】TTS, 已下載離線語音檔, 可以離線發音
                     if (mTts.isLanguageAvailable(l) == TextToSpeech.LANG_COUNTRY_AVAILABLE) {
                         mTts.setLanguage(l);
+                    }
+                    if (mDelayTts != null) {
+                        mDelayTts.run();
+                        mDelayTts = null;
                     }
                 }
             }
@@ -77,7 +85,17 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
             return;
         }
 
-        mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+        mDelayTts = null;
+        if (mIsInitialized) {
+            mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+        } else {
+            mDelayTts = new Runnable() {
+                @Override
+                public void run() {
+                    mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+                }
+            };
+        }
     }
 
     private void endTts() {
@@ -85,6 +103,7 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
             mTts.shutdown();
         }
         mTts = null;
+        mDelayTts = null;
     }
 
     @Override

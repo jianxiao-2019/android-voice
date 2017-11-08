@@ -88,6 +88,9 @@ public class VoiceService {
             @Override
             public void run() {
                 Logger.d("VoiceService mWebService.release()");
+                if (mWebService == null) {
+                    return;
+                }
                 mWebService.release();
                 mWebService = null;
             }
