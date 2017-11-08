@@ -133,6 +133,9 @@ public class VoiceTestingActivity extends BaseActivity
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mVoiceService != null) {
+            mVoiceService.stop();
+        }
         if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
             ((AndroidTtsSpeaker) mTtsSpeaker).setContext(null);
         }

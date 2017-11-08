@@ -480,4 +480,12 @@ public class KikaDialogFlowActivity extends BaseActivity {
             }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mDialogFlowService != null) {
+            mDialogFlowService.quitService();
+        }
+    }
 }
