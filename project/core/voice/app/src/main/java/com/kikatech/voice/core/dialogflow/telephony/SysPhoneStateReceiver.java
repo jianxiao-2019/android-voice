@@ -50,6 +50,7 @@ public class SysPhoneStateReceiver extends BroadcastReceiver {
                     if (LogUtil.DEBUG) LogUtil.logd(TAG, "outgoing call offhook");
                     broadcastIntent.putExtra(ArgKeys.KEY_ACTION, Actions.ACTION_OUTGOING_CALL);
                 }
+                LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
                 break;
             case TelephonyManager.CALL_STATE_RINGING: // 电话打进来状态
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "[onCallStateChanged] CALL_STATE_RINGING");
