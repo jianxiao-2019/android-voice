@@ -20,35 +20,31 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     private TtsStateChangedListener mListener;
 
     public void setContext(Context context) {
-        mContext = context;
-    }
-
-    @Override
-    public void speak(final String text) {
-        if (mContext == null) {
+        endTts();
+        if (context == null) {
             return;
         }
-        if (mTts == null) {
-            mTts = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int arg0) {
-                    if (mTts == null) {
-                        return;
-                    }
-                    // TTS 初始化成功
-                    if (arg0 == TextToSpeech.SUCCESS) {
-                        // 指定的語系: 英文(美國)
-                        Locale l = Locale.US;  // 不要用 Locale.ENGLISH, 會預設用英文(印度)
 
-                        // 目前指定的【語系+國家】TTS, 已下載離線語音檔, 可以離線發音
-                        if (mTts.isLanguageAvailable(l) == TextToSpeech.LANG_COUNTRY_AVAILABLE) {
-                            mTts.setLanguage(l);
-                        }
-                    }
-                    mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+        mContext = context;
+        mTts = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int arg0) {
+                if (mTts == null) {
+                    return;
                 }
-            });
-        }
+                // TTS 初始化成功
+                if (arg0 == TextToSpeech.SUCCESS) {
+                    // 指定的語系: 英文(美國)
+                    Locale l = Locale.US;  // 不要用 Locale.ENGLISH, 會預設用英文(印度)
+
+                    // 目前指定的【語系+國家】TTS, 已下載離線語音檔, 可以離線發音
+                    if (mTts.isLanguageAvailable(l) == TextToSpeech.LANG_COUNTRY_AVAILABLE) {
+                        mTts.setLanguage(l);
+                    }
+                }
+            }
+        });
+
         mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String utteranceId) {
@@ -62,7 +58,6 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
                 if (mListener != null) {
                     mListener.onTtsComplete();
                 }
-                endTts();
             }
 
             @Override
@@ -70,9 +65,17 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
                 if (mListener != null) {
                     mListener.onTtsError();
                 }
-                endTts();
             }
         });
+    }
+
+    @Override
+    public void speak(final String text) {
+        if (mTts == null) {
+            return;
+        }
+
+        mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
     }
 
     private void endTts() {
@@ -85,7 +88,6 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     @Override
     public void interrupt() {
         mTts.stop();
-        endTts();
         if (mListener != null) {
             mListener.onTtsInterrupted();
         }
