@@ -116,7 +116,35 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private TtsSpeaker mTtsSpeaker;
 
     private void tts(String words) {
-        tts(words, null);
+        tts(words, new TtsSpeaker.TtsStateChangedListener() {
+            @Override
+            public void onTtsStart() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "onTtsStart");
+                }
+            }
+
+            @Override
+            public void onTtsComplete() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "onTtsComplete");
+                }
+            }
+
+            @Override
+            public void onTtsInterrupted() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "onTtsInterrupted");
+                }
+            }
+
+            @Override
+            public void onTtsError() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "onTtsError");
+                }
+            }
+        });
     }
 
     private void tts(String words, TtsSpeaker.TtsStateChangedListener listener) {
@@ -128,8 +156,12 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 }
             }
             mTtsSpeaker.setTtsStateChangedListener(listener);
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "tts, words: " + words);
+            }
             mTtsSpeaker.speak(words);
         } catch (Exception e) {
+            e.printStackTrace();
             showLongToast(words);
         }
     }

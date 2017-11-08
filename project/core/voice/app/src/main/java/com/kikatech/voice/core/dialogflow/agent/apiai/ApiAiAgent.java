@@ -31,7 +31,7 @@ public class ApiAiAgent extends Agent {
 
     private static final String TAG = "ApiAiAgent";
 
-    private static final boolean DEBUG_ORIGINAL_DATA = true;
+    private static final boolean DEBUG_ORIGINAL_DATA = false;
 
     private static final String CLIENT_ACCESS_TOKEN_JASON = "cda255c3a7284b6e927eec6a06d086ea";
     private static final String CLIENT_ACCESS_TOKEN_BRAD = "cf718669b9534bb1a89b37a2e0f5fc46";
