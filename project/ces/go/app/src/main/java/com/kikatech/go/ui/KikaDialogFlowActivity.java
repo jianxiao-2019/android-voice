@@ -2,8 +2,6 @@ package com.kikatech.go.ui;
 
 import android.app.PendingIntent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +18,8 @@ import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.core.tts.TtsService;
+import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.tts.impl.AndroidTtsSpeaker;
 import com.kikatech.voice.service.DialogFlowDemoConfig;
 import com.kikatech.voice.service.DialogFlowService;
@@ -113,35 +113,21 @@ public class KikaDialogFlowActivity extends BaseActivity {
         }
     }
 
-    private AndroidTtsSpeaker mTtsSpeaker;
-    // new AndroidTtsSpeaker()
+    private TtsSpeaker mTtsSpeaker;
+
     private void tts(String words) {
+        tts(words, null);
+    }
+
+    private void tts(String words, TtsSpeaker.TtsStateChangedListener listener) {
         try {
             if (mTtsSpeaker == null) {
-                mTtsSpeaker = new AndroidTtsSpeaker();
-                mTtsSpeaker.setContext(this);
-//            mTtsSpeaker.setTtsStateChangedListener(new TtsSpeaker.TtsStateChangedListener() {
-//                @Override
-//                public void onTtsStart() {
-//
-//                }
-//
-//                @Override
-//                public void onTtsComplete() {
-//
-//                }
-//
-//                @Override
-//                public void onTtsInterrupted() {
-//
-//                }
-//
-//                @Override
-//                public void onTtsError() {
-//
-//                }
-//            });
+                mTtsSpeaker = TtsService.getInstance().getSpeaker();
+                if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
+                    ((AndroidTtsSpeaker) mTtsSpeaker).setContext(this);
+                }
             }
+            mTtsSpeaker.setTtsStateChangedListener(listener);
             mTtsSpeaker.speak(words);
         } catch (Exception e) {
             showLongToast(words);
@@ -211,31 +197,132 @@ public class KikaDialogFlowActivity extends BaseActivity {
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ANSWER:
                 log = "TELEPHONY_INCOMING_CMD_ANSWER";
                 toast = "Ok, answered this call.";
-                tts(toast);
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
                     @Override
-                    public void run() {
+                    public void onTtsStart() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsStart");
+                        }
+                    }
+
+                    @Override
+                    public void onTtsComplete() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsComplete");
+                        }
+                        answerPhoneCall();
+                    }
+
+                    @Override
+                    public void onTtsInterrupted() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsInterrupted");
+                        }
+                        answerPhoneCall();
+                    }
+
+                    @Override
+                    public void onTtsError() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsError");
+                        }
+                        answerPhoneCall();
+                    }
+
+                    private void answerPhoneCall() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "answerPhoneCall");
+                        }
                         TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
                         TelephonyServiceManager.getIns().turnOnSpeaker(KikaDialogFlowActivity.this);
                     }
-                }, 2000);
+                });
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_REJECT:
                 log = "TELEPHONY_INCOMING_CMD_REJECT";
                 toast = "Ok, rejected this call.";
-                TelephonyServiceManager.getIns().killPhoneCall(KikaDialogFlowActivity.this);
-                tts(toast);
+                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
+                    @Override
+                    public void onTtsStart() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsStart");
+                        }
+                    }
+
+                    @Override
+                    public void onTtsComplete() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsComplete");
+                        }
+                        rejectPhoneCall();
+                    }
+
+                    @Override
+                    public void onTtsInterrupted() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsInterrupted");
+                        }
+                        rejectPhoneCall();
+                    }
+
+                    @Override
+                    public void onTtsError() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsError");
+                        }
+                        rejectPhoneCall();
+                    }
+
+                    private void rejectPhoneCall() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "rejectPhoneCall");
+                        }
+                        TelephonyServiceManager.getIns().killPhoneCall(KikaDialogFlowActivity.this);
+                    }
+                });
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_IGNORE:
                 log = "TELEPHONY_INCOMING_CMD_IGNORE";
                 toast = "Ok, ignore this call.";
-                tts(toast);
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
                     @Override
-                    public void run() {
+                    public void onTtsStart() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsStart");
+                        }
+                    }
+
+                    @Override
+                    public void onTtsComplete() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsComplete");
+                        }
+                        ignorePhoneCall();
+                    }
+
+                    @Override
+                    public void onTtsInterrupted() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsInterrupted");
+                        }
+                        ignorePhoneCall();
+                    }
+
+                    @Override
+                    public void onTtsError() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "onTtsError");
+                        }
+                        ignorePhoneCall();
+                    }
+
+                    private void ignorePhoneCall() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "ignorePhoneCall");
+                        }
                         TelephonyServiceManager.getIns().turnOnSilentMode(KikaDialogFlowActivity.this);
                     }
-                }, 2000);
+                });
                 break;
 
         }
