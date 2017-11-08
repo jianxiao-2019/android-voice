@@ -66,14 +66,8 @@ public class SceneTelephonyIncoming extends SceneBase implements DialogObserver 
             default:
                 if (mPhoneStateReceiver != null && mPhoneStateReceiver.isIncomingCalling()) {
                     callbackPreStartTelephonyIncoming(mPhoneStateReceiver.getNumber());
-                    return;
-                } else {
-                    if (mCallback != null) {
-                        mCallback.resetContextImpl();
-                    }
-                    cmd = TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ERR;
                 }
-                break;
+                return;
         }
 
         if (mCallback != null) {

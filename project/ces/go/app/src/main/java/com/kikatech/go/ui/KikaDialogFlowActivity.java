@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.speech.tts.TextToSpeechService;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -21,8 +20,6 @@ import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.core.tts.TtsService;
-import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.tts.impl.AndroidTtsSpeaker;
 import com.kikatech.voice.service.DialogFlowDemoConfig;
 import com.kikatech.voice.service.DialogFlowService;
@@ -205,10 +202,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
         String toast = "UNKNOWN";
         String log = "UNKNOWN";
         switch (cmd) {
-            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ERR:
-                log = "TELEPHONY_INCOMING_CMD_ERR";
-                toast = "Error occurs, please contact RD";
-                break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_START:
                 String name = parameters.getString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME);
                 log = "TELEPHONY_INCOMING_CMD_START";

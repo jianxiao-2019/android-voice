@@ -62,6 +62,7 @@ public class DialogFlowService implements
     private void initVoiceService(@NonNull VoiceConfiguration conf) {
         mVoiceService = VoiceService.getService(mContext, conf);
         mVoiceService.setVoiceRecognitionListener(this);
+        mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.start();
         if (LogUtil.DEBUG) LogUtil.log(TAG, "init VoiceService ... Done");
     }
