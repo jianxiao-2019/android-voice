@@ -1,5 +1,6 @@
 package com.kikatech.voice.core.tts.impl;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -31,6 +32,16 @@ public class WSSpearker implements TtsSpeaker {
     public WSSpearker(WebSocket ws){
         mSocket = ws;
         mTtsMarks = Collections.synchronizedList(new ArrayList<Mark>());
+    }
+
+    @Override
+    public void init(Context context, OnTtsInitListener listener) {
+
+    }
+
+    @Override
+    public void close() {
+
     }
 
     @Override

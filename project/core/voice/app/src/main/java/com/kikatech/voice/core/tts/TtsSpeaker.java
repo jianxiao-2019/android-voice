@@ -1,5 +1,6 @@
 package com.kikatech.voice.core.tts;
 
+import android.content.Context;
 import android.util.Pair;
 
 /**
@@ -12,6 +13,9 @@ public interface TtsSpeaker {
     int TTS_VOICE_1 = 0;
     int TTS_VOICE_2 = 1;
 
+    int INIT_SUCCESS = 0;
+    int INIT_FAIL = 1;
+
     interface TtsStateChangedListener {
         void onTtsStart();
 
@@ -21,6 +25,14 @@ public interface TtsSpeaker {
 
         void onTtsError();
     }
+
+    interface OnTtsInitListener {
+        void onTtsInit(int state);
+    }
+
+    void init(Context context, OnTtsInitListener listener);
+
+    void close();
 
     void speak(String text);
 

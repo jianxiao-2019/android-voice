@@ -17,10 +17,9 @@ import android.widget.EditText;
 import com.kikatech.go.R;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
-import com.kikatech.voice.core.tts.impl.AndroidTtsSpeaker;
+import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
-import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.PreferenceUtil;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
@@ -40,7 +39,7 @@ public class VoiceTestingActivity extends BaseActivity
 
     private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
 
-    private static final Locale[] LOCALE_LIST = new Locale[] {
+    private static final Locale[] LOCALE_LIST = new Locale[]{
             new Locale("en", "US"),
             new Locale("zh", "CN"),
     };
@@ -117,13 +116,6 @@ public class VoiceTestingActivity extends BaseActivity
                 if (mEditText == null || TextUtils.isEmpty(mEditText.getText())) {
                     return;
                 }
-                if (mTtsSpeaker == null) {
-                    mTtsSpeaker = TtsService.getInstance().getSpeaker();
-                    if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
-                        ((AndroidTtsSpeaker) mTtsSpeaker).setContext(VoiceTestingActivity.this);
-                    }
-                    mTtsSpeaker.setTtsStateChangedListener(VoiceTestingActivity.this);
-                }
                 // mTtsSpeaker.speak(mEditText.getText().toString());
                 Pair<String, Integer>[] playList = new Pair[3];
                 playList[0] = new Pair<>("Your text is :", TtsSpeaker.TTS_VOICE_2);
@@ -134,6 +126,12 @@ public class VoiceTestingActivity extends BaseActivity
         });
 
         mEditText = (EditText) findViewById(R.id.edit_text);
+
+        if (mTtsSpeaker == null) {
+            mTtsSpeaker = TtsService.getInstance().getSpeaker();
+            mTtsSpeaker.init(this, null);
+            mTtsSpeaker.setTtsStateChangedListener(VoiceTestingActivity.this);
+        }
     }
 
     @Override
@@ -142,8 +140,9 @@ public class VoiceTestingActivity extends BaseActivity
         if (mVoiceService != null) {
             mVoiceService.stop();
         }
-        if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
-            ((AndroidTtsSpeaker) mTtsSpeaker).setContext(null);
+        if (mTtsSpeaker != null) {
+            mTtsSpeaker.close();
+            mTtsSpeaker = null;
         }
     }
 

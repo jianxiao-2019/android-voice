@@ -57,6 +57,11 @@ public class KikaDialogFlowActivity extends BaseActivity {
         setViewEnable(false);
 
         initDialogFlowService();
+
+        if (mTtsSpeaker == null) {
+            mTtsSpeaker = TtsService.getInstance().getSpeaker();
+            mTtsSpeaker.init(this, null);
+        }
     }
 
     @Override
@@ -67,8 +72,9 @@ public class KikaDialogFlowActivity extends BaseActivity {
             mDialogFlowService.quitService();
         }
 
-        if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
-            ((AndroidTtsSpeaker) mTtsSpeaker).setContext(null);
+        if (mTtsSpeaker != null) {
+            mTtsSpeaker.close();
+            mTtsSpeaker = null;
         }
     }
 
@@ -161,13 +167,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
     }
 
     private void tts(String words, TtsSpeaker.TtsStateChangedListener listener) {
+        if (mTtsSpeaker == null) {
+            return;
+        }
         try {
-            if (mTtsSpeaker == null) {
-                mTtsSpeaker = TtsService.getInstance().getSpeaker();
-                if (mTtsSpeaker instanceof AndroidTtsSpeaker) {
-                    ((AndroidTtsSpeaker) mTtsSpeaker).setContext(this);
-                }
-            }
             mTtsSpeaker.setTtsStateChangedListener(listener);
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "tts, words: " + words);
