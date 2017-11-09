@@ -10,6 +10,7 @@ import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
 
@@ -123,7 +124,12 @@ public class VoiceTestingActivity extends BaseActivity
                     }
                     mTtsSpeaker.setTtsStateChangedListener(VoiceTestingActivity.this);
                 }
-                mTtsSpeaker.speak(mEditText.getText().toString());
+                // mTtsSpeaker.speak(mEditText.getText().toString());
+                Pair<String, Integer>[] playList = new Pair[3];
+                playList[0] = new Pair<>("Your text is :", TtsSpeaker.TTS_VOICE_2);
+                playList[1] = new Pair<>(mEditText.getText().toString(), TtsSpeaker.TTS_VOICE_1);
+                playList[2] = new Pair<>("Is that correct?", TtsSpeaker.TTS_VOICE_2);
+                mTtsSpeaker.speak(playList);
             }
         });
 

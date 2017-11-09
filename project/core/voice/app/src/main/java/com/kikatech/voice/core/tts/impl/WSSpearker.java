@@ -1,6 +1,7 @@
 package com.kikatech.voice.core.tts.impl;
 
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.WebSocket;
@@ -34,6 +35,11 @@ public class WSSpearker implements TtsSpeaker {
 
     @Override
     public void speak(String text) {
+    }
+
+    @Override
+    public void speak(Pair<String, Integer>[] sentences) {
+
     }
 
     @Override

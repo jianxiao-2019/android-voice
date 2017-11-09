@@ -3,10 +3,14 @@ package com.kikatech.voice.core.tts.impl;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
+import android.util.Pair;
 
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.util.log.Logger;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Locale;
 
 /**
@@ -22,6 +26,10 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
 
     private boolean mIsInitialized = false;
     private Runnable mDelayTts = null;
+
+    private Voice[] mVoices = new Voice[SUPPORTED_VOICE_COUNT];
+    private final LinkedList<Pair<String, Integer>> mPlayList = new LinkedList<>();
+    private int mPlayListSize;
 
     public void setContext(Context context) {
         endTts();
@@ -50,6 +58,13 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
                         mDelayTts.run();
                         mDelayTts = null;
                     }
+
+                    mVoices[0] = mTts.getDefaultVoice();
+                    for (Voice voice : mTts.getVoices()) {
+                        if ("en-us-x-sfg#male_3-local".equals(voice.getName())) {
+                            mVoices[1] = voice;
+                        }
+                    }
                 }
             }
         });
@@ -57,14 +72,19 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
         mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String utteranceId) {
-                if (mListener != null) {
-                    mListener.onTtsStart();
+                if (mPlayListSize == mPlayList.size() + 1) {
+                    if (mListener != null) {
+                        mListener.onTtsStart();
+                    }
                 }
             }
 
             @Override
             public void onDone(String utteranceId) {
-                if (mListener != null) {
+                Logger.d("AndroidTtsSpeaker onDone mPlayList.size() = " + mPlayList.size());
+                if (mPlayList.size() > 0) {
+                    playSingleList();
+                } else if (mListener != null) {
                     mListener.onTtsComplete();
                 }
             }
@@ -80,6 +100,8 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
 
     @Override
     public void speak(final String text) {
+        mPlayList.clear();
+        mPlayListSize = 0;
         Logger.d("Android TtsSpeaker speak text = " + text + " mTts = " + mTts);
         if (mTts == null) {
             return;
@@ -96,6 +118,36 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
                 }
             };
         }
+    }
+
+    @Override
+    public void speak(Pair<String, Integer>[] sentences) {
+        if (sentences == null) {
+            return;
+        }
+        mPlayList.clear();
+        mPlayListSize = sentences.length;
+        Collections.addAll(mPlayList, sentences);
+        if (mPlayList.size() > 0) {
+            playSingleList();
+        }
+    }
+
+    private void playSingleList() {
+        Pair<String, Integer> pair = mPlayList.pollFirst();
+        if (pair != null) {
+            String text = pair.first;
+            int voiceId = pair.second;
+            mTts.setVoice(getVoice(voiceId));
+            mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+        }
+    }
+
+    private Voice getVoice(int voiceId) {
+        if (voiceId < 0 || mVoices == null || voiceId > mVoices.length) {
+            mTts.getDefaultVoice();
+        }
+        return mVoices[voiceId];
     }
 
     private void endTts() {
