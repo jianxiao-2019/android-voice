@@ -8,11 +8,9 @@ import com.kikatech.voice.core.tts.impl.AndroidTtsSpeaker;
 
 public class TtsService {
 
-    private static TtsService sTtsService;
+    private static TtsService sTtsService = new TtsService();
+
     public static TtsService getInstance() {
-        if (sTtsService == null) {
-            sTtsService = new TtsService();
-        }
         return sTtsService;
     }
 
