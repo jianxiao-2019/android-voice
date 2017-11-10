@@ -15,7 +15,6 @@ public class TtsService {
     }
 
     private TtsService () {
-
     }
 
     public TtsSpeaker getSpeaker(){

@@ -2,14 +2,16 @@ package com.kikatech.voice.util.log;
 
 import android.util.Log;
 
-import com.kikatech.voice.engine.interfaces.IVoiceManager;
+import com.kikatech.voice.Config;
 
 /**
  * Created by ryanlin on 06/10/2017.
  */
 
 public class Logger {
-    private static final boolean DEBUG = IVoiceManager.DEBUG;
+
+    private static final boolean DEBUG = Config.DEBUG;
+
     private static final String TAG = "KikaVoiceMVP";
 
     public static void v(String message) {

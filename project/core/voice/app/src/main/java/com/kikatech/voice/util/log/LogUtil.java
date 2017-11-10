@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.kikatech.voice.engine.interfaces.IVoiceManager;
+import com.kikatech.voice.Config;
 
 import java.util.Locale;
 
@@ -14,7 +14,8 @@ import java.util.Locale;
  */
 public class LogUtil
 {
-    final static public boolean DEBUG = IVoiceManager.DEBUG;
+    final static public boolean DEBUG = Config.DEBUG;
+
     private static int sProcessId = DEBUG ? 0 : android.os.Process.myPid();
 	private static final int PARENT_NODE = 3, SELF_NODE = 2;
 	private static final String PARENT_LOG_FORMAT = "[%s:%s:ln%d] ";
