@@ -17,10 +17,10 @@ import com.kikatech.voice.core.dialogflow.constant.GeneralCommand;
 import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
 import com.kikatech.voice.core.dialogflow.constant.Scene;
 import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
+import com.kikatech.voice.core.dialogflow.constant.TelephonyOutgoingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
-import com.kikatech.voice.core.tts.impl.AndroidTtsSpeaker;
 import com.kikatech.voice.service.DialogFlowDemoConfig;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
@@ -46,7 +46,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private TextView mTvExtras;
     private View[] mInteractiveViews;
 
-
+    private TtsSpeaker mTtsSpeaker;
     private DialogFlowService mDialogFlowService;
 
     @Override
@@ -56,12 +56,8 @@ public class KikaDialogFlowActivity extends BaseActivity {
         bindView();
         setViewEnable(false);
 
+        initTts();
         initDialogFlowService();
-
-        if (mTtsSpeaker == null) {
-            mTtsSpeaker = TtsService.getInstance().getSpeaker();
-            mTtsSpeaker.init(this, null);
-        }
     }
 
     @Override
@@ -75,6 +71,13 @@ public class KikaDialogFlowActivity extends BaseActivity {
         if (mTtsSpeaker != null) {
             mTtsSpeaker.close();
             mTtsSpeaker = null;
+        }
+    }
+
+    private void initTts() {
+        if (mTtsSpeaker == null) {
+            mTtsSpeaker = TtsService.getInstance().getSpeaker();
+            mTtsSpeaker.init(this, null);
         }
     }
 
@@ -104,6 +107,9 @@ public class KikaDialogFlowActivity extends BaseActivity {
                             case TELEPHONY_INCOMING:
                                 processTelephonyIncomingCommand(cmd, parameters);
                                 break;
+                            case TELEPHONY_OUTGOING:
+                                processTelephonyOutgoingCommand(cmd, parameters);
+                                break;
                             case DEFAULT:
                                 processGeneralCommand(cmd);
                                 break;
@@ -131,8 +137,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 break;
         }
     }
-
-    private TtsSpeaker mTtsSpeaker;
 
     private void tts(String words) {
         tts(words, new TtsSpeaker.TtsStateChangedListener() {
@@ -376,6 +380,52 @@ public class KikaDialogFlowActivity extends BaseActivity {
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
+    }
+
+    private void processTelephonyOutgoingCommand(byte cmd, Bundle parameters) {
+        String toast = "UNKNOWN";
+        String log = "UNKNOWN";
+        String name = parameters.getString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NAME);
+        String number = parameters.getString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NUMBER);
+        switch (cmd) {
+            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_ERR:
+                log = "TELEPHONY_OUTGOING_CMD_ERR";
+                toast = "Error occurs, please contact RD";
+                break;
+            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_ASK_NAME:
+                log = "TELEPHONY_OUTGOING_CMD_ASK_NAME";
+                toast = "Who do you want to call?";
+                break;
+            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_CONTACT_NOT_FOUND:
+                log = "TELEPHONY_OUTGOING_CMD_ASK_NAME_AGAIN";
+                toast = "Could not find in contacts. Please say it again.";
+                break;
+            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_CONFIRM_NAME:
+                log = "TELEPHONY_OUTGOING_CMD_CONFIRM_NAME";
+                toast = "Do you mean '" + name + "'?";
+                break;
+            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_START_CALL:
+                log = "TELEPHONY_OUTGOING_CMD_START_CALL";
+                toast = "Ok, make a call to " + name + ", dial number " + number;
+                break;
+            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_CANCELED:
+                log = "TELEPHONY_OUTGOING_CMD_CANCELED";
+                toast = "Ok, canceled.";
+                break;
+            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_DONT_UNDERSTAND:
+                log = "TELEPHONY_OUTGOING_CMD_DONT_UNDERSTAND";
+                toast = "Sorry I don't get it, would you say that again ?";
+                break;
+            default:
+                break;
+        }
+
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, log);
+            LogUtil.log(TAG, toast);
+        }
+        //showLongToast(toast);
+        tts(toast);
     }
 
     /**

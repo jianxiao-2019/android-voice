@@ -7,7 +7,8 @@ public enum Scene {
 
     DEFAULT("Default"), //default scene, un-know intents will go through
     NAVIGATION("Navigation"),
-    TELEPHONY_INCOMING("Telephony - Incoming");
+    TELEPHONY_INCOMING("Telephony - Incoming"),
+    TELEPHONY_OUTGOING("Telephony - Outgoing");
 
     Scene(String scene) {
         this.scene = scene;

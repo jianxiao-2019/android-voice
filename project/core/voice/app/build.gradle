@@ -33,6 +33,8 @@ dependencies {
     // Api.ai
     compile 'ai.api:libai:1.5.10'
     compile 'ai.api:sdk:2.0.7@aar'
+    // Fuzzy search
+    compile 'me.xdrop:fuzzywuzzy:1.1.9'
     testCompile 'junit:junit:4.12'
 }
 

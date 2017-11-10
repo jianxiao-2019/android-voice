@@ -14,6 +14,7 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneNavigation;
 import com.kikatech.voice.core.dialogflow.scene.SceneTelephonyIncoming;
+import com.kikatech.voice.core.dialogflow.scene.SceneTelephonyOutgoing;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.log.LogUtil;
 
@@ -37,6 +38,7 @@ public class DialogFlowService implements
 
     private SceneNavigation mSceneNavigation;
     private SceneTelephonyIncoming mSceneTelephonyIncoming;
+    private SceneTelephonyOutgoing mSceneTelephonyOutgoing;
     private DialogObserver debugLogger;
 
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
@@ -128,6 +130,21 @@ public class DialogFlowService implements
         mDialogFlow.register(Scene.TELEPHONY_INCOMING.toString(), mSceneTelephonyIncoming);
         mDialogFlow.register(Scene.DEFAULT.toString(), mSceneTelephonyIncoming);
 
+        // 3. Telephony Outgoing
+        mSceneTelephonyOutgoing = new SceneTelephonyOutgoing(mContext, new SceneBase.ISceneCallback() {
+            @Override
+            public void resetContextImpl() {
+                mDialogFlow.resetContexts();
+            }
+
+            @Override
+            public void onCommand(byte cmd, Bundle parameters) {
+                if (mCallback != null) {
+                    mCallback.onCommand(Scene.TELEPHONY_OUTGOING, cmd, parameters);
+                }
+            }
+        });
+        mDialogFlow.register(Scene.TELEPHONY_OUTGOING.toString(), mSceneTelephonyOutgoing);
 
         // Debug
         if (LogUtil.DEBUG) {
