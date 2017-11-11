@@ -31,6 +31,11 @@ public class VoiceService {
     private VoiceRecognitionListener mVoiceRecognitionListener;
     private VoiceStateChangedListener mVoiceStateChangedListener;
 
+    static {
+        Message.register("SPEECH", TextMessage.class);
+        Message.register("ALTER", EditTextMessage.class);
+    }
+
     public interface VoiceRecognitionListener {
         void onRecognitionResult(Message message);
     }
@@ -43,7 +48,6 @@ public class VoiceService {
 
     private VoiceService(VoiceConfiguration conf) {
         mConf = conf;
-
         // TODO : base on the VoiceConfiguration.
         mVoiceDetector = new VoiceDetector(new FileWriter(mConf.getDebugFilePath() + "_speex", new VoiceDataSender()), new VoiceDetector.OnVadProbabilityChangeListener() {
             @Override
@@ -64,16 +68,11 @@ public class VoiceService {
         Logger.d("VoiceService start");
         mVoiceDetector.startDetecting();
         mVoiceRecorder.start();
-
         if (mWebService != null) {
             mWebService.release();
         }
         mWebService = WebSocket.openConnection(mWebSocketListener);
         mWebService.connect(mConf.getConnectionConfiguration());
-
-        Message.register("SPEECH", TextMessage.class);
-        Message.register("ALTER", EditTextMessage.class);
-
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStartListening();
         }
@@ -83,7 +82,6 @@ public class VoiceService {
         Logger.d("VoiceService stop");
         mVoiceRecorder.stop();
         mVoiceDetector.stopDetecting();
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -95,7 +93,6 @@ public class VoiceService {
                 mWebService = null;
             }
         }, WEBSOCKET_CLOSE_DELAY);
-
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStopListening();
         }

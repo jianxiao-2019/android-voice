@@ -9,6 +9,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class StageIncoming extends SceneStage {
+
     @Override
     public SceneStage next(String action, Bundle extra) {
         return null;
@@ -16,6 +17,5 @@ public class StageIncoming extends SceneStage {
 
     @Override
     public void action() {
-
     }
 }

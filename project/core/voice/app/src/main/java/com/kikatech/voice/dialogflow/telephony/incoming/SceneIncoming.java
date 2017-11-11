@@ -12,11 +12,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 public class SceneIncoming extends SceneBase {
 
     public static final String SCENE = "Telephony - Incoming";
+
     @Override
     protected SceneStage init() {
         return new SceneStage() {
             @Override
             public SceneStage next(String action, Bundle extra) {
+                if (SceneActions.ACTION_TELEPHONY_INCOMING_START.equals(action)) {
+//                    return new com.kikatech.voice.dialogflow.telephony.incoming.stage.StageIncoming();
+                }
                 return null;
             }
 
