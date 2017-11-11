@@ -1,16 +1,16 @@
-package com.kikatech.voice.core.dialogflow.constant;
+package com.kikatech.voice.core.dialogflow.scene;
 
 /**
  * @author SkeeterWang Created on 2017/11/6.
  */
-public enum Scene {
+public enum SceneType {
 
     DEFAULT("Default"), //default scene, un-know intents will go through
     NAVIGATION("Navigation"),
     TELEPHONY_INCOMING("Telephony - Incoming"),
     TELEPHONY_OUTGOING("Telephony - Outgoing");
 
-    Scene(String scene) {
+    SceneType(String scene) {
         this.scene = scene;
     }
 
@@ -23,7 +23,7 @@ public enum Scene {
 
     public static String getScene(String intentName) {
         try {
-            for( Scene scene : values() ){
+            for( SceneType scene : values() ){
                 if (intentName.startsWith(scene.scene)){
                     return scene.scene;
                 }

@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.dialogflow.telephony;
+package com.kikatech.voice.dialogflow.telephony;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,14 +10,14 @@ import android.text.TextUtils;
 /**
  * @author SkeeterWang Created on 2017/11/7.
  */
-public class KikaPhoneStateReceiver extends BroadcastReceiver {
+public class PhoneStateReceiver extends BroadcastReceiver {
     private static final String TAG = "KikaPhoneStateReceiver";
 
     private ICallStateChangeListener mListener;
     private boolean isIncomingCalling;
     private String mNumber;
 
-    public KikaPhoneStateReceiver(ICallStateChangeListener listener) {
+    public PhoneStateReceiver(ICallStateChangeListener listener) {
         this.mListener = listener;
     }
 
@@ -61,11 +61,11 @@ public class KikaPhoneStateReceiver extends BroadcastReceiver {
     }
 
     public void register(Context context) {
-        LocalBroadcastManager.getInstance(context).registerReceiver(KikaPhoneStateReceiver.this, new IntentFilter(SysPhoneStateReceiver.ACTION_PHONE_STATE));
+        LocalBroadcastManager.getInstance(context).registerReceiver(PhoneStateReceiver.this, new IntentFilter(SysPhoneStateReceiver.ACTION_PHONE_STATE));
     }
 
     public void unregister(Context context) {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(KikaPhoneStateReceiver.this);
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(PhoneStateReceiver.this);
     }
 
     public boolean isIncomingCalling() {

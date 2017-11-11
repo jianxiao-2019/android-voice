@@ -2,7 +2,7 @@ package com.kikatech.voice.service;
 
 import android.os.Bundle;
 
-import com.kikatech.voice.core.dialogflow.constant.Scene;
+import com.kikatech.voice.core.dialogflow.scene.SceneType;
 
 /**
  * Created by bradchang on 2017/11/7.
@@ -15,7 +15,7 @@ public interface IDialogFlowService {
         void onInitComplete();
 
         // Please do your task in your own thread
-        void onCommand(Scene scene, byte cmd, Bundle parameters);
+        void onCommand(SceneType scene, byte cmd, Bundle parameters);
 
         void onSpeechSpokenDone(String speechText);
     }

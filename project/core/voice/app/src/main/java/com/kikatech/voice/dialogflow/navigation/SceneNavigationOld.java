@@ -1,12 +1,12 @@
-package com.kikatech.voice.core.dialogflow.scene;
+package com.kikatech.voice.dialogflow.navigation;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
-import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
 import com.kikatech.voice.util.log.LogUtil;
 
 import org.json.JSONException;
@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * Created by bradchang on 2017/11/3.
  */
 
-public class SceneNavigation extends SceneBase implements DialogObserver {
+public class SceneNavigationOld extends SceneBaseOld implements DialogObserver {
 
     private final static String TAG = "SceneNavigation";
 
@@ -51,7 +51,7 @@ public class SceneNavigation extends SceneBase implements DialogObserver {
     private final Bundle mCmdParms = new Bundle();
 
 
-    public SceneNavigation(ISceneCallback callback) {
+    public SceneNavigationOld(ISceneCallback callback) {
         super(callback);
     }
 

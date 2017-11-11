@@ -12,12 +12,11 @@ import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.voice.core.dialogflow.agent.apiai.ApiAiAgentCreator;
-import com.kikatech.voice.core.dialogflow.constant.GeneralCommand;
-import com.kikatech.voice.core.dialogflow.constant.NavigationCommand;
-import com.kikatech.voice.core.dialogflow.constant.Scene;
-import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
-import com.kikatech.voice.core.dialogflow.constant.TelephonyOutgoingCommand;
+import com.kikatech.voice.dialogflow.apiai.ApiAiAgentCreator;
+import com.kikatech.voice.dialogflow.navigation.NavigationCommand;
+import com.kikatech.voice.core.dialogflow.scene.SceneType;
+import com.kikatech.voice.dialogflow.telephony.TelephonyIncomingCommand;
+import com.kikatech.voice.dialogflow.telephony.TelephonyOutgoingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
@@ -99,7 +98,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onCommand(Scene scene, byte cmd, Bundle parameters) {
+                    public void onCommand(SceneType scene, byte cmd, Bundle parameters) {
                         switch (scene) {
                             case NAVIGATION:
                                 processNavigationCommand(cmd, parameters);
@@ -130,9 +129,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
     private void processGeneralCommand(byte cmd) {
         switch (cmd) {
-            case GeneralCommand.GENERAL_CMD_UNKNOWN:
-                tts("I cannot get what you mean, What's the message ?");
-                break;
+            // TODO: 17-11-10
+//            case GeneralCommand.GENERAL_CMD_UNKNOWN:
+//                tts("I cannot get what you mean, What's the message ?");
+//                break;
             default:
                 break;
         }

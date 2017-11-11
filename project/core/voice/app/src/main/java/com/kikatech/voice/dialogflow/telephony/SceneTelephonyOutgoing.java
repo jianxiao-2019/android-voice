@@ -1,22 +1,19 @@
-package com.kikatech.voice.core.dialogflow.scene;
+package com.kikatech.voice.dialogflow.telephony;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
-import com.kikatech.voice.core.dialogflow.constant.TelephonyOutgoingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
 import com.kikatech.voice.util.contact.ContactManager;
 import com.kikatech.voice.util.log.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * @author SkeeterWang Created on 2017/11/8.
  */
-public class SceneTelephonyOutgoing extends SceneBase implements DialogObserver {
+public class SceneTelephonyOutgoing extends SceneBaseOld implements DialogObserver {
     private static final String TAG = "SceneTelephonyOutgoing";
 
     private static final String ACTION_TELEPHONY_OUTGOING_START = "telephony.outgoing.start";

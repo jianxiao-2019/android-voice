@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.dialogflow.agent.apiai;
+package com.kikatech.voice.dialogflow.apiai;
 
 import android.content.Context;
 

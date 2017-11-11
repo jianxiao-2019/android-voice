@@ -1,24 +1,25 @@
 package com.kikatech.voice.core.dialogflow.scene;
 
-import android.os.Bundle;
+import com.kikatech.voice.core.dialogflow.DialogObserver;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 /**
- * Created by bradchang on 2017/11/6.
+ * Created by tianli on 17-11-10.
  */
 
-public abstract class SceneBase {
+public abstract class SceneBase implements DialogObserver {
 
-    final static String ACTION_UNKNOWN = "input.unknown";
+    protected SceneStage mStage = init();
 
-    public interface ISceneCallback {
-        void resetContextImpl();
+    protected abstract SceneStage init();
 
-        void onCommand(byte cmd, Bundle parameters);
+    @Override
+    public void onIntent(Intent intent) {
+        SceneStage stage = mStage.next(intent.getAction(), intent.getExtra());
+        if (stage != null) {
+            mStage = stage;
+            stage.action();
+        }
     }
 
-    final ISceneCallback mCallback;
-
-    SceneBase(ISceneCallback callback) {
-        mCallback = callback;
-    }
 }

@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.dialogflow.telephony;
+package com.kikatech.voice.dialogflow.telephony;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;

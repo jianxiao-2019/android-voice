@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.dialogflow.constant;
+package com.kikatech.voice.dialogflow.telephony;
 
 /**
  * @author SkeeterWang Created on 2017/11/8.

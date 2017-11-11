@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.dialogflow.constant;
+package com.kikatech.voice.dialogflow.navigation;
 
 /**
  * Created by bradchang on 2017/11/7.

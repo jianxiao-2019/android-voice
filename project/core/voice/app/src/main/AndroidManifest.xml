@@ -24,7 +24,7 @@
             <!--</intent-filter>-->
         </activity>
 
-        <receiver android:name=".core.dialogflow.telephony.SysPhoneStateReceiver">
+        <receiver android:name=".dialogflow.telephony.SysPhoneStateReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE"/>
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>

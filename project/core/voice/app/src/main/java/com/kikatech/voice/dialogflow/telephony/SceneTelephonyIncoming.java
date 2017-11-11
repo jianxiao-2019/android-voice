@@ -1,17 +1,16 @@
-package com.kikatech.voice.core.dialogflow.scene;
+package com.kikatech.voice.dialogflow.telephony;
 
 import android.content.Context;
 import android.os.Bundle;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
-import com.kikatech.voice.core.dialogflow.constant.TelephonyIncomingCommand;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.core.dialogflow.telephony.KikaPhoneStateReceiver;
+import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
 
 /**
  * @author SkeeterWang Created on 2017/11/6.
  */
-public class SceneTelephonyIncoming extends SceneBase implements DialogObserver {
+public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserver {
 
     private static final String TAG = "SceneTelephonyIncoming";
 
@@ -24,7 +23,7 @@ public class SceneTelephonyIncoming extends SceneBase implements DialogObserver 
 
     private final static String PRM_NAME = "name";
 
-    private KikaPhoneStateReceiver mPhoneStateReceiver;
+    private PhoneStateReceiver mPhoneStateReceiver;
 
     public SceneTelephonyIncoming(Context context, ISceneCallback callback) {
         super(callback);
@@ -76,7 +75,7 @@ public class SceneTelephonyIncoming extends SceneBase implements DialogObserver 
     }
 
     private void registerBroadcastReceiver(Context context) {
-        mPhoneStateReceiver = new KikaPhoneStateReceiver(new KikaPhoneStateReceiver.ICallStateChangeListener() {
+        mPhoneStateReceiver = new PhoneStateReceiver(new PhoneStateReceiver.ICallStateChangeListener() {
             @Override
             public void onInComingCallRinging(String phoneNumber) {
                 callbackPreStartTelephonyIncoming( phoneNumber );
