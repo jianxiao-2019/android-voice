@@ -129,7 +129,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                         });
                     }
                 });
-        mTelephonySceneManager = new TelephonySceneManager(mDialogFlowService);
+        mTelephonySceneManager = new TelephonySceneManager(this, mDialogFlowService);
         registerScenes();
     }
 
@@ -205,135 +205,13 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ANSWER:
                 log = "TELEPHONY_INCOMING_CMD_ANSWER";
-                toast = "Ok, answered this call.";
-//                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
-//                    @Override
-//                    public void onTtsStart() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsStart");
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onTtsComplete() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsComplete");
-//                        }
-//                        answerPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsInterrupted() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsInterrupted");
-//                        }
-//                        answerPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsError() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsError");
-//                        }
-//                        answerPhoneCall();
-//                    }
-//
-//                    private void answerPhoneCall() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.log(TAG, "answerPhoneCall");
-//                        }
-//                        TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
-//                        TelephonyServiceManager.getIns().turnOnSpeaker(KikaDialogFlowActivity.this);
-//                    }
-//                });
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_REJECT:
                 log = "TELEPHONY_INCOMING_CMD_REJECT";
-                toast = "Ok, rejected this call.";
-//                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
-//                    @Override
-//                    public void onTtsStart() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsStart");
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onTtsComplete() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsComplete");
-//                        }
-//                        rejectPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsInterrupted() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsInterrupted");
-//                        }
-//                        rejectPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsError() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsError");
-//                        }
-//                        rejectPhoneCall();
-//                    }
-//
-//                    private void rejectPhoneCall() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.log(TAG, "rejectPhoneCall");
-//                        }
-//                        TelephonyServiceManager.getIns().killPhoneCall(KikaDialogFlowActivity.this);
-//                    }
-//                });
                 break;
             case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_IGNORE:
                 log = "TELEPHONY_INCOMING_CMD_IGNORE";
-                toast = "Ok, ignore this call.";
-//                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
-//                    @Override
-//                    public void onTtsStart() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsStart");
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onTtsComplete() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsComplete");
-//                        }
-//                        ignorePhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsInterrupted() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsInterrupted");
-//                        }
-//                        ignorePhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsError() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsError");
-//                        }
-//                        ignorePhoneCall();
-//                    }
-//
-//                    private void ignorePhoneCall() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.log(TAG, "ignorePhoneCall");
-//                        }
-//                        TelephonyServiceManager.getIns().turnOnSilentMode(KikaDialogFlowActivity.this);
-//                    }
-//                });
                 break;
-
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
@@ -425,7 +303,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 resetLogs();
                 if (intent != null) {
                     mTvScene.setText(intent.getScene());
-                    mTvName.setText(intent.getName());
                     mTvAction.setText(intent.getAction());
                     Bundle args = intent.getExtra();
                     if (args != null && !args.isEmpty()) {

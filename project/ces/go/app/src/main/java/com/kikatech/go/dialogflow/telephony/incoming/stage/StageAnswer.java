@@ -22,6 +22,48 @@ public class StageAnswer extends SceneStage {
 
     @Override
     public void action() {
+        String toast = "Ok, answered this call.";
+        speak(toast);
+//                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
+//                    @Override
+//                    public void onTtsStart() {
+//                        if (LogUtil.DEBUG) {
+//                            LogUtil.logv(TAG, "onTtsStart");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onTtsComplete() {
+//                        if (LogUtil.DEBUG) {
+//                            LogUtil.logv(TAG, "onTtsComplete");
+//                        }
+//                        answerPhoneCall();
+//                    }
+//
+//                    @Override
+//                    public void onTtsInterrupted() {
+//                        if (LogUtil.DEBUG) {
+//                            LogUtil.logv(TAG, "onTtsInterrupted");
+//                        }
+//                        answerPhoneCall();
+//                    }
+//
+//                    @Override
+//                    public void onTtsError() {
+//                        if (LogUtil.DEBUG) {
+//                            LogUtil.logv(TAG, "onTtsError");
+//                        }
+//                        answerPhoneCall();
+//                    }
+//
+//                    private void answerPhoneCall() {
+//                        if (LogUtil.DEBUG) {
+//                            LogUtil.log(TAG, "answerPhoneCall");
+//                        }
+//                        TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
+//                        TelephonyServiceManager.getIns().turnOnSpeaker(KikaDialogFlowActivity.this);
+//                    }
+//                });
 
     }
 }

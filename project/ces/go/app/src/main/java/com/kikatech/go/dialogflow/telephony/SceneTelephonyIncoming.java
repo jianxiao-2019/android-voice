@@ -5,12 +5,12 @@ import android.os.Bundle;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
+//import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
 
 /**
  * @author SkeeterWang Created on 2017/11/6.
  */
-public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserver {
+public class SceneTelephonyIncoming implements DialogObserver {
 
     private static final String TAG = "SceneTelephonyIncoming";
 
@@ -25,8 +25,8 @@ public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserv
 
     private PhoneStateDispatcher mPhoneStateReceiver;
 
-    public SceneTelephonyIncoming(Context context, ISceneCallback callback) {
-        super(callback);
+    public SceneTelephonyIncoming(Context context) {
+//        super(callback);
         registerBroadcastReceiver(context);
     }
 
@@ -69,9 +69,9 @@ public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserv
                 return;
         }
 
-        if (mCallback != null) {
-            mCallback.onCommand(cmd, mCmdParams);
-        }
+//        if (mCallback != null) {
+//            mCallback.onCommand(cmd, mCmdParams);
+//        }
     }
 
     private void registerBroadcastReceiver(Context context) {
@@ -83,9 +83,6 @@ public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserv
 
             @Override
             public void onInComingCallEnded() {
-                if (mCallback != null) {
-                    mCallback.resetContextImpl();
-                }
             }
         });
         mPhoneStateReceiver.register(context);
@@ -96,11 +93,11 @@ public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserv
     }
 
     private void callbackPreStartTelephonyIncoming(String phoneNumber) {
-        if (mCallback != null) {
-            mCallback.resetContextImpl();
-            Bundle mCmdParams = new Bundle();
-            mCmdParams.putString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME, phoneNumber);
-            mCallback.onCommand(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_PRE_START, mCmdParams);
-        }
+//        if (mCallback != null) {
+//            mCallback.resetContextImpl();
+//            Bundle mCmdParams = new Bundle();
+//            mCmdParams.putString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME, phoneNumber);
+//            mCallback.onCommand(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_PRE_START, mCmdParams);
+//        }
     }
 }

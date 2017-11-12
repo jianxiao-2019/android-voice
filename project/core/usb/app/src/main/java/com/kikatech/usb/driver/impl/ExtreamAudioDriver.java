@@ -40,9 +40,9 @@ public class ExtreamAudioDriver implements UsbAudioDriver {
                 initUSBOk = mUsbControl.initUSBDevice(fileDescriptor, mDevice.getProductId(), mDevice.getVendorId());
             }
             if (!initUSBOk) {
-                // TODO: 17-11-6 handle init error
+                // TODO: 17-11-6 handle idle error
             } else {
-                // TODO: 17-11-6 handle init success
+                // TODO: 17-11-6 handle idle success
             }
         } else {
             Log.e(TAG, "Failed to open USB device");

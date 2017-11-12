@@ -521,7 +521,7 @@ struct usbi_os_backend {
 	int (*init)(struct libusb_context *ctx, int i_enumerateDevices);
 
 	/* Deinitialization. Optional. This function should destroy anything
-	 * that was set up by init.
+	 * that was set up by idle.
 	 *
 	 * This function is called when the user deinitializes the library.
 	 */

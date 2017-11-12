@@ -8,19 +8,18 @@ import android.os.Bundle;
 
 public class Intent {
 
+    public final static String ACTION_EXIT = "__Exit__";
+
     private String mScene;
-    private String mName;
     private String mAction;
     private Bundle mExtra = new Bundle();
 
-    public Intent(String scene, String name) {
+    public Intent(String scene) {
         mScene = scene;
-        mName = name;
     }
 
-    public Intent(String scene, String name, String action) {
+    public Intent(String scene, String action) {
         mScene = scene;
-        mName = name;
         mAction = action;
     }
 
@@ -30,14 +29,6 @@ public class Intent {
 
     public void setAction(String action) {
         this.mAction = action;
-    }
-
-    public String getName() {
-        return mName;
-    }
-
-    public void setName(String name) {
-        this.mName = name;
     }
 
     public void putExtra(String key, String value) {

@@ -6,7 +6,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
+//import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
 import com.kikatech.voice.util.log.LogUtil;
 
 import org.json.JSONException;
@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * Created by bradchang on 2017/11/3.
  */
 
-public class SceneNavigationOld extends SceneBaseOld implements DialogObserver {
+public class SceneNavigationOld  implements DialogObserver {
 
     private final static String TAG = "SceneNavigation";
 
@@ -51,8 +51,8 @@ public class SceneNavigationOld extends SceneBaseOld implements DialogObserver {
     private final Bundle mCmdParms = new Bundle();
 
 
-    public SceneNavigationOld(ISceneCallback callback) {
-        super(callback);
+    public SceneNavigationOld() {
+//        super(callback);
     }
 
     @Override
@@ -85,8 +85,8 @@ public class SceneNavigationOld extends SceneBaseOld implements DialogObserver {
             case ACTION_NAV_YES_CANCEL:
                 resetContext();
                 break;
-            case ACTION_UNKNOWN:
-                break;
+//            case ACTION_UNKNOWN:
+//                break;
             default:
                 break;
         }
@@ -94,11 +94,11 @@ public class SceneNavigationOld extends SceneBaseOld implements DialogObserver {
         byte naviAction = checkState(action);
         if (LogUtil.DEBUG) LogUtil.log(TAG, "processIntent, naviAction:" + naviAction);
 
-        if (mCallback != null) {
-            mCmdParms.clear();
-            mCmdParms.putString(NavigationCommand.NAVI_CMD_ADDRESS, mStateNaviAddress);
-            mCallback.onCommand(naviAction, mCmdParms);
-        }
+//        if (mCallback != null) {
+//            mCmdParms.clear();
+//            mCmdParms.putString(NavigationCommand.NAVI_CMD_ADDRESS, mStateNaviAddress);
+//            mCallback.onCommand(naviAction, mCmdParms);
+//        }
 
         if (NavigationCommand.NAVI_CMD_START_NAVI == naviAction) {
             mStateNaviConfirm = false;
@@ -114,7 +114,7 @@ public class SceneNavigationOld extends SceneBaseOld implements DialogObserver {
 
     private void resetContext() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "resetContext >>>>>>> ");
-        if (mCallback != null) mCallback.resetContextImpl();
+        //if (mCallback != null) mCallback.resetContextImpl();
         resetVariables();
     }
 
@@ -155,9 +155,9 @@ public class SceneNavigationOld extends SceneBaseOld implements DialogObserver {
             case ACTION_NAV_YES_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Stop navigation");
                 return NavigationCommand.NAVI_CMD_STOP_NAVIGATION;
-            case ACTION_UNKNOWN:
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
-                return NavigationCommand.NAVI_CMD_DONT_UNDERSTAND;
+//            case ACTION_UNKNOWN:
+//                if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
+//                return NavigationCommand.NAVI_CMD_DONT_UNDERSTAND;
             default:
                 break;
         }

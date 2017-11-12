@@ -19,7 +19,11 @@ public class SceneNavigation extends SceneBase {
     }
 
     @Override
-    protected SceneStage init() {
+    protected void onExit() {
+    }
+
+    @Override
+    protected SceneStage idle() {
         return new SceneStage(mFeedback) {
             @Override
             public SceneStage next(String action, Bundle extra) {

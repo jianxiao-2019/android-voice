@@ -32,22 +32,6 @@ public abstract class SceneStage {
             mFeedback.onText(text);
         }
     }
-
-    public static class Idle extends SceneStage {
-
-        public Idle() {
-            super(null);
-        }
-
-        @Override
-        public void action() {
-        }
-
-        @Override
-        public SceneStage next(String action, Bundle extra) {
-            return this;
-        }
-    }
 }
 
 

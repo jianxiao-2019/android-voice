@@ -12,6 +12,7 @@ import com.kikatech.voice.core.dialogflow.DialogFlow;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
+import com.kikatech.voice.core.dialogflow.SceneManager;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -33,6 +34,9 @@ public class DialogFlowService implements
     private final IServiceCallback mCallback;
     private VoiceService mVoiceService;
     private DialogFlow mDialogFlow;
+
+    private SceneManager mSceneManager;
+
     private TtsSpeaker mTtsSpeaker;
 
 //    private SceneNavigationOld mSceneNavigation;
@@ -43,6 +47,7 @@ public class DialogFlowService implements
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
         mContext = ctx;
         mCallback = callback;
+        mSceneManager = new SceneManager(mSceneCallback);
         initDialogFlow(conf);
         initVoiceService(conf);
         initTts();
@@ -50,17 +55,18 @@ public class DialogFlowService implements
     }
 
     public void registerScene(String scene, DialogObserver observer) {
-        mDialogFlow.register(scene, observer);
+        mSceneManager.register(scene, observer);
     }
 
-    public void unregisterScene(String scene, DialogObserver observer){
-        mDialogFlow.unregister(scene, observer);
+    public void unregisterScene(String scene, DialogObserver observer) {
+        mSceneManager.unregister(scene, observer);
     }
 
     private void initDialogFlow(@NonNull VoiceConfiguration conf) {
         mDialogFlow = new DialogFlow(mContext, conf);
+        mDialogFlow.setObserver(mSceneManager);
         registerScenes();
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "init DialogFlow ... Done");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "idle DialogFlow ... Done");
     }
 
     private void initVoiceService(@NonNull VoiceConfiguration conf) {
@@ -68,7 +74,7 @@ public class DialogFlowService implements
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.start();
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "init VoiceService ... Done");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "idle VoiceService ... Done");
     }
 
     private void initTts() {
@@ -84,7 +90,7 @@ public class DialogFlowService implements
             return;
         }
         try {
-            if(mTtsSpeaker != null) {
+            if (mTtsSpeaker != null) {
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, "tts, words: " + words);
                 }
@@ -113,7 +119,6 @@ public class DialogFlowService implements
         if (LogUtil.DEBUG && intent != null) {
             LogUtil.log(TAG, "===== START ON INTENT =====");
             LogUtil.log(TAG, "Scene: " + intent.getScene());
-            LogUtil.log(TAG, "Name: " + intent.getName());
             LogUtil.log(TAG, "Action: " + intent.getAction());
             Bundle args = intent.getExtra();
             if (args != null && !args.isEmpty()) {
@@ -193,11 +198,6 @@ public class DialogFlowService implements
 
         mDialogFlow.resetContexts();
     }
-
-//    private void startTelephonyIncoming(String phoneNumber) {
-//        String cmdIntoTelephonyIntent = String.format(SceneTelephonyIncoming.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
-//        mDialogFlow.talk(cmdIntoTelephonyIntent);
-//    }
 
     public static synchronized DialogFlowService queryService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
         return new DialogFlowService(ctx, conf, callback);
@@ -306,6 +306,17 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsError");
             }
+        }
+    };
+
+    private SceneManager.ISceneCallback mSceneCallback = new SceneManager.ISceneCallback() {
+        @Override
+        public void onSceneEnter(String scene) {
+        }
+
+        @Override
+        public void onSceneExit(String scene) {
+            mDialogFlow.resetContexts();
         }
     };
 

@@ -1,8 +1,8 @@
 package com.kikatech.go.dialogflow.telephony;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.kikatech.go.dialogflow.navigation.SceneNavigation;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
 import com.kikatech.voice.service.DialogFlowService;
@@ -17,12 +17,15 @@ public class TelephonySceneManager {
 
     private DialogFlowService mService;
 
+    private Context mContext;
     private SceneIncoming mSceneIncoming;
     private SceneOutgoing mSceneOutgoing;
 
-    public TelephonySceneManager(@NonNull DialogFlowService service) {
+    public TelephonySceneManager(Context context, @NonNull DialogFlowService service) {
+        mContext = context.getApplicationContext();
         mService = service;
         mPhoneStateReceiver = new PhoneStateDispatcher(mPhoneListener);
+        mPhoneStateReceiver.register(mContext);
         registerScenes();
     }
 
@@ -40,19 +43,20 @@ public class TelephonySceneManager {
 
     public void close() {
         unregisterScenes();
+        mPhoneStateReceiver.unregister(mContext);
     }
 
     private PhoneStateDispatcher.ICallStateChangeListener mPhoneListener = new PhoneStateDispatcher.ICallStateChangeListener() {
         @Override
         public void onInComingCallRinging(String phoneNumber) {
-//            callbackPreStartTelephonyIncoming( phoneNumber );
+            mService.resetContexts();
+            String incoming = String.format(SceneTelephonyIncoming.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
+            mService.talk(incoming);
         }
 
         @Override
         public void onInComingCallEnded() {
-//            if (mCallback != null) {
-//                mCallback.resetContextImpl();
-//            }
+            mService.resetContexts();
         }
     };
 }

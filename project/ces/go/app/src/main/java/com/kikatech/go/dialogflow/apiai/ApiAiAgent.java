@@ -162,7 +162,7 @@ public class ApiAiAgent extends Agent {
 
         if (LogUtil.DEBUG) LogUtil.logd(TAG, "action: " + action);
 
-        Intent intent = new Intent(scene, name, action);
+        Intent intent = new Intent(scene, action);
 
         final Map<String, JsonElement> params = result.getParameters();
 

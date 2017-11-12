@@ -62,12 +62,21 @@ public class PhoneStateDispatcher extends BroadcastReceiver {
     }
 
     public void register(Context context) {
-        LocalBroadcastManager.getInstance(context).registerReceiver(PhoneStateDispatcher.this,
-                new IntentFilter(PhoneStateReceiver.ACTION_PHONE_STATE));
+        try {
+            LocalBroadcastManager.getInstance(context).registerReceiver(PhoneStateDispatcher.this,
+                    new IntentFilter(PhoneStateReceiver.ACTION_PHONE_STATE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void unregister(Context context) {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(PhoneStateDispatcher.this);
+        try {
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(PhoneStateDispatcher.this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isIncomingCalling() {
@@ -80,6 +89,7 @@ public class PhoneStateDispatcher extends BroadcastReceiver {
 
     public interface ICallStateChangeListener {
         void onInComingCallRinging(String phoneNumber);
+
         void onInComingCallEnded();
     }
 }

@@ -15,16 +15,23 @@ public abstract class SceneBase implements DialogObserver {
         mFeedback = feedback;
     }
 
-    protected SceneStage mStage = init();
+    protected SceneStage mStage = idle();
 
-    protected abstract SceneStage init();
+    protected abstract void onExit();
+
+    protected abstract SceneStage idle();
 
     @Override
     public void onIntent(Intent intent) {
-        SceneStage stage = mStage.next(intent.getAction(), intent.getExtra());
-        if (stage != null) {
-            mStage = stage;
-            stage.action();
+        if(Intent.ACTION_EXIT.equals(intent.getAction())){
+            SceneStage stage = mStage.next(intent.getAction(), intent.getExtra());
+            if (stage != null) {
+                mStage = stage;
+                stage.action();
+            }
+        }else{
+            onExit();
+            mStage = idle();
         }
     }
 

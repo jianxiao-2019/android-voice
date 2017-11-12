@@ -6,14 +6,13 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.core.dialogflow.scene.SceneBaseOld;
 import com.kikatech.voice.util.contact.ContactManager;
 import com.kikatech.voice.util.log.LogUtil;
 
 /**
  * @author SkeeterWang Created on 2017/11/8.
  */
-public class SceneTelephonyOutgoing extends SceneBaseOld implements DialogObserver {
+public class SceneTelephonyOutgoing implements DialogObserver {
     private static final String TAG = "SceneTelephonyOutgoing";
 
     private static final String ACTION_TELEPHONY_OUTGOING_START = "telephony.outgoing.start";
@@ -37,8 +36,8 @@ public class SceneTelephonyOutgoing extends SceneBaseOld implements DialogObserv
 
     private final Bundle mCmdParams = new Bundle();
 
-    public SceneTelephonyOutgoing(Context context, ISceneCallback callback) {
-        super(callback);
+    public SceneTelephonyOutgoing(Context context) {
+//        super(callback);
         mContext = context;
     }
 
@@ -72,8 +71,8 @@ public class SceneTelephonyOutgoing extends SceneBaseOld implements DialogObserv
             case ACTION_TELEPHONY_OUTGOING_CANCEL:
                 resetContext();
                 break;
-            case ACTION_UNKNOWN:
-                break;
+//            case ACTION_UNKNOWN:
+//                break;
             default:
                 break;
         }
@@ -82,14 +81,14 @@ public class SceneTelephonyOutgoing extends SceneBaseOld implements DialogObserv
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, "processIntent, cmd:" + cmd);
 
-        if (mCallback != null) {
-            mCmdParams.clear();
-            if (mOutGoingContact != null) {
-                mCmdParams.putString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NAME, mOutGoingContact.displayName);
-                mCmdParams.putString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NUMBER, mOutGoingContact.phoneNumber);
-            }
-            mCallback.onCommand(cmd, mCmdParams);
-        }
+//        if (mCallback != null) {
+//            mCmdParams.clear();
+//            if (mOutGoingContact != null) {
+//                mCmdParams.putString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NAME, mOutGoingContact.displayName);
+//                mCmdParams.putString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NUMBER, mOutGoingContact.phoneNumber);
+//            }
+//            mCallback.onCommand(cmd, mCmdParams);
+//        }
 
         switch (cmd) {
             case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_START_CALL:
@@ -100,7 +99,7 @@ public class SceneTelephonyOutgoing extends SceneBaseOld implements DialogObserv
 
     private void resetContext() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "resetContext >>>>>>> ");
-        if (mCallback != null) mCallback.resetContextImpl();
+//        if (mCallback != null) mCallback.resetContextImpl();
         resetVariables();
     }
 
@@ -151,9 +150,9 @@ public class SceneTelephonyOutgoing extends SceneBaseOld implements DialogObserv
             case ACTION_TELEPHONY_OUTGOING_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Canceled phone call.");
                 return TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_CANCELED;
-            case ACTION_UNKNOWN:
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
-                return TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_DONT_UNDERSTAND;
+//            case ACTION_UNKNOWN:
+//                if (LogUtil.DEBUG) LogUtil.log(TAG, "[SC] Cannot understand what user says");
+//                return TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_DONT_UNDERSTAND;
             default:
                 break;
         }
