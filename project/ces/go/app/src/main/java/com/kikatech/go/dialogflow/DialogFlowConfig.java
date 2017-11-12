@@ -18,7 +18,7 @@ import java.util.Locale;
  * Created by bradchang on 2017/11/7.
  */
 
-public class DialogFlowDemoConfig {
+public class DialogFlowConfig {
 
     public static VoiceConfiguration queryDemoConfig(Context ctx) {
         String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";

@@ -23,7 +23,7 @@ public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserv
 
     private final static String PRM_NAME = "name";
 
-    private PhoneStateReceiver mPhoneStateReceiver;
+    private PhoneStateDispatcher mPhoneStateReceiver;
 
     public SceneTelephonyIncoming(Context context, ISceneCallback callback) {
         super(callback);
@@ -75,7 +75,7 @@ public class SceneTelephonyIncoming extends SceneBaseOld implements DialogObserv
     }
 
     private void registerBroadcastReceiver(Context context) {
-        mPhoneStateReceiver = new PhoneStateReceiver(new PhoneStateReceiver.ICallStateChangeListener() {
+        mPhoneStateReceiver = new PhoneStateDispatcher(new PhoneStateDispatcher.ICallStateChangeListener() {
             @Override
             public void onInComingCallRinging(String phoneNumber) {
                 callbackPreStartTelephonyIncoming( phoneNumber );
