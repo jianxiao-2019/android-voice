@@ -571,7 +571,7 @@ void my_close_handle(libusb_device_handle *handle)
 }
 \endcode
  *
- * Applications using hotplug support should start the thread at program idle,
+ * Applications using hotplug support should start the thread at program init,
  * after having successfully called libusb_hotplug_register_callback(), and
  * should stop the thread at program exit as follows:
 \code
