@@ -9,17 +9,13 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
+import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.dialogflow.navigation.SceneNavigation;
-import com.kikatech.voice.dialogflow.telephony.SceneTelephonyIncoming;
-import com.kikatech.voice.dialogflow.telephony.incoming.SceneIncoming;
-import com.kikatech.voice.dialogflow.telephony.outgoing.SceneOutgoing;
 import com.kikatech.voice.util.log.LogUtil;
-
 
 
 /**
@@ -39,10 +35,6 @@ public class DialogFlowService implements
     private DialogFlow mDialogFlow;
     private TtsSpeaker mTtsSpeaker;
 
-    private SceneIncoming mSceneIncoming;
-    private SceneOutgoing mSceneOutgoing;
-    private SceneNavigation mSceneNavigation;
-
 //    private SceneNavigationOld mSceneNavigation;
 //    private SceneTelephonyIncoming mSceneTelephonyIncoming;
 //    private SceneTelephonyOutgoing mSceneTelephonyOutgoing;
@@ -55,6 +47,14 @@ public class DialogFlowService implements
         initVoiceService(conf);
         initTts();
         callback.onInitComplete();
+    }
+
+    public void registerScene(String scene, DialogObserver observer) {
+        mDialogFlow.register(scene, observer);
+    }
+
+    public void unregisterScene(String scene, DialogObserver observer){
+        mDialogFlow.unregister(scene, observer);
     }
 
     private void initDialogFlow(@NonNull VoiceConfiguration conf) {
@@ -84,17 +84,23 @@ public class DialogFlowService implements
             return;
         }
         try {
-            if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "tts, words: " + words);
+            if(mTtsSpeaker != null) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "tts, words: " + words);
+                }
+                mTtsSpeaker.speak(words);
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "tts, words: " + words);
+                }
+                mTtsSpeaker.speak(words);
             }
-            mTtsSpeaker.speak(words);
         } catch (Exception e) {
             e.printStackTrace();
-            toast(words);
+//            toast(words);
         }
     }
 
-    protected void toast(final String message) {
+    private void toast(final String message) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -121,9 +127,6 @@ public class DialogFlowService implements
 
     private void registerScenes() {
         // 0. Common flow / Error handling
-        mDialogFlow.register(SceneNavigation.SCENE, mSceneNavigation = new SceneNavigation(mSceneFeedback));
-        mDialogFlow.register(SceneIncoming.SCENE, mSceneIncoming = new SceneIncoming(mSceneFeedback));
-        mDialogFlow.register(SceneOutgoing.SCENE, mSceneOutgoing = new SceneOutgoing(mSceneFeedback));
 //         1. Navigation
 //        mSceneNavigation = new SceneNavigationOld(new SceneBaseOld.ISceneCallback() {
 //            @Override
@@ -191,10 +194,10 @@ public class DialogFlowService implements
         mDialogFlow.resetContexts();
     }
 
-    private void startTelephonyIncoming(String phoneNumber) {
-        String cmdIntoTelephonyIntent = String.format(SceneTelephonyIncoming.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
-        mDialogFlow.talk(cmdIntoTelephonyIntent);
-    }
+//    private void startTelephonyIncoming(String phoneNumber) {
+//        String cmdIntoTelephonyIntent = String.format(SceneTelephonyIncoming.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
+//        mDialogFlow.talk(cmdIntoTelephonyIntent);
+//    }
 
     public static synchronized DialogFlowService queryService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
         return new DialogFlowService(ctx, conf, callback);
@@ -223,11 +226,6 @@ public class DialogFlowService implements
         if (mTtsSpeaker != null) {
             mTtsSpeaker.close();
             mTtsSpeaker = null;
-        }
-        if(mDialogFlow != null) {
-            mDialogFlow.unregister(SceneIncoming.SCENE, mSceneIncoming);
-            mDialogFlow.unregister(SceneOutgoing.SCENE, mSceneOutgoing);
-            mDialogFlow.unregister(SceneNavigation.SCENE, mSceneNavigation);
         }
         if (LogUtil.DEBUG) {
 //            mDialogFlow.unregister(SceneType.DEFAULT.toString(), debugLogger);
@@ -270,7 +268,11 @@ public class DialogFlowService implements
         if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onSpeechProbabilityChanged:" + prob);
     }
 
-    protected ISceneFeedback mSceneFeedback = new ISceneFeedback() {
+    public ISceneFeedback getTtsFeedback() {
+        return mSceneFeedback;
+    }
+
+    private ISceneFeedback mSceneFeedback = new ISceneFeedback() {
         @Override
         public void onText(String text) {
             tts(text);
@@ -309,9 +311,9 @@ public class DialogFlowService implements
 
 //    @Override
 //    public void onIntent(Intent intent) {
-        // Process Default Fallback Intent
-        // List<DialogObserver> subs = mDialogFlow.getListeningSubscribers();
-        // TODO: 17-11-10 GENERAL_CMD_UNKNOWN
+    // Process Default Fallback Intent
+    // List<DialogObserver> subs = mDialogFlow.getListeningSubscribers();
+    // TODO: 17-11-10 GENERAL_CMD_UNKNOWN
 //        mCallback.onCommand(SceneType.DEFAULT, GeneralCommand.GENERAL_CMD_UNKNOWN, null);
 //    }
 }

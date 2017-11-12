@@ -8,16 +8,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.DialogFlowDemoConfig;
+import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
+import com.kikatech.go.dialogflow.navigation.NavigationCommand;
+import com.kikatech.go.dialogflow.navigation.SceneNavigation;
+import com.kikatech.go.dialogflow.telephony.TelephonyIncomingCommand;
+import com.kikatech.go.dialogflow.telephony.TelephonyOutgoingCommand;
+import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
+import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.SceneType;
-import com.kikatech.voice.dialogflow.apiai.ApiAiAgentCreator;
-import com.kikatech.voice.dialogflow.navigation.NavigationCommand;
-import com.kikatech.voice.dialogflow.telephony.TelephonyIncomingCommand;
-import com.kikatech.voice.dialogflow.telephony.TelephonyOutgoingCommand;
-import com.kikatech.voice.service.DialogFlowDemoConfig;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.service.VoiceConfiguration;
@@ -43,6 +46,9 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private View[] mInteractiveViews;
 
     private DialogFlowService mDialogFlowService;
+    private SceneIncoming mSceneIncoming;
+    private SceneOutgoing mSceneOutgoing;
+    private SceneNavigation mSceneNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +63,30 @@ public class KikaDialogFlowActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterScenes();
         if (mDialogFlowService != null) {
             mDialogFlowService.quitService();
         }
     }
 
+    private void registerScenes() {
+        if (mDialogFlowService != null) {
+            mDialogFlowService.registerScene(SceneNavigation.SCENE, mSceneNavigation = new SceneNavigation(
+                    mDialogFlowService.getTtsFeedback()));
+            mDialogFlowService.registerScene(SceneIncoming.SCENE, mSceneIncoming = new SceneIncoming(
+                    mDialogFlowService.getTtsFeedback()));
+            mDialogFlowService.registerScene(SceneOutgoing.SCENE, mSceneOutgoing = new SceneOutgoing(
+                    mDialogFlowService.getTtsFeedback()));
+        }
+    }
 
+    private void unregisterScenes() {
+        if (mDialogFlowService != null) {
+            mDialogFlowService.unregisterScene(SceneNavigation.SCENE, mSceneNavigation);
+            mDialogFlowService.unregisterScene(SceneIncoming.SCENE, mSceneIncoming);
+            mDialogFlowService.unregisterScene(SceneOutgoing.SCENE, mSceneOutgoing);
+        }
+    }
 
     private void initDialogFlowService() {
         VoiceConfiguration config = new VoiceConfiguration();
@@ -109,6 +133,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                         });
                     }
                 });
+        registerScenes();
     }
 
     private void processGeneralCommand(byte cmd) {
