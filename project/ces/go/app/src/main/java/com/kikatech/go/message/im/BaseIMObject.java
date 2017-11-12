@@ -34,7 +34,7 @@ public abstract class BaseIMObject extends Chatable
 	protected static final String EXTRAS_LINE_CHAT_ID = "line.chat.id";
 	protected static final String EXTRAS_LINE_STICKER_URL = "line.sticker.url";
 	protected static final String EXTRAS_TITLE = "android.title";
-	protected static final String EXTRAS_TEXT = "android.text";
+	protected static final String EXTRAS_TEXT = "android.speak";
 	protected static final String EXTRAS_SUBTEXT = "android.subText";
 	protected static final String EXTRAS_TEXT_LINES = "android.textLines";
 	protected static final String EXTRAS_MESSAGES = "android.messages";

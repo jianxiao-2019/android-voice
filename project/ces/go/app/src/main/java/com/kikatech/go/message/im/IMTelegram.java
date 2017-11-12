@@ -40,16 +40,16 @@ public class IMTelegram extends BaseIMObject
 		{
 			/**
 			 * title: Telegram
-			 * text: 14 new messages from 3 chats
+			 * speak: 14 new messages from 3 chats
 			 *
 			 * title: Telegram Notifications
-			 * text: New in version X.X:...
+			 * speak: New in version X.X:...
 			 */
 			return;
 		}
 		if( text != null )
 		{
-			// text: 5 new messages
+			// speak: 5 new messages
 			if( StringUtil.matchRegularExpression( text, "^[0-9]+ new messages" ) ) return;
 		}
 
@@ -66,7 +66,7 @@ public class IMTelegram extends BaseIMObject
 			{
 				/**
 				 * title: {groupName}
-				 * text: {userName}: {msg}
+				 * speak: {userName}: {msg}
 				 */
 				groupName = title;
 				userName = msgContent.substring( 0, msgContent.indexOf( ": " ) ).trim();

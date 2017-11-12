@@ -8,6 +8,12 @@ import android.os.Bundle;
 
 public abstract class SceneStage {
 
+    protected ISceneFeedback mFeedback;
+
+    public SceneStage(ISceneFeedback feedback) {
+        mFeedback = feedback;
+    }
+
     /**
      * Move to next stage according to the action from agent
      *
@@ -21,7 +27,17 @@ public abstract class SceneStage {
      */
     public abstract void action();
 
+    protected void speak(String text){
+        if(mFeedback != null){
+            mFeedback.onText(text);
+        }
+    }
+
     public static class Idle extends SceneStage {
+
+        public Idle() {
+            super(null);
+        }
 
         @Override
         public void action() {

@@ -2313,7 +2313,7 @@ void usbi_log_v(struct libusb_context *ctx, enum libusb_log_level level,
 		text_len = sizeof(buf) - header_len;
 	}
 	if (header_len + text_len + sizeof(USBI_LOG_LINE_END) >= sizeof(buf)) {
-		/* Need to truncate the text slightly to fit on the terminator. */
+		/* Need to truncate the speak slightly to fit on the terminator. */
 		text_len -= (header_len + text_len + sizeof(USBI_LOG_LINE_END)) - sizeof(buf);
 	}
 	strcpy(buf + header_len + text_len, USBI_LOG_LINE_END);

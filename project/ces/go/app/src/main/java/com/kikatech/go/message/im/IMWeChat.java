@@ -49,8 +49,8 @@ public class IMWeChat extends BaseIMObject
 			{
 				/**
 				 * title: {userName}
-				 * text: [8條]{userName}: {msg}
-                 * text(en): [8]{userName}: {msg}
+				 * speak: [8條]{userName}: {msg}
+                 * speak(en): [8]{userName}: {msg}
 				 */
 				userName = title;
                 msgContent = text.replaceFirst("\\[(\\d+\\S?)\\]" + userName + ": ", "");
@@ -59,8 +59,8 @@ public class IMWeChat extends BaseIMObject
 			{
                 /**
                  * title: {groupName}
-                 * text: [6條]{userName}: {msg}
-                 * text(en): [6]{userName}: {msg}
+                 * speak: [6條]{userName}: {msg}
+                 * speak(en): [6]{userName}: {msg}
                  */
                 groupName = title;
 

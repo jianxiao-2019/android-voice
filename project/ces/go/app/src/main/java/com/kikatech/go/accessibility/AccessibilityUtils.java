@@ -58,7 +58,7 @@ public class AccessibilityUtils {
             CharSequence text = nodeInfo.getText();
             CharSequence description = nodeInfo.getContentDescription();
             CharSequence className = nodeInfo.getClassName();
-            // the following view type are not valuable for us to collect text data on screen
+            // the following view type are not valuable for us to collect speak data on screen
             if (AccessibilityConstants.CLASSNAME_EDIT_TEXT.equals(className) ||
                     AccessibilityConstants.CLASSNAME_IMAGE_VIEW.equals(className) ||
                     AccessibilityConstants.CLASSNAME_BUTTON.equals(className) ||

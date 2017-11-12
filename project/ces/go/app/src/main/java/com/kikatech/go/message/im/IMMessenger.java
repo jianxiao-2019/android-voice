@@ -60,44 +60,44 @@ public class IMMessenger extends BaseIMObject
 			 * title: {groupName}
 			 *
 			 * ========== Traditional Chinese ==========
-			 * text: {userName} 傳送到 {groupName}：{msg}
-			 * text: {userName} 傳送到你的群組：{msg}
+			 * speak: {userName} 傳送到 {groupName}：{msg}
+			 * speak: {userName} 傳送到你的群組：{msg}
 			 * ---------------------------------------------
-			 * text: {userName} 送出 1 張貼圖到 {groupName}
-			 * text: {userName} 送出 1 張貼圖到你的群組。
+			 * speak: {userName} 送出 1 張貼圖到 {groupName}
+			 * speak: {userName} 送出 1 張貼圖到你的群組。
 			 * ---------------------------------------------
-			 * text: {userName} 傳送了 1 張相片到 {groupName} 。
-			 * text: {userName} 傳送了 1 張相片到你的群組。
+			 * speak: {userName} 傳送了 1 張相片到 {groupName} 。
+			 * speak: {userName} 傳送了 1 張相片到你的群組。
 			 * ---------------------------------------------
-			 * text: {userName} 從 Disney Gif 傳送了 1 張 GIF 到 {groupName} 。
-			 * text: {userName} 從 Tenor GIF Keyboard 傳送了 1 張 GIF 到你的群組。
+			 * speak: {userName} 從 Disney Gif 傳送了 1 張 GIF 到 {groupName} 。
+			 * speak: {userName} 從 Tenor GIF Keyboard 傳送了 1 張 GIF 到你的群組。
 			 * ---------------------------------------------
 			 *
 			 * ========== Simple Chinese ==========
-			 * text: {userName} 在 {groupName} 説：{msg}
-			 * text: {userName} 在小组说：123
+			 * speak: {userName} 在 {groupName} 説：{msg}
+			 * speak: {userName} 在小组说：123
 			 * ---------------------------------------------
-			 * text: {userName} 向 {groupName} 发送了贴图。
-			 * text: {userName} 在群聊中发了贴图。
+			 * speak: {userName} 向 {groupName} 发送了贴图。
+			 * speak: {userName} 在群聊中发了贴图。
 			 * ---------------------------------------------
-			 * text: {userName} 向 {groupName} 发送了照片
-			 * text: {userName} 向小组发送了照片
+			 * speak: {userName} 向 {groupName} 发送了照片
+			 * speak: {userName} 向小组发送了照片
 			 * ---------------------------------------------
-			 * text: {userName} 用 Disney Gif 向 {groupName} 发送了 GIF
-			 * text: {userName} 用 GIPHY 向小组发送了 GIF 动图。
+			 * speak: {userName} 用 Disney Gif 向 {groupName} 发送了 GIF
+			 * speak: {userName} 用 GIPHY 向小组发送了 GIF 动图。
 			 * ---------------------------------------------
 			 *
 			 * ========== English ==========
-			 * text: {userName} : {msg}
+			 * speak: {userName} : {msg}
 			 * ---------------------------------------------
-			 * text: {userName}：{userFirstName} sent a sticker to Test.
-			 * text: {userFirstName} sent a sticker to your group.
+			 * speak: {userName}：{userFirstName} sent a sticker to Test.
+			 * speak: {userFirstName} sent a sticker to your group.
 			 * ---------------------------------------------
-			 * text: {userFirstName} sent a photo to Test.
-			 * text: {userFirstName} sent a photo to your group.
+			 * speak: {userFirstName} sent a photo to Test.
+			 * speak: {userFirstName} sent a photo to your group.
 			 * ---------------------------------------------
-			 * text: {userFirstName} sent a GIF from Disney Gif to Test.
-			 * text: {userFirstName} sent a GIF from Disney Gif to your group.
+			 * speak: {userFirstName} sent a GIF from Disney Gif to Test.
+			 * speak: {userFirstName} sent a GIF from Disney Gif to your group.
 			 * ---------------------------------------------
 			 */
 			groupName = title;
@@ -145,7 +145,7 @@ public class IMMessenger extends BaseIMObject
 		{
 			/** syntax
 			 * title: {userName}
-			 * text: {userName} : {msg}
+			 * speak: {userName} : {msg}
 			 */
 			userName = title;
 			groupName = null;

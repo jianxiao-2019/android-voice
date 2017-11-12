@@ -235,23 +235,23 @@ public class DeviceUtils {
 //        return isSupportGlyph(code);
 //    }
 //
-//    public static boolean supportLanguageFont(String text) {
-//        if (TextUtils.isEmpty(text)) {
+//    public static boolean supportLanguageFont(String speak) {
+//        if (TextUtils.isEmpty(speak)) {
 //            return false;
 //        }
 //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-//            return !isCharacterMissingInFont(String.valueOf(text.charAt(0)));
+//            return !isCharacterMissingInFont(String.valueOf(speak.charAt(0)));
 //        } else {
-//            return new Paint().hasGlyph(String.valueOf(text.charAt(0)));
+//            return new Paint().hasGlyph(String.valueOf(speak.charAt(0)));
 //        }
 //    }
 //
-//    private static Bitmap drawBitmap(String text) {
+//    private static Bitmap drawBitmap(String speak) {
 //        Paint paint = new Paint();
 //        paint.setColor(Color.BLACK);
 //        Bitmap b = Bitmap.createBitmap(BITMAP_WIDTH, BITMAP_HEIGHT, Bitmap.Config.ALPHA_8);
 //        Canvas c = new Canvas(b);
-//        c.drawText(text, 0, BITMAP_HEIGHT / 2, paint);
+//        c.drawText(speak, 0, BITMAP_HEIGHT / 2, paint);
 //        return b;
 //    }
 //

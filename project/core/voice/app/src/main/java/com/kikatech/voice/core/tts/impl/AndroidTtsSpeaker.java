@@ -109,7 +109,7 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     public void speak(final String text) {
         mPlayList.clear();
         mPlayListSize = 0;
-        Logger.d("Android TtsSpeaker speak text = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
+        Logger.d("Android TtsSpeaker speak speak = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
         if (mTts == null) {
             return;
         }

@@ -2,6 +2,7 @@ package com.kikatech.voice.dialogflow.telephony.incoming.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
@@ -10,6 +11,10 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class StageReject extends SceneStage {
 
+    public StageReject(ISceneFeedback feedback) {
+        super(feedback);
+    }
+
     @Override
     public SceneStage next(String action, Bundle extra) {
         return null;
@@ -17,6 +22,7 @@ public class StageReject extends SceneStage {
 
     @Override
     public void action() {
-
+        String toast = "Ok, rejected this call.";
+        speak(toast);
     }
 }

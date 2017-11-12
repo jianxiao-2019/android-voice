@@ -36,7 +36,7 @@ public class WeChatProcessor extends IMProcessor {
         Intent intent = new Intent(Intent.ACTION_SEND);
         ComponentName componentName = new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI");
         intent.setComponent(componentName);
-        intent.setType("text/plain");
+        intent.setType("speak/plain");
         intent.putExtra(Intent.EXTRA_TEXT, message);
         return intent;
     }

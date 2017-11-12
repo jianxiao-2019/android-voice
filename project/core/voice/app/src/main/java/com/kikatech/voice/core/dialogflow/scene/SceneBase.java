@@ -9,6 +9,12 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 public abstract class SceneBase implements DialogObserver {
 
+    protected ISceneFeedback mFeedback;
+
+    public SceneBase(ISceneFeedback feedback) {
+        mFeedback = feedback;
+    }
+
     protected SceneStage mStage = init();
 
     protected abstract SceneStage init();

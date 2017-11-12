@@ -118,7 +118,7 @@ public class VoiceTestingActivity extends BaseActivity
                 }
                 // mTtsSpeaker.speak(mEditText.getText().toString());
                 Pair<String, Integer>[] playList = new Pair[3];
-                playList[0] = new Pair<>("Your text is :", TtsSpeaker.TTS_VOICE_2);
+                playList[0] = new Pair<>("Your speak is :", TtsSpeaker.TTS_VOICE_2);
                 playList[1] = new Pair<>(mEditText.getText().toString(), TtsSpeaker.TTS_VOICE_1);
                 playList[2] = new Pair<>("Is that correct?", TtsSpeaker.TTS_VOICE_2);
                 mTtsSpeaker.speak(playList);

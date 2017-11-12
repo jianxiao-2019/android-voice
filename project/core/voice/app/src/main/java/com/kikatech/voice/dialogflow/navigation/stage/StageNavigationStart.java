@@ -2,6 +2,7 @@ package com.kikatech.voice.dialogflow.navigation.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
@@ -9,6 +10,11 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class StageNavigationStart extends SceneStage {
+
+    public StageNavigationStart(ISceneFeedback feedback) {
+        super(feedback);
+    }
+
     @Override
     public SceneStage next(String action, Bundle extra) {
         return null;

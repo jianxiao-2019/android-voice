@@ -92,7 +92,7 @@ public class Scene {
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
         } else {
             // TODO to be confirmed for API level < 21
-//            ClipData data = ClipData.newPlainText("auto_fill_text", text);
+//            ClipData data = ClipData.newPlainText("auto_fill_text", speak);
 //            ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
 //            clipboardManager.setPrimaryClip(data);
 //            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_FOCUS); // 获取焦点
