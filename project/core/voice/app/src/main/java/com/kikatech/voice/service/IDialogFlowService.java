@@ -2,6 +2,8 @@ package com.kikatech.voice.service;
 
 import android.os.Bundle;
 
+import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
+import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneType;
 
 /**
@@ -19,6 +21,12 @@ public interface IDialogFlowService {
 
         void onSpeechSpokenDone(String speechText);
     }
+
+    void registerScene(SceneBase scene);
+
+    void unregisterScene(SceneBase scene);
+
+    ISceneFeedback getTtsFeedback();
 
     void resetContexts();
 

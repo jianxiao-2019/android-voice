@@ -7,6 +7,7 @@ import com.kikatech.go.dialogflow.telephony.incoming.SceneActions;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
 import com.kikatech.voice.service.DialogFlowService;
+import com.kikatech.voice.service.IDialogFlowService;
 
 /**
  * Created by tianli on 17-11-12.
@@ -16,13 +17,13 @@ public class TelephonySceneManager {
 
     private PhoneStateDispatcher mPhoneStateReceiver;
 
-    private DialogFlowService mService;
+    private IDialogFlowService mService;
 
     private Context mContext;
     private SceneIncoming mSceneIncoming;
     private SceneOutgoing mSceneOutgoing;
 
-    public TelephonySceneManager(Context context, @NonNull DialogFlowService service) {
+    public TelephonySceneManager(Context context, @NonNull IDialogFlowService service) {
         mContext = context.getApplicationContext();
         mService = service;
         mPhoneStateReceiver = new PhoneStateDispatcher(mPhoneListener);

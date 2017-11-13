@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
-import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -55,10 +54,12 @@ public class DialogFlowService implements
         callback.onInitComplete();
     }
 
+    @Override
     public void registerScene(SceneBase scene) {
         mSceneManager.register(scene);
     }
 
+    @Override
     public void unregisterScene(SceneBase scene) {
         mSceneManager.unregister(scene);
     }
@@ -200,7 +201,7 @@ public class DialogFlowService implements
         mDialogFlow.resetContexts();
     }
 
-    public static synchronized DialogFlowService queryService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
+    public static synchronized IDialogFlowService queryService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
         return new DialogFlowService(ctx, conf, callback);
     }
 

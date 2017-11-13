@@ -43,7 +43,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private TextView mTvExtras;
     private View[] mInteractiveViews;
 
-    private DialogFlowService mDialogFlowService;
+    private IDialogFlowService mDialogFlowService;
     private TelephonySceneManager mTelephonySceneManager;
     private SceneNavigation mSceneNavigation;
 
