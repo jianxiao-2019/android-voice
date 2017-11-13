@@ -1,5 +1,6 @@
 package com.kikatech.go.dialogflow.telephony.outgoing;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -14,9 +15,15 @@ public class SceneOutgoing extends SceneBase {
 
     public static final String SCENE = "Telephony - Outgoing";
 
-    public SceneOutgoing(ISceneFeedback feedback) {
-        super(feedback);
+    public SceneOutgoing(Context context, ISceneFeedback feedback) {
+        super(context, feedback);
     }
+
+    @Override
+    protected String scene() {
+        return SCENE;
+    }
+
 
     @Override
     protected void onExit() {

@@ -1,5 +1,7 @@
 package com.kikatech.voice.core.dialogflow.scene;
 
+import android.content.Context;
+
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 
@@ -10,12 +12,24 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 public abstract class SceneBase implements DialogObserver {
 
     protected ISceneFeedback mFeedback;
+    protected Context mContext;
+    private ISceneManager mSceneManager = null;
+    protected SceneStage mStage = idle();
 
-    public SceneBase(ISceneFeedback feedback) {
+    public SceneBase(Context context, ISceneFeedback feedback) {
+        mContext = context.getApplicationContext();
         mFeedback = feedback;
     }
 
-    protected SceneStage mStage = idle();
+    void attach(ISceneManager manager) {
+        mSceneManager = manager;
+    }
+
+    void detach() {
+        mSceneManager = null;
+    }
+
+    protected abstract String scene();
 
     protected abstract void onExit();
 
@@ -23,13 +37,13 @@ public abstract class SceneBase implements DialogObserver {
 
     @Override
     public void onIntent(Intent intent) {
-        if(Intent.ACTION_EXIT.equals(intent.getAction())){
+        if (Intent.ACTION_EXIT.equals(intent.getAction())) {
             SceneStage stage = mStage.next(intent.getAction(), intent.getExtra());
             if (stage != null) {
                 mStage = stage;
                 stage.action();
             }
-        }else{
+        } else {
             onExit();
             mStage = idle();
         }

@@ -10,6 +10,8 @@ public abstract class SceneStage {
 
     protected ISceneFeedback mFeedback;
 
+    private ISceneManager mSceneManager = null;
+
     public SceneStage(ISceneFeedback feedback) {
         mFeedback = feedback;
     }
@@ -26,6 +28,10 @@ public abstract class SceneStage {
      * Perform the action, must be invoked after call {@link #next(String, Bundle) next}
      */
     public abstract void action();
+
+    void attach(ISceneManager manager) {
+        mSceneManager = manager;
+    }
 
     protected void speak(String text){
         if(mFeedback != null){

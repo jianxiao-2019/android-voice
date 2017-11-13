@@ -1,5 +1,6 @@
 package com.kikatech.go.dialogflow.navigation;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -14,8 +15,13 @@ public class SceneNavigation extends SceneBase {
 
     public static final String SCENE = "Navigation";
 
-    public SceneNavigation(ISceneFeedback feedback) {
-        super(feedback);
+    public SceneNavigation(Context context, ISceneFeedback feedback) {
+        super(context, feedback);
+    }
+
+    @Override
+    protected String scene() {
+        return SCENE;
     }
 
     @Override

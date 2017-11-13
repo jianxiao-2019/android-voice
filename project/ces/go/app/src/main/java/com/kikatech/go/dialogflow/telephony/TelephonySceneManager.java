@@ -30,15 +30,15 @@ public class TelephonySceneManager {
     }
 
     private void registerScenes() {
-        mService.registerScene(SceneIncoming.SCENE, mSceneIncoming = new SceneIncoming(
-                mService.getTtsFeedback()));
-        mService.registerScene(SceneOutgoing.SCENE, mSceneOutgoing = new SceneOutgoing(
-                mService.getTtsFeedback()));
+        mService.registerScene(mSceneIncoming = new SceneIncoming(
+                mContext, mService.getTtsFeedback()));
+        mService.registerScene(mSceneOutgoing = new SceneOutgoing(
+                mContext, mService.getTtsFeedback()));
     }
 
     private void unregisterScenes() {
-        mService.unregisterScene(SceneIncoming.SCENE, mSceneIncoming);
-        mService.unregisterScene(SceneOutgoing.SCENE, mSceneOutgoing);
+        mService.unregisterScene(mSceneIncoming);
+        mService.unregisterScene(mSceneOutgoing);
     }
 
     public void close() {

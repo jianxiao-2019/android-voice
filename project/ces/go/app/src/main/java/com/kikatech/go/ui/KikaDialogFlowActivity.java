@@ -72,7 +72,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
     private void registerScenes() {
         if (mDialogFlowService != null) {
-            mDialogFlowService.registerScene(SceneNavigation.SCENE, mSceneNavigation = new SceneNavigation(
+            mDialogFlowService.registerScene(mSceneNavigation = new SceneNavigation(this,
                     mDialogFlowService.getTtsFeedback()));
 
         }
@@ -80,7 +80,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
     private void unregisterScenes() {
         if (mDialogFlowService != null) {
-            mDialogFlowService.unregisterScene(SceneNavigation.SCENE, mSceneNavigation);
+            mDialogFlowService.unregisterScene(mSceneNavigation);
         }
     }
 

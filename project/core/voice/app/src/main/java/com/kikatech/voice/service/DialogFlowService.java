@@ -12,7 +12,8 @@ import com.kikatech.voice.core.dialogflow.DialogFlow;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
-import com.kikatech.voice.core.dialogflow.SceneManager;
+import com.kikatech.voice.core.dialogflow.scene.SceneBase;
+import com.kikatech.voice.core.dialogflow.scene.SceneManager;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -54,12 +55,12 @@ public class DialogFlowService implements
         callback.onInitComplete();
     }
 
-    public void registerScene(String scene, DialogObserver observer) {
-        mSceneManager.register(scene, observer);
+    public void registerScene(SceneBase scene) {
+        mSceneManager.register(scene);
     }
 
-    public void unregisterScene(String scene, DialogObserver observer) {
-        mSceneManager.unregister(scene, observer);
+    public void unregisterScene(SceneBase scene) {
+        mSceneManager.unregister(scene);
     }
 
     private void initDialogFlow(@NonNull VoiceConfiguration conf) {
@@ -309,7 +310,7 @@ public class DialogFlowService implements
         }
     };
 
-    private SceneManager.ISceneCallback mSceneCallback = new SceneManager.ISceneCallback() {
+    private SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
         @Override
         public void onSceneEnter(String scene) {
         }
