@@ -18,8 +18,8 @@ public class LogUtil
 
     private static int sProcessId = DEBUG ? 0 : android.os.Process.myPid();
 	private static final int PARENT_NODE = 3, SELF_NODE = 2;
-	private static final String PARENT_LOG_FORMAT = "[%s:%s:ln%d] ";
-	private static final String LOG_FORMAT = "[%s:%s:ln%d] %s (pid: %d)";
+	private static final String PARENT_LOG_FORMAT = "[%s:%s] ";
+	private static final String LOG_FORMAT = "[%s:%s] %s <pid:%d>";
 
 	private enum LogLabel
 	{
@@ -41,7 +41,7 @@ public class LogUtil
 			String parentStack = "";
             String className = null;
             String methodName = null;
-            int lineNumber = 0;
+            //int lineNumber = 0;
 			StackTraceElement stack;
 			String[] classes;
 			if( parentStacksCount > 0 )
@@ -55,9 +55,9 @@ public class LogUtil
 						classes = className.split( "\\." );
 						if( classes.length > 0 ) className = classes[ classes.length - 1 ];
 						methodName = stack.getMethodName();
-						lineNumber = stack.getLineNumber();
+						//lineNumber = stack.getLineNumber();
 
-						parentStack += String.format( Locale.ENGLISH, PARENT_LOG_FORMAT, className, methodName, lineNumber );
+						parentStack += String.format( Locale.ENGLISH, PARENT_LOG_FORMAT, className, methodName );
 					}
 				}
 			}
@@ -68,12 +68,12 @@ public class LogUtil
 				classes = className.split( "\\." );
                 if( classes.length > 0 ) className = classes[ classes.length - 1 ];
                 methodName = stack.getMethodName();
-                lineNumber = stack.getLineNumber();
+                //lineNumber = stack.getLineNumber();
             }
 
-			message = String.format( Locale.ENGLISH, LOG_FORMAT, className, methodName, lineNumber, log, sProcessId );
+			message = String.format( Locale.ENGLISH, LOG_FORMAT, className, methodName, log, sProcessId );
 			if( !TextUtils.isEmpty( parentStack ) ) message += ( "\n parent stacks: " + parentStack );
-			return message;
+			return message + generateClassNavigationSuffix(getCallerStackTraceElement());
         }
         catch( Exception ignore ) {}
 		return message;
@@ -191,4 +191,16 @@ public class LogUtil
     {
         return key + ": " + ( TextUtils.isEmpty( value ) ? "" :  value );
     }
+
+	private static String generateClassNavigationSuffix(StackTraceElement caller) {
+		String suffix = " (%s.java:%d)";
+		String callerClazzName = caller.getClassName();
+		callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
+		suffix = String.format(suffix, callerClazzName, caller.getLineNumber());
+		return suffix;
+	}
+
+	private static StackTraceElement getCallerStackTraceElement() {
+		return Thread.currentThread().getStackTrace()[5];
+	}
 }
