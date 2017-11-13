@@ -10,8 +10,8 @@ import android.widget.TextView;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
+import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.navigation.NavigationCommand;
-import com.kikatech.go.dialogflow.navigation.SceneNavigation;
 import com.kikatech.go.dialogflow.telephony.TelephonyOutgoingCommand;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.navigation.NavigationManager;
@@ -45,7 +45,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
     private IDialogFlowService mDialogFlowService;
     private TelephonySceneManager mTelephonySceneManager;
-    private SceneNavigation mSceneNavigation;
+    private NaviSceneManager mNaviSceneManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,26 +60,14 @@ public class KikaDialogFlowActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterScenes();
         if(mTelephonySceneManager != null){
             mTelephonySceneManager.close();
         }
+        if(mNaviSceneManager != null) {
+            mNaviSceneManager.close();
+        }
         if (mDialogFlowService != null) {
             mDialogFlowService.quitService();
-        }
-    }
-
-    private void registerScenes() {
-        if (mDialogFlowService != null) {
-            mDialogFlowService.registerScene(mSceneNavigation = new SceneNavigation(this,
-                    mDialogFlowService.getTtsFeedback()));
-
-        }
-    }
-
-    private void unregisterScenes() {
-        if (mDialogFlowService != null) {
-            mDialogFlowService.unregisterScene(mSceneNavigation);
         }
     }
 
@@ -125,8 +113,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
                         });
                     }
                 });
+
+        // Register all scenes from scene mangers
         mTelephonySceneManager = new TelephonySceneManager(this, mDialogFlowService);
-        registerScenes();
+        mNaviSceneManager = new NaviSceneManager(this, mDialogFlowService);
     }
 
     private void processGeneralCommand(byte cmd) {
