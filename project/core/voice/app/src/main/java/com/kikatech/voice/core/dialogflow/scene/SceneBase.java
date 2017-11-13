@@ -35,6 +35,10 @@ public abstract class SceneBase implements DialogObserver {
         }
     }
 
+    final public Context getContext() {
+        return mContext;
+    }
+
     protected abstract String scene();
 
     protected abstract void onExit();

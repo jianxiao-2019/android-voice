@@ -1,6 +1,7 @@
 package com.kikatech.voice.core.dialogflow.scene;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 /**
  * Created by tianli on 17-11-11.
@@ -12,7 +13,7 @@ public abstract class SceneStage {
 
     protected SceneBase mSceneBase = null;
 
-    public SceneStage(SceneBase scene, ISceneFeedback feedback) {
+    public SceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         mFeedback = feedback;
         mSceneBase = scene;
     }
@@ -31,9 +32,7 @@ public abstract class SceneStage {
     public abstract void action();
 
     final protected void exitScene() {
-        if(mSceneBase != null){
-            mSceneBase.exit();
-        }
+        mSceneBase.exit();
     }
 
     protected void speak(String text) {

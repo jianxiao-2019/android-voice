@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -25,46 +26,16 @@ public class StageAnswer extends SceneStage {
     public void action() {
         String toast = "Ok, answered this call.";
         speak(toast);
-//                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
-//                    @Override
-//                    public void onTtsStart() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsStart");
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onTtsComplete() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsComplete");
-//                        }
-//                        answerPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsInterrupted() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsInterrupted");
-//                        }
-//                        answerPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsError() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsError");
-//                        }
-//                        answerPhoneCall();
-//                    }
-//
-//                    private void answerPhoneCall() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.log(TAG, "answerPhoneCall");
-//                        }
-//                        TelephonyServiceManager.getIns().answerPhoneCall(KikaDialogFlowActivity.this);
-//                        TelephonyServiceManager.getIns().turnOnSpeaker(KikaDialogFlowActivity.this);
-//                    }
-//                });
+        // TODO: 17-11-13 是否等tts结束之后再接电话
+        answerPhoneCall();
+        exitScene();
+    }
 
+    private void answerPhoneCall() {
+//        if (LogUtil.DEBUG) {
+//            LogUtil.log(TAG, "answerPhoneCall");
+//        }
+        TelephonyServiceManager.getIns().answerPhoneCall(mSceneBase.getContext());
+        TelephonyServiceManager.getIns().turnOnSpeaker(mSceneBase.getContext());
     }
 }

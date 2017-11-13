@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -23,45 +24,13 @@ public class StageReject extends SceneStage {
 
     @Override
     public void action() {
-        String toast = "Ok, rejected this call.";
-        toast = "Ok, rejected this call.";
-//                tts(toast, new TtsSpeaker.TtsStateChangedListener() {
-//                    @Override
-//                    public void onTtsStart() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsStart");
-//                        }
-//                    }
-//                    @Override
-//                    public void onTtsComplete() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsComplete");
-//                        }
-//                        rejectPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsInterrupted() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsInterrupted");
-//                        }
-//                        rejectPhoneCall();
-//                    }
-//
-//                    @Override
-//                    public void onTtsError() {
-//                        if (LogUtil.DEBUG) {
-//                            LogUtil.logv(TAG, "onTtsError");
-//                        }
-//                        rejectPhoneCall();
-//                    }
-//
-//                });
-        speak(toast);
+        speak("Ok, rejected this call.");
+        rejectPhoneCall();
+        exitScene();
     }
 
     private void rejectPhoneCall() {
-//        TelephonyServiceManager.getIns().killPhoneCall();
+        TelephonyServiceManager.getIns().killPhoneCall(mSceneBase.getContext());
     }
 
 }
