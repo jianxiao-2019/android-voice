@@ -31,12 +31,12 @@ public class SceneIncoming extends SceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new SceneStage(mFeedback) {
+        return new SceneStage(this, mFeedback) {
             @Override
             public SceneStage next(String action, Bundle extra) {
                 if (SceneActions.ACTION_INCOMING_START.equals(action)) {
                     if (extra != null && extra.containsKey(SceneActions.PARAM_INCOMING_NAME)) {
-                        return new StageIncoming(null, extra.getString(SceneActions.PARAM_INCOMING_NAME));
+                        return new StageIncoming(SceneIncoming.this, null, extra.getString(SceneActions.PARAM_INCOMING_NAME));
                     }
                 }
                 return null;

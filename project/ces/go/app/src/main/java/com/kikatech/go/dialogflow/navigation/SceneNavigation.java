@@ -30,7 +30,7 @@ public class SceneNavigation extends SceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new SceneStage(mFeedback) {
+        return new SceneStage(this, mFeedback) {
             @Override
             public SceneStage next(String action, Bundle extra) {
                 return null;

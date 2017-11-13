@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.navigation.stage;
 import android.os.Bundle;
 
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
+import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
@@ -11,8 +12,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class StageNavigation extends SceneStage {
 
-    public StageNavigation(ISceneFeedback feedback) {
-        super(feedback);
+    public StageNavigation(SceneBase scene, ISceneFeedback feedback) {
+        super(scene, feedback);
     }
 
     @Override

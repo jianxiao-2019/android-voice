@@ -10,10 +10,11 @@ public abstract class SceneStage {
 
     protected ISceneFeedback mFeedback;
 
-    private ISceneManager mSceneManager = null;
+    protected SceneBase mSceneBase = null;
 
-    public SceneStage(ISceneFeedback feedback) {
+    public SceneStage(SceneBase scene, ISceneFeedback feedback) {
         mFeedback = feedback;
+        mSceneBase = scene;
     }
 
     /**
@@ -29,12 +30,14 @@ public abstract class SceneStage {
      */
     public abstract void action();
 
-    void attach(ISceneManager manager) {
-        mSceneManager = manager;
+    final protected void exitScene() {
+        if(mSceneBase != null){
+            mSceneBase.exit();
+        }
     }
 
-    protected void speak(String text){
-        if(mFeedback != null){
+    protected void speak(String text) {
+        if (mFeedback != null) {
             mFeedback.onText(text);
         }
     }

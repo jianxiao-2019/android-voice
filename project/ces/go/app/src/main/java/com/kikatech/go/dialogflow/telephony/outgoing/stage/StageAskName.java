@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
+import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
@@ -11,8 +12,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class StageAskName extends SceneStage {
 
-    public StageAskName(ISceneFeedback feedback) {
-        super(feedback);
+    public StageAskName(SceneBase scene, ISceneFeedback feedback) {
+        super(scene, feedback);
     }
 
     @Override

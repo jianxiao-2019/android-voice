@@ -29,6 +29,12 @@ public abstract class SceneBase implements DialogObserver {
         mSceneManager = null;
     }
 
+    void exit() {
+        if (mSceneManager != null) {
+            mSceneManager.exitScene(this);
+        }
+    }
+
     protected abstract String scene();
 
     protected abstract void onExit();
