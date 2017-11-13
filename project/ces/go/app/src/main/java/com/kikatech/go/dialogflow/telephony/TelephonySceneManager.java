@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.telephony.incoming.SceneActions;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
 import com.kikatech.voice.service.DialogFlowService;
@@ -50,7 +51,7 @@ public class TelephonySceneManager {
         @Override
         public void onInComingCallRinging(String phoneNumber) {
             mService.resetContexts();
-            String incoming = String.format(SceneTelephonyIncoming.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
+            String incoming = String.format(SceneActions.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
             mService.talk(incoming);
         }
 

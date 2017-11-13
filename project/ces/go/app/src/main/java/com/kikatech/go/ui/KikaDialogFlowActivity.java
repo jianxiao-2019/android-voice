@@ -12,7 +12,6 @@ import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.go.dialogflow.navigation.NavigationCommand;
 import com.kikatech.go.dialogflow.navigation.SceneNavigation;
-import com.kikatech.go.dialogflow.telephony.TelephonyIncomingCommand;
 import com.kikatech.go.dialogflow.telephony.TelephonyOutgoingCommand;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.navigation.NavigationManager;
@@ -107,9 +106,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
                             case NAVIGATION:
                                 processNavigationCommand(cmd, parameters);
                                 break;
-                            case TELEPHONY_INCOMING:
-                                processTelephonyIncomingCommand(cmd, parameters);
-                                break;
                             case TELEPHONY_OUTGOING:
                                 processTelephonyOutgoingCommand(cmd, parameters);
                                 break;
@@ -187,30 +183,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 break;
             default:
                 //
-                break;
-        }
-
-        if (LogUtil.DEBUG) LogUtil.log(TAG, log);
-    }
-
-    private void processTelephonyIncomingCommand(byte cmd, Bundle parameters) {
-        String toast = "UNKNOWN";
-        String log = "UNKNOWN";
-        switch (cmd) {
-            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_START:
-                String name = parameters.getString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME);
-                log = "TELEPHONY_INCOMING_CMD_START";
-                toast = String.format("%s is calling you", name);
-//                tts(toast);
-                break;
-            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_ANSWER:
-                log = "TELEPHONY_INCOMING_CMD_ANSWER";
-                break;
-            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_REJECT:
-                log = "TELEPHONY_INCOMING_CMD_REJECT";
-                break;
-            case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_IGNORE:
-                log = "TELEPHONY_INCOMING_CMD_IGNORE";
                 break;
         }
 

@@ -13,4 +13,6 @@ public class SceneActions {
 
     public final static String PARAM_INCOMING_NAME = "name";
 
+    public static final String KIKA_PROCESS_INCOMING_CALL = "kika_process_incoming_call %s";
+
 }
