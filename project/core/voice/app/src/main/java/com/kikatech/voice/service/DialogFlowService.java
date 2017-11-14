@@ -97,10 +97,6 @@ public class DialogFlowService implements
                     LogUtil.logv(TAG, "tts, words: " + words);
                 }
                 mTtsSpeaker.speak(words);
-                if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, "tts, words: " + words);
-                }
-                mTtsSpeaker.speak(words);
             }
         } catch (Exception e) {
             e.printStackTrace();

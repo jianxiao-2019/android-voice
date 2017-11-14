@@ -156,11 +156,11 @@ public class ApiAiAgent extends Agent {
             return null;
         }
 
-        if (LogUtil.DEBUG) LogUtil.logd(TAG, "scene: " + scene);
-
         String action = result.getAction();
 
-        if (LogUtil.DEBUG) LogUtil.logd(TAG, "action: " + action);
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "scene: " + scene + ", action: " + action);
+        }
 
         Intent intent = new Intent(scene, action);
 

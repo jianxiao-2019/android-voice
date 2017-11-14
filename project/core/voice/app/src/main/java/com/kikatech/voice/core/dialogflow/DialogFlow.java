@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.util.log.LogUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class DialogFlow {
     }
 
     public void resetContexts() {
+        if (LogUtil.DEBUG) LogUtil.log("DialogFlow", "resetContexts");
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
