@@ -9,10 +9,8 @@ import android.widget.TextView;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
-import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.navigation.NavigationCommand;
-import com.kikatech.go.dialogflow.telephony.TelephonyOutgoingCommand;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
@@ -21,7 +19,6 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.SceneType;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
-import com.kikatech.voice.service.VoiceConfiguration;
 
 import java.util.ArrayList;
 
@@ -72,8 +69,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
     }
 
     private void initDialogFlowService() {
-        VoiceConfiguration config = new VoiceConfiguration();
-        config.agent(new ApiAiAgentCreator());
         mDialogFlowService = DialogFlowService.queryService(this,
                 DialogFlowConfig.queryDemoConfig(this),
                 new IDialogFlowService.IServiceCallback() {
@@ -93,9 +88,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
                         switch (scene) {
                             case NAVIGATION:
                                 processNavigationCommand(cmd, parameters);
-                                break;
-                            case TELEPHONY_OUTGOING:
-                                processTelephonyOutgoingCommand(cmd, parameters);
                                 break;
                             case DEFAULT:
                                 processGeneralCommand(cmd);
@@ -177,52 +169,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
         }
 
         if (LogUtil.DEBUG) LogUtil.log(TAG, log);
-    }
-
-    private void processTelephonyOutgoingCommand(byte cmd, Bundle parameters) {
-        String toast = "UNKNOWN";
-        String log = "UNKNOWN";
-        String name = parameters.getString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NAME);
-        String number = parameters.getString(TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_NUMBER);
-        switch (cmd) {
-            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_ERR:
-                log = "TELEPHONY_OUTGOING_CMD_ERR";
-                toast = "Error occurs, please contact RD";
-                break;
-            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_ASK_NAME:
-                log = "TELEPHONY_OUTGOING_CMD_ASK_NAME";
-                toast = "Who do you want to call?";
-                break;
-            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_CONTACT_NOT_FOUND:
-                log = "TELEPHONY_OUTGOING_CMD_ASK_NAME_AGAIN";
-                toast = "Could not find in contacts. Please say it again.";
-                break;
-            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_CONFIRM_NAME:
-                log = "TELEPHONY_OUTGOING_CMD_CONFIRM_NAME";
-                toast = "Do you mean '" + name + "'?";
-                break;
-            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_START_CALL:
-                log = "TELEPHONY_OUTGOING_CMD_START_CALL";
-                toast = "Ok, make a call to " + name + ", dial number " + number;
-                break;
-            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_CANCELED:
-                log = "TELEPHONY_OUTGOING_CMD_CANCELED";
-                toast = "Ok, canceled.";
-                break;
-            case TelephonyOutgoingCommand.TELEPHONY_OUTGOING_CMD_DONT_UNDERSTAND:
-                log = "TELEPHONY_OUTGOING_CMD_DONT_UNDERSTAND";
-                toast = "Sorry I don't get it, would you say that again ?";
-                break;
-            default:
-                break;
-        }
-
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, log);
-            LogUtil.log(TAG, toast);
-        }
-        //showLongToast(toast);
-//        tts(toast);
     }
 
     /**

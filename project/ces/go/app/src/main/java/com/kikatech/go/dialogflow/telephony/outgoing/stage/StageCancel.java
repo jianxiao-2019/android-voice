@@ -9,27 +9,28 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
- * Created by tianli on 17-11-11.
+ * @author SkeeterWang Created on 2017/11/13.
  */
 
-public class StageNoContact extends StageOutgoing {
-    private static final String TAG = "StageNoContact";
+public class StageCancel extends SceneStage {
+    private static final String TAG = "StageCancel";
 
-    public StageNoContact(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    public StageCancel(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
     @Override
     public SceneStage next(String action, Bundle extra) {
-        return super.next(action, extra);
+        return null;
     }
 
     @Override
     public void action() {
-        String speech = "Could not find in contacts. Please say it again.";
+        String speech = "ok, canceled it.";
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }
         speak(speech);
+        exitScene();
     }
 }

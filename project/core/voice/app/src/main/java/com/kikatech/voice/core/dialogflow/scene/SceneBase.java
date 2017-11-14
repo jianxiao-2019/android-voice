@@ -47,7 +47,7 @@ public abstract class SceneBase implements DialogObserver {
 
     @Override
     public void onIntent(Intent intent) {
-        if (Intent.ACTION_EXIT.equals(intent.getAction())) {
+        if (!Intent.ACTION_EXIT.equals(intent.getAction())) {
             SceneStage stage = mStage.next(intent.getAction(), intent.getExtra());
             if (stage != null) {
                 mStage = stage;
