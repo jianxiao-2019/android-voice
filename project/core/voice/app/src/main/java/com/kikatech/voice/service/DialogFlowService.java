@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneManager;
@@ -87,7 +88,7 @@ public class DialogFlowService implements
         }
     }
 
-    private void tts(String words) {
+    private void tts(String words, IDialogFlowFeedback.IToSceneFeedback listener) {
         if (mTtsSpeaker == null) {
             return;
         }
@@ -96,6 +97,7 @@ public class DialogFlowService implements
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, "tts, words: " + words);
                 }
+                mTtsListener.bindListener(listener);
                 mTtsSpeaker.speak(words);
             }
         } catch (Exception e) {
@@ -272,16 +274,27 @@ public class DialogFlowService implements
 
     private ISceneFeedback mSceneFeedback = new ISceneFeedback() {
         @Override
-        public void onText(String text) {
-            tts(text);
+        public void onText(String text, IDialogFlowFeedback.IToSceneFeedback feedback) {
+            tts(text, feedback);
         }
     };
 
-    private TtsSpeaker.TtsStateChangedListener mTtsListener = new TtsSpeaker.TtsStateChangedListener() {
+
+    private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
+    private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {
+        private IDialogFlowFeedback.IToSceneFeedback listener;
+
+        private void bindListener(IDialogFlowFeedback.IToSceneFeedback listener) {
+            this.listener = listener;
+        }
+
         @Override
         public void onTtsStart() {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsStart");
+            }
+            if( listener != null ) {
+                listener.onTtsStart();
             }
         }
 
@@ -290,12 +303,18 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsComplete");
             }
+            if( listener != null ) {
+                listener.onTtsComplete();
+            }
         }
 
         @Override
         public void onTtsInterrupted() {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsInterrupted");
+            }
+            if( listener != null ) {
+                listener.onTtsInterrupted();
             }
         }
 
@@ -304,8 +323,11 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsError");
             }
+            if( listener != null ) {
+                listener.onTtsError();
+            }
         }
-    };
+    }
 
     private SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
         @Override

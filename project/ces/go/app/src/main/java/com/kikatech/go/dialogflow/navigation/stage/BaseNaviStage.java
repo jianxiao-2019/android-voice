@@ -49,6 +49,6 @@ public class BaseNaviStage extends SceneStage {
             }
         });
         if (mFeedback != null)
-            mFeedback.onText(words);
+            mFeedback.onText(words, null);
     }
 }

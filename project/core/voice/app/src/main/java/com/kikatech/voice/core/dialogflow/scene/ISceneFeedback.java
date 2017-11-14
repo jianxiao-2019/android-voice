@@ -5,5 +5,5 @@ package com.kikatech.voice.core.dialogflow.scene;
  */
 
 public interface ISceneFeedback {
-    void onText(String text);
+    void onText(String text, IDialogFlowFeedback.IToSceneFeedback feedback);
 }

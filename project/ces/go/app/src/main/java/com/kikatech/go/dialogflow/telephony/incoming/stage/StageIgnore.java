@@ -3,6 +3,8 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 import android.os.Bundle;
 
 import com.kikatech.go.telephony.TelephonyServiceManager;
+import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -12,6 +14,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class StageIgnore extends SceneStage {
+    private static final String TAG = "StageIgnore";
 
     public StageIgnore(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
@@ -24,8 +27,30 @@ public class StageIgnore extends SceneStage {
 
     @Override
     public void action() {
-        speak("Ok, ignore this call.");
-        ignorePhoneCall();
+        String speech = "Ok, ignore this call.";
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, speech);
+        }
+        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
+            @Override
+            public void onTtsStart() {
+            }
+
+            @Override
+            public void onTtsComplete() {
+                ignorePhoneCall();
+            }
+
+            @Override
+            public void onTtsError() {
+                ignorePhoneCall();
+            }
+
+            @Override
+            public void onTtsInterrupted() {
+                ignorePhoneCall();
+            }
+        });
         exitScene();
     }
 

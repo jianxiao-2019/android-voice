@@ -3,6 +3,8 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 import android.os.Bundle;
 
 import com.kikatech.go.telephony.TelephonyServiceManager;
+import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -12,6 +14,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class StageAnswer extends SceneStage {
+    private static final String TAG = "StageAnswer";
 
     public StageAnswer(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
@@ -24,17 +27,34 @@ public class StageAnswer extends SceneStage {
 
     @Override
     public void action() {
-        String toast = "Ok, answered this call.";
-        speak(toast);
-        // TODO: 17-11-13 是否等tts结束之后再接电话
-        answerPhoneCall();
+        String speech = "Ok, answered this call.";
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, speech);
+        }
+        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
+            @Override
+            public void onTtsStart() {
+            }
+
+            @Override
+            public void onTtsComplete() {
+                answerPhoneCall();
+            }
+
+            @Override
+            public void onTtsError() {
+                answerPhoneCall();
+            }
+
+            @Override
+            public void onTtsInterrupted() {
+                answerPhoneCall();
+            }
+        });
         exitScene();
     }
 
     private void answerPhoneCall() {
-//        if (LogUtil.DEBUG) {
-//            LogUtil.log(TAG, "answerPhoneCall");
-//        }
         TelephonyServiceManager.getIns().answerPhoneCall(mSceneBase.getContext());
         TelephonyServiceManager.getIns().turnOnSpeaker(mSceneBase.getContext());
     }

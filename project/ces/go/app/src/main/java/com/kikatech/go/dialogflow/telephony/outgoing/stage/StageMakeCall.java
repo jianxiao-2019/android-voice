@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -47,8 +48,27 @@ public class StageMakeCall extends StageOutgoing {
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }
-        speak(speech);
-        makePhoneCall(phoneNumber);
+        final String finalPhoneNumber = phoneNumber;
+        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
+            @Override
+            public void onTtsStart() {
+            }
+
+            @Override
+            public void onTtsComplete() {
+                makePhoneCall(finalPhoneNumber);
+            }
+
+            @Override
+            public void onTtsError() {
+                makePhoneCall(finalPhoneNumber);
+            }
+
+            @Override
+            public void onTtsInterrupted() {
+                makePhoneCall(finalPhoneNumber);
+            }
+        });
         exitScene();
     }
 

@@ -37,8 +37,12 @@ public abstract class SceneStage {
     }
 
     protected void speak(String text) {
+        speak(text, null);
+    }
+
+    protected void speak(String text, IDialogFlowFeedback.IToSceneFeedback feedback) {
         if (mFeedback != null) {
-            mFeedback.onText(text);
+            mFeedback.onText(text, feedback);
         }
     }
 }
