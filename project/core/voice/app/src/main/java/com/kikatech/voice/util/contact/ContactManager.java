@@ -2,14 +2,15 @@ package com.kikatech.voice.util.contact;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 
 import com.kikatech.voice.util.fuzzy.FuzzySearchManager;
 import com.kikatech.voice.util.log.LogUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author SkeeterWang Created on 2017/11/9.
@@ -107,7 +108,11 @@ public class ContactManager {
             long id = Long.valueOf(phones.getString(idIdx));
 
             if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phoneNumber)) {
-                phoneBook.put(name, new PhoneBookContact(id, name, phoneNumber));
+                if (phoneBook.containsKey(name)) {
+                    phoneBook.get(name).addNumber(phoneNumber);
+                } else {
+                    phoneBook.put(name, new PhoneBookContact(id, name, phoneNumber));
+                }
             }
 
             if (LogUtil.DEBUG) {
@@ -123,7 +128,7 @@ public class ContactManager {
 
         public long id;
         public String displayName;
-        public String phoneNumber;
+        public List<String> phoneNumbers = new ArrayList<>();
 
         PhoneBookContact(String phoneNumber) {
             this(-1, null, phoneNumber);
@@ -132,7 +137,32 @@ public class ContactManager {
         PhoneBookContact(long id, String displayName, String phoneNumber) {
             this.id = id;
             this.displayName = displayName;
-            this.phoneNumber = phoneNumber;
+            if (!TextUtils.isEmpty(phoneNumber)) {
+                this.phoneNumbers.add(phoneNumber);
+            }
+        }
+
+        public PhoneBookContact clone(int idxNumber) {
+            if (idxNumber < phoneNumbers.size()) {
+                return new PhoneBookContact(id, displayName, phoneNumbers.get(idxNumber));
+            }
+            return null;
+        }
+
+        private void addNumber(String number) {
+            if (!TextUtils.isEmpty(number)) {
+                this.phoneNumbers.add(number);
+            }
+        }
+
+        private void print() {
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, "name: " + displayName);
+                for (String number : phoneNumbers) {
+                    LogUtil.logd(TAG, "number: " + number);
+                }
+                LogUtil.logd(TAG, "------------------------------");
+            }
         }
     }
 }

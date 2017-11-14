@@ -29,7 +29,11 @@ public class StageConfirmName extends StageOutgoing {
         if (!TextUtils.isEmpty(action)) {
             switch (action) {
                 case SceneActions.ACTION_OUTGOING_YES:
-                    return new StageMakeCall(mSceneBase, mFeedback, mContact);
+                    if (mContact.phoneNumbers.size() > 1) {
+                        return new StageConfirmNumber(mSceneBase, mFeedback, mContact);
+                    } else {
+                        return new StageMakeCall(mSceneBase, mFeedback, mContact);
+                    }
                 case SceneActions.ACTION_OUTGOING_NO:
                     return new StageAskName(mSceneBase, mFeedback);
                 default:

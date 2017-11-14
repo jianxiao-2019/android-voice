@@ -20,7 +20,8 @@ public class StageOutgoing extends SceneStage {
     private static final byte NAME_STATE_NULL = 0x01;
     private static final byte NAME_STATE_FULL_MACH = 0x02;
     private static final byte NAME_STATE_FUZZY_MATCH = 0x03;
-    private static final byte NAME_STATE_NOT_FOUND = 0x04;
+    private static final byte NAME_STATE_NUMBER_MATCH = 0x04;
+    private static final byte NAME_STATE_NOT_FOUND = 0x05;
 
     private String mTargetName;
     private ContactManager.PhoneBookContact mContact;
@@ -33,6 +34,7 @@ public class StageOutgoing extends SceneStage {
     public SceneStage next(String action, Bundle extra) {
         if (!TextUtils.isEmpty(action)) {
             switch (action) {
+                case SceneActions.ACTION_OUTGOING_NUMBERS:
                 case SceneActions.ACTION_OUTGOING_START:
                 case SceneActions.ACTION_OUTGOING_CHANGE:
                     if (extra != null && extra.containsKey(SceneActions.PARAM_OUTGOING_NAME)) {
@@ -41,6 +43,12 @@ public class StageOutgoing extends SceneStage {
                     int contactState = queryContact();
                     switch (contactState) {
                         case NAME_STATE_FULL_MACH:
+                            if (mContact.phoneNumbers.size() > 1) {
+                                return new StageConfirmNumber(mSceneBase, mFeedback, mContact);
+                            } else {
+                                return new StageMakeCall(mSceneBase, mFeedback, mContact);
+                            }
+                        case NAME_STATE_NUMBER_MATCH:
                             return new StageMakeCall(mSceneBase, mFeedback, mContact);
                         case NAME_STATE_NOT_FOUND:
                             return new StageNoContact(mSceneBase, mFeedback);
@@ -80,8 +88,8 @@ public class StageOutgoing extends SceneStage {
                     } else {
                         return NAME_STATE_FUZZY_MATCH;
                     }
-                } else {
-                    return NAME_STATE_NOT_FOUND;
+                } else if (mContact.phoneNumbers != null && !mContact.phoneNumbers.isEmpty()) {
+                    return NAME_STATE_NUMBER_MATCH;
                 }
             } else {
                 return NAME_STATE_NOT_FOUND;
