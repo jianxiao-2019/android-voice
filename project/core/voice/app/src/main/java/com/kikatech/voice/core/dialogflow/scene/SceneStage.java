@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 
 public abstract class SceneStage {
 
+    public final static String TAG = "SceneStage";
     protected ISceneFeedback mFeedback;
 
     protected SceneBase mSceneBase = null;
