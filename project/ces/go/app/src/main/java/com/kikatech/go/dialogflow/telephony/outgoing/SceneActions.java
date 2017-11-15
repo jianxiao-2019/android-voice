@@ -13,6 +13,7 @@ public class SceneActions {
     public static final String ACTION_OUTGOING_CANCEL = "telephony.outgoing.cancel";
 
     public static final String PARAM_OUTGOING_NAME = "name";
-    public static final String PARAM_OUTGOING_ORDINAL = "ordinal";
-    public static final String PARAM_OUTGOING_NUMBER = "number";
+    private static final String PARAM_OUTGOING_ORDINAL = "ordinal";
+    private static final String PARAM_OUTGOING_NUMBER = "number";
+    public static final String[] PARAM_OUTGOING_ORDINALS = new String[]{PARAM_OUTGOING_ORDINAL, PARAM_OUTGOING_NUMBER};
 }
