@@ -10,8 +10,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.util.contact.ContactManager;
 
-import org.json.JSONObject;
-
 /**
  * @author SkeeterWang Created on 2017/11/14.
  */
@@ -52,20 +50,24 @@ public class StageConfirmNumber extends StageOutgoing {
     @Override
     public void action() {
         String speech = "error occurred, please contact RD";
-        SceneBase.OptionList optionList = null;
+        Bundle extras = null;
         if (mContact != null) {
             if (!mContact.phoneNumbers.isEmpty()) {
                 speech = "Choose for the following list";
-                optionList = new SceneBase.OptionList(SceneBase.OptionList.REQUEST_TYPE_ORDINAL);
-                for (int i = 0; i < mContact.phoneNumbers.size(); i++) {
-                    optionList.add(new SceneBase.Option(mContact.phoneNumbers.get(i), SceneActions.ACTION_OUTGOING_NUMBERS));
+                extras = new Bundle();
+                extras.putString(EXTRA_OPTIONS_TITLE, speech);
+                OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
+                for (String number : mContact.phoneNumbers) {
+                    optionList.add(new Option(number, SceneActions.ACTION_OUTGOING_NUMBERS));
                 }
+                extras.putParcelable(EXTRA_OPTIONS_LIST, optionList);
+                speech = getOptionTextToSpeak(speech, optionList);
             }
         }
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }
-        speak(speech, optionList);
+        speak(speech, extras);
     }
 
     private String parseOrdinal(Bundle param) {

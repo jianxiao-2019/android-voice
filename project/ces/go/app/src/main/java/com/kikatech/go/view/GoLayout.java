@@ -3,6 +3,7 @@ package com.kikatech.go.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -12,10 +13,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.view.widget.GoTextView;
-import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * @author SkeeterWang Created on 2017/11/10.
@@ -201,7 +202,7 @@ public class GoLayout extends RelativeLayout {
         mListenView.setText(text);
     }
 
-    public void displayOptions(String title, final SceneBase.OptionList optionList, final IOnOptionSelectListener listener) {
+    public void displayOptions(String title, final BaseSceneStage.OptionList optionList, final IOnOptionSelectListener listener) {
         mCurrentStatus = ViewStatus.DISPLAY_OPTIONS;
 
         mSpeakView.setVisibility(GONE);
@@ -212,24 +213,26 @@ public class GoLayout extends RelativeLayout {
         mOptionsTitle.setText(title);
         mOptionsLayout.removeAllViews();
         Context context = getContext();
-        for (final SceneBase.Option option : optionList.getList()) {
-            TextView optionView = new TextView(context);
-            LinearLayout.LayoutParams optionParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            optionParams.setMargins(0, dp2px(20), 0, 0);
-            optionView.setLayoutParams(optionParams);
-            optionView.setTextColor(mOptionItemTextColor);
-            optionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mOptionItemTextSize);
-            optionView.setText(option.getDisplayText());
-            optionView.setGravity(Gravity.CENTER);
-            optionView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onSelected(optionList.getRequestType(), option);
+        if( optionList != null && !optionList.isEmpty() ){
+            for (final BaseSceneStage.Option option : optionList.getList()) {
+                TextView optionView = new TextView(context);
+                LinearLayout.LayoutParams optionParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                optionParams.setMargins(0, dp2px(20), 0, 0);
+                optionView.setLayoutParams(optionParams);
+                optionView.setTextColor(mOptionItemTextColor);
+                optionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mOptionItemTextSize);
+                optionView.setText(option.getDisplayText());
+                optionView.setGravity(Gravity.CENTER);
+                optionView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (listener != null) {
+                            listener.onSelected(optionList.getRequestType(), option);
+                        }
                     }
-                }
-            });
-            mOptionsLayout.addView(optionView);
+                });
+                mOptionsLayout.addView(optionView);
+            }
         }
 
         mStatusAnimationView.setText("Display Options"); // TODO: animation
@@ -246,6 +249,6 @@ public class GoLayout extends RelativeLayout {
 
 
     public interface IOnOptionSelectListener {
-        void onSelected(byte requestType, SceneBase.Option option);
+        void onSelected(byte requestType, BaseSceneStage.Option option);
     }
 }

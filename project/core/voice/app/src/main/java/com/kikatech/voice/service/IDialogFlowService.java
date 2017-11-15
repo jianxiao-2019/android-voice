@@ -1,5 +1,7 @@
 package com.kikatech.voice.service;
 
+import android.os.Bundle;
+
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 
@@ -15,7 +17,7 @@ public interface IDialogFlowService {
 
         void onSpeechSpokenDone(String speechText);
 
-        void onText(String text, SceneBase.OptionList optionList);
+        void onText(String text, Bundle extras);
     }
 
     void registerScene(SceneBase scene);

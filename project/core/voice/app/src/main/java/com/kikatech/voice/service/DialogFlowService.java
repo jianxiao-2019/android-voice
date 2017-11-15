@@ -1,6 +1,7 @@
 package com.kikatech.voice.service;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -161,28 +162,11 @@ public class DialogFlowService implements
 
     private final ISceneFeedback mSceneFeedback = new ISceneFeedback() {
         @Override
-        public void onText(String text, SceneBase.OptionList optionList, IDialogFlowFeedback.IToSceneFeedback feedback) {
-            StringBuilder stringBuilder = new StringBuilder();
-            if (!TextUtils.isEmpty(text)) {
-                stringBuilder.append(text).append("\n");
-            }
-            if (optionList != null && !optionList.isEmpty()) {
-                SceneBase.Option option;
-                for (int i = 0; i < optionList.size(); i++) {
-                    option = optionList.get(i);
-                    if (option != null) {
-                        stringBuilder.append(String.valueOf(i)).append(" ").append(option.getDisplayText()).append("\n");
-                    }
-                }
-            }
-            String textToSpeak = stringBuilder.toString();
-            if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "textToSpeak: " + textToSpeak);
-            }
+        public void onText(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
             if (mCallback != null) {
-                mCallback.onText(text, optionList);
+                mCallback.onText(text, extras);
             }
-            tts(textToSpeak, feedback);
+            tts(text, feedback);
         }
     };
 

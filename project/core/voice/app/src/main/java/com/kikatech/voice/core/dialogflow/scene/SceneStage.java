@@ -44,13 +44,13 @@ public abstract class SceneStage {
         speak(text, null, feedback);
     }
 
-    protected void speak(String text, SceneBase.OptionList optionList) {
-        speak(text, optionList, null);
+    protected void speak(String text, Bundle extras) {
+        speak(text, extras, null);
     }
 
-    protected void speak(String text, SceneBase.OptionList optionList, IDialogFlowFeedback.IToSceneFeedback feedback) {
+    protected void speak(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
         if (mFeedback != null) {
-            mFeedback.onText(text, optionList, feedback);
+            mFeedback.onText(text, extras, feedback);
         }
     }
 }

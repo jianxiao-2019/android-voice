@@ -4,12 +4,12 @@ import android.os.Bundle;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.view.GoLayout;
-import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 
@@ -66,11 +66,17 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onText(String text, SceneBase.OptionList optionList) {
+                    public void onText(String text, Bundle extras) {
+                        BaseSceneStage.OptionList optionList = null;
+                        String title = text;
+                        if (extras != null && extras.containsKey(BaseSceneStage.EXTRA_OPTIONS_LIST)) {
+                            optionList = extras.getParcelable(BaseSceneStage.EXTRA_OPTIONS_LIST);
+                            title = extras.getString(BaseSceneStage.EXTRA_OPTIONS_TITLE);
+                        }
                         if (optionList != null && !optionList.isEmpty()) {
-                            displayOptionOnLayout(text, optionList);
+                            displayOptionOnLayout(title, optionList);
                         } else {
-                            speakOnLayout(text);
+                            speakOnLayout(title);
                         }
                     }
                 });
@@ -99,18 +105,18 @@ public class KikaAlphaUiActivity extends BaseActivity {
         });
     }
 
-    private void displayOptionOnLayout(final String text, final SceneBase.OptionList optionList) {
+    private void displayOptionOnLayout(final String text, final BaseSceneStage.OptionList optionList) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mGoLayout.displayOptions(text, optionList, new GoLayout.IOnOptionSelectListener() {
                     @Override
-                    public void onSelected(byte requestType, SceneBase.Option option) {
+                    public void onSelected(byte requestType, BaseSceneStage.Option option) {
                         switch (requestType) {
-                            case SceneBase.OptionList.REQUEST_TYPE_ORDINAL:
+                            case BaseSceneStage.OptionList.REQUEST_TYPE_ORDINAL:
                                 mDialogFlowService.talk(String.valueOf(optionList.indexOf(option) + 1));
                                 break;
-                            case SceneBase.OptionList.REQUEST_TYPE_TEXT:
+                            case BaseSceneStage.OptionList.REQUEST_TYPE_TEXT:
                                 mDialogFlowService.talk(option.getDisplayText());
                                 break;
                         }

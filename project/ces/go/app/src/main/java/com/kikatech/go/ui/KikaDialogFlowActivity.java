@@ -12,7 +12,6 @@ import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
-import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 
@@ -88,7 +87,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onText(String text, SceneBase.OptionList optionList) {
+                    public void onText(String text, Bundle extras) {
 
                     }
                 });
