@@ -14,6 +14,8 @@ public interface IDialogFlowService {
         void onInitComplete();
 
         void onSpeechSpokenDone(String speechText);
+
+        void onText(String text, SceneBase.OptionList optionList);
     }
 
     void registerScene(SceneBase scene);

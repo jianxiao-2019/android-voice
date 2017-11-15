@@ -5,6 +5,9 @@ import android.content.Context;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by tianli on 17-11-10.
  */
@@ -60,4 +63,61 @@ public abstract class SceneBase implements DialogObserver {
         }
     }
 
+    public static class OptionList {
+        public static final byte REQUEST_TYPE_ORDINAL = 0x01;
+        public static final byte REQUEST_TYPE_TEXT = 0x02;
+
+        private byte requestType;
+        private List<Option> options = new ArrayList<>();
+
+        public OptionList(byte requestType) {
+            this.requestType = requestType;
+        }
+
+        public void add(Option option) {
+            this.options.add(option);
+        }
+
+        public int size() {
+            return options.size();
+        }
+
+        public int indexOf(Option option) {
+            return options.indexOf(option);
+        }
+
+        public boolean isEmpty() {
+            return options.isEmpty();
+        }
+
+        public Option get(int index) {
+            return index > 0 && index < options.size() ? options.get(index) : null;
+        }
+
+        public byte getRequestType() {
+            return requestType;
+        }
+
+        public List<Option> getList() {
+            return options;
+        }
+    }
+
+    public static class Option {
+        private String displayText;
+        private String nextSceneAction;
+
+        public Option(String displayText, String nextSceneAction) {
+            this.displayText = displayText;
+            this.nextSceneAction = nextSceneAction;
+        }
+
+        public String getDisplayText() {
+            return displayText;
+        }
+
+        public String getNextSceneAction() {
+            return nextSceneAction;
+        }
+    }
 }

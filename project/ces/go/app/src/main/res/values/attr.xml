@@ -18,4 +18,16 @@
 
         <attr name="aw_color_uniform" format="reference"/>
     </declare-styleable>
+
+
+    <declare-styleable name="GoLayout">
+        <attr name="speak_text_size" format="dimension"/>
+        <attr name="speak_text_color" format="color"/>
+        <attr name="listen_text_size" format="dimension"/>
+        <attr name="listen_text_color" format="color"/>
+        <attr name="option_title_text_size" format="dimension"/>
+        <attr name="option_title_text_color" format="color"/>
+        <attr name="option_item_text_size" format="dimension"/>
+        <attr name="option_item_text_color" format="color"/>
+    </declare-styleable>
 </resources>

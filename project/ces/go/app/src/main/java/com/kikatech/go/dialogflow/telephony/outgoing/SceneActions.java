@@ -14,4 +14,5 @@ public class SceneActions {
 
     public static final String PARAM_OUTGOING_NAME = "name";
     public static final String PARAM_OUTGOING_ORDINAL = "ordinal";
+    public static final String PARAM_OUTGOING_NUMBER = "number";
 }

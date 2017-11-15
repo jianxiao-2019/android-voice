@@ -1,15 +1,10 @@
 package com.kikatech.voice.service;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
-import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -39,17 +34,10 @@ public class DialogFlowService implements
     private SceneManager mSceneManager;
 
     private TtsSpeaker mTtsSpeaker;
-    private final ISceneFeedback mSceneFeedback;
 
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
         mContext = ctx;
         mCallback = callback;
-        mSceneFeedback = new ISceneFeedback() {
-            @Override
-            public void onText(String text, IDialogFlowFeedback.IToSceneFeedback feedback) {
-                tts(text, feedback);
-            }
-        };
         mSceneManager = new SceneManager(mSceneCallback);
         initDialogFlow(conf);
         initVoiceService(conf);
@@ -71,7 +59,6 @@ public class DialogFlowService implements
         mDialogFlow = new DialogFlow(mContext, conf);
         mDialogFlow.setObserver(mSceneManager);
         mDialogFlow.resetContexts();
-
         if (LogUtil.DEBUG) LogUtil.log(TAG, "idle DialogFlow ... Done");
     }
 
@@ -103,7 +90,6 @@ public class DialogFlowService implements
             mTtsSpeaker.speak(words);
         } catch (Exception e) {
             e.printStackTrace();
-//            toast(words);
         }
     }
 
@@ -172,6 +158,33 @@ public class DialogFlowService implements
         if (LogUtil.DEBUG) LogUtil.log(TAG, "getTtsFeedback:" + mSceneFeedback);
         return mSceneFeedback;
     }
+
+    private final ISceneFeedback mSceneFeedback = new ISceneFeedback() {
+        @Override
+        public void onText(String text, SceneBase.OptionList optionList, IDialogFlowFeedback.IToSceneFeedback feedback) {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (!TextUtils.isEmpty(text)) {
+                stringBuilder.append(text).append("\n");
+            }
+            if (optionList != null && !optionList.isEmpty()) {
+                SceneBase.Option option;
+                for (int i = 0; i < optionList.size(); i++) {
+                    option = optionList.get(i);
+                    if (option != null) {
+                        stringBuilder.append(String.valueOf(i)).append(" ").append(option.getDisplayText()).append("\n");
+                    }
+                }
+            }
+            String textToSpeak = stringBuilder.toString();
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "textToSpeak: " + textToSpeak);
+            }
+            if (mCallback != null) {
+                mCallback.onText(text, optionList);
+            }
+            tts(textToSpeak, feedback);
+        }
+    };
 
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
     private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {

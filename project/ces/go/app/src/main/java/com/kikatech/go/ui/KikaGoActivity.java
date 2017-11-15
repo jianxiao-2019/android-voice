@@ -103,5 +103,13 @@ public class KikaGoActivity extends Activity{
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.button_alpha_ui).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaAlphaUiActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

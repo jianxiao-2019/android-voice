@@ -28,8 +28,13 @@ public class StageConfirmNumber extends StageOutgoing {
         if (!TextUtils.isEmpty(action)) {
             switch (action) {
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
+                    String ordinal = null;
                     if (extra.containsKey(SceneActions.PARAM_OUTGOING_ORDINAL)) {
-                        String ordinal = extra.getString(SceneActions.PARAM_OUTGOING_ORDINAL);
+                        ordinal = extra.getString(SceneActions.PARAM_OUTGOING_ORDINAL);
+                    } else if (extra.containsKey(SceneActions.PARAM_OUTGOING_NUMBER)) {
+                        ordinal = extra.getString(SceneActions.PARAM_OUTGOING_NUMBER);
+                    }
+                    if (!TextUtils.isEmpty(ordinal)) {
                         ContactManager.PhoneBookContact newContact = queryNumber(ordinal);
                         if (newContact != null) {
                             return new StageMakeCall(mSceneBase, mFeedback, newContact);
@@ -50,18 +55,20 @@ public class StageConfirmNumber extends StageOutgoing {
     @Override
     public void action() {
         String speech = "error occurred, please contact RD";
+        SceneBase.OptionList optionList = null;
         if (mContact != null) {
             if (!mContact.phoneNumbers.isEmpty()) {
-                speech = "Choose for the following list\n";
+                speech = "Choose for the following list";
+                optionList = new SceneBase.OptionList(SceneBase.OptionList.REQUEST_TYPE_ORDINAL);
                 for (int i = 0; i < mContact.phoneNumbers.size(); i++) {
-                    speech += String.format("%1$s %2$s\n", i + 1, mContact.phoneNumbers.get(i));
+                    optionList.add(new SceneBase.Option(mContact.phoneNumbers.get(i), SceneActions.ACTION_OUTGOING_NUMBERS));
                 }
             }
         }
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }
-        speak(speech);
+        speak(speech, optionList);
     }
 
     private ContactManager.PhoneBookContact queryNumber(String ordinal) {
