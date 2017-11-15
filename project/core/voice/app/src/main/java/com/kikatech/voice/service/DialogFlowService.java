@@ -39,15 +39,17 @@ public class DialogFlowService implements
     private SceneManager mSceneManager;
 
     private TtsSpeaker mTtsSpeaker;
-
-//    private SceneNavigationOld mSceneNavigation;
-//    private SceneTelephonyIncoming mSceneTelephonyIncoming;
-//    private SceneTelephonyOutgoing mSceneTelephonyOutgoing;
-//    private DialogObserver debugLogger;
+    private final ISceneFeedback mSceneFeedback;
 
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
         mContext = ctx;
         mCallback = callback;
+        mSceneFeedback = new ISceneFeedback() {
+            @Override
+            public void onText(String text, IDialogFlowFeedback.IToSceneFeedback feedback) {
+                tts(text, feedback);
+            }
+        };
         mSceneManager = new SceneManager(mSceneCallback);
         initDialogFlow(conf);
         initVoiceService(conf);
@@ -68,7 +70,8 @@ public class DialogFlowService implements
     private void initDialogFlow(@NonNull VoiceConfiguration conf) {
         mDialogFlow = new DialogFlow(mContext, conf);
         mDialogFlow.setObserver(mSceneManager);
-        registerScenes();
+        mDialogFlow.resetContexts();
+
         if (LogUtil.DEBUG) LogUtil.log(TAG, "idle DialogFlow ... Done");
     }
 
@@ -93,110 +96,15 @@ public class DialogFlowService implements
             return;
         }
         try {
-            if (mTtsSpeaker != null) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, "tts, words: " + words);
-                }
-                mTtsListener.bindListener(listener);
-                mTtsSpeaker.speak(words);
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "tts, words: " + words);
             }
+            mTtsListener.bindListener(listener);
+            mTtsSpeaker.speak(words);
         } catch (Exception e) {
             e.printStackTrace();
 //            toast(words);
         }
-    }
-
-    private void toast(final String message) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void debugDumpIntent(Intent intent) {
-        if (LogUtil.DEBUG && intent != null) {
-            LogUtil.log(TAG, "===== START ON INTENT =====");
-            LogUtil.log(TAG, "Scene: " + intent.getScene());
-            LogUtil.log(TAG, "Action: " + intent.getAction());
-            Bundle args = intent.getExtra();
-            if (args != null && !args.isEmpty()) {
-                for (String key : args.keySet()) {
-                    LogUtil.log(TAG, "[params] " + key + ": " + args.getString(key));
-                }
-            }
-            LogUtil.log(TAG, "===== STOP ON INTENT =====");
-        }
-    }
-
-    private void registerScenes() {
-        // 0. Common flow / Error handling
-//         1. Navigation
-//        mSceneNavigation = new SceneNavigationOld(new SceneBaseOld.ISceneCallback() {
-//            @Override
-//            public void resetContextImpl() {
-//                mDialogFlow.resetContexts();
-//            }
-//
-//            @Override
-//            public void onCommand(byte cmd, Bundle parameters) {
-//                if (mCallback != null) {
-//                    mCallback.onCommand(SceneType.NAVIGATION, cmd, parameters);
-//                }
-//            }
-//        });
-//        mDialogFlow.register(SceneType.NAVIGATION.toString(), mSceneNavigation);
-        // 2. Telephony Incoming
-//        mSceneTelephonyIncoming = new SceneTelephonyIncoming(mContext, new SceneBaseOld.ISceneCallback() {
-//            @Override
-//            public void resetContextImpl() {
-//                mDialogFlow.resetContexts();
-//            }
-//            @Override
-//            public void onCommand(byte cmd, Bundle parameters) {
-//                switch (cmd) {
-//                    case TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_PRE_START:
-//                        String phoneNumber = parameters.getString(TelephonyIncomingCommand.TELEPHONY_INCOMING_CMD_NAME);
-//                        startTelephonyIncoming(phoneNumber);
-//                        break;
-//                    default:
-//                        if (mCallback != null) {
-//                            mCallback.onCommand(SceneType.TELEPHONY_INCOMING, cmd, parameters);
-//                        }
-//                        break;
-//                }
-//            }
-//        });
-//        mDialogFlow.register(SceneType.TELEPHONY_INCOMING.toString(), mSceneTelephonyIncoming);
-//        mDialogFlow.register(SceneType.DEFAULT.toString(), mSceneTelephonyIncoming);
-        // 3. Telephony Outgoing
-//        mSceneTelephonyOutgoing = new SceneTelephonyOutgoing(mContext, new SceneBaseOld.ISceneCallback() {
-//            @Override
-//            public void resetContextImpl() {
-//                mDialogFlow.resetContexts();
-//            }
-//            @Override
-//            public void onCommand(byte cmd, Bundle parameters) {
-//                if (mCallback != null) {
-//                    mCallback.onCommand(SceneType.TELEPHONY_OUTGOING, cmd, parameters);
-//                }
-//            }
-//        });
-//        mDialogFlow.register(SceneType.TELEPHONY_OUTGOING.toString(), mSceneTelephonyOutgoing);
-        // Debug
-//        if (LogUtil.DEBUG) {
-//            debugLogger = new DialogObserver() {
-//                @Override
-//                public void onIntent(Intent intent) {
-//                    debugDumpIntent(intent);
-//                }
-//            };
-//            mDialogFlow.register(SceneType.DEFAULT.toString(), debugLogger);
-//            mDialogFlow.register(SceneType.NAVIGATION.toString(), debugLogger);
-//        }
-
-        mDialogFlow.resetContexts();
     }
 
     public static synchronized IDialogFlowService queryService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
@@ -227,14 +135,6 @@ public class DialogFlowService implements
             mTtsSpeaker.close();
             mTtsSpeaker = null;
         }
-        if (LogUtil.DEBUG) {
-//            mDialogFlow.unregister(SceneType.DEFAULT.toString(), debugLogger);
-//            mDialogFlow.unregister(SceneType.NAVIGATION.toString(), debugLogger);
-        }
-//        try {
-//            mSceneTelephonyIncoming.unregisterBroadcastReceiver(mContext);
-//        } catch (Exception ignore) {
-//        }
     }
 
     @Override
@@ -269,16 +169,9 @@ public class DialogFlowService implements
     }
 
     public ISceneFeedback getTtsFeedback() {
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "getTtsFeedback:" + mSceneFeedback);
         return mSceneFeedback;
     }
-
-    private ISceneFeedback mSceneFeedback = new ISceneFeedback() {
-        @Override
-        public void onText(String text, IDialogFlowFeedback.IToSceneFeedback feedback) {
-            tts(text, feedback);
-        }
-    };
-
 
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
     private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {
@@ -339,12 +232,4 @@ public class DialogFlowService implements
             mDialogFlow.resetContexts();
         }
     };
-
-//    @Override
-//    public void onIntent(Intent intent) {
-    // Process Default Fallback Intent
-    // List<DialogObserver> subs = mDialogFlow.getListeningSubscribers();
-    // TODO: 17-11-10 GENERAL_CMD_UNKNOWN
-//        mCallback.onCommand(SceneType.DEFAULT, GeneralCommand.GENERAL_CMD_UNKNOWN, null);
-//    }
 }

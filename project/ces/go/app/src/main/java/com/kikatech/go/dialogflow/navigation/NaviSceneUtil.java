@@ -36,6 +36,8 @@ public class NaviSceneUtil {
     private final static String KEY_SHORTCUT = "shortcut";
     private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT};
 
+    private static boolean sNavigating = false;
+
     public static String parseAddress(@NonNull Bundle parm) {
         for (String key : PRM_ARRAY) {
             String addr = parm.getString(key);
@@ -57,16 +59,25 @@ public class NaviSceneUtil {
         return "";
     }
 
-    public static void navigateToLocation(Context ctx, String loc) {
+    public synchronized static void navigateToLocation(Context ctx, String loc) {
         ArrayList<BaseNavigationProvider.NavigationAvoid> avoidList = new ArrayList<>();
         final BaseNavigationProvider.NavigationAvoid[] avoids = avoidList.toArray(new BaseNavigationProvider.NavigationAvoid[0]);
         NavigationManager.getIns().startNavigation(ctx, loc, BaseNavigationProvider.NavigationMode.DRIVE, avoids);
+        sNavigating = true;
     }
 
     /**
      * This is a workaround ...
      */
-    public static void stopNavigation(final Context ctx) {
+    public synchronized static void stopNavigation(final Context ctx) {
+        if(!sNavigating) {
+            if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Not navigating, ignore command");
+            return;
+        }
+
+        if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Start to stop navigation ...");
+
+        sNavigating = false;
         NavigationManager.getIns().stopNavigation(ctx);
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

@@ -18,9 +18,6 @@ public class TelephonySceneManager extends BaseSceneManager {
 
     private PhoneStateDispatcher mPhoneStateReceiver;
 
-    private SceneIncoming mSceneIncoming;
-    private SceneOutgoing mSceneOutgoing;
-
     public TelephonySceneManager(Context context, @NonNull IDialogFlowService service) {
         super(context, service);
         mPhoneStateReceiver = new PhoneStateDispatcher(mPhoneListener);
@@ -28,22 +25,16 @@ public class TelephonySceneManager extends BaseSceneManager {
     }
 
     @Override
-    protected void registerScenes() {
-        mService.registerScene(mSceneIncoming = new SceneIncoming(
+    protected void initScenes() {
+        mSceneBaseList.add(new SceneIncoming(
                 mContext, mService.getTtsFeedback()));
-        mService.registerScene(mSceneOutgoing = new SceneOutgoing(
+        mSceneBaseList.add(new SceneOutgoing(
                 mContext, mService.getTtsFeedback()));
-    }
-
-    @Override
-    protected void unregisterScenes() {
-        mService.unregisterScene(mSceneIncoming);
-        mService.unregisterScene(mSceneOutgoing);
     }
 
     @Override
     public void close() {
-        unregisterScenes();
+        super.close();
         mPhoneStateReceiver.unregister(mContext);
     }
 

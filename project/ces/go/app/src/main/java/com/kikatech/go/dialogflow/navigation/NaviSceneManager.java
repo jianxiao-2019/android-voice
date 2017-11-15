@@ -12,24 +12,12 @@ import com.kikatech.voice.service.IDialogFlowService;
 
 public class NaviSceneManager extends BaseSceneManager {
 
-    private SceneNavigation mSceneNav;
-
     public NaviSceneManager(Context context, @NonNull IDialogFlowService service) {
         super(context, service);
     }
 
     @Override
-    protected void registerScenes() {
-        mService.registerScene(mSceneNav = new SceneNavigation(mContext, mService.getTtsFeedback()));
-    }
-
-    @Override
-    protected void unregisterScenes() {
-        mService.unregisterScene(mSceneNav);
-    }
-
-    @Override
-    public void close() {
-        unregisterScenes();
+    protected void initScenes() {
+        mSceneBaseList.add(new SceneNavigation(mContext, mService.getTtsFeedback()));
     }
 }

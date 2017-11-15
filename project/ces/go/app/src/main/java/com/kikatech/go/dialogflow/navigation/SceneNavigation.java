@@ -15,7 +15,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class SceneNavigation extends SceneBase {
 
-    private static final String SCENE = "Navigation";
+    public static final String SCENE = "Navigation";
 
     SceneNavigation(Context context, ISceneFeedback feedback) {
         super(context, feedback);

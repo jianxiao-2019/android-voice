@@ -7,11 +7,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
+import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,8 +38,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private View[] mInteractiveViews;
 
     private IDialogFlowService mDialogFlowService;
-    private TelephonySceneManager mTelephonySceneManager;
-    private NaviSceneManager mNaviSceneManager;
+    private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +53,8 @@ public class KikaDialogFlowActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mTelephonySceneManager != null) {
-            mTelephonySceneManager.close();
-        }
-        if (mNaviSceneManager != null) {
-            mNaviSceneManager.close();
+        for (BaseSceneManager bcm : mSceneManagers) {
+            if (bcm != null) bcm.close();
         }
         if (mDialogFlowService != null) {
             mDialogFlowService.quitService();
@@ -87,8 +88,9 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 });
 
         // Register all scenes from scene mangers
-        mTelephonySceneManager = new TelephonySceneManager(this, mDialogFlowService);
-        mNaviSceneManager = new NaviSceneManager(this, mDialogFlowService);
+        mSceneManagers.add(new TelephonySceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new NaviSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService));
     }
 
     private void resetLogs() {

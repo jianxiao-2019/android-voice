@@ -14,11 +14,12 @@ public abstract class SceneBase implements DialogObserver {
     protected ISceneFeedback mFeedback;
     protected Context mContext;
     private ISceneManager mSceneManager = null;
-    protected SceneStage mStage = idle();
+    protected SceneStage mStage;
 
     public SceneBase(Context context, ISceneFeedback feedback) {
         mContext = context.getApplicationContext();
         mFeedback = feedback;
+        mStage = idle();
     }
 
     void attach(ISceneManager manager) {

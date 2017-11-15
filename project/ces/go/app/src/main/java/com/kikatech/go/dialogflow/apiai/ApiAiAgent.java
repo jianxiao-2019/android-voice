@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.google.gson.JsonElement;
 import com.kikatech.voice.core.dialogflow.Agent;
-import com.kikatech.voice.core.dialogflow.scene.SceneType;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.util.log.LogUtil;
 
@@ -145,14 +144,14 @@ public class ApiAiAgent extends Agent {
         String name = metadata.getIntentName();
 
         if (TextUtils.isEmpty(name)) {
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "Err, name is empty");
             return null;
         }
-
-        if (LogUtil.DEBUG) LogUtil.logd(TAG, "name: " + name);
 
         String scene = SceneType.getScene(name);
 
         if (TextUtils.isEmpty(scene)) {
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "Err, scene is empty");
             return null;
         }
 
