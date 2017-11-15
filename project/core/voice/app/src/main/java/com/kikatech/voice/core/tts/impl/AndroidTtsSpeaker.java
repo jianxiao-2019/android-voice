@@ -55,9 +55,18 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
 
                     mVoices[0] = mTts.getDefaultVoice();
                     for (Voice voice : mTts.getVoices()) {
-                        if ("en-us-x-sfg#male_3-local".equals(voice.getName())) {
-                            mVoices[1] = voice;
+                        if (voice.getName().startsWith("en-us")) {
+                            Logger.d("voice name = " + voice.getName());
+                            if (!mVoices[0].getName().startsWith("en-us")) {
+                                mVoices[0] = voice;
+                            } else {
+                                mVoices[1] = voice;
+                                break;
+                            }
                         }
+                    }
+                    if (mVoices[1] == null) {
+                        mVoices[1] = mVoices[0];
                     }
 
                     if (listener != null) {
@@ -109,12 +118,13 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     public void speak(final String text) {
         mPlayList.clear();
         mPlayListSize = 0;
-        Logger.d("Android TtsSpeaker speak speak = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
+        Logger.d("Android TtsSpeaker speak text = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
         if (mTts == null) {
             return;
         }
 
         if (mIsInitialized) {
+            mTts.setVoice(getVoice(0));
             mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
         } else {
             if (mStateChangedListener != null) {
@@ -147,7 +157,8 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     }
 
     private Voice getVoice(int voiceId) {
-        if (voiceId < 0 || mVoices == null || voiceId > mVoices.length) {
+        if (voiceId < 0 || mVoices == null || voiceId > mVoices.length
+                || mVoices[voiceId] == null) {
             mTts.getDefaultVoice();
         }
         return mVoices[voiceId];
@@ -161,6 +172,14 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
                 mStateChangedListener.onTtsInterrupted();
             }
         }
+    }
+
+    @Override
+    public boolean isTtsSpeaking() {
+        if (mTts != null) {
+            return mTts.isSpeaking();
+        }
+        return false;
     }
 
     @Override

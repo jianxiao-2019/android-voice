@@ -69,6 +69,9 @@ public class VoiceSource implements IVoiceSource {
 
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
+        if (mAudioRecord == null) {
+            return -1;
+        }
         return mAudioRecord.read(audioData, offsetInBytes, sizeInBytes);
     }
 

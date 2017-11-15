@@ -10,6 +10,7 @@ import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.util.log.Logger;
@@ -31,10 +32,7 @@ public class VoiceService {
     private VoiceRecognitionListener mVoiceRecognitionListener;
     private VoiceStateChangedListener mVoiceStateChangedListener;
 
-    static {
-        Message.register("SPEECH", TextMessage.class);
-        Message.register("ALTER", EditTextMessage.class);
-    }
+    private Handler mMainThreadHander;
 
     public interface VoiceRecognitionListener {
         void onRecognitionResult(Message message);
@@ -49,11 +47,19 @@ public class VoiceService {
     private VoiceService(VoiceConfiguration conf) {
         mConf = conf;
         // TODO : base on the VoiceConfiguration.
-        mVoiceDetector = new VoiceDetector(new FileWriter(mConf.getDebugFilePath() + "_speex", new VoiceDataSender()), new VoiceDetector.OnVadProbabilityChangeListener() {
+        mVoiceDetector = new VoiceDetector(
+                new FileWriter(mConf.getDebugFilePath() + "_speex", new VoiceDataSender()), new VoiceDetector.OnVadProbabilityChangeListener() {
             @Override
-            public void onSpeechProbabilityChanged(float speechProbability) {
-                if (mVoiceStateChangedListener != null) {
-                    mVoiceStateChangedListener.onSpeechProbabilityChanged(speechProbability);
+            public void onSpeechProbabilityChanged(final float speechProbability) {
+                if (mMainThreadHander != null) {
+                    mMainThreadHander.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mVoiceStateChangedListener != null) {
+                                mVoiceStateChangedListener.onSpeechProbabilityChanged(speechProbability);
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -73,9 +79,16 @@ public class VoiceService {
         }
         mWebService = WebSocket.openConnection(mWebSocketListener);
         mWebService.connect(mConf.getConnectionConfiguration());
+
+        Message.register("NONE", IntermediateMessage.class);
+        Message.register("ALTER", EditTextMessage.class);
+        Message.register("SPEECH", TextMessage.class);
+
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStartListening();
         }
+
+        mMainThreadHander = new Handler();
     }
 
     public void stop() {
@@ -98,17 +111,24 @@ public class VoiceService {
         }
     }
 
-    public void alterViaVoice(String toBeAltered) {
+    public void sendCommand(String command, String alter) {
         if (mWebService != null) {
-            mWebService.sendCommand("ALTER", toBeAltered);
+            mWebService.sendCommand(command, alter);
         }
     }
 
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
         @Override
-        public void onMessage(Message message) {
-            if (mVoiceRecognitionListener != null) {
-                mVoiceRecognitionListener.onRecognitionResult(message);
+        public void onMessage(final Message message) {
+            if (mMainThreadHander != null) {
+                mMainThreadHander.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mVoiceRecognitionListener != null) {
+                            mVoiceRecognitionListener.onRecognitionResult(message);
+                        }
+                    }
+                });
             }
         }
 
@@ -133,7 +153,7 @@ public class VoiceService {
 
         @Override
         public void onData(byte[] data) {
-            Logger.d("VoiceDataSender onData");
+            Logger.i("VoiceDataSender onData");
             if (mWebService != null) {
                 mWebService.sendData(data);
             }

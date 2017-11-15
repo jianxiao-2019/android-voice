@@ -1,6 +1,7 @@
 package com.kikatech.voice.service;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.AgentCreator;
 import com.kikatech.voice.core.recorder.IVoiceSource;
@@ -10,6 +11,9 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
  */
 
 public class VoiceConfiguration {
+
+    private static final String DEFAULT_ENGINE = "google";
+    private static final String DEFAULT_LOCALE = "en_US";
 
     private IVoiceSource mVoiceSource;
 
@@ -99,7 +103,22 @@ public class VoiceConfiguration {
                 return this;
             }
 
+            public Builder setEngine(String engine) {
+                this.engine = engine;
+                return this;
+            }
+
             public ConnectionConfiguration build() {
+                if (TextUtils.isEmpty(url) || TextUtils.isEmpty(sign)
+                        || TextUtils.isEmpty(userAgent)) {
+                    throw new IllegalArgumentException();
+                }
+                if (TextUtils.isEmpty(engine)) {
+                    engine = DEFAULT_ENGINE;
+                }
+                if (TextUtils.isEmpty(locale)) {
+                    locale = DEFAULT_LOCALE;
+                }
                 return new ConnectionConfiguration(url, locale, sign, userAgent, engine, bundle);
             }
         }

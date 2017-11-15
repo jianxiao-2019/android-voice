@@ -75,6 +75,7 @@ public class WebSocket {
                 httpHeaders.put("User-Agent", conf.userAgent);
                 httpHeaders.put("lang", conf.locale);
                 httpHeaders.put("locale", conf.locale);
+                httpHeaders.put("engine", conf.engine);
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));
                 }
@@ -188,7 +189,6 @@ public class WebSocket {
         try {
             JSONObject json = new JSONObject(msg);
             Message message = Message.create(json.optString("type", "NONE"));
-            Logger.i("handleMessage message = " + message);
             if (message != null) {
                 message.fromJson(json);
             }

@@ -40,5 +40,7 @@ public interface TtsSpeaker {
 
     void interrupt();
 
+    boolean isTtsSpeaking();
+
     void setTtsStateChangedListener(TtsStateChangedListener listener);
 }

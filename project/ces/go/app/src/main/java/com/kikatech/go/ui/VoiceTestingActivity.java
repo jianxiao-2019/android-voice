@@ -38,6 +38,7 @@ public class VoiceTestingActivity extends BaseActivity
         TtsSpeaker.TtsStateChangedListener {
 
     private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
+    private static final String SERVER_COMMAND_CONTENT = "CONTENT";
 
     private static final Locale[] LOCALE_LIST = new Locale[]{
             new Locale("en", "US"),
@@ -65,6 +66,7 @@ public class VoiceTestingActivity extends BaseActivity
                 .setLocale(getCurrentLocale())
                 .setSign(RequestManager.getSign(this))
                 .setUserAgent(RequestManager.generateUserAgent(this))
+                .setEngine("google")
                 .build());
         mVoiceService = VoiceService.getService(this, conf);
         mVoiceService.setVoiceRecognitionListener(this);
@@ -105,7 +107,9 @@ public class VoiceTestingActivity extends BaseActivity
             @Override
             public void onClick(View v) {
                 if (mVoiceService != null && mEditText != null) {
-                    mVoiceService.alterViaVoice(mEditText.getText().toString());
+                    mVoiceService.sendCommand(
+                            SERVER_COMMAND_CONTENT,
+                            mEditText.getText().toString());
                 }
             }
         });

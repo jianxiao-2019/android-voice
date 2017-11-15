@@ -10,11 +10,13 @@ public class EditTextMessage extends Message {
 
     public int alterStart;
     public int alterEnd;
+    public String context;
 
     @Override
     public void fromJson(JSONObject json) {
         super.fromJson(json);
         alterStart = json.optInt("alterStart", 0);
         alterEnd = json.optInt("alterEnd", 0);
+        context = json.optString("context");
     }
 }
