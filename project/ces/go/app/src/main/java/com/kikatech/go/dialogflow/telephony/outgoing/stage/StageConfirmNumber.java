@@ -10,6 +10,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.util.contact.ContactManager;
 
+import org.json.JSONObject;
+
 /**
  * @author SkeeterWang Created on 2017/11/14.
  */
@@ -28,12 +30,7 @@ public class StageConfirmNumber extends StageOutgoing {
         if (!TextUtils.isEmpty(action)) {
             switch (action) {
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
-                    String ordinal = null;
-                    if (extra.containsKey(SceneActions.PARAM_OUTGOING_ORDINAL)) {
-                        ordinal = extra.getString(SceneActions.PARAM_OUTGOING_ORDINAL);
-                    } else if (extra.containsKey(SceneActions.PARAM_OUTGOING_NUMBER)) {
-                        ordinal = extra.getString(SceneActions.PARAM_OUTGOING_NUMBER);
-                    }
+                    String ordinal = parseOrdinal(extra);
                     if (!TextUtils.isEmpty(ordinal)) {
                         ContactManager.PhoneBookContact newContact = queryNumber(ordinal);
                         if (newContact != null) {
@@ -71,10 +68,27 @@ public class StageConfirmNumber extends StageOutgoing {
         speak(speech, optionList);
     }
 
+    private String parseOrdinal(Bundle param) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, param.toString());
+        }
+        String ordinal = null;
+        for (String key : SceneActions.PARAM_OUTGOING_ORDINALS) {
+            if (param.containsKey(key)) {
+                ordinal = param.getString(key);
+                break;
+            }
+        }
+        if (!TextUtils.isEmpty(ordinal)) {
+            ordinal = ordinal.substring(1, ordinal.length() - 1);
+        }
+        return ordinal;
+    }
+
     private ContactManager.PhoneBookContact queryNumber(String ordinal) {
         try {
             if (!TextUtils.isEmpty(ordinal)) {
-                int idxNumber = Integer.parseInt(ordinal.substring(1, ordinal.length() - 1)) - 1;
+                int idxNumber = Integer.parseInt(ordinal) - 1;
                 if (idxNumber < mContact.phoneNumbers.size()) {
                     return mContact.clone(idxNumber);
                 }
