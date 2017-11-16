@@ -1,6 +1,7 @@
 package com.kikatech.go.view.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -8,6 +9,8 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
+import com.kikatech.go.R;
+import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
 
 
@@ -18,6 +21,8 @@ public class GoTextView extends AppCompatTextView {
 
     private static final String TAG = "GoTextView";
 
+    private static final int DEFAULT_MIN_TEXT_SIZE_SP = 30;
+
     private float mMinTextSize;
     private float mMaxTextSize;
     private boolean mResizeEnabled;
@@ -26,15 +31,43 @@ public class GoTextView extends AppCompatTextView {
 
 
     public GoTextView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public GoTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, android.R.attr.textViewStyle);
     }
 
     public GoTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(attrs);
+    }
+
+    private void init(AttributeSet attrs) {
+        try {
+            Context context = getContext();
+
+            if (attrs != null) {
+                TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.GoTextView, 0, 0);
+
+                mMinTextSize = typedArray.getDimensionPixelSize(R.styleable.GoTextView_min_text_size, ResolutionUtil.sp2px(context,DEFAULT_MIN_TEXT_SIZE_SP));
+                mMaxTextSize = typedArray.getDimensionPixelSize(R.styleable.GoTextView_max_text_size, -1);
+
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "max: " + mMaxTextSize + ", min: " + mMinTextSize);
+                }
+                if (mMaxTextSize > 0) {
+                    mResizeEnabled = true;
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, mMaxTextSize);
+                }
+
+                typedArray.recycle();
+            }
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
     }
 
 

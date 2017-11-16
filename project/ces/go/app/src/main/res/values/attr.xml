@@ -20,14 +20,8 @@
     </declare-styleable>
 
 
-    <declare-styleable name="GoLayout">
-        <attr name="speak_text_size" format="dimension"/>
-        <attr name="speak_text_color" format="color"/>
-        <attr name="listen_text_size" format="dimension"/>
-        <attr name="listen_text_color" format="color"/>
-        <attr name="option_title_text_size" format="dimension"/>
-        <attr name="option_title_text_color" format="color"/>
-        <attr name="option_item_text_size" format="dimension"/>
-        <attr name="option_item_text_color" format="color"/>
+    <declare-styleable name="GoTextView">
+        <attr name="min_text_size" format="dimension"/>
+        <attr name="max_text_size" format="dimension"/>
     </declare-styleable>
 </resources>

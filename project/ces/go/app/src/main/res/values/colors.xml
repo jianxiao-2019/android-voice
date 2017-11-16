@@ -5,4 +5,9 @@
     <color name="colorAccent">#40c3ff</color>
 
     <color name="voice_primary_color">#00aefe</color>
+
+    <color name="go_layout_speak_text_color">#b3bdd9</color>
+    <color name="go_layout_listen_text_color">#24D3E0</color>
+    <color name="go_layout_option_title_text_color">#7781a0</color>
+    <color name="go_layout_option_item_text_color">#b3bdd9</color>
 </resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/go_layout_content_padding_left_right"
+        android:paddingRight="@dimen/go_layout_content_padding_left_right">
+
+        <include
+            android:id="@+id/go_layout_speak"
+            layout="@layout/go_layout_speak"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <include
+            android:id="@+id/go_layout_listen"
+            layout="@layout/go_layout_listen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:id="@+id/go_layout_options"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"/>
+
+    </FrameLayout>
+
+    <include
+        android:id="@+id/go_layout_status"
+        layout="@layout/go_layout_status"/>
+
+</LinearLayout>

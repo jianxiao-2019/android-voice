@@ -3,6 +3,8 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -61,7 +63,7 @@ public class StageConfirmNumber extends StageOutgoing {
                     optionList.add(new Option(number, SceneActions.ACTION_OUTGOING_NUMBERS));
                 }
                 extras.putParcelable(EXTRA_OPTIONS_LIST, optionList);
-                speech = getOptionTextToSpeak(speech, optionList);
+                speech = optionList.getTextToSpeak(speech);
             }
         }
         if (LogUtil.DEBUG) {

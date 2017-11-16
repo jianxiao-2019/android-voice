@@ -91,6 +91,11 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     public void onText(String text, Bundle extras) {
 
                     }
+
+                    @Override
+                    public void onSceneExit(String scene) {
+
+                    }
                 });
 
         // Register all scenes from scene mangers

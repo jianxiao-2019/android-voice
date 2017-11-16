@@ -18,6 +18,8 @@ public interface IDialogFlowService {
         void onSpeechSpokenDone(String speechText);
 
         void onText(String text, Bundle extras);
+
+        void onSceneExit(String scene);
     }
 
     void registerScene(SceneBase scene);

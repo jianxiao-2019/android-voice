@@ -227,6 +227,9 @@ public class DialogFlowService implements
         @Override
         public void onSceneExit(String scene) {
             mDialogFlow.resetContexts();
+            if (mCallback != null) {
+                mCallback.onSceneExit(scene);
+            }
         }
     };
 }

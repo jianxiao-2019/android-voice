@@ -6,10 +6,13 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
@@ -59,6 +62,8 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     @Override
                     public void onInitComplete() {
                         // Register all scenes from scene mangers
+                        displayOptionOnLayout(OptionList.getDefaultOptionListTitle(),
+                                OptionList.getDefaultOptionList());
                     }
 
                     @Override
@@ -68,7 +73,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
                     @Override
                     public void onText(String text, Bundle extras) {
-                        BaseSceneStage.OptionList optionList = null;
+                        OptionList optionList = null;
                         String title = text;
                         if (extras != null && extras.containsKey(BaseSceneStage.EXTRA_OPTIONS_LIST)) {
                             optionList = extras.getParcelable(BaseSceneStage.EXTRA_OPTIONS_LIST);
@@ -79,6 +84,17 @@ public class KikaAlphaUiActivity extends BaseActivity {
                         } else {
                             speakOnLayout(title);
                         }
+                    }
+
+                    @Override
+                    public void onSceneExit(String scene) {
+                        BackgroundThread.getHandler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayOptionOnLayout(OptionList.getDefaultOptionListTitle(),
+                                        OptionList.getDefaultOptionList());
+                            }
+                        }, 1000);
                     }
                 });
 
@@ -107,18 +123,18 @@ public class KikaAlphaUiActivity extends BaseActivity {
         });
     }
 
-    private void displayOptionOnLayout(final String text, final BaseSceneStage.OptionList optionList) {
+    private void displayOptionOnLayout(final String text, final OptionList optionList) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mGoLayout.displayOptions(text, optionList, new GoLayout.IOnOptionSelectListener() {
                     @Override
-                    public void onSelected(byte requestType, BaseSceneStage.Option option) {
+                    public void onSelected(byte requestType, Option option) {
                         switch (requestType) {
-                            case BaseSceneStage.OptionList.REQUEST_TYPE_ORDINAL:
+                            case OptionList.REQUEST_TYPE_ORDINAL:
                                 mDialogFlowService.talk(String.valueOf(optionList.indexOf(option) + 1));
                                 break;
-                            case BaseSceneStage.OptionList.REQUEST_TYPE_TEXT:
+                            case OptionList.REQUEST_TYPE_TEXT:
                                 mDialogFlowService.talk(option.getDisplayText());
                                 break;
                         }

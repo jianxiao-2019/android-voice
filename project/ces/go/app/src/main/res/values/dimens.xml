@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="go_layout_content_padding_left_right">33dp</dimen>
+    <dimen name="go_layout_speak_text_max_size">73dp</dimen>
+    <dimen name="go_layout_listen_text_max_size">73dp</dimen>
+    <dimen name="go_layout_option_title_text_max_size">43dp</dimen>
+    <dimen name="go_layout_option_item_text_max_size">53dp</dimen>
+    <dimen name="go_layout_status_bar_height">157dp</dimen>
+</resources>

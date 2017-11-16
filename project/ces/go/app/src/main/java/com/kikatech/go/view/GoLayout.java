@@ -1,27 +1,24 @@
 package com.kikatech.go.view;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
-import com.kikatech.go.dialogflow.BaseSceneStage;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
-
-import java.util.HashMap;
 
 /**
  * @author SkeeterWang Created on 2017/11/10.
  */
-public class GoLayout extends RelativeLayout {
+public class GoLayout extends FrameLayout {
     private static final String TAG = "GoLayout";
 
     private enum DisplayMode {
@@ -29,35 +26,22 @@ public class GoLayout extends RelativeLayout {
     }
 
     private enum ViewStatus {
-        SPEAK, LISTEN, DISPLAY_OPTIONS
+        SPEAK, LISTEN, DISPLAY_OPTIONS, LOADING
     }
-
-    private static final int DEFAULT_SPEAK_TEXT_SIZE_SP = 40;
-    private static final int DEFAULT_SPEAK_TEXT_COLOR = Color.GRAY;
-    private static final int DEFAULT_LISTEN_TEXT_SIZE_SP = 40;
-    private static final int DEFAULT_LISTEN_TEXT_COLOR = Color.BLACK;
-    private static final int DEFAULT_OPTION_TITLE_TEXT_SIZE_SP = 40;
-    private static final int DEFAULT_OPTION_TITLE_TEXT_COLOR = Color.BLACK;
-    private static final int DEFAULT_OPTION_ITEM_TEXT_SIZE_SP = 30;
-    private static final int DEFAULT_OPTION_ITEM_TEXT_COLOR = Color.GRAY;
-    private static final int MIN_TEXT_SIZE_SP = 20;
 
     private DisplayMode mCurrentMode = DisplayMode.AWAKE;
     private ViewStatus mCurrentStatus;
 
-    private float mSpeakTextSize;
-    private int mSpeakTextColor;
-    private float mListenTextSize;
-    private int mListenTextColor;
-    private float mOptionTitleTextSize;
-    private int mOptionTitleTextColor;
-    private float mOptionItemTextSize;
-    private int mOptionItemTextColor;
+    private LayoutInflater mLayoutInflater;
 
+    private View mSpeakLayout;
     private GoTextView mSpeakView;
+    private View mListenLayout;
     private GoTextView mListenView;
-    private GoTextView mOptionsTitle;
     private LinearLayout mOptionsLayout;
+    private GoTextView mOptionsTitle;
+
+    private View mStatusLayout;
     private TextView mStatusAnimationView;
 
 
@@ -75,90 +59,25 @@ public class GoLayout extends RelativeLayout {
 
     public GoLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init(attrs);
+        bindView();
     }
 
-    private void init(AttributeSet attrs) {
-        try {
-            Context context = getContext();
+    private void bindView() {
+        mLayoutInflater = LayoutInflater.from(getContext());
 
-            if (attrs != null) {
-                TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.GoLayout, 0, 0);
+        mLayoutInflater.inflate(R.layout.go_layout, this);
 
-                mSpeakTextSize = typedArray.getFloat(R.styleable.GoLayout_speak_text_size, DEFAULT_SPEAK_TEXT_SIZE_SP);
-                mSpeakTextColor = typedArray.getColor(R.styleable.GoLayout_speak_text_color, DEFAULT_SPEAK_TEXT_COLOR);
+        mSpeakLayout = findViewById(R.id.go_layout_speak);
+        mSpeakView = (GoTextView) findViewById(R.id.go_layout_speak_text);
 
-                mListenTextSize = typedArray.getFloat(R.styleable.GoLayout_listen_text_size, DEFAULT_LISTEN_TEXT_SIZE_SP);
-                mListenTextColor = typedArray.getColor(R.styleable.GoLayout_listen_text_color, DEFAULT_LISTEN_TEXT_COLOR);
+        mListenLayout = findViewById(R.id.go_layout_listen);
+        mListenView = (GoTextView) findViewById(R.id.go_layout_listen_text);
 
-                mOptionTitleTextSize = typedArray.getFloat(R.styleable.GoLayout_listen_text_size, DEFAULT_OPTION_TITLE_TEXT_SIZE_SP);
-                mOptionTitleTextColor = typedArray.getColor(R.styleable.GoLayout_listen_text_color, DEFAULT_OPTION_TITLE_TEXT_COLOR);
-                mOptionItemTextSize = typedArray.getFloat(R.styleable.GoLayout_listen_text_size, DEFAULT_OPTION_ITEM_TEXT_SIZE_SP);
-                mOptionItemTextColor = typedArray.getColor(R.styleable.GoLayout_listen_text_color, DEFAULT_OPTION_ITEM_TEXT_COLOR);
+        mOptionsLayout = (LinearLayout) findViewById(R.id.go_layout_options);
+        mOptionsTitle = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_option_title, null);
 
-                typedArray.recycle();
-            }
-
-            initSpeakView(context);
-            initListenView(context);
-            initOptionView(context);
-            initStatusView(context);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initSpeakView(Context context) {
-        mSpeakView = new GoTextView(context);
-        LayoutParams speakParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        speakParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        mSpeakView.setLayoutParams(speakParams);
-        mSpeakView.setTextColor(mSpeakTextColor);
-        mSpeakView.enableResize(sp2px(MIN_TEXT_SIZE_SP), sp2px(mSpeakTextSize));
-        mSpeakView.setGravity(Gravity.CENTER);
-        addView(mSpeakView);
-    }
-
-    private void initListenView(Context context) {
-        mListenView = new GoTextView(context);
-        LayoutParams listenParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        listenParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        mListenView.setLayoutParams(listenParams);
-        mListenView.setTextColor(mListenTextColor);
-        mListenView.setGravity(Gravity.CENTER);
-        mListenView.enableResize(sp2px(MIN_TEXT_SIZE_SP), sp2px(mListenTextSize));
-        addView(mListenView);
-    }
-
-    private void initOptionView(Context context) {
-        mOptionsTitle = new GoTextView(context);
-        mOptionsLayout = new LinearLayout(context);
-        mOptionsLayout.setOrientation(LinearLayout.VERTICAL);
-
-        LayoutParams titleParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        titleParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-        mOptionsTitle.setLayoutParams(titleParams);
-        mOptionsTitle.setTextColor(mOptionTitleTextColor);
-        mOptionsTitle.enableResize(sp2px(MIN_TEXT_SIZE_SP), sp2px(mOptionTitleTextSize));
-        mOptionsTitle.setGravity(Gravity.CENTER);
-
-        LayoutParams optionParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        optionParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        mOptionsLayout.setLayoutParams(optionParams);
-
-        addView(mOptionsTitle);
-        addView(mOptionsLayout);
-    }
-
-    private void initStatusView(Context context) {
-        mStatusAnimationView = new TextView(context);
-        LayoutParams statusParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        statusParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        statusParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-        mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.darker_gray));
-        mStatusAnimationView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
-        mStatusAnimationView.setLayoutParams(statusParams);
-        addView(mStatusAnimationView);
+        mStatusLayout = findViewById(R.id.go_layout_status);
+        mStatusAnimationView = (TextView) findViewById(R.id.go_layout_status_text);
     }
 
     @Override
@@ -166,10 +85,10 @@ public class GoLayout extends RelativeLayout {
         super.onLayout(changed, left, top, right, bottom);
         switch (mCurrentMode) {
             case SLEEP:
-                setBackgroundColor(getResources().getColor(android.R.color.black));
+                setBackgroundResource(R.drawable.kika_awake_bg);
                 break;
             case AWAKE:
-                setBackgroundColor(getResources().getColor(android.R.color.white));
+                setBackgroundResource(R.drawable.kika_normal_bg);
                 break;
         }
     }
@@ -180,75 +99,112 @@ public class GoLayout extends RelativeLayout {
         requestLayout();
     }
 
-    public void speak(String text) {
+
+    public synchronized void speak(final String text) {
         mCurrentStatus = ViewStatus.SPEAK;
 
-        mSpeakView.setVisibility(VISIBLE);
-        mListenView.setVisibility(GONE);
-        mOptionsTitle.setVisibility(GONE);
+        mSpeakLayout.setVisibility(VISIBLE);
+        mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
-        mStatusAnimationView.setText("Speaking"); // TODO: animation
+
         mSpeakView.setText(text);
+
+        onStatusChanged(mCurrentStatus);
     }
 
-    public void listen(String text) {
+    public synchronized void listen(final String text) {
         mCurrentStatus = ViewStatus.LISTEN;
 
-        mSpeakView.setVisibility(GONE);
-        mListenView.setVisibility(VISIBLE);
-        mOptionsTitle.setVisibility(GONE);
+        mSpeakLayout.setVisibility(GONE);
+        mListenLayout.setVisibility(VISIBLE);
         mOptionsLayout.setVisibility(GONE);
-        mStatusAnimationView.setText("Listening"); // TODO: animation
+
         mListenView.setText(text);
+
+        onStatusChanged(mCurrentStatus);
     }
 
-    public void displayOptions(String title, final BaseSceneStage.OptionList optionList, final IOnOptionSelectListener listener) {
+    public synchronized void displayOptions(final String title, final OptionList optionList, final IOnOptionSelectListener listener) {
         mCurrentStatus = ViewStatus.DISPLAY_OPTIONS;
 
-        mSpeakView.setVisibility(GONE);
-        mListenView.setVisibility(GONE);
-        mOptionsTitle.setVisibility(VISIBLE);
+        mSpeakLayout.setVisibility(GONE);
+        mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(VISIBLE);
 
-        mOptionsTitle.setText(title);
         mOptionsLayout.removeAllViews();
-        Context context = getContext();
-        if( optionList != null && !optionList.isEmpty() ){
-            for (final BaseSceneStage.Option option : optionList.getList()) {
-                TextView optionView = new TextView(context);
-                LinearLayout.LayoutParams optionParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                optionParams.setMargins(0, dp2px(20), 0, 0);
-                optionView.setLayoutParams(optionParams);
-                optionView.setTextColor(mOptionItemTextColor);
-                optionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mOptionItemTextSize);
-                optionView.setText(option.getDisplayText());
-                optionView.setGravity(Gravity.CENTER);
-                optionView.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (listener != null) {
-                            listener.onSelected(optionList.getRequestType(), option);
+
+        try {
+            if (optionList != null && !optionList.isEmpty()) {
+                mOptionsTitle.setText(title);
+                mOptionsLayout.addView(mOptionsTitle);
+                for (final Option option : optionList.getList()) {
+                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_option_item, null);
+                    mOptionsLayout.addView(optionView);
+                    optionView.setText(option.getDisplayText());
+                    optionView.setGravity(Gravity.CENTER);
+                    optionView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (listener != null) {
+                                listener.onSelected(optionList.getRequestType(), option);
+                            }
                         }
-                    }
-                });
-                mOptionsLayout.addView(optionView);
+                    });
+                }
+                resolveOptionLayoutMargin();
+            }
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
         }
 
-        mStatusAnimationView.setText("Display Options"); // TODO: animation
+        onStatusChanged(mCurrentStatus);
     }
 
+    private void resolveOptionLayoutMargin() {
+        try {
+            final int CHILD_COUNT = mOptionsLayout.getChildCount();
+            final int DEFAULT_TITLE_MARGIN_BOTTOM = 20; //px
+            final int DEFAULT_TOTAL_MARGIN = 180; // px
+            final int ITEM_MARGIN_TOP = DEFAULT_TOTAL_MARGIN / (CHILD_COUNT - 1);
+            LinearLayout.LayoutParams titleParam = (LinearLayout.LayoutParams) mOptionsTitle.getLayoutParams();
+            titleParam.setMargins(0, 0, 0, DEFAULT_TITLE_MARGIN_BOTTOM);
+            mOptionsTitle.setLayoutParams(titleParam);
+            for (int i = 1; i < CHILD_COUNT; i++) {
+                View child = mOptionsLayout.getChildAt(i);
+                LinearLayout.LayoutParams optionParam = (LinearLayout.LayoutParams) child.getLayoutParams();
+                optionParam.setMargins(0, ITEM_MARGIN_TOP, 0, 0);
+                child.setLayoutParams(optionParam);
+            }
+            mOptionsLayout.requestLayout();
 
-    private int sp2px(float sp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, getContext().getResources().getDisplayMetrics());
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
     }
 
-    private int dp2px(float dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
+    private void onStatusChanged(ViewStatus status) {
+        switch (status) {
+            case LOADING:
+                mStatusAnimationView.setText("Loading"); // TODO: animation
+                break;
+            case SPEAK:
+                mStatusAnimationView.setText("Speaking"); // TODO: animation
+                break;
+            case LISTEN:
+                mStatusAnimationView.setText("Listening"); // TODO: animation
+                break;
+            case DISPLAY_OPTIONS:
+                mStatusAnimationView.setText("Display Options"); // TODO: animation
+                break;
+        }
     }
 
 
     public interface IOnOptionSelectListener {
-        void onSelected(byte requestType, BaseSceneStage.Option option);
+        void onSelected(byte requestType, Option option);
     }
 }
