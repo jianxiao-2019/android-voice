@@ -7,6 +7,7 @@ import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
+import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.view.GoLayout;
@@ -85,6 +86,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         mSceneManagers.add(new TelephonySceneManager(this, mDialogFlowService));
         mSceneManagers.add(new NaviSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService));
+        mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
     }
 
     private void speakOnLayout(final String text) {

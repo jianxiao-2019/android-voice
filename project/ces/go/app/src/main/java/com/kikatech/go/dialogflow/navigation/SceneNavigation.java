@@ -33,6 +33,6 @@ public class SceneNavigation extends SceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new StageNavigationIdle(SceneNavigation.this, mFeedback);
+        return new StageNavigationIdle(this, mFeedback);
     }
 }

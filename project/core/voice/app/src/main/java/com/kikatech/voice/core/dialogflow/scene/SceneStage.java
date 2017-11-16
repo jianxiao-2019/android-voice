@@ -10,9 +10,9 @@ import android.support.annotation.NonNull;
 public abstract class SceneStage {
 
     public final static String TAG = "SceneStage";
-    protected ISceneFeedback mFeedback;
+    protected final ISceneFeedback mFeedback;
 
-    protected SceneBase mSceneBase = null;
+    protected final SceneBase mSceneBase;
 
     public SceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         mFeedback = feedback;

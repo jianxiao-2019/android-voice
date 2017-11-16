@@ -23,7 +23,6 @@ public class StageNavigationIdle extends BaseNaviStage {
 
     public StageNavigationIdle(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "StageNavigationIdle init");
     }
 
     @Override

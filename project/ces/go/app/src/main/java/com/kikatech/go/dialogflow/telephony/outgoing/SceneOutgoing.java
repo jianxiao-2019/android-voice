@@ -33,7 +33,6 @@ public class SceneOutgoing extends SceneBase {
 
     @Override
     protected SceneStage idle() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "idle");
         return new StageOutgoing(this, mFeedback);
     }
 }

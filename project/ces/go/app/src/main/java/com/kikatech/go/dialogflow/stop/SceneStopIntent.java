@@ -31,6 +31,6 @@ public class SceneStopIntent extends SceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new StageProcessStopIdle(SceneStopIntent.this, mFeedback);
+        return new StageProcessStopIdle(this, mFeedback);
     }
 }

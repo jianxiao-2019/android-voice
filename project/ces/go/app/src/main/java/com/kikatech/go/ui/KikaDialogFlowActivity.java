@@ -10,6 +10,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
+import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.voice.service.DialogFlowService;
@@ -96,6 +97,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
         mSceneManagers.add(new TelephonySceneManager(this, mDialogFlowService));
         mSceneManagers.add(new NaviSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService));
+        mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
     }
 
     private void resetLogs() {

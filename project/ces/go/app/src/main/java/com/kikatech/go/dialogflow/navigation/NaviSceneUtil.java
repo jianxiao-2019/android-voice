@@ -55,7 +55,7 @@ public class NaviSceneUtil {
                 return addrResult;
             }
         }
-        if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "parseAddress : <empty>" + ", parm:" + parm.keySet());
+        if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "parseAddress : <empty>" + ", parm:" + parm.keySet().size());
         return "";
     }
 
