@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -24,7 +25,8 @@ public class StageSendSmsConfirm extends BaseSendSmsStage {
 
     @Override
     public void action() {
-        speak("Send SMS !!!");
+        speak("Send SMS !!!\n" + getSmsContent().toString());
+        exitScene();
         // TODO send sms / check Emoji
     }
 }

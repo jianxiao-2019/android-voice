@@ -3,7 +3,6 @@ package com.kikatech.go.dialogflow.sms.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -14,30 +13,20 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class StageAskSendTargetCorrect extends BaseSendSmsStage {
 
-    // SendSMS 2.4
+    /**
+     * SendSMS 2.4 確認傳訊對象
+     */
     StageAskSendTargetCorrect(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
     @Override
-    public SceneStage next(String action, Bundle extra) {
-        SmsContent sc = parseSmsContent(extra);
-        if (sc.hasOnlyOneNumber()) {
-            if (sc.isSmsBodyAvailable()) {
-                // SendSMS 2.9
-                return new StageAskForSendSmsToContact(mSceneBase, mFeedback);
-            } else {
-                // SendSMS 2.8
-                return new StageAskForSmsBody(mSceneBase, mFeedback);
-            }
-        } else {
-            // SendSMS 2.6
-            return new StageAskForChooseNumbers(mSceneBase, mFeedback);
-        }
+    protected SceneStage getNextStage(String action, Bundle extra) {
+        return getStageCheckNumberCount(TAG, getSmsContent(), mSceneBase, mFeedback);
     }
 
     @Override
     public void action() {
-        speak("Is " + getSmsContent().getContact() + " correct ?");
+        speak("Is " + getSmsContent().getMatchedName() + " correct ?");
     }
 }

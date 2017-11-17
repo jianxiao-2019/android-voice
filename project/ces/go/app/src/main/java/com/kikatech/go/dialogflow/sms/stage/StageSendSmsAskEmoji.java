@@ -20,7 +20,7 @@ public class StageSendSmsAskEmoji extends BaseSendSmsStage {
     }
 
     @Override
-    public SceneStage next(String action, Bundle extra) {
+    protected SceneStage getNextStage(String action, Bundle extra) {
         if(action.equals("send.emoji.confirm")) {
             // Send sms with Emoji
         } else if(action.equals("send.emoji.confirm.no")) {

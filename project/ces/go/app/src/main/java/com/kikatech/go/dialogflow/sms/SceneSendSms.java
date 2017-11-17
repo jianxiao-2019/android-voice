@@ -1,7 +1,6 @@
 package com.kikatech.go.dialogflow.sms;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import com.kikatech.go.dialogflow.sms.stage.StageSendSmsIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -16,7 +15,7 @@ public class SceneSendSms extends SceneBase {
 
     public static final String SCENE = "SendSMS";
 
-    private SmsContent smsContent;
+    private SmsContent smsContent = null;
 
     SceneSendSms(Context context, ISceneFeedback feedback) {
         super(context, feedback);
@@ -26,8 +25,12 @@ public class SceneSendSms extends SceneBase {
         return smsContent;
     }
 
-    public void setSmsContent(SmsContent sc) {
-        smsContent = sc;
+    public void updateSmsContent(SmsContent.IntentContent ic) {
+        if(smsContent == null) {
+            smsContent = new SmsContent(ic);
+        } else {
+            smsContent.update(ic);
+        }
     }
 
     @Override
@@ -37,7 +40,7 @@ public class SceneSendSms extends SceneBase {
 
     @Override
     protected void onExit() {
-
+        smsContent = null;
     }
 
     @Override
