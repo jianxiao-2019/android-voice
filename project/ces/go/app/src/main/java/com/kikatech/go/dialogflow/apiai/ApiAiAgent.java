@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.google.gson.JsonElement;
+import com.kikatech.go.util.TimeUtil;
 import com.kikatech.voice.core.dialogflow.Agent;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.util.log.LogUtil;
@@ -37,6 +38,8 @@ public class ApiAiAgent extends Agent {
     private static final String CLIENT_ACCESS_TOKEN = CLIENT_ACCESS_TOKEN_BRAD;
 
     private AIService mAIService;
+
+    private long mLatestContactUploadTime = 0;
 
     ApiAiAgent(Context context) {
         final AIConfiguration config = new AIConfiguration(CLIENT_ACCESS_TOKEN,
@@ -161,6 +164,8 @@ public class ApiAiAgent extends Agent {
             LogUtil.logd(TAG, "scene: " + scene + ", action: " + action);
         }
 
+        checkToUploadContacts(scene);
+
         Intent intent = new Intent(scene, action);
 
         final Map<String, JsonElement> params = result.getParameters();
@@ -182,6 +187,16 @@ public class ApiAiAgent extends Agent {
         }
 
         return intent;
+    }
+
+    private void checkToUploadContacts(String scene) {
+        if(scene.equals(SceneType.SEND_SMS.name())) {
+            final long now = System.currentTimeMillis();
+            if (now - mLatestContactUploadTime > 30 * TimeUtil.MILLIS_IN_MINUTE) {
+                // TODO upload contacts to api.ai server
+                mLatestContactUploadTime = now;
+            }
+        }
     }
 
     private void printOriginalData(AIResponse response) {

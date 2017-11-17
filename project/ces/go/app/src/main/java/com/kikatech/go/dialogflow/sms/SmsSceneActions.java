@@ -13,4 +13,6 @@ public class SmsSceneActions {
     public static final String ACTION_SEND_SMS_YES = "SendSMS.SendSMS-yes";
     public static final String ACTION_SEND_SMS_CANCEL = "SendSMS.SendSMS-cancel";
     public static final String ACTION_SEND_SMS_SELECT_NUM = "SendSMS.SendSMS-selectnumber";
+    public static final String ACTION_SEND_SMS_CHANGE_SMS_BODY = "SendSMS.SendSMS-chnage.sms";
+    public static final String ACTION_SEND_SMS_AGAIN = "SendSMS.SendSMS-repeat";
 }

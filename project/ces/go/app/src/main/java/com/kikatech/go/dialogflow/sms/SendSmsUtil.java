@@ -1,9 +1,13 @@
 package com.kikatech.go.dialogflow.sms;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.kikatech.go.message.sms.SmsManager;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.PermissionUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,8 +27,8 @@ public class SendSmsUtil {
 
     public static SmsContent.IntentContent parseContactName(@NonNull Bundle parm) {
         SmsContent.IntentContent ic = new SmsContent.IntentContent();
-        ic.smsBody = parm.getString(KEY_ANY, "").replace("\"", "");;
-        ic.lastName = parm.getString(KEY_LAST_NAME, "");
+        ic.smsBody = parm.getString(KEY_ANY, "").replace("\"", "");
+        ic.lastName = parm.getString(KEY_LAST_NAME, "").replace("\"", "");;
         String names = parm.getString(KEY_NAME, "");
         try {
             if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "names:" + names);
@@ -41,11 +45,11 @@ public class SendSmsUtil {
             if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "chosenNum:" + chosenNum);
             JSONArray jsonNums = new JSONArray(chosenNum);
             if (jsonNums.length() > 0) {
-                ic.chosenNumber += jsonNums.getString(0);
+                ic.chosenOption += jsonNums.getString(0);
             }
-            ic.chosenNumber = ic.chosenNumber.trim();
+            ic.chosenOption = ic.chosenOption.trim();
         } catch (JSONException e) {
-            ic.chosenNumber = names.replace("\"", "");
+            ic.chosenOption = names.replace("\"", "");
         }
 
         if (LogUtil.DEBUG) {
@@ -57,5 +61,22 @@ public class SendSmsUtil {
         }
 
         return ic;
+    }
+
+    public static boolean sensSms(Context ctx, String phoneNum, String msgContent) {
+        if (!PermissionUtil.hasPermissionsSMS(ctx)) {
+            if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "Get SMS permission first!");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(phoneNum) || TextUtils.isEmpty(msgContent)) {
+            if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "Empty target or message!");
+            return false;
+        }
+
+        boolean sent = SmsManager.getInstance().sendMessage(ctx, phoneNum, "", msgContent);
+        if (LogUtil.DEBUG)
+            LogUtil.log("SendSmsUtil", "phoneNum:" + phoneNum + ", msgContent:" + msgContent + ", send status:" + sent);
+        return sent;
     }
 }

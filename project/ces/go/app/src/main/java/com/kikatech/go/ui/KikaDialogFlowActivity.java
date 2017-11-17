@@ -2,6 +2,7 @@ package com.kikatech.go.ui;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -135,10 +136,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
         mBtnQuery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String words = mWordsInput.getText().toString();
-                if (!TextUtils.isEmpty(words)) {
-                    mDialogFlowService.talk(words);
-                }
+                query();
             }
         });
 
@@ -158,7 +156,25 @@ public class KikaDialogFlowActivity extends BaseActivity {
             }
         });
 
+        mWordsInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    query();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         mInteractiveViews = new View[]{mWordsInput, mBtnResetContexts, mBtnQuery, mBtnResetAll, mBtnClearInputs};
+    }
+
+    private void query() {
+        String words = mWordsInput.getText().toString();
+        if (!TextUtils.isEmpty(words)) {
+            mDialogFlowService.talk(words);
+        }
     }
 
     private void setViewEnable(boolean enable) {

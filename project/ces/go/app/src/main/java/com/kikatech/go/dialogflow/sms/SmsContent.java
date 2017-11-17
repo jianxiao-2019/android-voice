@@ -19,6 +19,7 @@ public class SmsContent {
 
     private String contactMatchedName;
     private final List<String> phoneNumbers;
+    private String mChoosedNumber;
 
     private boolean isContactMatched;
 
@@ -26,14 +27,25 @@ public class SmsContent {
         String smsBody = "";
         String firstName = "";
         String lastName = "";
-        String chosenNumber = "";
+        String chosenOption = "";
 
         @Override
         public String toString() {
             return "smsBody:" + getDisplayString(smsBody) +
                     ", firstName:" + getDisplayString(firstName) +
                     ", lastName:" + getDisplayString(lastName) +
-                    ", chosenNumber:" + getDisplayString(chosenNumber);
+                    ", chosenOption:" + getDisplayString(chosenOption);
+        }
+
+        private String checkNUpdate(String ov, String nv) {
+            return TextUtils.isEmpty(nv) ? ov : nv;
+        }
+
+        void update(IntentContent ic) {
+            smsBody = checkNUpdate(smsBody, ic.smsBody);
+            firstName = checkNUpdate(firstName, ic.firstName);
+            lastName = checkNUpdate(lastName, ic.lastName);
+            chosenOption = checkNUpdate(chosenOption, ic.chosenOption);
         }
     }
 
@@ -47,7 +59,11 @@ public class SmsContent {
     }
 
     void update(IntentContent ic) {
-        mIntentContent = ic;
+        if(mIntentContent == null) {
+            mIntentContent = ic;
+        } else {
+            mIntentContent.update(ic);
+        }
     }
 
     public String getContact() {
@@ -86,8 +102,22 @@ public class SmsContent {
         return phoneNumbers;
     }
 
-    public boolean isOkToSend() {
-        return isContactAvailable() && isSmsBodyAvailable() && !isSimilarContact();
+    public String getChoosedPhoneNumber() {
+        return mChoosedNumber;
+    }
+
+    public void setChoosedNumber(String number) {
+        if(LogUtil.DEBUG) LogUtil.log("SmsContent", "setChoosedNumber:" + number);
+        mChoosedNumber = number;
+    }
+
+    public int getChosenOption() {
+        try {
+            return Integer.parseInt(mIntentContent.chosenOption);
+        } catch (Exception e) {
+            if(LogUtil.DEBUG) LogUtil.log("SmsContent", "Err, cannot parse chosenOption :" + mIntentContent.chosenOption);
+        }
+        return -1;
     }
 
     public boolean tryParseContact(Context ctx, String smsBody) {
@@ -100,7 +130,9 @@ public class SmsContent {
         if (pbc != null) {
             contactMatchedName = pbc.displayName;
             phoneNumbers.clear();
-            phoneNumbers.addAll(pbc.phoneNumbers);
+            for(String s:pbc.phoneNumbers) {
+                phoneNumbers.add(s.replace(" ", ""));
+            }
             isContactMatched = true;
 
             if (LogUtil.DEBUG) {
@@ -111,7 +143,7 @@ public class SmsContent {
                 LogUtil.log("SmsContent", "Find " + contactMatchedName + ", numbers:" + numb);
             }
         } else {
-            LogUtil.log("SmsContent", "findName fail");
+            if(LogUtil.DEBUG) LogUtil.log("SmsContent", "findName fail");
             isContactMatched = false;
         }
 
@@ -125,7 +157,7 @@ public class SmsContent {
     public String toString() {
         return "contact:" + getDisplayString(getContact()) + ", smsBody:" + getDisplayString(mIntentContent.smsBody) +
                 ", matched:" + getDisplayString(getMatchedName()) +
-                ", phoneNumber count:" + phoneNumbers.size() +
+                "\nChoosed Number:" + mChoosedNumber + ", phoneNumber count:" + phoneNumbers.size() +
                 "\nisSimilarContact:" + isSimilarContact() +
                 ", isContactMatched:" + isContactMatched;
     }

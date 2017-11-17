@@ -12,6 +12,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneManager;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.log.LogUtil;
 
@@ -103,6 +105,9 @@ public class DialogFlowService implements
         if (mDialogFlow != null) {
             mDialogFlow.resetContexts();
         }
+        if(mSceneManager != null) {
+            mSceneManager.exitCurrentScene();
+        }
     }
 
     @Override
@@ -124,9 +129,17 @@ public class DialogFlowService implements
         }
     }
 
+//    mVoiceService.sendCommand(SERVER_COMMAND_CONTENT, mEditText.getText().toString());
+
     @Override
     public void onRecognitionResult(Message message) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "onMessage message = " + message.text);
+        if (LogUtil.DEBUG && !(message instanceof IntermediateMessage)) {
+            LogUtil.logd(TAG, "onMessage message = " + message);
+        }
+        if (message instanceof EditTextMessage) {
+            String alter = ((EditTextMessage) message).context;
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
+        }
         if (message.seqId < 0 && !TextUtils.isEmpty(message.text)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Speech spoken : " + message.text);
 
@@ -142,21 +155,20 @@ public class DialogFlowService implements
 
     @Override
     public void onStartListening() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onStartListening");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "onStartListening");
     }
 
     @Override
     public void onStopListening() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onStopListening");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "onStopListening");
     }
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceService] onSpeechProbabilityChanged:" + prob);
+        //if (LogUtil.DEBUG) LogUtil.log(TAG, "onSpeechProbabilityChanged:" + prob);
     }
 
     public ISceneFeedback getTtsFeedback() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "getTtsFeedback:" + mSceneFeedback);
         return mSceneFeedback;
     }
 
@@ -171,6 +183,7 @@ public class DialogFlowService implements
     };
 
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
+
     private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {
         private IDialogFlowFeedback.IToSceneFeedback listener;
 
@@ -183,7 +196,7 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsStart");
             }
-            if( listener != null ) {
+            if (listener != null) {
                 listener.onTtsStart();
             }
         }
@@ -193,7 +206,7 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsComplete");
             }
-            if( listener != null ) {
+            if (listener != null) {
                 listener.onTtsComplete();
             }
         }
@@ -203,7 +216,7 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsInterrupted");
             }
-            if( listener != null ) {
+            if (listener != null) {
                 listener.onTtsInterrupted();
             }
         }
@@ -213,7 +226,7 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsError");
             }
-            if( listener != null ) {
+            if (listener != null) {
                 listener.onTtsError();
             }
         }

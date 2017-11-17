@@ -29,6 +29,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
             case SmsSceneActions.ACTION_SEND_SMS_YES:
                 return new StageSendSmsConfirm(mSceneBase, mFeedback);
             case SmsSceneActions.ACTION_SEND_SMS_NO:
+            case SmsSceneActions.ACTION_SEND_SMS_CHANGE_SMS_BODY:
                 return new StageAskForSmsBody(mSceneBase, mFeedback);
             case SmsSceneActions.ACTION_SEND_SMS_MSGBODY:
                 return new StageAskForSendSmsToContact(mSceneBase, mFeedback);
@@ -42,6 +43,6 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     @Override
     public void action() {
         SmsContent sc = getSmsContent();
-        speak("2.9 Are you sure to send text " + sc.getSmsBody() + " to " + sc.getMatchedName() + " ?");
+        speak("2.9 Send text \"" + sc.getSmsBody() + "\" to " + sc.getMatchedName() + ". Send it or change it ?");
     }
 }

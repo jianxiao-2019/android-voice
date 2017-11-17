@@ -67,6 +67,11 @@ public class SceneManager implements DialogObserver, ISceneManager {
         }
     }
 
+    @Override
+    public void exitCurrentScene() {
+        doExitScene(mScene);
+    }
+
     private void doExitScene(String scene){
         if (!TextUtils.isEmpty(scene)) {
             notifyObservers(new Intent(scene, Intent.ACTION_EXIT));
