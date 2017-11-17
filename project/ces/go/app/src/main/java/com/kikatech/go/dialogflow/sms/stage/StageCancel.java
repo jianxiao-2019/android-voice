@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.sms.stage;
 
 import android.support.annotation.NonNull;
 
+import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 
@@ -17,7 +18,25 @@ public class StageCancel extends BaseSendSmsStage {
 
     @Override
     public void action() {
-        speak("Cancel Send SMS");
-        exitScene();
+        speak("Cancel Send SMS", new IDialogFlowFeedback.IToSceneFeedback() {
+            @Override
+            public void onTtsStart() {
+            }
+
+            @Override
+            public void onTtsComplete() {
+                exitScene();
+            }
+
+            @Override
+            public void onTtsError() {
+                exitScene();
+            }
+
+            @Override
+            public void onTtsInterrupted() {
+                exitScene();
+            }
+        });
     }
 }

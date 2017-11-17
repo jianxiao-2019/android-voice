@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -26,8 +27,26 @@ public class BaseNaviStage extends SceneStage {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
         mStopNavi = action.equals(NaviSceneActions.ACTION_NAV_CANCEL);
         if (mStopNavi) {
-            speak("OK, Stop navigation !");
-            exitScene();
+            speak("OK, Stop navigation !", new IDialogFlowFeedback.IToSceneFeedback() {
+                @Override
+                public void onTtsStart() {
+                }
+
+                @Override
+                public void onTtsComplete() {
+                    exitScene();
+                }
+
+                @Override
+                public void onTtsError() {
+                    exitScene();
+                }
+
+                @Override
+                public void onTtsInterrupted() {
+                    exitScene();
+                }
+            });
         }
         return null;
     }

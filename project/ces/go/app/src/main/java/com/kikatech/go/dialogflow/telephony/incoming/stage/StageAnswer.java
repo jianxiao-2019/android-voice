@@ -55,11 +55,11 @@ public class StageAnswer extends SceneStage {
                 answerPhoneCall();
             }
         });
-        exitScene();
     }
 
     private void answerPhoneCall() {
         TelephonyServiceManager.getIns().answerPhoneCall(mSceneBase.getContext());
         TelephonyServiceManager.getIns().turnOnSpeaker(mSceneBase.getContext());
+        exitScene();
     }
 }

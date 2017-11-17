@@ -69,12 +69,12 @@ public class StageMakeCall extends StageOutgoing {
                 makePhoneCall(finalPhoneNumber);
             }
         });
-        exitScene();
     }
 
     private void makePhoneCall(String number) {
         if (!TextUtils.isEmpty(number)) {
             TelephonyServiceManager.getIns().makePhoneCall(mSceneBase.getContext(), number);
+            exitScene();
         }
     }
 }

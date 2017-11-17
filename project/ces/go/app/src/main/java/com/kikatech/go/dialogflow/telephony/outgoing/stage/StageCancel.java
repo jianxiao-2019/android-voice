@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -34,7 +35,25 @@ public class StageCancel extends SceneStage {
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }
-        speak(speech);
-        exitScene();
+        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
+            @Override
+            public void onTtsStart() {
+            }
+
+            @Override
+            public void onTtsComplete() {
+                exitScene();
+            }
+
+            @Override
+            public void onTtsError() {
+                exitScene();
+            }
+
+            @Override
+            public void onTtsInterrupted() {
+                exitScene();
+            }
+        });
     }
 }

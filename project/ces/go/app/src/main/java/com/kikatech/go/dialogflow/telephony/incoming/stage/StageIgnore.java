@@ -55,10 +55,10 @@ public class StageIgnore extends SceneStage {
                 ignorePhoneCall();
             }
         });
-        exitScene();
     }
 
     private void ignorePhoneCall() {
         TelephonyServiceManager.getIns().turnOnSilentMode(mSceneBase.getContext());
+        exitScene();
     }
 }

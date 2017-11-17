@@ -54,11 +54,11 @@ public class StageReject extends SceneStage {
                 rejectPhoneCall();
             }
         });
-        exitScene();
     }
 
     private void rejectPhoneCall() {
         TelephonyServiceManager.getIns().killPhoneCall(mSceneBase.getContext());
+        exitScene();
     }
 
 }
