@@ -1,19 +1,14 @@
 package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
-import com.kikatech.go.dialogflow.navigation.SceneNavigation;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by tianli on 17-11-11.

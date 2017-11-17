@@ -26,6 +26,10 @@ public class StageIgnore extends SceneStage {
     }
 
     @Override
+    public void prepare() {
+    }
+
+    @Override
     public void action() {
         String speech = "Ok, ignore this call.";
         if (LogUtil.DEBUG) {
@@ -55,9 +59,6 @@ public class StageIgnore extends SceneStage {
     }
 
     private void ignorePhoneCall() {
-//        if (LogUtil.DEBUG) {
-//            LogUtil.log(TAG, "ignorePhoneCall");
-//        }
         TelephonyServiceManager.getIns().turnOnSilentMode(mSceneBase.getContext());
     }
 }

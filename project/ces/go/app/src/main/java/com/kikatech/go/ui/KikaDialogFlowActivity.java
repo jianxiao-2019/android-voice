@@ -14,6 +14,7 @@ import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 
@@ -90,12 +91,19 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
                     @Override
                     public void onText(String text, Bundle extras) {
-
                     }
 
                     @Override
                     public void onSceneExit(String scene) {
+                    }
 
+                    @Override
+                    public void onStagePrepared(String scene, String action, SceneStage sceneStage) {
+                        sceneStage.action();
+                    }
+
+                    @Override
+                    public void onStageActionDone() {
                     }
                 });
 

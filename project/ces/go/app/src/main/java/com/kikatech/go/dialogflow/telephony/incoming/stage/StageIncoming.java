@@ -33,6 +33,10 @@ public class StageIncoming extends SceneStage {
     }
 
     @Override
+    public void prepare() {
+    }
+
+    @Override
     public void action() {
         String toast = String.format("%s is calling you", mCaller);
         speak(toast);

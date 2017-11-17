@@ -8,4 +8,8 @@ import android.os.Bundle;
 
 public interface ISceneFeedback {
     void onText(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback);
+
+    void onStagePrepared(String scene, String action, SceneStage sceneStage);
+
+    void onStageActionDone();
 }

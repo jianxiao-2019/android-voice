@@ -106,7 +106,7 @@ public class FlexibleOnTouchListener implements View.OnTouchListener
 			}
 
 			@Override
-			public void onStop( long stopMillis ) {}
+			public void onInterrupted(long stopMillis ) {}
 		} );
 	}
 

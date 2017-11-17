@@ -1,10 +1,7 @@
 package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.util.LogUtil;
@@ -29,26 +26,17 @@ public class BaseNaviStage extends SceneStage {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
         mStopNavi = action.equals(NaviSceneActions.ACTION_NAV_CANCEL);
         if (mStopNavi) {
-            response("OK, Stop navigation !");
+            speak("OK, Stop navigation !");
             exitScene();
         }
         return null;
     }
 
     @Override
-    public void action() {
-
+    public void prepare() {
     }
 
-    void response(final String words) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, words);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mSceneBase.getContext(), words, Toast.LENGTH_LONG).show();
-            }
-        });
-        if (mFeedback != null)
-            mFeedback.onText(words, null, null);
+    @Override
+    public void action() {
     }
 }

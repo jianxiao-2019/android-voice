@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
+import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
  * Created by bradchang on 2017/11/7.
@@ -20,6 +21,10 @@ public interface IDialogFlowService {
         void onText(String text, Bundle extras);
 
         void onSceneExit(String scene);
+
+        void onStagePrepared(String scene, String action, SceneStage sceneStage);
+
+        void onStageActionDone();
     }
 
     void registerScene(SceneBase scene);

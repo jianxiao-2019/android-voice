@@ -1,7 +1,6 @@
 package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
@@ -46,6 +45,6 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public void action() {
-        response("Are you sure to go to '" + mNaviAddress + "' ?");
+        speak("Are you sure to go to '" + mNaviAddress + "' ?");
     }
 }

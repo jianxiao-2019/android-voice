@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -47,6 +46,6 @@ public class StageAskAddress extends BaseNaviStage {
         String words = mAgain ?
                 "Sorry, I cannot understand, would you say that again ?" :
                 "Where would you like to go ?";
-        response(words);
+        speak(words);
     }
 }

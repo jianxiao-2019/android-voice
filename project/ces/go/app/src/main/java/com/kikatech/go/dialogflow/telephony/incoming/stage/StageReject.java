@@ -25,6 +25,10 @@ public class StageReject extends SceneStage {
     }
 
     @Override
+    public void prepare() {
+    }
+
+    @Override
     public void action() {
         String speech = "Ok, rejected this call.";
         if (LogUtil.DEBUG) {

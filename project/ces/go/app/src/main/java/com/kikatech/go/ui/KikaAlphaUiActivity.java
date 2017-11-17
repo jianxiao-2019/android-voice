@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
-import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -12,8 +11,10 @@ import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
-import com.kikatech.go.util.BackgroundThread;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.GoLayout;
+import com.kikatech.go.view.UiTaskManager;
+import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 
@@ -27,7 +28,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
     private static final String TAG = "KikaAlphaUiActivity";
 
     private GoLayout mGoLayout;
-
+    private UiTaskManager mUiManager;
     private IDialogFlowService mDialogFlowService;
     private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
 
@@ -51,7 +52,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
     }
 
     private void bindView() {
-        mGoLayout = (GoLayout) findViewById(R.id.go_layout);
+        mGoLayout =(GoLayout) findViewById(R.id.go_layout);
     }
 
     private void initDialogFlowService() {
@@ -61,40 +62,36 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 new IDialogFlowService.IServiceCallback() {
                     @Override
                     public void onInitComplete() {
-                        // Register all scenes from scene mangers
-                        displayOptionOnLayout(OptionList.getDefaultOptionListTitle(),
-                                OptionList.getDefaultOptionList());
+                        initUiTaskManager();
+                        mUiManager.dispatchDefaultOptionsTask();
                     }
 
                     @Override
                     public void onSpeechSpokenDone(final String speechText) {
-                        listenOnLayout(speechText);
+                        mUiManager.dispatchSpeechTask(speechText);
                     }
 
                     @Override
                     public void onText(String text, Bundle extras) {
-                        OptionList optionList = null;
-                        String title = text;
-                        if (extras != null && extras.containsKey(BaseSceneStage.EXTRA_OPTIONS_LIST)) {
-                            optionList = extras.getParcelable(BaseSceneStage.EXTRA_OPTIONS_LIST);
-                            title = extras.getString(BaseSceneStage.EXTRA_OPTIONS_TITLE);
-                        }
-                        if (optionList != null && !optionList.isEmpty()) {
-                            displayOptionOnLayout(title, optionList);
-                        } else {
-                            speakOnLayout(title);
-                        }
+                        mUiManager.dispatchTtsTask(text, extras);
                     }
 
                     @Override
                     public void onSceneExit(String scene) {
-                        BackgroundThread.getHandler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayOptionOnLayout(OptionList.getDefaultOptionListTitle(),
-                                        OptionList.getDefaultOptionList());
-                            }
-                        }, 1000);
+                        mUiManager.dispatchDefaultOptionsTask();
+                    }
+
+                    @Override
+                    public void onStagePrepared(String scene, String action, SceneStage stage) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "scene: " + scene + ", action: " + action + ", stage: " + stage.getClass().getSimpleName());
+                        }
+                        mUiManager.dispatchStageTask(stage);
+                    }
+
+                    @Override
+                    public void onStageActionDone() {
+                        mUiManager.onStageActionDone();
                     }
                 });
 
@@ -105,41 +102,21 @@ public class KikaAlphaUiActivity extends BaseActivity {
         mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
     }
 
-    private void speakOnLayout(final String text) {
-        runOnUiThread(new Runnable() {
+    /**
+     * must called after GoLayout and DialogFlowService initialized
+     **/
+    private void initUiTaskManager() {
+        mUiManager = new UiTaskManager(mGoLayout, new UiTaskManager.IUiManagerFeedback() {
             @Override
-            public void run() {
-                mGoLayout.speak(text);
-            }
-        });
-    }
-
-    private void listenOnLayout(final String text) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mGoLayout.listen(text);
-            }
-        });
-    }
-
-    private void displayOptionOnLayout(final String text, final OptionList optionList) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mGoLayout.displayOptions(text, optionList, new GoLayout.IOnOptionSelectListener() {
-                    @Override
-                    public void onSelected(byte requestType, Option option) {
-                        switch (requestType) {
-                            case OptionList.REQUEST_TYPE_ORDINAL:
-                                mDialogFlowService.talk(String.valueOf(optionList.indexOf(option) + 1));
-                                break;
-                            case OptionList.REQUEST_TYPE_TEXT:
-                                mDialogFlowService.talk(option.getDisplayText());
-                                break;
-                        }
-                    }
-                });
+            public void onOptionSelected(byte requestType, int index, Option option) {
+                switch (requestType) {
+                    case OptionList.REQUEST_TYPE_ORDINAL:
+                        mDialogFlowService.talk(String.valueOf(index + 1));
+                        break;
+                    case OptionList.REQUEST_TYPE_TEXT:
+                        mDialogFlowService.talk(option.getDisplayText());
+                        break;
+                }
             }
         });
     }

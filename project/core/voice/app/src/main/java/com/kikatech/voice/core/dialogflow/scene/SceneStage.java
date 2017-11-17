@@ -27,6 +27,8 @@ public abstract class SceneStage {
      */
     public abstract SceneStage next(String action, Bundle extra);
 
+    public abstract void prepare();
+
     /**
      * Perform the action, must be invoked after call {@link #next(String, Bundle) next}
      */
@@ -34,6 +36,19 @@ public abstract class SceneStage {
 
     final protected void exitScene() {
         mSceneBase.exit();
+    }
+
+    final void prepareAction(String scene, String action, SceneStage stage) {
+        prepare();
+        if (mFeedback != null) {
+            mFeedback.onStagePrepared(scene, action, stage);
+        }
+    }
+
+    protected void onActionDone() {
+        if (mFeedback != null) {
+            mFeedback.onStageActionDone();
+        }
     }
 
     protected void speak(String text) {
@@ -50,7 +65,49 @@ public abstract class SceneStage {
 
     protected void speak(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
         if (mFeedback != null) {
-            mFeedback.onText(text, extras, feedback);
+            mDefaultToSceneFeedback.bindFeedback(feedback);
+            mFeedback.onText(text, extras, mDefaultToSceneFeedback);
+        }
+    }
+
+    private IToSceneFeedbackDispatcher mDefaultToSceneFeedback = new IToSceneFeedbackDispatcher();
+
+    private class IToSceneFeedbackDispatcher implements IDialogFlowFeedback.IToSceneFeedback {
+        private IDialogFlowFeedback.IToSceneFeedback mToFeedback;
+
+        private void bindFeedback(IDialogFlowFeedback.IToSceneFeedback feedback) {
+            mToFeedback = feedback;
+        }
+
+        @Override
+        public void onTtsStart() {
+            if (mToFeedback != null) {
+                mToFeedback.onTtsStart();
+            }
+        }
+
+        @Override
+        public void onTtsComplete() {
+            if (mToFeedback != null) {
+                mToFeedback.onTtsComplete();
+            }
+            onActionDone();
+        }
+
+        @Override
+        public void onTtsError() {
+            if (mToFeedback != null) {
+                mToFeedback.onTtsError();
+            }
+            onActionDone();
+        }
+
+        @Override
+        public void onTtsInterrupted() {
+            if (mToFeedback != null) {
+                mToFeedback.onTtsInterrupted();
+            }
+            onActionDone();
         }
     }
 }

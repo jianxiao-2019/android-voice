@@ -16,10 +16,19 @@ public class OptionList implements Parcelable {
     public static final byte REQUEST_TYPE_TEXT = 0x02;
 
     private byte requestType;
+    private String title;
     private List<Option> options = new ArrayList<>();
 
     public OptionList(byte requestType) {
         this.requestType = requestType;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public void add(Option option) {
@@ -51,10 +60,10 @@ public class OptionList implements Parcelable {
     }
 
 
-    public String getTextToSpeak(String text) {
+    public String getTextToSpeak() {
         StringBuilder stringBuilder = new StringBuilder();
-        if (!TextUtils.isEmpty(text)) {
-            stringBuilder.append(text).append("\n");
+        if (!TextUtils.isEmpty(title)) {
+            stringBuilder.append(title).append("\n");
         }
         if (options != null && !options.isEmpty()) {
             Option option;
@@ -69,12 +78,9 @@ public class OptionList implements Parcelable {
     }
 
 
-    public static String getDefaultOptionListTitle() {
-        return "You can Say";
-    }
-
     public static OptionList getDefaultOptionList() {
         OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+        optionList.setTitle("You can Say");
         optionList.add(new Option("Navigate", null));
         optionList.add(new Option("Message", null));
         optionList.add(new Option("Make a call", null));
@@ -90,11 +96,13 @@ public class OptionList implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(requestType);
+        dest.writeString(title);
         dest.writeList(options);
     }
 
-    protected OptionList(Parcel in) {
+    private OptionList(Parcel in) {
         requestType = in.readByte();
+        title = in.readString();
         in.readList(options, Option.class.getClassLoader());
     }
 

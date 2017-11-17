@@ -25,6 +25,10 @@ public class StageCancel extends SceneStage {
     }
 
     @Override
+    public void prepare() {
+    }
+
+    @Override
     public void action() {
         String speech = "ok, canceled it.";
         if (LogUtil.DEBUG) {

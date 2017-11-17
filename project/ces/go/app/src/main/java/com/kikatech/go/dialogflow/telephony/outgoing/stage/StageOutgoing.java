@@ -67,6 +67,10 @@ public class StageOutgoing extends BaseSceneStage {
     }
 
     @Override
+    public void prepare() {
+    }
+
+    @Override
     public void action() {
     }
 

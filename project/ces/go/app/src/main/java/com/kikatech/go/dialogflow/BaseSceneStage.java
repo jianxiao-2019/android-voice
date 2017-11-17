@@ -12,7 +12,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public abstract class BaseSceneStage extends SceneStage {
 
-    public static final String EXTRA_OPTIONS_TITLE = "extra_options_title";
     public static final String EXTRA_OPTIONS_LIST = "extra_options_list";
 
     public BaseSceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {

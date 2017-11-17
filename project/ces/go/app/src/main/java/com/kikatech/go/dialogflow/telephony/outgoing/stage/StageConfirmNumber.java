@@ -55,15 +55,14 @@ public class StageConfirmNumber extends StageOutgoing {
         Bundle extras = null;
         if (mContact != null) {
             if (!mContact.phoneNumbers.isEmpty()) {
-                speech = "Choose for the following list";
                 extras = new Bundle();
-                extras.putString(EXTRA_OPTIONS_TITLE, speech);
                 OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
+                optionList.setTitle("Choose for the following list");
                 for (String number : mContact.phoneNumbers) {
                     optionList.add(new Option(number, SceneActions.ACTION_OUTGOING_NUMBERS));
                 }
                 extras.putParcelable(EXTRA_OPTIONS_LIST, optionList);
-                speech = optionList.getTextToSpeak(speech);
+                speech = optionList.getTextToSpeak();
             }
         }
         if (LogUtil.DEBUG) {

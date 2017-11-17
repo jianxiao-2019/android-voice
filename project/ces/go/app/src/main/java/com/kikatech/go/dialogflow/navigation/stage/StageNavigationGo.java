@@ -2,7 +2,6 @@ package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
 
-import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -29,7 +28,7 @@ public class StageNavigationGo extends BaseNaviStage {
 
     @Override
     public void action() {
-        response("Navigate to " + mNaviAddress);
+        speak("Navigate to " + mNaviAddress);
         NaviSceneUtil.navigateToLocation(mSceneBase.getContext(), mNaviAddress);
         exitScene();
     }

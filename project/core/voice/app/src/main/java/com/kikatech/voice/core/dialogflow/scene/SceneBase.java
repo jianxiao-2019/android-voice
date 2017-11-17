@@ -1,12 +1,10 @@
 package com.kikatech.voice.core.dialogflow.scene;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by tianli on 17-11-10.
@@ -51,11 +49,15 @@ public abstract class SceneBase implements DialogObserver {
 
     @Override
     public void onIntent(Intent intent) {
-        if (!Intent.ACTION_EXIT.equals(intent.getAction())) {
-            SceneStage stage = mStage.next(intent.getAction(), intent.getExtra());
+        String action = intent.getAction();
+        if (TextUtils.isEmpty(action)) {
+            return;
+        }
+        if (!Intent.ACTION_EXIT.equals(action)) {
+            SceneStage stage = mStage.next(action, intent.getExtra());
             if (stage != null) {
                 mStage = stage;
-                stage.action();
+                stage.prepareAction(scene(), action, stage);
             }
         } else {
             onExit();

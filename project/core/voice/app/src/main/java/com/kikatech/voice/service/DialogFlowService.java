@@ -10,6 +10,7 @@ import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneManager;
+import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
@@ -179,6 +180,20 @@ public class DialogFlowService implements
                 mCallback.onText(text, extras);
             }
             tts(text, feedback);
+        }
+
+        @Override
+        public void onStagePrepared(String scene, String action, SceneStage sceneStage) {
+            if (mCallback != null) {
+                mCallback.onStagePrepared(scene, action, sceneStage);
+            }
+        }
+
+        @Override
+        public void onStageActionDone() {
+            if (mCallback != null) {
+                mCallback.onStageActionDone();
+            }
         }
     };
 

@@ -77,10 +77,17 @@ public class NaviSceneUtil {
 
         if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Start to stop navigation ...");
 
-        sNavigating = false;
-        NavigationManager.getIns().stopNavigation(ctx);
+        Handler uiHandler = new Handler(Looper.getMainLooper());
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+        uiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sNavigating = false;
+                NavigationManager.getIns().stopNavigation(ctx);
+            }
+        });
+
+        uiHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
 //                try {

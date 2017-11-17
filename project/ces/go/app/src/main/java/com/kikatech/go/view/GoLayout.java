@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.util.CountingTimer;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
 
@@ -20,6 +21,8 @@ import com.kikatech.go.view.widget.GoTextView;
  */
 public class GoLayout extends FrameLayout {
     private static final String TAG = "GoLayout";
+
+    private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
 
     private enum DisplayMode {
         SLEEP, AWAKE
@@ -94,13 +97,107 @@ public class GoLayout extends FrameLayout {
     }
 
 
+    private IOnLockStateChangeListener mLockStateChangeListener;
+
+    public void setOnLockStateChangeListener(IOnLockStateChangeListener listener) {
+        mLockStateChangeListener = listener;
+    }
+
+    private boolean isViewLocking;
+
+    private CountingTimer mTimer = new CountingTimer(EACH_STATUS_MIN_STAY_MILLIS, 100, new CountingTimer.ICountingListener() {
+        @Override
+        public void onTimeTickStart() {
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "onTimeTickStart");
+            }
+            performLock();
+        }
+
+        @Override
+        public void onTimeTick(long millis) {
+            if (LogUtil.DEBUG && millis % 1000 == 0) {
+                LogUtil.logv(TAG, "onTimeTick: " + millis);
+            }
+        }
+
+        @Override
+        public void onTimeTickEnd() {
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "onTimeTickEnd");
+            }
+            performUnlock();
+        }
+
+        @Override
+        public void onInterrupted(long stopMillis) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "onInterrupted, stopMillis: " + stopMillis);
+            }
+            performUnlock();
+        }
+
+        private void performLock() {
+            isViewLocking = true;
+            if (mLockStateChangeListener != null) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLockStateChangeListener.onLocked();
+                    }
+                });
+            }
+        }
+
+        private void performUnlock() {
+            isViewLocking = false;
+            if (mLockStateChangeListener != null) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLockStateChangeListener.onLockReleased();
+                    }
+                });
+            }
+        }
+    });
+
+    private synchronized void lock() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "lock");
+        }
+        mTimer.start();
+    }
+
+    public synchronized void unlock() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "unlock");
+        }
+        if (mTimer.isCounting()) {
+            mTimer.stop();
+        }
+    }
+
+    public boolean isViewLocking() {
+        return isViewLocking;
+    }
+
+
     public void onModeChanged(DisplayMode mode) {
         mCurrentMode = (mCurrentMode.equals(DisplayMode.SLEEP)) ? DisplayMode.AWAKE : DisplayMode.SLEEP;
         requestLayout();
     }
 
 
+    /**
+     * display content spoken by tts service
+     **/
     public synchronized void speak(final String text) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "speak");
+        }
+        lock();
+
         mCurrentStatus = ViewStatus.SPEAK;
 
         mSpeakLayout.setVisibility(VISIBLE);
@@ -112,7 +209,15 @@ public class GoLayout extends FrameLayout {
         onStatusChanged(mCurrentStatus);
     }
 
+    /**
+     * display content spoken by user (voice input)
+     **/
     public synchronized void listen(final String text) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "listen");
+        }
+        lock();
+
         mCurrentStatus = ViewStatus.LISTEN;
 
         mSpeakLayout.setVisibility(GONE);
@@ -124,7 +229,15 @@ public class GoLayout extends FrameLayout {
         onStatusChanged(mCurrentStatus);
     }
 
-    public synchronized void displayOptions(final String title, final OptionList optionList, final IOnOptionSelectListener listener) {
+    /**
+     * display content spoken by tts service with option list
+     **/
+    public synchronized void displayOptions(final OptionList optionList, final IOnOptionSelectListener listener) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "displayOptions");
+        }
+        lock();
+
         mCurrentStatus = ViewStatus.DISPLAY_OPTIONS;
 
         mSpeakLayout.setVisibility(GONE);
@@ -135,7 +248,7 @@ public class GoLayout extends FrameLayout {
 
         try {
             if (optionList != null && !optionList.isEmpty()) {
-                mOptionsTitle.setText(title);
+                mOptionsTitle.setText(optionList.getTitle());
                 mOptionsLayout.addView(mOptionsTitle);
                 for (final Option option : optionList.getList()) {
                     GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_option_item, null);
@@ -146,7 +259,7 @@ public class GoLayout extends FrameLayout {
                         @Override
                         public void onClick(View v) {
                             if (listener != null) {
-                                listener.onSelected(optionList.getRequestType(), option);
+                                listener.onSelected(optionList.getRequestType(), optionList.indexOf(option), option);
                             }
                         }
                     });
@@ -205,6 +318,12 @@ public class GoLayout extends FrameLayout {
 
 
     public interface IOnOptionSelectListener {
-        void onSelected(byte requestType, Option option);
+        void onSelected(byte requestType, int index, Option option);
+    }
+
+    public interface IOnLockStateChangeListener {
+        void onLocked();
+
+        void onLockReleased();
     }
 }
