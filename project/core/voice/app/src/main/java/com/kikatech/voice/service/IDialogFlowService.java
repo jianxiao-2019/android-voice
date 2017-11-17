@@ -37,5 +37,7 @@ public interface IDialogFlowService {
 
     void talk(final String words);
 
+    void text(final String words);
+
     void quitService();
 }

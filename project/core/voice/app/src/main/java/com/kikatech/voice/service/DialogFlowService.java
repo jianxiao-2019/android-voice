@@ -120,6 +120,17 @@ public class DialogFlowService implements
     }
 
     @Override
+    public void text(String words) {
+        if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "text : " + words);
+            mDialogFlow.talk(words);
+            if (mCallback != null) {
+                mCallback.onSpeechSpokenDone(words);
+            }
+        }
+    }
+
+    @Override
     public void quitService() {
         if (mVoiceService != null) {
             mVoiceService.stop();

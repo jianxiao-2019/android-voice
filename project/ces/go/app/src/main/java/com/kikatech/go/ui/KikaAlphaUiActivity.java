@@ -111,10 +111,10 @@ public class KikaAlphaUiActivity extends BaseActivity {
             public void onOptionSelected(byte requestType, int index, Option option) {
                 switch (requestType) {
                     case OptionList.REQUEST_TYPE_ORDINAL:
-                        mDialogFlowService.talk(String.valueOf(index + 1));
+                        mDialogFlowService.text(String.valueOf(index + 1));
                         break;
                     case OptionList.REQUEST_TYPE_TEXT:
-                        mDialogFlowService.talk(option.getDisplayText());
+                        mDialogFlowService.text(option.getDisplayText());
                         break;
                 }
             }
