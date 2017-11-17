@@ -1,0 +1,26 @@
+[
+    {
+        "outputFile": "/Users/tianli/kika/git/F8/project/ces/USBAUDIO/app/build/intermediates/res/merged/debug/values_values.arsc.flat",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 53,
+                    "endOffset": 104
+                },
+                "from": {
+                    "file": "/Users/tianli/kika/git/F8/project/ces/USBAUDIO/app/src/main/res/values/strings.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 55,
+                        "endColumn": 53,
+                        "endOffset": 104
+                    }
+                }
+            }
+        ]
+    }
+]
