@@ -2,7 +2,6 @@ package com.kikatech.go.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.CountingTimer;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
@@ -254,7 +254,6 @@ public class GoLayout extends FrameLayout {
                     GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_option_item, null);
                     mOptionsLayout.addView(optionView);
                     optionView.setText(option.getDisplayText());
-                    optionView.setGravity(Gravity.CENTER);
                     optionView.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -271,15 +270,15 @@ public class GoLayout extends FrameLayout {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
         }
-
         onStatusChanged(mCurrentStatus);
     }
 
     private void resolveOptionLayoutMargin() {
         try {
+            final Context context = getContext();
             final int CHILD_COUNT = mOptionsLayout.getChildCount();
-            final int DEFAULT_TITLE_MARGIN_BOTTOM = 20; //px
-            final int DEFAULT_TOTAL_MARGIN = 180; // px
+            final int DEFAULT_TITLE_MARGIN_BOTTOM = ResolutionUtil.dp2px(context,10);
+            final int DEFAULT_TOTAL_MARGIN = ResolutionUtil.dp2px(context, 30);
             final int ITEM_MARGIN_TOP = DEFAULT_TOTAL_MARGIN / (CHILD_COUNT - 1);
             LinearLayout.LayoutParams titleParam = (LinearLayout.LayoutParams) mOptionsTitle.getLayoutParams();
             titleParam.setMargins(0, 0, 0, DEFAULT_TITLE_MARGIN_BOTTOM);
@@ -290,8 +289,6 @@ public class GoLayout extends FrameLayout {
                 optionParam.setMargins(0, ITEM_MARGIN_TOP, 0, 0);
                 child.setLayoutParams(optionParam);
             }
-            mOptionsLayout.requestLayout();
-
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
