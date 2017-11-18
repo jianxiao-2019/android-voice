@@ -15,6 +15,7 @@ public class UsbAudioService {
 
     private static volatile UsbAudioService sInstance;
 
+    private UsbAudioSource mAudioSource = null;
     private Context mContext;
     private IUsbAudioListener mListener;
     private UsbDeviceManager mDeviceManager;
@@ -48,12 +49,18 @@ public class UsbAudioService {
         @Override
         public void onDeviceAttached(UsbDevice device) {
             mDevice = device;
-            mListener.onDeviceAttached(new UsbAudioSource(new KikaAudioDriver(mContext, mDevice)));
+            mAudioSource = new UsbAudioSource(new KikaAudioDriver(mContext, mDevice));
+            mListener.onDeviceAttached(mAudioSource);
         }
 
         @Override
         public void onDeviceDetached() {
             mDevice = null;
+            if (mAudioSource != null) {
+                mAudioSource.close();
+            }
+            mAudioSource = null;
+            mListener.onDeviceDetached();
         }
     };
 

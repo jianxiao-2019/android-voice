@@ -11,8 +11,6 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
-import com.xiao.usbaudio.USBAudioActivity;
-
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -95,7 +93,16 @@ class UsbDeviceManager {
         @Override
         public void onUsbDetached(UsbDevice device) {
             if (device != null) {
-                if (mDevice == device) {
+                int detachedVendorId = device.getVendorId();
+                int attachedVendorId = mDevice.getVendorId();
+                int detachedProductId = device.getProductId();
+                int attachedProductId = mDevice.getProductId();
+                Log.d(TAG, "detachedDeviceVendorId: " + detachedVendorId);
+                Log.d(TAG, "attachedDeviceVendorId: " + attachedVendorId);
+                Log.d(TAG, "detachedProductId: " + detachedProductId);
+                Log.d(TAG, "attachedProductId: " + attachedProductId);
+                // TODO: 17-11-18 handle usb detach
+                if (detachedVendorId == attachedVendorId && detachedProductId == attachedProductId) {
                     mDevice = null;
                     mListener.onDeviceDetached();
                 }

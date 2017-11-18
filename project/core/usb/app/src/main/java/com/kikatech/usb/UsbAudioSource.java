@@ -36,4 +36,10 @@ public class UsbAudioSource implements IVoiceSource {
     public int getBufferSize() {
         return 0;
     }
+
+    public void close() {
+        if (mAudioDriver != null) {
+            mAudioDriver.close();
+        }
+    }
 }

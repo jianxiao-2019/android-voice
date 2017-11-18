@@ -32,4 +32,10 @@ public abstract class UsbHostAudioDriver implements UsbAudioDriver {
         }
     }
 
+    @Override
+    public void close() {
+        if (mConnection != null) {
+            mConnection.close();
+        }
+    }
 }
