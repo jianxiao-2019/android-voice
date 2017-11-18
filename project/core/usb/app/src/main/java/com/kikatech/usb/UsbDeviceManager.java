@@ -66,7 +66,7 @@ class UsbDeviceManager {
         }
     }
 
-    private boolean isAudioDevice(UsbDevice device){
+    private boolean isAudioDevice(UsbDevice device) {
         if (device != null && device.getInterfaceCount() > 0) {
             UsbInterface usbInterface = device.getInterface(0);
             Log.d(TAG, "Audio UsbInterface : " + usbInterface.getInterfaceClass());
@@ -80,7 +80,7 @@ class UsbDeviceManager {
     private UsbDeviceReceiver.UsbDeviceListener mDeviceListener = new UsbDeviceReceiver.UsbDeviceListener() {
         @Override
         public void onUsbAttached(UsbDevice device) {
-            if(isAudioDevice(device)){
+            if (isAudioDevice(device)) {
                 Log.d(TAG, "Audio class device: " + device);
                 Log.d(TAG, "Audio class device name: " + mDevice.getDeviceName());
                 if (hasPermission(device)) {
@@ -95,7 +95,7 @@ class UsbDeviceManager {
         @Override
         public void onUsbDetached(UsbDevice device) {
             if (device != null) {
-                if(mDevice == device){
+                if (mDevice == device) {
                     mDevice = null;
                     mListener.onDeviceDetached();
                 }

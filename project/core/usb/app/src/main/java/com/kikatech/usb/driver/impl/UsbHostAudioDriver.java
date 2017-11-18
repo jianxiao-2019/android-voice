@@ -11,7 +11,7 @@ import com.kikatech.usb.driver.UsbAudioDriver;
  * Created by tianli on 17-11-18.
  */
 
-public abstract class UsbHostAudioDriver implements UsbAudioDriver{
+public abstract class UsbHostAudioDriver implements UsbAudioDriver {
 
     protected Context mContext;
     protected UsbDeviceConnection mConnection = null;
@@ -22,12 +22,12 @@ public abstract class UsbHostAudioDriver implements UsbAudioDriver{
         mDevice = device;
     }
 
-    protected boolean openConnection(){
-        try{
+    protected boolean openConnection() {
+        try {
             UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
             mConnection = manager.openDevice(mDevice);
             return mConnection != null;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

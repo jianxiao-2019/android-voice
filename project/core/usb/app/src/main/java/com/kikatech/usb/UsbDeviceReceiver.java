@@ -20,11 +20,11 @@ class UsbDeviceReceiver extends BroadcastReceiver {
 
     private UsbDeviceListener mListener;
 
-    public UsbDeviceReceiver(UsbDeviceListener l){
+    public UsbDeviceReceiver(UsbDeviceListener l) {
         mListener = l;
     }
 
-    public void register(Context context){
+    public void register(Context context) {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION_GRANTED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
@@ -34,7 +34,7 @@ class UsbDeviceReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(context == null || intent == null){
+        if (context == null || intent == null) {
             return;
         }
         String action = intent.getAction();
@@ -62,15 +62,15 @@ class UsbDeviceReceiver extends BroadcastReceiver {
         }
     }
 
-    private void onUsbAttached(UsbDevice device){
+    private void onUsbAttached(UsbDevice device) {
         mListener.onUsbAttached(device);
     }
 
-    private void onUsbDetached(UsbDevice device){
+    private void onUsbDetached(UsbDevice device) {
         mListener.onUsbDetached(device);
     }
 
-    private void onUsbPermissionGranted(UsbDevice device){
+    private void onUsbPermissionGranted(UsbDevice device) {
         mListener.onUsbPermissionGranted(device);
     }
 

@@ -22,64 +22,64 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
-public class USBAudioActivity extends Activity
-{
+public class USBAudioActivity extends Activity {
 
     private static final String TAG = "UsbAudio";
-	
+
     private static final String ACTION_USB_PERMISSION = "com.minelab.droidspleen.USB_PERMISSION";
     PendingIntent mPermissionIntent = null;
     UsbManager mUsbManager = null;
     UsbDevice mAudioDevice = null;
-    
+
     UsbAudio mUsbAudio = null;
     private UsbDeviceConnection m_connection = null;
 
     private UsbReciever mUsbPermissionReciever;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.main);
 
-	        // Grab the USB Device so we can get permission
+        // Grab the USB Device so we can get permission
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-        while(deviceIterator.hasNext()){
+        while (deviceIterator.hasNext()) {
             UsbDevice device = deviceIterator.next();
-    		UsbInterface intf = device.getInterface(0);
-		Log.d(TAG, "Audio intf.getInterfaceClass() : " + intf.getInterfaceClass());
-    		if (intf.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
-    			Log.d(TAG, "Audio class device: " + device);
-    			mAudioDevice = device;
-			Log.d(TAG, "Audio class device name: " + mAudioDevice.getDeviceName());
-			m_connection = mUsbManager.openDevice(device);
-			
-			if (m_connection != null) {
-			    int fd = m_connection.getFileDescriptor();
-			    Log.d(TAG, "1jx getFileDescriptor: " + fd);
-			}
+            UsbInterface intf = device.getInterface(0);
+            Log.d(TAG, "Audio intf.getInterfaceClass() : " + intf.getInterfaceClass());
+            if (intf.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
+                Log.d(TAG, "Audio class device: " + device);
+                mAudioDevice = device;
+                Log.d(TAG, "Audio class device name: " + mAudioDevice.getDeviceName());
+                m_connection = mUsbManager.openDevice(device);
 
-    		}
+                if (m_connection != null) {
+                    int fd = m_connection.getFileDescriptor();
+                    Log.d(TAG, "1jx getFileDescriptor: " + fd);
+                }
+
+            }
         }
-    	
+
         // Load native lib
         System.loadLibrary("usbaudio");
-       
-    	mUsbAudio = new UsbAudio();
-    	
-    	AudioPlayBack.setup();
-    	
-    	// Buttons
+
+        mUsbAudio = new UsbAudio();
+
+        AudioPlayBack.setup();
+
+        // Buttons
 //	final Button startButton = (Button) findViewById(R.id.button1);
 //	final Button stopButton = (Button) findViewById(R.id.button2);
-	
+
 //	startButton.setEnabled(true);
 //	stopButton.setEnabled(false);
-	
+
 //	startButton.setOnClickListener(new View.OnClickListener() {
 //		public void onClick(View v) {
 //		    Log.d(TAG, "Start pressed");
@@ -101,7 +101,7 @@ public class USBAudioActivity extends Activity
 //		        }).start();
 //		}
 //	    });
-	
+
 //	stopButton.setOnClickListener(new View.OnClickListener() {
 //		public void onClick(View v) {
 //		    Log.d(TAG, "Stop pressed");
@@ -113,54 +113,54 @@ public class USBAudioActivity extends Activity
 //		    stopButton.setEnabled(false);
 //		}
 //	    });
-        
+
         // Register for permission
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         mUsbPermissionReciever = new UsbReciever();
         registerReceiver(mUsbPermissionReciever, filter);
-        
+
         // Request permission from user
         if (mAudioDevice != null && mPermissionIntent != null) {
-        	mUsbManager.requestPermission(mAudioDevice, mPermissionIntent);
+            mUsbManager.requestPermission(mAudioDevice, mPermissionIntent);
         } else {
-        	Log.e(TAG, "Device not present? Can't request peremission");
+            Log.e(TAG, "Device not present? Can't request peremission");
         }
 
     }
 
     public void onDestroy() {
         super.onDestroy();
-	mUsbAudio.stop();
-	mUsbAudio.close();
+        mUsbAudio.stop();
+        mUsbAudio.close();
     }
-    
+
     private void setDevice(UsbDevice device) {
-    	// Set button to enabled when permission is obtained
+        // Set button to enabled when permission is obtained
 //    	((Button) findViewById(R.id.button1)).setEnabled(device != null);
     }
-    
-    private class UsbReciever extends BroadcastReceiver {
-		
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-			if (ACTION_USB_PERMISSION.equals(action)) {
-				if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-					setDevice(device);
-					m_connection = mUsbManager.openDevice(device);
-					
-					if (m_connection != null) {
-					    int fd = m_connection.getFileDescriptor();
-					    Log.d(TAG, "jx getFileDescriptor: " + fd);
-					}
 
-				} else {
-					Log.d(TAG, "Permission denied for device " + device);
-				}
-			}
-		}
+    private class UsbReciever extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                    setDevice(device);
+                    m_connection = mUsbManager.openDevice(device);
+
+                    if (m_connection != null) {
+                        int fd = m_connection.getFileDescriptor();
+                        Log.d(TAG, "jx getFileDescriptor: " + fd);
+                    }
+
+                } else {
+                    Log.d(TAG, "Permission denied for device " + device);
+                }
+            }
+        }
     }
 
 }

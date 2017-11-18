@@ -25,7 +25,7 @@ public class ExtreamAudioDriver extends UsbHostAudioDriver {
 
     @Override
     public boolean open() {
-        if(openConnection()){
+        if (openConnection()) {
             int fileDescriptor = mConnection.getFileDescriptor();
             boolean initUSBOk;
             if (android.os.Build.VERSION.SDK_INT >= 24) {

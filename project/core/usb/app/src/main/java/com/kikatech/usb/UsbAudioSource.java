@@ -9,11 +9,11 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
  * Created by tianli on 17-11-6.
  */
 
-public class UsbAudioSource implements IVoiceSource{
+public class UsbAudioSource implements IVoiceSource {
 
     private UsbAudioDriver mAudioDriver;
 
-    public UsbAudioSource(UsbAudioDriver driver){
+    public UsbAudioSource(UsbAudioDriver driver) {
         mAudioDriver = driver;
     }
 

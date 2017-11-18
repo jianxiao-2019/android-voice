@@ -274,7 +274,7 @@ public class USBDeviceManager {
                 if (LogUtil.DEBUG)
                     LogUtil.logw(TAG, "NO devices found, calling initUSBDevice() in hope for root access");
                 /*
-				boolean linuxSeesAudioDevice = mUsbControl.isAudioDevicePresentForLinux();
+                boolean linuxSeesAudioDevice = mUsbControl.isAudioDevicePresentForLinux();
 				if (linuxSeesAudioDevice)
 				{
 					bundle.putString( "ExtraErrorMsg", mContext.getResources().getString( R.string.AndroidDidNotFindAnyDevice ) );
