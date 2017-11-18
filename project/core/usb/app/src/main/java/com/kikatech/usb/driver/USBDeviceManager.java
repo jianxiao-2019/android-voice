@@ -28,8 +28,8 @@ public class USBDeviceManager {
     private Context mContext;
 
     private boolean mRetried = false;
-    final String UsbManagerClassName = "android.hardware.usb.UsbManager";
-    final String UsbDeviceClassName = "android.hardware.usb.UsbDevice";
+//    final String UsbManagerClassName = "android.hardware.usb.UsbManager";
+//    final String UsbDeviceClassName = "android.hardware.usb.UsbDevice";
 
     private UsbDevice mUsbDevice = null;
     private UsbDeviceConnection mConnection = null;
@@ -45,6 +45,7 @@ public class USBDeviceManager {
     private static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
     private static final String EXTRA_DEVICE = "device";
     private static final String EXTRA_PERMISSION_GRANTED = "permission";
+
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             performOnUsbActionReceived(context, intent);

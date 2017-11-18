@@ -16,9 +16,7 @@ class UsbDeviceReceiver extends BroadcastReceiver {
 
     final static String TAG = "UsbDeviceReceiver";
 
-    private static final String ACTION_USB_PERMISSION = "com.kikatech.usb.USB_PERMISSION";
-    private static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
-    private static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
+    public static final String ACTION_USB_PERMISSION_GRANTED = "com.kikatech.usb.USB_PERMISSION";
 
     private UsbDeviceListener mListener;
 
@@ -28,7 +26,7 @@ class UsbDeviceReceiver extends BroadcastReceiver {
 
     public void register(Context context){
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_USB_PERMISSION);
+        filter.addAction(ACTION_USB_PERMISSION_GRANTED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         context.registerReceiver(this, filter);
@@ -43,19 +41,19 @@ class UsbDeviceReceiver extends BroadcastReceiver {
         UsbDevice device;
         Log.v(TAG, "action = " + action);
         switch (action) {
-            case ACTION_USB_ATTACHED:
+            case UsbManager.ACTION_USB_DEVICE_ATTACHED:
                 device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 onUsbAttached(device);
                 break;
-            case ACTION_USB_DETACHED:
+            case UsbManager.ACTION_USB_DEVICE_DETACHED:
                 device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 onUsbDetached(device);
                 break;
-            case ACTION_USB_PERMISSION:
+            case ACTION_USB_PERMISSION_GRANTED:
                 device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                     if (device != null) {
-                        onUsbPermissionGrant(device);
+                        onUsbPermissionGranted(device);
                     }
                 } else {
                     Log.d(TAG, "permission denied for device " + device);
@@ -72,8 +70,8 @@ class UsbDeviceReceiver extends BroadcastReceiver {
         mListener.onUsbDetached(device);
     }
 
-    private void onUsbPermissionGrant(UsbDevice device){
-        mListener.onUsbPermissionGrant(device);
+    private void onUsbPermissionGranted(UsbDevice device){
+        mListener.onUsbPermissionGranted(device);
     }
 
     interface UsbDeviceListener {
@@ -82,6 +80,6 @@ class UsbDeviceReceiver extends BroadcastReceiver {
 
         void onUsbDetached(UsbDevice device);
 
-        void onUsbPermissionGrant(UsbDevice device);
+        void onUsbPermissionGranted(UsbDevice device);
     }
 }
