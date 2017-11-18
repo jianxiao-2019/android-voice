@@ -13,25 +13,20 @@ import com.kikatech.usb.driver.UsbAudioDriver;
  * Created by tianli on 17-11-6.
  */
 
-public class ExtreamAudioDriver implements UsbAudioDriver {
+public class ExtreamAudioDriver extends UsbHostAudioDriver {
 
     private final static String TAG = "ExtreamAudioDriver";
 
     private USBControl mUsbControl = null;
-    private UsbDeviceConnection mConnection = null;
-    private UsbDevice mDevice;
-    private Context mContext;
 
     public ExtreamAudioDriver(Context context, UsbDevice device) {
-        mContext = context.getApplicationContext();
-        mDevice = device;
+        super(context, device);
     }
 
     @Override
     public boolean open() {
-        if (mConnection != null) {
+        if(openConnection()){
             int fileDescriptor = mConnection.getFileDescriptor();
-
             boolean initUSBOk;
             if (android.os.Build.VERSION.SDK_INT >= 24) {
                 initUSBOk = mUsbControl.initUSBDeviceByName(fileDescriptor, mDevice.getDeviceName(), mDevice.getProductId(),
@@ -44,9 +39,9 @@ public class ExtreamAudioDriver implements UsbAudioDriver {
             } else {
                 // TODO: 17-11-6 handle init success
             }
-        } else {
-            Log.e(TAG, "Failed to open USB device");
+            return true;
         }
+        Log.e(TAG, "Failed to open USB device");
         return false;
     }
 

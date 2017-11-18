@@ -5,11 +5,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
 import com.xiao.usbaudio.USBAudioActivity;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by tianli on 17-11-6.
@@ -19,9 +24,15 @@ class UsbDeviceManager {
 
     private static final String TAG = "UsbDeviceManager";
     private Context mContext;
+    private UsbDevice mDevice;
+    private UsbDeviceReceiver mDeviceReceiver;
+    private IUsbAudioDeviceListener mListener = null;
 
-    public UsbDeviceManager(Context context) {
+    public UsbDeviceManager(Context context, IUsbAudioDeviceListener listener) {
         mContext = context.getApplicationContext();
+        mDeviceReceiver = new UsbDeviceReceiver(mDeviceListener);
+        mDeviceReceiver.register(context);
+        mListener = listener;
     }
 
     public boolean hasPermission(UsbDevice device) {
@@ -33,14 +44,77 @@ class UsbDeviceManager {
         // Register for permission
         PendingIntent intent = PendingIntent.getBroadcast(mContext, 0,
                 new Intent(UsbDeviceReceiver.ACTION_USB_PERMISSION_GRANTED), 0);
-        if(device != null && intent != null){
+        if (device != null && intent != null) {
             IntentFilter filter = new IntentFilter(UsbDeviceReceiver.ACTION_USB_PERMISSION_GRANTED);
             mContext.registerReceiver(receiver, filter);
             UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
             manager.requestPermission(device, intent);
-        }else{
+        } else {
             Log.e(TAG, "requestPermission exception.");
         }
     }
 
+    public void scanDevices() {
+        UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        if (deviceList != null && deviceList.values() != null) {
+            Iterator<UsbDevice> iterator = deviceList.values().iterator();
+            while (iterator.hasNext()) {
+                UsbDevice device = iterator.next();
+                mDeviceListener.onUsbAttached(device);
+            }
+        }
+    }
+
+    private boolean isAudioDevice(UsbDevice device){
+        if (device != null && device.getInterfaceCount() > 0) {
+            UsbInterface usbInterface = device.getInterface(0);
+            Log.d(TAG, "Audio UsbInterface : " + usbInterface.getInterfaceClass());
+            if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private UsbDeviceReceiver.UsbDeviceListener mDeviceListener = new UsbDeviceReceiver.UsbDeviceListener() {
+        @Override
+        public void onUsbAttached(UsbDevice device) {
+            if(isAudioDevice(device)){
+                Log.d(TAG, "Audio class device: " + device);
+                Log.d(TAG, "Audio class device name: " + mDevice.getDeviceName());
+                if (hasPermission(device)) {
+                    mDevice = device;
+                    mListener.onDeviceAttached(mDevice);
+                } else {
+                    requestPermission(device, mDeviceReceiver);
+                }
+            }
+        }
+
+        @Override
+        public void onUsbDetached(UsbDevice device) {
+            if (device != null) {
+                if(mDevice == device){
+                    mDevice = null;
+                    mListener.onDeviceDetached();
+                }
+            }
+        }
+
+        @Override
+        public void onUsbPermissionGranted(UsbDevice device) {
+            if (device != null) {
+                mDevice = device;
+                mListener.onDeviceAttached(mDevice);
+            }
+        }
+    };
+
+    interface IUsbAudioDeviceListener {
+
+        void onDeviceAttached(UsbDevice device);
+
+        void onDeviceDetached();
+    }
 }

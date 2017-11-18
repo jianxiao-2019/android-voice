@@ -16,7 +16,6 @@ import com.extreamsd.usbtester.USBControl;
 import com.kikatech.usb.driver.AudioSystemParams;
 import com.kikatech.usb.driver.USBDeviceManager;
 import com.kikatech.usb.driver.interfaces.IUsbAudioTransferListener;
-import com.kikatech.usb.driver.interfaces.IUsbStatusListener;
 import com.kikatech.usb.util.AudioUtil;
 import com.kikatech.usb.util.FileUtil;
 import com.kikatech.usb.util.ImageUtil;
@@ -47,7 +46,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
 
     private USBControl mUsbControl;
     private USBDeviceManager mUsbDeviceManager;
-    private static IUsbStatusListener mUsbStatusListener;
     private static IUsbAudioTransferListener mUsbAudioTransferListener;
     private FileOutputStream os;
     private String filePath;
@@ -108,7 +106,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
             switch (intent.getAction()) {
                 case Commands.START_FOREGROUND:
                     startForeground(SERVICE_ID, getForegroundNotification());
-                    if (mUsbStatusListener != null) mUsbStatusListener.onServiceStarted();
                     if (mUsbControl.initUSB(Build.VERSION.SDK_INT < 24)) {
                         mUsbDeviceManager = new USBDeviceManager(getApplicationContext(), mUsbControl, this);
                         mUsbDeviceManager.getUSBAudioDevices();
@@ -118,7 +115,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
                     break;
                 case Commands.STOP_FOREGROUND:
                     handleStopAudioTransfer(intent);
-                    if (mUsbStatusListener != null) mUsbStatusListener.onServiceStopped();
                     stopForeground(true);
                     break;
                 case Commands.START_AUDIO_TRANSFER:
@@ -150,7 +146,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
     @Override
     public void onAttached() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "onAttached");
-        if (mUsbStatusListener != null) mUsbStatusListener.onAttached();
     }
 
     @Override
@@ -160,34 +155,28 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
         mUsbControl.stopMIDIInputTransfers();
         // mUsbControl.cleanUp();
         mUsbControl.restartUSBAudioManager(true);
-
-        if (mUsbStatusListener != null) mUsbStatusListener.onDetached();
     }
 
     @Override
     public void onNoDevices() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "onNoDevices");
-        if (mUsbStatusListener != null) mUsbStatusListener.onNoDevices();
     }
 
     @Override
     public void onInitialized() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "onInitialized");
-        if (mUsbStatusListener != null) mUsbStatusListener.onInitialized();
     }
 
     @Override
     public void onInitializedFailed(String errorMsg) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "onInitializedFailed");
         makeToast("USB audio interface initialize failed!");
-        if (mUsbStatusListener != null) mUsbStatusListener.onInitializedFailed(errorMsg);
     }
 
     @Override
     public void onOpenFailed() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "onOpenFailed");
         makeToast("USB audio interface open failed!");
-        if (mUsbStatusListener != null) mUsbStatusListener.onOpenFailed();
     }
 
 
@@ -251,17 +240,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
 
     private void makeToast(String msg) {
         Toast.makeText(UsbForegroundService.this, msg, Toast.LENGTH_SHORT).show();
-    }
-
-
-    public static void setUsbStatusListener(IUsbStatusListener listener) {
-        mUsbStatusListener = listener;
-    }
-
-    public static void processStart(Context context, IUsbStatusListener listener) {
-        mUsbStatusListener = listener;
-        Bundle args = new Bundle();
-        launchCommend(context, Commands.START_FOREGROUND, args);
     }
 
     public static void processStartAudioTransfer(Context context, IUsbAudioTransferListener listener) {

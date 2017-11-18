@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.kikatech.usb.R;
 import com.kikatech.usb.UsbForegroundService;
 import com.kikatech.usb.driver.interfaces.IUsbAudioTransferListener;
-import com.kikatech.usb.driver.interfaces.IUsbStatusListener;
 
 /**
  * Created by tianli on 17-10-23.
@@ -64,50 +63,5 @@ public class UsbAudioTestActivity extends AppCompatActivity {
             }
         });
 
-        UsbForegroundService.processStart(UsbAudioTestActivity.this, new IUsbStatusListener() {
-            @Override
-            public void onAttached() {
-            }
-
-            @Override
-            public void onDetached() {
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(false);
-            }
-
-            @Override
-            public void onNoDevices() {
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(false);
-            }
-
-            @Override
-            public void onInitialized() {
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-            }
-
-            @Override
-            public void onInitializedFailed(String errorMsg) {
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(false);
-            }
-
-            @Override
-            public void onOpenFailed() {
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(false);
-            }
-
-            @Override
-            public void onServiceStarted() {
-            }
-
-            @Override
-            public void onServiceStopped() {
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(false);
-            }
-        });
     }
 }
