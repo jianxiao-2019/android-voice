@@ -11,8 +11,11 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
+import com.kikatech.usb.util.LogUtil;
+
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by tianli on 17-11-6.
@@ -71,6 +74,63 @@ class UsbDeviceManager {
             if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
                 return true;
             }
+//            Iterator<?> it = devices.entrySet().iterator();
+//            while (it.hasNext()) {
+//                @SuppressWarnings("rawtypes") Map.Entry pairs = (Map.Entry) it.next();
+//                UsbDevice dev = (UsbDevice) pairs.getValue();
+//
+//                if (dev != null) {
+//                    int deviceClass = dev.getDeviceClass();
+//
+//                    if (((deviceClass == 1) || (deviceClass == 0) || (deviceClass == 239) || (deviceClass == 255)) && // inspect interface device class, misc = 239, 255 = vendor specific
+//                            dev.getVendorId() != 0x05C6 && dev.getVendorId() != 0x05E1 && // Symantec bluetooth and video cameras
+//                            dev.getVendorId() != 0x0A5C) // Broadcom (bluetooth)
+//                    {
+//                        m_devicesToQuery++;
+//                    }
+//
+//                    if (dev.getVendorId() == 0x1519 && dev.getProductId() == 0x443) // Samsung dock?
+//                    {
+//                        //appendLog(m_context, "   hasClass2Vendor5401");
+//                        hasClass2Vendor5401 = true;
+//                    }
+//                }
+//            }
+//            if (LogUtil.DEBUG)
+//                LogUtil.log(TAG, "Devices to query = " + m_devicesToQuery + ", hasClass2Vendor5401 = " + hasClass2Vendor5401);
+//
+//            it = devices.entrySet().iterator();
+//            while (it.hasNext()) {
+//                @SuppressWarnings("rawtypes") Map.Entry pairs = (Map.Entry) it.next();
+//                UsbDevice dev = (UsbDevice) pairs.getValue();
+//
+//                if (dev != null) {
+//                    int deviceClass = dev.getDeviceClass();
+//                    //Log.v(TAG, "deviceClass = " + deviceClass + ", dev.getVendorId() = " + dev.getVendorId());
+//                    if (LogUtil.DEBUG)
+//                        LogUtil.log(TAG, "deviceClass = " + deviceClass + ", dev.getVendorId() = " + dev.getVendorId());
+//
+//                    if (((deviceClass == 1) || (deviceClass == 0) || (deviceClass == 239) || (deviceClass == 255)) && dev.getVendorId() != 0x05C6 && dev.getVendorId() != 0x05E1 && // Symantec bluetooth and video cameras
+//                            dev.getVendorId() != 0x0A5C) {
+//                        if (hasClass2Vendor5401 && dev.getVendorId() == 0x8BB && m_devicesToQuery >= 2) {
+//                            if (LogUtil.DEBUG) LogUtil.logw(TAG, "Skipping dock audio!");
+//                            continue;
+//                        } else {
+//                            //appendLog(m_context, "Not skipping: hasClass2Vendor5401 = " + hasClass2Vendor5401 + ", dev.getVendorId() = " + dev.getVendorId() + ", m_devicesToQuery = " + m_devicesToQuery);
+//                        }
+//
+//                        possibleAudioDevices++;
+//                        //Log.v(TAG, "----> requestPermission");
+//                        if (LogUtil.DEBUG) LogUtil.log(TAG, "requestPermission");
+//
+//                        if (manager.hasPermission(dev) == false) {
+//                            manager.requestPermission(dev, mPermissionIntent);
+//                        } else {
+//                            openDevice(mContext, dev);
+//                        }
+//                    }
+//                }
+//            }
         }
         return false;
     }
