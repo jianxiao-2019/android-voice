@@ -173,6 +173,7 @@ public class GoLayout extends FrameLayout {
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, "unlock");
         }
+        onStatusChanged(ViewStatus.LOADING);
         if (mTimer.isCounting()) {
             mTimer.stop();
         }
@@ -200,11 +201,11 @@ public class GoLayout extends FrameLayout {
 
         mCurrentStatus = ViewStatus.SPEAK;
 
+        mSpeakView.setText(text);
+
         mSpeakLayout.setVisibility(VISIBLE);
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
-
-        mSpeakView.setText(text);
 
         onStatusChanged(mCurrentStatus);
     }
@@ -220,11 +221,11 @@ public class GoLayout extends FrameLayout {
 
         mCurrentStatus = ViewStatus.LISTEN;
 
+        mListenView.setText(text);
+
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(VISIBLE);
         mOptionsLayout.setVisibility(GONE);
-
-        mListenView.setText(text);
 
         onStatusChanged(mCurrentStatus);
     }
@@ -270,6 +271,7 @@ public class GoLayout extends FrameLayout {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
         }
+
         onStatusChanged(mCurrentStatus);
     }
 
@@ -297,18 +299,23 @@ public class GoLayout extends FrameLayout {
     }
 
     private void onStatusChanged(ViewStatus status) {
+        // TODO: animations
         switch (status) {
             case LOADING:
-                mStatusAnimationView.setText("Loading"); // TODO: animation
-                break;
-            case SPEAK:
-                mStatusAnimationView.setText("Speaking"); // TODO: animation
-                break;
-            case LISTEN:
-                mStatusAnimationView.setText("Listening"); // TODO: animation
+                mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_round_blue);
+                mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+                mStatusAnimationView.setText("请说出指令");
                 break;
             case DISPLAY_OPTIONS:
-                mStatusAnimationView.setText("Display Options"); // TODO: animation
+            case SPEAK:
+                mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_round_red);
+                mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                mStatusAnimationView.setText("TTS播放中");
+                break;
+            case LISTEN:
+                mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_round_green);
+                mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                mStatusAnimationView.setText("指令辨识中");
                 break;
         }
     }

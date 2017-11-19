@@ -2,12 +2,13 @@ package com.kikatech.go.view;
 
 import android.os.Bundle;
 
+import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.ui.MediaPlayerUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-import com.kikatech.voice.service.IDialogFlowService;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -85,7 +86,7 @@ public class UiTaskManager {
     }
 
 
-    public void dispatchTtsTask(String text, Bundle extras) {
+    public synchronized void dispatchTtsTask(String text, Bundle extras) {
         OptionList optionList = null;
         if (extras != null && extras.containsKey(BaseSceneStage.EXTRA_OPTIONS_LIST)) {
             optionList = extras.getParcelable(BaseSceneStage.EXTRA_OPTIONS_LIST);
@@ -97,7 +98,7 @@ public class UiTaskManager {
         }
     }
 
-    public void dispatchStageTask(SceneStage sceneStage) {
+    public synchronized void dispatchStageTask(SceneStage sceneStage) {
         if (isLayoutPerformTask()) {
             addToQueue(new Task(TaskType.TYPE_SCENE_STAGE, sceneStage));
         } else {
@@ -105,7 +106,7 @@ public class UiTaskManager {
         }
     }
 
-    public void dispatchSpeechTask(String speech) {
+    public synchronized void dispatchSpeechTask(String speech) {
         if (isLayoutPerformTask()) {
             addToQueue(new Task(TaskType.TYPE_SPEECH, speech));
         } else {
@@ -113,14 +114,15 @@ public class UiTaskManager {
         }
     }
 
-    public void dispatchDefaultOptionsTask() {
+    public synchronized void dispatchDefaultOptionsTask() {
         if (!isLayoutPerformTask()) {
             displayOptions(mDefaultOptionList);
+            unlock();
         }
     }
 
-    public void onStageActionDone() {
-        mLayout.unlock();
+    public synchronized void onStageActionDone() {
+        unlock();
     }
 
 
@@ -172,6 +174,19 @@ public class UiTaskManager {
                 });
             }
         });
+    }
+
+    private void unlock() {
+        mLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mLayout.unlock();
+            }
+        });
+//        TODO: alert
+//        if(withAlert) {
+//            MediaPlayerUtil.playAlert(mLayout.getContext(), R.raw.alert_dot, null);
+//        }
     }
 
     public interface IUiManagerFeedback {

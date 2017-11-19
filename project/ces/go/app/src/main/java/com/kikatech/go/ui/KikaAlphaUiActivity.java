@@ -62,8 +62,13 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 new IDialogFlowService.IServiceCallback() {
                     @Override
                     public void onInitComplete() {
-                        initUiTaskManager();
-                        mUiManager.dispatchDefaultOptionsTask();
+                        mGoLayout.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                initUiTaskManager();
+                                mUiManager.dispatchDefaultOptionsTask();
+                            }
+                        }, 800);
                     }
 
                     @Override

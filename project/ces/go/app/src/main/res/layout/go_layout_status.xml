@@ -7,9 +7,10 @@
 
     <TextView
         android:id="@+id/go_layout_status_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="30sp"/>
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textSize="13sp"/>
 
 </LinearLayout>
