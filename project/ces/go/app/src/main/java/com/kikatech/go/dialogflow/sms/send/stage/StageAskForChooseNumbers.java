@@ -63,7 +63,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
                 return new StageAskForChooseNumbers(mSceneBase, mFeedback, ERR_STATUS_OPTION_OOI);
             }
 
-            sc.setChoosedNumber(sc.getPhoneNumbers().get(chosenIdx));
+            sc.setChosenNumber(sc.getPhoneNumbers().get(chosenIdx));
             return getStageCheckSmsBody(TAG, sc, mSceneBase, mFeedback);
         }
     }

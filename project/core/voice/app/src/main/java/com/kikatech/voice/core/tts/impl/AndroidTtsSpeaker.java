@@ -151,8 +151,13 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
         if (pair != null) {
             String text = pair.first;
             int voiceId = pair.second;
-            mTts.setVoice(getVoice(voiceId));
-            mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+            Voice voice = getVoice(voiceId);
+            if (voice != null) {
+                mTts.setVoice(getVoice(voiceId));
+                mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+            } else {
+                new Exception("playSingleList failed").printStackTrace();
+            }
         }
     }
 

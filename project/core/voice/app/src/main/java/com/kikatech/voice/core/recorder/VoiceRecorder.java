@@ -1,11 +1,5 @@
 package com.kikatech.voice.core.recorder;
 
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
-import android.media.audiofx.AcousticEchoCanceler;
-import android.support.annotation.NonNull;
-
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.log.Logger;
 
@@ -22,6 +16,7 @@ public class VoiceRecorder {
     private final IVoiceSource mVoiceSource;
 
     AudioRecordThread mAudioRecordThread;
+    
 
     //private final Object mSyncObj = new Object();
 

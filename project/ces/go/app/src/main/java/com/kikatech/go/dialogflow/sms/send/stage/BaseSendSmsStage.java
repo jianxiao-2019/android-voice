@@ -93,7 +93,7 @@ public class BaseSendSmsStage extends SceneStage {
     static SceneStage getStageCheckNumberCount(String TAG, SmsContent sc, SceneBase mSceneBase, ISceneFeedback mFeedback) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "Tel Number count : " + sc.getNumberCount());
         if (sc.getNumberCount() == 1) {
-            sc.setChoosedNumber(sc.getPhoneNumbers().get(0));
+            sc.setChosenNumber(sc.getPhoneNumbers().get(0));
             return getStageCheckSmsBody(TAG, sc, mSceneBase, mFeedback);
         } else {
             // SendSMS 2.6 向用戶進一步確認號碼或識別標籤

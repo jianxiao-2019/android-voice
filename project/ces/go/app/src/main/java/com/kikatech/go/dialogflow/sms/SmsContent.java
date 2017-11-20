@@ -19,7 +19,7 @@ public class SmsContent {
 
     private String contactMatchedName;
     private final List<String> phoneNumbers;
-    private String mChoosedNumber;
+    private String mChosenNumber;
 
     private boolean isContactMatched;
 
@@ -102,13 +102,13 @@ public class SmsContent {
         return phoneNumbers;
     }
 
-    public String getChoosedPhoneNumber() {
-        return mChoosedNumber;
+    public String getChosenPhoneNumber() {
+        return mChosenNumber;
     }
 
-    public void setChoosedNumber(String number) {
-        if(LogUtil.DEBUG) LogUtil.log("SmsContent", "setChoosedNumber:" + number);
-        mChoosedNumber = number;
+    public void setChosenNumber(String number) {
+        if(LogUtil.DEBUG) LogUtil.log("SmsContent", "setChosenNumber:" + number);
+        mChosenNumber = number;
     }
 
     public int getChosenOption() {
@@ -157,7 +157,7 @@ public class SmsContent {
     public String toString() {
         return "contact:" + getDisplayString(getContact()) + ", smsBody:" + getDisplayString(mIntentContent.smsBody) +
                 ", matched:" + getDisplayString(getMatchedName()) +
-                "\nChoosed Number:" + mChoosedNumber + ", phoneNumber count:" + phoneNumbers.size() +
+                "\nChosen Number:" + mChosenNumber + ", phoneNumber count:" + phoneNumbers.size() +
                 "\nisSimilarContact:" + isSimilarContact() +
                 ", isContactMatched:" + isContactMatched;
     }
