@@ -16,7 +16,7 @@ import org.json.JSONException;
  * Created by brad_chang on 2017/11/15.
  */
 
-public class SendSmsUtil {
+public class SmsUtil {
 
     private static final String KEY_NAME = "given-name";
     private static final String KEY_LAST_NAME = "last-name";
@@ -27,11 +27,11 @@ public class SendSmsUtil {
 
     public static SmsContent.IntentContent parseContactName(@NonNull Bundle parm) {
         SmsContent.IntentContent ic = new SmsContent.IntentContent();
-        ic.smsBody = parm.getString(KEY_ANY, "").replace("\"", "");
+        ic.smsBody = parseTagAny(parm);
         ic.lastName = parm.getString(KEY_LAST_NAME, "").replace("\"", "");;
         String names = parm.getString(KEY_NAME, "");
         try {
-            if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "names:" + names);
+            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "names:" + names);
             JSONArray jsonNames = new JSONArray(names);
             for (int i = 0; i < jsonNames.length(); ++i) {
                 ic.firstName += jsonNames.getString(i) + " ";
@@ -42,7 +42,7 @@ public class SendSmsUtil {
         }
         String chosenNum = parm.getString(KEY_NUMBER, "");
         try {
-            if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "chosenNum:" + chosenNum);
+            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "chosenNum:" + chosenNum);
             JSONArray jsonNums = new JSONArray(chosenNum);
             if (jsonNums.length() > 0) {
                 ic.chosenOption += jsonNums.getString(0);
@@ -54,29 +54,33 @@ public class SendSmsUtil {
 
         if (LogUtil.DEBUG) {
             for (String k : parm.keySet()) {
-                LogUtil.log("SendSmsUtil", "" + k + ":" + parm.getString(k));
+                LogUtil.log("SmsUtil", "" + k + ":" + parm.getString(k));
                 //return parm.getString(k);
             }
-            LogUtil.log("SendSmsUtil", "" + ic.toString());
+            LogUtil.log("SmsUtil", "" + ic.toString());
         }
 
         return ic;
     }
 
-    public static boolean sensSms(Context ctx, String phoneNum, String msgContent) {
+    public static boolean sendSms(Context ctx, String phoneNum, String msgContent) {
         if (!PermissionUtil.hasPermissionsSMS(ctx)) {
-            if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "Get SMS permission first!");
+            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Get SMS permission first!");
             return false;
         }
 
         if (TextUtils.isEmpty(phoneNum) || TextUtils.isEmpty(msgContent)) {
-            if (LogUtil.DEBUG) LogUtil.log("SendSmsUtil", "Empty target or message!");
+            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Empty target or message!");
             return false;
         }
 
         boolean sent = SmsManager.getInstance().sendMessage(ctx, phoneNum, "", msgContent);
         if (LogUtil.DEBUG)
-            LogUtil.log("SendSmsUtil", "phoneNum:" + phoneNum + ", msgContent:" + msgContent + ", send status:" + sent);
+            LogUtil.log("SmsUtil", "phoneNum:" + phoneNum + ", msgContent:" + msgContent + ", send status:" + sent);
         return sent;
+    }
+
+    public static String parseTagAny(Bundle extra) {
+        return extra.getString(KEY_ANY, "").replace("\"", "");
     }
 }

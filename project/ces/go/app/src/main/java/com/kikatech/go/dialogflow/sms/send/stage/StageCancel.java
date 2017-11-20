@@ -1,4 +1,4 @@
-package com.kikatech.go.dialogflow.sms.stage;
+package com.kikatech.go.dialogflow.sms.send.stage;
 
 import android.support.annotation.NonNull;
 

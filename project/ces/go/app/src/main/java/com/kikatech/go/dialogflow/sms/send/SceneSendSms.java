@@ -1,8 +1,9 @@
-package com.kikatech.go.dialogflow.sms;
+package com.kikatech.go.dialogflow.sms.send;
 
 import android.content.Context;
 
-import com.kikatech.go.dialogflow.sms.stage.StageSendSmsIdle;
+import com.kikatech.go.dialogflow.sms.SmsContent;
+import com.kikatech.go.dialogflow.sms.send.stage.StageSendSmsIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -17,7 +18,7 @@ public class SceneSendSms extends SceneBase {
 
     private SmsContent smsContent = null;
 
-    SceneSendSms(Context context, ISceneFeedback feedback) {
+    public SceneSendSms(Context context, ISceneFeedback feedback) {
         super(context, feedback);
     }
 

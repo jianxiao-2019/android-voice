@@ -1,16 +1,15 @@
-package com.kikatech.go.dialogflow.sms.stage;
+package com.kikatech.go.dialogflow.sms.send.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.sms.SmsContent;
-import com.kikatech.go.dialogflow.sms.SmsSceneActions;
+import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-import com.kikatech.voice.util.contact.ContactManager;
 
 /**
  * Created by brad_chang on 2017/11/15.
@@ -28,8 +27,8 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         SmsContent sc = getSmsContent();
         boolean supportedCommand = false;
-        if (!SmsSceneActions.ACTION_SEND_SMS_NAME.equals(action)) {
-            if (SmsSceneActions.ACTION_SEND_SMS_MSGBODY.equals(action) && !TextUtils.isEmpty(sc.getSmsBody())) {
+        if (!SceneActions.ACTION_SEND_SMS_NAME.equals(action)) {
+            if (SceneActions.ACTION_SEND_SMS_MSGBODY.equals(action) && !TextUtils.isEmpty(sc.getSmsBody())) {
                 if (LogUtil.DEBUG)
                     LogUtil.log(TAG, "Try to parse sms content, it might be the contact");
                 supportedCommand = sc.tryParseContact(mSceneBase.getContext(), sc.getSmsBody());

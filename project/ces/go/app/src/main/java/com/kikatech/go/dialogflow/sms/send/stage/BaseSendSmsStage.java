@@ -1,12 +1,12 @@
-package com.kikatech.go.dialogflow.sms.stage;
+package com.kikatech.go.dialogflow.sms.send.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.kikatech.go.dialogflow.sms.SceneSendSms;
-import com.kikatech.go.dialogflow.sms.SendSmsUtil;
+import com.kikatech.go.dialogflow.sms.SmsUtil;
+import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.dialogflow.sms.SmsContent;
-import com.kikatech.go.dialogflow.sms.SmsSceneActions;
+import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -35,8 +35,8 @@ public class BaseSendSmsStage extends SceneStage {
     @Override
     public SceneStage next(String action, Bundle extra) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
-        ((SceneSendSms) mSceneBase).updateSmsContent(SendSmsUtil.parseContactName(extra));
-        if(action.equals(SmsSceneActions.ACTION_SEND_SMS_CANCEL)) {
+        ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseContactName(extra));
+        if(action.equals(SceneActions.ACTION_SEND_SMS_CANCEL)) {
             return new StageCancel(mSceneBase, mFeedback);
         }
         return getNextStage(action, extra);

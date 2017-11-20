@@ -49,7 +49,7 @@ public class SmsContent {
         }
     }
 
-    SmsContent(IntentContent ic) {
+    public SmsContent(IntentContent ic) {
         phoneNumbers = new ArrayList<>();
         update(ic);
     }
@@ -58,7 +58,7 @@ public class SmsContent {
         return TextUtils.isEmpty(filed) ? "<empty>" : filed;
     }
 
-    void update(IntentContent ic) {
+    public void update(IntentContent ic) {
         if(mIntentContent == null) {
             mIntentContent = ic;
         } else {
