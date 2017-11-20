@@ -1,6 +1,5 @@
 package com.kikatech.voice.core.recorder;
 
-import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;

@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.extreamsd.usbtester.USBControl;
 import com.kikatech.usb.driver.AudioSystemParams;
 import com.kikatech.usb.driver.USBDeviceManager;
-import com.kikatech.usb.driver.interfaces.IUsbAudioTransferListener;
 import com.kikatech.usb.util.AudioUtil;
 import com.kikatech.usb.util.FileUtil;
 import com.kikatech.usb.util.ImageUtil;
@@ -46,7 +45,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
 
     private USBControl mUsbControl;
     private USBDeviceManager mUsbDeviceManager;
-    private static IUsbAudioTransferListener mUsbAudioTransferListener;
     private FileOutputStream os;
     private String filePath;
 
@@ -56,10 +54,7 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
      */
     public void putAudioData(final short[] data) {
         if (data != null) {
-            if (mUsbAudioTransferListener != null)
-                mUsbAudioTransferListener.onAudioTransferBufferResult(data);
             AudioUtil.getIns().playPcm(data);
-
             try {
                 if (os == null) {
                     filePath = FileUtil.getRecordFilePath();
@@ -122,8 +117,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
                     break;
                 case Commands.STOP_AUDIO_TRANSFER:
                     handleStopAudioTransfer(intent);
-                    if (mUsbAudioTransferListener != null)
-                        mUsbAudioTransferListener.onAudioTransferStop(filePath);
                     break;
             }
         } catch (Exception e) {
@@ -195,8 +188,6 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
 
             int openSLESBufferSize = getOpenSLESBufferSize(DEFAULT_SAMPLE_RATE);
             mUsbControl.startAudioTransfers(false, true, DEFAULT_SAMPLE_RATE, false, DEFAULT_USB_BUFFER_SIZE_IN_FRAMES, openSLESBufferSize);
-
-            if (mUsbAudioTransferListener != null) mUsbAudioTransferListener.onAudioTransferStart();
         } catch (Exception ignore) {
         }
     }
@@ -242,8 +233,7 @@ public class UsbForegroundService extends Service implements USBDeviceManager.IU
         Toast.makeText(UsbForegroundService.this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public static void processStartAudioTransfer(Context context, IUsbAudioTransferListener listener) {
-        mUsbAudioTransferListener = listener;
+    public static void processStartAudioTransfer(Context context) {
         Bundle args = new Bundle();
         launchCommend(context, Commands.START_AUDIO_TRANSFER, args);
     }

@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.kikatech.usb.R;
 import com.kikatech.usb.UsbForegroundService;
-import com.kikatech.usb.driver.interfaces.IUsbAudioTransferListener;
 
 /**
  * Created by tianli on 17-10-23.
@@ -34,32 +33,12 @@ public class UsbAudioTestActivity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UsbForegroundService.processStartAudioTransfer(UsbAudioTestActivity.this, new IUsbAudioTransferListener() {
-                    @Override
-                    public void onAudioTransferStart() {
-                        btnStart.setEnabled(false);
-                        btnStop.setEnabled(true);
-                    }
-
-                    @Override
-                    public void onAudioTransferStop(String filePath) {
-                        btnStart.setEnabled(true);
-                        btnStop.setEnabled(false);
-                        String log = logTv.getText().toString() + "\n\nfile saved at: \n" + filePath;
-                        logTv.setText(log);
-                    }
-
-                    @Override
-                    public void onAudioTransferBufferResult(short[] data) {
-                    }
-                });
             }
         });
 
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UsbForegroundService.processStopAudioTransfer(UsbAudioTestActivity.this);
             }
         });
 
