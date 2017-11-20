@@ -20,7 +20,7 @@ import com.kikatech.voice.util.log.Logger;
  */
 
 public class VoiceService {
-
+    
     private static final long WEBSOCKET_CLOSE_DELAY = 2000;
 
     private VoiceConfiguration mConf;
@@ -32,7 +32,7 @@ public class VoiceService {
     private VoiceRecognitionListener mVoiceRecognitionListener;
     private VoiceStateChangedListener mVoiceStateChangedListener;
 
-    private Handler mMainThreadHander;
+    private Handler mMainHandler;
 
     public interface VoiceRecognitionListener {
         void onRecognitionResult(Message message);
@@ -51,8 +51,8 @@ public class VoiceService {
                 new FileWriter(mConf.getDebugFilePath() + "_speex", new VoiceDataSender()), new VoiceDetector.OnVadProbabilityChangeListener() {
             @Override
             public void onSpeechProbabilityChanged(final float speechProbability) {
-                if (mMainThreadHander != null) {
-                    mMainThreadHander.post(new Runnable() {
+                if (mMainHandler != null) {
+                    mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (mVoiceStateChangedListener != null) {
@@ -88,7 +88,7 @@ public class VoiceService {
             mVoiceStateChangedListener.onStartListening();
         }
 
-        mMainThreadHander = new Handler();
+        mMainHandler = new Handler();
     }
 
     public void stop() {
@@ -120,8 +120,8 @@ public class VoiceService {
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
         @Override
         public void onMessage(final Message message) {
-            if (mMainThreadHander != null) {
-                mMainThreadHander.post(new Runnable() {
+            if (mMainHandler != null) {
+                mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (mVoiceRecognitionListener != null) {
