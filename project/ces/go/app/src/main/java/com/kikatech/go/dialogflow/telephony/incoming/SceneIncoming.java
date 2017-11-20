@@ -3,7 +3,6 @@ package com.kikatech.go.dialogflow.telephony.incoming;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.telephony.incoming.stage.StageIncoming;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -37,7 +36,7 @@ public class SceneIncoming extends SceneBase {
             public SceneStage next(String action, Bundle extra) {
                 if (SceneActions.ACTION_INCOMING_START.equals(action)) {
                     if (extra != null && extra.containsKey(SceneActions.PARAM_INCOMING_NAME)) {
-                        return new StageIncoming(SceneIncoming.this, null, extra.getString(SceneActions.PARAM_INCOMING_NAME));
+                        return new StageIncoming(SceneIncoming.this, mFeedback, extra.getString(SceneActions.PARAM_INCOMING_NAME));
                     }
                 }
                 return null;
