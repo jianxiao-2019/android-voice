@@ -80,7 +80,7 @@ public class SmsUtil {
         return sent;
     }
 
-    public static String parseTagAny(Bundle extra) {
-        return extra.getString(KEY_ANY, "").replace("\"", "");
+    public static String parseTagAny(@NonNull Bundle parm) {
+        return parm.getString(KEY_ANY, "").replace("\"", "");
     }
 }

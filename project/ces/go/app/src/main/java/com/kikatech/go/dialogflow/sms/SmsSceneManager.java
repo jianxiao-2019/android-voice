@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
+import android.util.LongSparseArray;
 
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
@@ -20,13 +21,15 @@ import com.kikatech.voice.service.IDialogFlowService;
 
 public class SmsSceneManager extends BaseSceneManager {
 
-    private static final String KIKA_PROCESS_RECEIVED_SMS = "kika_process_received_sms";
+    private static final String KIKA_PROCESS_RECEIVED_SMS = "kika_process_received_sms %d";
 
     private BroadcastReceiver mSmsReceiver = null;
+    private LongSparseArray<SmsObject> mReceivedSmsList;
 
     public SmsSceneManager(Context context, @NonNull IDialogFlowService service) {
         super(context, service);
 
+        mReceivedSmsList = new LongSparseArray<>();
         registerSmsReceiver();
     }
 
@@ -37,9 +40,11 @@ public class SmsSceneManager extends BaseSceneManager {
                 if (SmsManager.ACTION_SMS_MESSAGE_UPDATED.equals(intent.getAction())) {
                     SmsObject smsObject = intent.getParcelableExtra(SmsManager.KEY_DATA_SMS_OBJECT);
                     if (LogUtil.DEBUG)
-                        LogUtil.log("SmsSceneManager", "Received sms object: " + smsObject.getMsgContent());
+                        LogUtil.log("SmsSceneManager", "[Received SMS] " + smsObject.getTitle() + ": " + smsObject.getMsgContent());
+                    long t = System.currentTimeMillis();
+                    mReceivedSmsList.put(t, smsObject);
 
-                    mService.talk(KIKA_PROCESS_RECEIVED_SMS);
+                    mService.talk(String.format(KIKA_PROCESS_RECEIVED_SMS, t));
                 }
             }
         };
@@ -54,6 +59,8 @@ public class SmsSceneManager extends BaseSceneManager {
         super.close();
         mContext.unregisterReceiver(mSmsReceiver);
         mSmsReceiver = null;
+        mReceivedSmsList.clear();
+        mReceivedSmsList = null;
     }
 
     @Override
@@ -61,8 +68,10 @@ public class SmsSceneManager extends BaseSceneManager {
         mSceneBaseList.add(new SceneSendSms(mContext, mService.getTtsFeedback()));
         mSceneBaseList.add(new SceneReplySms(mContext, mService.getTtsFeedback(), new SceneReplySms.ISmsFunc() {
             @Override
-            public SmsObject getReceivedSms(long t) {
-                return null;
+            public SmsObject getReceivedSms(long timestamp) {
+                SmsObject so = mReceivedSmsList.get(timestamp);
+                if(so != null) mReceivedSmsList.remove(timestamp);
+                return so;
             }
         }));
     }

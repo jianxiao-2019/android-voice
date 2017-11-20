@@ -48,6 +48,9 @@ public class BaseSendSmsStage extends SceneStage {
 
     @Override
     public void prepare() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "prepare : do nothing");
+        }
     }
 
     @Override
