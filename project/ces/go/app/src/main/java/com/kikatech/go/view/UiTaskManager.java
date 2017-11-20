@@ -86,10 +86,6 @@ public class UiTaskManager {
     }
 
 
-    public synchronized void dipatchSleepTask() {
-        sleep();
-    }
-
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
         OptionList optionList = null;
         if (extras != null && extras.containsKey(BaseSceneStage.EXTRA_OPTIONS_LIST)) {
@@ -121,14 +117,22 @@ public class UiTaskManager {
     public synchronized void dispatchDefaultOptionsTask() {
         if (!isLayoutPerformTask()) {
             displayOptions(mDefaultOptionList);
-            unlock();
+            unlock(true);
         }
     }
 
-    public synchronized void onStageActionDone() {
-        unlock();
+    public synchronized void onStageActionDone(boolean isEndOfScene) {
+        unlock(!isEndOfScene);
+        if (isEndOfScene) {
+            displayOptions(mDefaultOptionList);
+            unlock(false);
+        }
     }
 
+    public synchronized void release() {
+        mTaskQueue.clear();
+        mLayout = null;
+    }
 
     private boolean isLayoutPerformTask() {
         return mLayout.isViewLocking() || !mTaskQueue.isEmpty();
@@ -189,17 +193,16 @@ public class UiTaskManager {
         });
     }
 
-    private void unlock() {
+    private void unlock(boolean withAlert) {
         mLayout.post(new Runnable() {
             @Override
             public void run() {
                 mLayout.unlock();
             }
         });
-//        TODO: alert
-//        if(withAlert) {
-//            MediaPlayerUtil.playAlert(mLayout.getContext(), R.raw.alert_dot, null);
-//        }
+        if (withAlert) {
+            MediaPlayerUtil.playAlert(mLayout.getContext(), R.raw.alert_dot, null);
+        }
     }
 
     public interface IUiManagerFeedback {

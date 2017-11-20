@@ -53,6 +53,11 @@ public class StageReject extends SceneStage {
             public void onTtsInterrupted() {
                 rejectPhoneCall();
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 

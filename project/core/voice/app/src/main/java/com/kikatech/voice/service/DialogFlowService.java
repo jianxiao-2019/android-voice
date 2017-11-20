@@ -201,9 +201,9 @@ public class DialogFlowService implements
         }
 
         @Override
-        public void onStageActionDone() {
+        public void onStageActionDone(boolean isEndOfScene) {
             if (mCallback != null) {
-                mCallback.onStageActionDone();
+                mCallback.onStageActionDone(isEndOfScene);
             }
         }
     };
@@ -266,9 +266,6 @@ public class DialogFlowService implements
         @Override
         public void onSceneExit(String scene) {
             mDialogFlow.resetContexts();
-            if (mCallback != null) {
-                mCallback.onSceneExit(scene);
-            }
         }
     };
 }

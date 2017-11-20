@@ -48,6 +48,11 @@ public class StageNavigationGo extends BaseNaviStage {
             public void onTtsInterrupted() {
                 startNavigate();
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 

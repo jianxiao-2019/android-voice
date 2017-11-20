@@ -20,11 +20,9 @@ public interface IDialogFlowService {
 
         void onText(String text, Bundle extras);
 
-        void onSceneExit(String scene);
-
         void onStagePrepared(String scene, String action, SceneStage sceneStage);
 
-        void onStageActionDone();
+        void onStageActionDone(boolean isEndOfScene);
     }
 
     void registerScene(SceneBase scene);

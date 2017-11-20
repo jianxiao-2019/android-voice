@@ -46,6 +46,11 @@ public class BaseNaviStage extends SceneStage {
                 public void onTtsInterrupted() {
                     exitScene();
                 }
+
+                @Override
+                public boolean isEndOfScene() {
+                    return true;
+                }
             });
         }
         return null;

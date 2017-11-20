@@ -37,6 +37,11 @@ public class StageCancel extends BaseSendSmsStage {
             public void onTtsInterrupted() {
                 exitScene();
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 }

@@ -68,6 +68,11 @@ public class StageMakeCall extends StageOutgoing {
             public void onTtsInterrupted() {
                 makePhoneCall(finalPhoneNumber);
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 

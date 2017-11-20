@@ -54,6 +54,11 @@ public class StageAnswer extends SceneStage {
             public void onTtsInterrupted() {
                 answerPhoneCall();
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 

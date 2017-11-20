@@ -94,16 +94,12 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onSceneExit(String scene) {
-                    }
-
-                    @Override
                     public void onStagePrepared(String scene, String action, SceneStage sceneStage) {
                         sceneStage.action();
                     }
 
                     @Override
-                    public void onStageActionDone() {
+                    public void onStageActionDone(boolean isEndOfScene) {
                     }
                 });
 

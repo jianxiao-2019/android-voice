@@ -54,6 +54,11 @@ public class StageIgnore extends SceneStage {
             public void onTtsInterrupted() {
                 ignorePhoneCall();
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 

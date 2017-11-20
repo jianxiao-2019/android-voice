@@ -49,17 +49,20 @@ public class KikaAlphaUiActivity extends BaseActivity {
         if (mDialogFlowService != null) {
             mDialogFlowService.quitService();
         }
+        if( mUiManager != null ) {
+            mUiManager.release();
+        }
     }
 
     private void bindView() {
-        mGoLayout =(GoLayout) findViewById(R.id.go_layout);
+        mGoLayout = (GoLayout) findViewById(R.id.go_layout);
         mGoLayout.sleep();
         mGoLayout.setOnModeChangedListener(new GoLayout.IOnModeChangedListener() {
             @Override
             public void onChanged(GoLayout.DisplayMode mode) {
                 switch (mode) {
                     case AWAKE:
-                        if( mDialogFlowService == null ){
+                        if (mDialogFlowService == null) {
                             initDialogFlowService();
                         }
                         break;
@@ -97,11 +100,6 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onSceneExit(String scene) {
-                        mUiManager.dispatchDefaultOptionsTask();
-                    }
-
-                    @Override
                     public void onStagePrepared(String scene, String action, SceneStage stage) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "scene: " + scene + ", action: " + action + ", stage: " + stage.getClass().getSimpleName());
@@ -110,8 +108,8 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onStageActionDone() {
-                        mUiManager.onStageActionDone();
+                    public void onStageActionDone(boolean isEndOfScene) {
+                        mUiManager.onStageActionDone(isEndOfScene);
                     }
                 });
 

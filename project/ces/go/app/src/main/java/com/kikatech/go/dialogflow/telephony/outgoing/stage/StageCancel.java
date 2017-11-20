@@ -54,6 +54,11 @@ public class StageCancel extends SceneStage {
             public void onTtsInterrupted() {
                 exitScene();
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 }

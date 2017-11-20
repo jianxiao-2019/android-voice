@@ -12,5 +12,7 @@ public interface IDialogFlowFeedback {
         void onTtsError();
 
         void onTtsInterrupted();
+
+        boolean isEndOfScene();
     }
 }

@@ -45,9 +45,9 @@ public abstract class SceneStage {
         }
     }
 
-    protected void onActionDone() {
+    protected void onActionDone(boolean isEndOfScene) {
         if (mFeedback != null) {
-            mFeedback.onStageActionDone();
+            mFeedback.onStageActionDone(isEndOfScene);
         }
     }
 
@@ -88,26 +88,31 @@ public abstract class SceneStage {
 
         @Override
         public void onTtsComplete() {
+            onActionDone(isEndOfScene());
             if (mToFeedback != null) {
                 mToFeedback.onTtsComplete();
             }
-            onActionDone();
         }
 
         @Override
         public void onTtsError() {
+            onActionDone(isEndOfScene());
             if (mToFeedback != null) {
                 mToFeedback.onTtsError();
             }
-            onActionDone();
         }
 
         @Override
         public void onTtsInterrupted() {
+            onActionDone(isEndOfScene());
             if (mToFeedback != null) {
                 mToFeedback.onTtsInterrupted();
             }
-            onActionDone();
+        }
+
+        @Override
+        public boolean isEndOfScene() {
+            return mToFeedback != null && mToFeedback.isEndOfScene();
         }
     }
 }

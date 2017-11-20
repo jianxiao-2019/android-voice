@@ -47,6 +47,11 @@ public class StageSendSmsConfirm extends BaseSendSmsStage {
             public void onTtsInterrupted() {
                 sendSms();
             }
+
+            @Override
+            public boolean isEndOfScene() {
+                return true;
+            }
         });
     }
 
