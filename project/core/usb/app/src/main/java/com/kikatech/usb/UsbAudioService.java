@@ -3,6 +3,7 @@ package com.kikatech.usb;
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
 
+import com.kikatech.usb.driver.UsbAudioDriver;
 import com.kikatech.usb.driver.impl.KikaAudioDriver;
 
 /**
@@ -49,8 +50,13 @@ public class UsbAudioService {
         @Override
         public void onDeviceAttached(UsbDevice device) {
             mDevice = device;
-            mAudioSource = new UsbAudioSource(new KikaAudioDriver(mContext, mDevice));
-            mListener.onDeviceAttached(mAudioSource);
+            UsbAudioDriver driver = new KikaAudioDriver(mContext, mDevice);
+            if (driver.open()) {
+                mAudioSource = new UsbAudioSource(new KikaAudioDriver(mContext, mDevice));
+                mListener.onDeviceAttached(mAudioSource);
+            } else {
+                // TODO: 17-11-20 handle exception
+            }
         }
 
         @Override
@@ -59,8 +65,10 @@ public class UsbAudioService {
             if (mAudioSource != null) {
                 mAudioSource.close();
             }
-            mAudioSource = null;
-            mListener.onDeviceDetached();
+            if (mAudioSource != null) {
+                mAudioSource = null;
+                mListener.onDeviceDetached();
+            }
         }
     };
 

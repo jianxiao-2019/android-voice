@@ -10,7 +10,7 @@ import com.xiao.usbaudio.UsbAudio;
  * Created by tianli on 17-11-18.
  */
 
-public class KikaAudioDriver extends UsbHostAudioDriver {
+public class KikaAudioDriver extends UsbHostDriver {
 
     private UsbAudio mUsbAudio = new UsbAudio();
 

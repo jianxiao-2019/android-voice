@@ -18,10 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VoiceRecorder {
 
-    public static final int STATUS_SUCCESS = 0;
-    public static final int STATUS_RECORDER_INIT_FAIL = 1;
-    public static final int STATUS_RECORDER_RESTART = 2;
-
     private final IDataPath mDataPath;
     private final IVoiceSource mVoiceSource;
 

@@ -2,18 +2,16 @@ package com.kikatech.usb.driver.impl;
 
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.extreamsd.usbtester.USBControl;
-import com.kikatech.usb.driver.UsbAudioDriver;
 
 /**
  * Created by tianli on 17-11-6.
  */
 
-public class ExtreamAudioDriver extends UsbHostAudioDriver {
+public class ExtreamAudioDriver extends UsbHostDriver {
 
     private final static String TAG = "ExtreamAudioDriver";
 
