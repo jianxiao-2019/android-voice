@@ -12,8 +12,9 @@ import java.util.List;
  */
 
 public class OptionList implements Parcelable {
-    public static final byte REQUEST_TYPE_ORDINAL = 0x01;
-    public static final byte REQUEST_TYPE_TEXT = 0x02;
+    public static final byte REQUEST_TYPE_AWAKE = 0x01;
+    public static final byte REQUEST_TYPE_ORDINAL = 0x02;
+    public static final byte REQUEST_TYPE_TEXT = 0x03;
 
     private byte requestType;
     private String title;
@@ -77,6 +78,13 @@ public class OptionList implements Parcelable {
         return stringBuilder.toString();
     }
 
+
+    public static OptionList getSleepOptionList() {
+        OptionList optionList = new OptionList(REQUEST_TYPE_AWAKE);
+        optionList.setTitle("Say");
+        optionList.add(new Option("Hi Kika", null));
+        return optionList;
+    }
 
     public static OptionList getDefaultOptionList() {
         OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);

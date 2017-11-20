@@ -32,4 +32,12 @@ public class GoTextView extends AppCompatTextView {
     private void init(AttributeSet attrs) {
         mHelper = ResizeHelper.create(this, attrs);
     }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        if (mHelper != null) {
+            mHelper.prepareResize();
+        }
+        super.onLayout(changed, left, top, right, bottom);
+    }
 }

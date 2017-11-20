@@ -10,4 +10,6 @@
     <color name="go_layout_listen_text_color">#24D3E0</color>
     <color name="go_layout_option_title_text_color">#7781a0</color>
     <color name="go_layout_option_item_text_color">#b3bdd9</color>
+    <color name="go_layout_option_title_sleep_text_color">#42485a</color>
+    <color name="go_layout_option_item_sleep_text_color">#656c7f</color>
 </resources>

@@ -86,7 +86,14 @@ public class ResizeHelper {
         });
     }
 
-    public void resize() {
+    /**
+     * hide view for resizing
+     **/
+    public void prepareResize() {
+        mTextView.setVisibility(View.INVISIBLE);
+    }
+
+    private void resize() {
         if (!mResizeEnabled) {
             return;
         }
@@ -110,7 +117,7 @@ public class ResizeHelper {
         StaticLayout staticLayout = getStaticLayout(text, mPaint, targetWidth, targetTextSize);
 
         Context context = mTextView.getContext();
-        if( LogUtil.DEBUG ) {
+        if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "line: " + staticLayout.getLineCount());
         }
         while (staticLayout.getLineCount() > 1 && targetTextSize > mMinTextSize) {
@@ -118,7 +125,14 @@ public class ResizeHelper {
             staticLayout = getStaticLayout(text, mPaint, targetWidth, targetTextSize);
         }
 
-        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
+        final float finalTargetTextSize = targetTextSize;
+        mTextView.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, finalTargetTextSize);
+                mTextView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     // Set the text size of the text paint object and use a static layout to render text off screen before measuring

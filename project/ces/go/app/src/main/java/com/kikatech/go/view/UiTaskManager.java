@@ -86,6 +86,10 @@ public class UiTaskManager {
     }
 
 
+    public synchronized void dipatchSleepTask() {
+        sleep();
+    }
+
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
         OptionList optionList = null;
         if (extras != null && extras.containsKey(BaseSceneStage.EXTRA_OPTIONS_LIST)) {
@@ -141,6 +145,15 @@ public class UiTaskManager {
         mTaskQueue.offer(task);
     }
 
+
+    private void sleep() {
+        mLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mLayout.sleep();
+            }
+        });
+    }
 
     private void speak(final String text) {
         mLayout.post(new Runnable() {

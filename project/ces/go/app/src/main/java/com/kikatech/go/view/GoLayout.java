@@ -32,7 +32,7 @@ public class GoLayout extends FrameLayout {
         SPEAK, LISTEN, DISPLAY_OPTIONS, LOADING
     }
 
-    private DisplayMode mCurrentMode = DisplayMode.AWAKE;
+    private DisplayMode mCurrentMode = DisplayMode.SLEEP;
     private ViewStatus mCurrentStatus;
 
     private LayoutInflater mLayoutInflater;
@@ -46,6 +46,7 @@ public class GoLayout extends FrameLayout {
 
     private View mStatusLayout;
     private TextView mStatusAnimationView;
+    private View mStatusSleepView;
 
 
     public GoLayout(Context context) {
@@ -77,10 +78,10 @@ public class GoLayout extends FrameLayout {
         mListenView = (GoTextView) findViewById(R.id.go_layout_listen_text);
 
         mOptionsLayout = (LinearLayout) findViewById(R.id.go_layout_options);
-        mOptionsTitle = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_option_title, null);
 
         mStatusLayout = findViewById(R.id.go_layout_status);
         mStatusAnimationView = (TextView) findViewById(R.id.go_layout_status_text);
+        mStatusSleepView = findViewById(R.id.go_layout_status_text_sleep);
     }
 
     @Override
@@ -184,8 +185,16 @@ public class GoLayout extends FrameLayout {
     }
 
 
-    public void onModeChanged(DisplayMode mode) {
-        mCurrentMode = (mCurrentMode.equals(DisplayMode.SLEEP)) ? DisplayMode.AWAKE : DisplayMode.SLEEP;
+    public void sleep() {
+        onModeChanged(DisplayMode.SLEEP);
+    }
+
+    public void awake() {
+        onModeChanged(DisplayMode.AWAKE);
+    }
+
+    private void onModeChanged(DisplayMode mode) {
+        mCurrentMode = mode;
         requestLayout();
     }
 
@@ -249,10 +258,24 @@ public class GoLayout extends FrameLayout {
 
         try {
             if (optionList != null && !optionList.isEmpty()) {
-                mOptionsTitle.setText(optionList.getTitle());
+                int titleRes;
+                int itemRes;
+                switch (mCurrentMode) {
+                    case AWAKE:
+                        titleRes = R.layout.go_layout_option_title;
+                        itemRes = R.layout.go_layout_option_item;
+                        break;
+                    default:
+                    case SLEEP:
+                        titleRes = R.layout.go_layout_option_title_sleep;
+                        itemRes = R.layout.go_layout_option_item_sleep;
+                        break;
+                }
+                mOptionsTitle = (GoTextView) mLayoutInflater.inflate(titleRes, null);
                 mOptionsLayout.addView(mOptionsTitle);
+                mOptionsTitle.setText(optionList.getTitle());
                 for (final Option option : optionList.getList()) {
-                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_option_item, null);
+                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(itemRes, null);
                     mOptionsLayout.addView(optionView);
                     optionView.setText(option.getDisplayText());
                     optionView.setOnClickListener(new OnClickListener() {
@@ -272,14 +295,14 @@ public class GoLayout extends FrameLayout {
             }
         }
 
-        onStatusChanged(mCurrentStatus);
+        onStatusChanged(mCurrentStatus, listener);
     }
 
     private void resolveOptionLayoutMargin() {
         try {
             final Context context = getContext();
             final int CHILD_COUNT = mOptionsLayout.getChildCount();
-            final int DEFAULT_TITLE_MARGIN_BOTTOM = ResolutionUtil.dp2px(context,10);
+            final int DEFAULT_TITLE_MARGIN_BOTTOM = ResolutionUtil.dp2px(context, 10);
             final int DEFAULT_TOTAL_MARGIN = ResolutionUtil.dp2px(context, 30);
             final int ITEM_MARGIN_TOP = DEFAULT_TOTAL_MARGIN / (CHILD_COUNT - 1);
             LinearLayout.LayoutParams titleParam = (LinearLayout.LayoutParams) mOptionsTitle.getLayoutParams();
@@ -299,23 +322,45 @@ public class GoLayout extends FrameLayout {
     }
 
     private void onStatusChanged(ViewStatus status) {
+        onStatusChanged(status, null);
+    }
+
+    private void onStatusChanged(ViewStatus status, final IOnOptionSelectListener listener) {
         // TODO: animations
-        switch (status) {
-            case LOADING:
-                mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_round_blue);
-                mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
-                mStatusAnimationView.setText("请说出指令");
+        switch (mCurrentMode) {
+            case AWAKE:
+                mStatusSleepView.setVisibility(GONE);
+                mStatusAnimationView.setVisibility(VISIBLE);
+                switch (status) {
+                    case LOADING:
+                        mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_circle_blue);
+                        mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+                        mStatusAnimationView.setText("请说出指令");
+                        break;
+                    case DISPLAY_OPTIONS:
+                    case SPEAK:
+                        mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_circle_red);
+                        mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                        mStatusAnimationView.setText("TTS播放中");
+                        break;
+                    case LISTEN:
+                        mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_circle_green);
+                        mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                        mStatusAnimationView.setText("指令辨识中");
+                        break;
+                }
                 break;
-            case DISPLAY_OPTIONS:
-            case SPEAK:
-                mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_round_red);
-                mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                mStatusAnimationView.setText("TTS播放中");
-                break;
-            case LISTEN:
-                mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_round_green);
-                mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-                mStatusAnimationView.setText("指令辨识中");
+            case SLEEP:
+                mStatusSleepView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if( listener != null ) {
+                            listener.onSelected(OptionList.REQUEST_TYPE_AWAKE, -1, null);
+                        }
+                    }
+                });
+                mStatusSleepView.setVisibility(VISIBLE);
+                mStatusAnimationView.setVisibility(GONE);
                 break;
         }
     }

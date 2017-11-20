@@ -37,7 +37,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_alpha_ui);
         bindView();
-        initDialogFlowService();
+        //initDialogFlowService();
     }
 
     @Override
@@ -53,6 +53,17 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
     private void bindView() {
         mGoLayout =(GoLayout) findViewById(R.id.go_layout);
+        mGoLayout.sleep();
+        mGoLayout.displayOptions(OptionList.getSleepOptionList(), new GoLayout.IOnOptionSelectListener() {
+            @Override
+            public void onSelected(byte requestType, int index, Option option) {
+                switch (requestType){
+                    case OptionList.REQUEST_TYPE_AWAKE:
+                        initDialogFlowService();
+                        break;
+                }
+            }
+        });
     }
 
     private void initDialogFlowService() {
@@ -66,6 +77,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                             @Override
                             public void run() {
                                 initUiTaskManager();
+                                mGoLayout.awake();
                                 mUiManager.dispatchDefaultOptionsTask();
                             }
                         }, 800);
