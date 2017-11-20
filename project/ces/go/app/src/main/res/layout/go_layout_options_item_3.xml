@@ -6,5 +6,6 @@
     android:layout_height="wrap_content"
     android:fontFamily="sans-serif-medium"
     android:gravity="center"
-    android:textColor="@color/go_layout_option_item_sleep_text_color"
-    app:max_text_size="@dimen/go_layout_option_item_sleep_text_max_size"/>
+    android:textColor="@color/go_layout_option_item_text_color"
+    app:max_text_size="@dimen/go_layout_option_item_text_max_size_3"
+    app:min_text_size="@dimen/go_layout_option_item_text_min_size"/>

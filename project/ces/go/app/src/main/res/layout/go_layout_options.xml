@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.kikatech.go.view.widget.GoTextView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/go_layout_options_title"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:textColor="@color/go_layout_option_title_text_color"
+        app:max_text_size="@dimen/go_layout_option_title_text_max_size"
+        app:min_text_size="@dimen/go_layout_option_title_text_min_size"/>
+
+    <LinearLayout
+        android:id="@+id/go_layout_options_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+    </LinearLayout>
+
+</LinearLayout>

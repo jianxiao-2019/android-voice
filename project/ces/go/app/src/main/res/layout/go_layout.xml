@@ -8,6 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:paddingTop="@dimen/go_layout_content_padding_top_bottom"
+        android:paddingBottom="@dimen/go_layout_content_padding_top_bottom"
         android:paddingLeft="@dimen/go_layout_content_padding_left_right"
         android:paddingRight="@dimen/go_layout_content_padding_left_right">
 
@@ -23,12 +25,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <LinearLayout
+        <include
             android:id="@+id/go_layout_options"
+            layout="@layout/go_layout_options"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"/>
+            android:layout_height="match_parent"/>
+
+        <include
+            android:id="@+id/go_layout_sleep"
+            layout="@layout/go_layout_sleep"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </FrameLayout>
 

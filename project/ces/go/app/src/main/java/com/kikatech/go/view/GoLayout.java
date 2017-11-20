@@ -24,7 +24,7 @@ public class GoLayout extends FrameLayout {
 
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
 
-    private enum DisplayMode {
+    public enum DisplayMode {
         SLEEP, AWAKE
     }
 
@@ -41,8 +41,11 @@ public class GoLayout extends FrameLayout {
     private GoTextView mSpeakView;
     private View mListenLayout;
     private GoTextView mListenView;
-    private LinearLayout mOptionsLayout;
+    private View mOptionsLayout;
+    private LinearLayout mOptionsItemLayout;
     private GoTextView mOptionsTitle;
+    private View mSleepLayout;
+
 
     private View mStatusLayout;
     private TextView mStatusAnimationView;
@@ -63,12 +66,16 @@ public class GoLayout extends FrameLayout {
 
     public GoLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
         bindView();
     }
 
     private void bindView() {
         mLayoutInflater = LayoutInflater.from(getContext());
-
         mLayoutInflater.inflate(R.layout.go_layout, this);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
@@ -77,11 +84,26 @@ public class GoLayout extends FrameLayout {
         mListenLayout = findViewById(R.id.go_layout_listen);
         mListenView = (GoTextView) findViewById(R.id.go_layout_listen_text);
 
-        mOptionsLayout = (LinearLayout) findViewById(R.id.go_layout_options);
+        mOptionsLayout = findViewById(R.id.go_layout_options);
+        mOptionsTitle = (GoTextView) findViewById(R.id.go_layout_options_title);
+        mOptionsItemLayout = (LinearLayout) findViewById(R.id.go_layout_options_item);
+
+        mSleepLayout = findViewById(R.id.go_layout_sleep);
 
         mStatusLayout = findViewById(R.id.go_layout_status);
         mStatusAnimationView = (TextView) findViewById(R.id.go_layout_status_text);
         mStatusSleepView = findViewById(R.id.go_layout_status_text_sleep);
+
+        bindListeners();
+    }
+
+    private void bindListeners() {
+        mStatusSleepView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                awake();
+            }
+        });
     }
 
     @Override
@@ -97,6 +119,11 @@ public class GoLayout extends FrameLayout {
         }
     }
 
+    private IOnModeChangedListener mModeChangedListener;
+
+    public void setOnModeChangedListener(IOnModeChangedListener listener) {
+        this.mModeChangedListener = listener;
+    }
 
     private IOnLockStateChangeListener mLockStateChangeListener;
 
@@ -187,10 +214,23 @@ public class GoLayout extends FrameLayout {
 
     public void sleep() {
         onModeChanged(DisplayMode.SLEEP);
+        mSpeakLayout.setVisibility(GONE);
+        mListenLayout.setVisibility(GONE);
+        mOptionsLayout.setVisibility(GONE);
+        mSleepLayout.setVisibility(VISIBLE);
+        mStatusSleepView.setVisibility(VISIBLE);
+        mStatusAnimationView.setVisibility(GONE);
+        if (mModeChangedListener != null) {
+            mModeChangedListener.onChanged(DisplayMode.SLEEP);
+        }
     }
 
     public void awake() {
         onModeChanged(DisplayMode.AWAKE);
+        mSleepLayout.setVisibility(GONE);
+        if (mModeChangedListener != null) {
+            mModeChangedListener.onChanged(DisplayMode.AWAKE);
+        }
     }
 
     private void onModeChanged(DisplayMode mode) {
@@ -254,29 +294,28 @@ public class GoLayout extends FrameLayout {
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(VISIBLE);
 
-        mOptionsLayout.removeAllViews();
+        mOptionsItemLayout.removeAllViews();
 
         try {
             if (optionList != null && !optionList.isEmpty()) {
-                int titleRes;
-                int itemRes;
-                switch (mCurrentMode) {
-                    case AWAKE:
-                        titleRes = R.layout.go_layout_option_title;
-                        itemRes = R.layout.go_layout_option_item;
-                        break;
-                    default:
-                    case SLEEP:
-                        titleRes = R.layout.go_layout_option_title_sleep;
-                        itemRes = R.layout.go_layout_option_item_sleep;
-                        break;
-                }
-                mOptionsTitle = (GoTextView) mLayoutInflater.inflate(titleRes, null);
-                mOptionsLayout.addView(mOptionsTitle);
                 mOptionsTitle.setText(optionList.getTitle());
+
+                Context context = getContext();
+
+                int itemRes = R.layout.go_layout_options_item_2;
+                int ITEM_MARGIN = 0;
+
+                if (optionList.size() == 2) {
+                    ITEM_MARGIN = ResolutionUtil.dp2px(context, 7);
+
+                } else if (optionList.size() == 3) {
+                    itemRes = R.layout.go_layout_options_item_3;
+                    ITEM_MARGIN = ResolutionUtil.dp2px(context, 9);
+                }
+
                 for (final Option option : optionList.getList()) {
                     GoTextView optionView = (GoTextView) mLayoutInflater.inflate(itemRes, null);
-                    mOptionsLayout.addView(optionView);
+                    mOptionsItemLayout.addView(optionView);
                     optionView.setText(option.getDisplayText());
                     optionView.setOnClickListener(new OnClickListener() {
                         @Override
@@ -286,8 +325,17 @@ public class GoLayout extends FrameLayout {
                             }
                         }
                     });
+                    int topMargin = ITEM_MARGIN / 2;
+                    int bottomMargin = ITEM_MARGIN / 2;
+                    int idxOption = optionList.indexOf(option);
+                    if (idxOption == 0) {
+                        topMargin = 0;
+                    } else if (idxOption == optionList.size() - 1) {
+                        bottomMargin = 0;
+                    }
+                    LinearLayout.LayoutParams optionParam = (LinearLayout.LayoutParams) optionView.getLayoutParams();
+                    optionParam.setMargins(0, topMargin, 0, bottomMargin);
                 }
-                resolveOptionLayoutMargin();
             }
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
@@ -295,37 +343,11 @@ public class GoLayout extends FrameLayout {
             }
         }
 
-        onStatusChanged(mCurrentStatus, listener);
+        onStatusChanged(mCurrentStatus);
     }
 
-    private void resolveOptionLayoutMargin() {
-        try {
-            final Context context = getContext();
-            final int CHILD_COUNT = mOptionsLayout.getChildCount();
-            final int DEFAULT_TITLE_MARGIN_BOTTOM = ResolutionUtil.dp2px(context, 10);
-            final int DEFAULT_TOTAL_MARGIN = ResolutionUtil.dp2px(context, 30);
-            final int ITEM_MARGIN_TOP = DEFAULT_TOTAL_MARGIN / (CHILD_COUNT - 1);
-            LinearLayout.LayoutParams titleParam = (LinearLayout.LayoutParams) mOptionsTitle.getLayoutParams();
-            titleParam.setMargins(0, 0, 0, DEFAULT_TITLE_MARGIN_BOTTOM);
-            mOptionsTitle.setLayoutParams(titleParam);
-            for (int i = 1; i < CHILD_COUNT; i++) {
-                View child = mOptionsLayout.getChildAt(i);
-                LinearLayout.LayoutParams optionParam = (LinearLayout.LayoutParams) child.getLayoutParams();
-                optionParam.setMargins(0, ITEM_MARGIN_TOP, 0, 0);
-                child.setLayoutParams(optionParam);
-            }
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
-        }
-    }
 
     private void onStatusChanged(ViewStatus status) {
-        onStatusChanged(status, null);
-    }
-
-    private void onStatusChanged(ViewStatus status, final IOnOptionSelectListener listener) {
         // TODO: animations
         switch (mCurrentMode) {
             case AWAKE:
@@ -351,20 +373,16 @@ public class GoLayout extends FrameLayout {
                 }
                 break;
             case SLEEP:
-                mStatusSleepView.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if( listener != null ) {
-                            listener.onSelected(OptionList.REQUEST_TYPE_AWAKE, -1, null);
-                        }
-                    }
-                });
                 mStatusSleepView.setVisibility(VISIBLE);
                 mStatusAnimationView.setVisibility(GONE);
                 break;
         }
     }
 
+
+    public interface IOnModeChangedListener {
+        void onChanged(DisplayMode mode);
+    }
 
     public interface IOnOptionSelectListener {
         void onSelected(byte requestType, int index, Option option);
