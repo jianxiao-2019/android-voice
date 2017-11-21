@@ -80,7 +80,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onSpeechSpokenDone(final String speechText) {
+                    public void onASRResult(final String speechText, boolean isFinished) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

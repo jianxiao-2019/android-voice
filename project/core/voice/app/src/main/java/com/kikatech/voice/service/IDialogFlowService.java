@@ -16,7 +16,7 @@ public interface IDialogFlowService {
 
         void onInitComplete();
 
-        void onSpeechSpokenDone(String speechText);
+        void onASRResult(String speechText, boolean isFinished);
 
         void onText(String text, Bundle extras);
 

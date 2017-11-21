@@ -124,9 +124,6 @@ public class DialogFlowService implements
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "text : " + words);
             mDialogFlow.talk(words);
-            if (mCallback != null) {
-                mCallback.onSpeechSpokenDone(words);
-            }
         }
     }
 
@@ -152,16 +149,14 @@ public class DialogFlowService implements
             String alter = ((EditTextMessage) message).context;
             if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
         }
-        if (message.seqId < 0 && !TextUtils.isEmpty(message.text)) {
+        if (!TextUtils.isEmpty(message.text)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Speech spoken : " + message.text);
 
             if (mDialogFlow != null) {
                 mDialogFlow.talk(message.text);
             }
 
-            if (mCallback != null) {
-                mCallback.onSpeechSpokenDone(message.text);
-            }
+            mCallback.onASRResult(message.text, message.seqId < 0);
         }
     }
 
@@ -187,24 +182,18 @@ public class DialogFlowService implements
     private final ISceneFeedback mSceneFeedback = new ISceneFeedback() {
         @Override
         public void onText(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
-            if (mCallback != null) {
-                mCallback.onText(text, extras);
-            }
+            mCallback.onText(text, extras);
             tts(text, feedback);
         }
 
         @Override
         public void onStagePrepared(String scene, String action, SceneStage sceneStage) {
-            if (mCallback != null) {
-                mCallback.onStagePrepared(scene, action, sceneStage);
-            }
+            mCallback.onStagePrepared(scene, action, sceneStage);
         }
 
         @Override
         public void onStageActionDone(boolean isEndOfScene) {
-            if (mCallback != null) {
-                mCallback.onStageActionDone(isEndOfScene);
-            }
+            mCallback.onStageActionDone(isEndOfScene);
         }
     };
 
