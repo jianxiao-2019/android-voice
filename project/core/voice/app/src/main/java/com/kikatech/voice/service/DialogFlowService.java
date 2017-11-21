@@ -150,13 +150,17 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
         }
         if (!TextUtils.isEmpty(message.text)) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "Speech spoken : " + message.text);
+            if (LogUtil.DEBUG) {
+                String s = message.seqId < 0 ? "[done]" : "";
+                LogUtil.log(TAG, "Speech spoken" + s + " : " + message.text);
+            }
 
-            if (mDialogFlow != null) {
+            boolean isFinished = message.seqId < 0;
+            if (isFinished && mDialogFlow != null) {
                 mDialogFlow.talk(message.text);
             }
 
-            mCallback.onASRResult(message.text, message.seqId < 0);
+            mCallback.onASRResult(message.text, isFinished);
         }
     }
 

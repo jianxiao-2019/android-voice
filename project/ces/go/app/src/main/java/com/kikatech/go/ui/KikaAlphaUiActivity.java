@@ -91,7 +91,9 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
                     @Override
                     public void onASRResult(final String speechText, boolean isFinished) {
-                        mUiManager.dispatchSpeechTask(speechText);
+                        if(isFinished) {
+                            mUiManager.dispatchSpeechTask(speechText);
+                        }
                     }
 
                     @Override
