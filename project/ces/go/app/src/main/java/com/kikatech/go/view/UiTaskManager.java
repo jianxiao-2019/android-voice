@@ -121,8 +121,8 @@ public class UiTaskManager {
         }
     }
 
-    public synchronized void onStageActionDone(boolean isEndOfScene) {
-        unlock(!isEndOfScene);
+    public synchronized void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
+        unlock(!isEndOfScene && !isInterrupted);
         if (isEndOfScene) {
             displayOptions(mDefaultOptionList);
             unlock(false);

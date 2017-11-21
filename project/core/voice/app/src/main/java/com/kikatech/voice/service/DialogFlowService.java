@@ -91,8 +91,13 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "tts, words: " + words);
             }
-            mTtsListener.bindListener(listener);
-            mTtsSpeaker.speak(words);
+            if (mTtsSpeaker.isTtsSpeaking()) {
+                mTtsSpeaker.interrupt();
+                tts(words, listener);
+            } else {
+                mTtsListener.bindListener(listener);
+                mTtsSpeaker.speak(words);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -197,8 +202,8 @@ public class DialogFlowService implements
         }
 
         @Override
-        public void onStageActionDone(boolean isEndOfScene) {
-            mCallback.onStageActionDone(isEndOfScene);
+        public void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
+            mCallback.onStageActionDone(isEndOfScene, isInterrupted);
         }
     };
 

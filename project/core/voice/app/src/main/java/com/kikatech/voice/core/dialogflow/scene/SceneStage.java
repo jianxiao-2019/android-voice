@@ -50,8 +50,12 @@ public abstract class SceneStage {
     }
 
     protected void onActionDone(boolean isEndOfScene) {
+        onActionDone(isEndOfScene, false);
+    }
+
+    protected void onActionDone(boolean isEndOfScene, boolean isInterrupted) {
         if (mFeedback != null) {
-            mFeedback.onStageActionDone(isEndOfScene);
+            mFeedback.onStageActionDone(isEndOfScene, isInterrupted);
         }
     }
 
@@ -108,7 +112,7 @@ public abstract class SceneStage {
 
         @Override
         public void onTtsInterrupted() {
-            onActionDone(isEndOfScene());
+            onActionDone(isEndOfScene(), true);
             if (mToFeedback != null) {
                 mToFeedback.onTtsInterrupted();
             }

@@ -11,5 +11,5 @@ public interface ISceneFeedback {
 
     void onStagePrepared(String scene, String action, SceneStage sceneStage);
 
-    void onStageActionDone(boolean isEndOfScene);
+    void onStageActionDone(boolean isEndOfScene, boolean isInterrupted);
 }
