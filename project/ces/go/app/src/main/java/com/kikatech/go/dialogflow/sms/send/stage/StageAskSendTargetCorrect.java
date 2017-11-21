@@ -2,8 +2,10 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.sms.SmsContent;
+import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -29,6 +31,13 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         SmsContent sc = getSmsContent();
         if (action.equals(SceneActions.ACTION_SEND_SMS_NO) || action.equals(SceneActions.ACTION_SEND_SMS_NAME)) {
+
+            SmsContent.IntentContent ic = SmsUtil.parseContactName(extra);
+            if(ic.isNameEmpty()) {
+                sc.setIntentContent(ic);
+                return new StageAskForSendTarget(mSceneBase, mFeedback);
+            }
+
             boolean isContactMatched = sc.isContactMatched(mSceneBase.getContext());
             if (isContactMatched) {
                 if (mCurrentName.equals(sc.getMatchedName())) {

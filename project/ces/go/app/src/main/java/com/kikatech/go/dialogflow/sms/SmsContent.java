@@ -47,6 +47,10 @@ public class SmsContent {
             lastName = checkNUpdate(lastName, ic.lastName);
             chosenOption = checkNUpdate(chosenOption, ic.chosenOption);
         }
+
+        public boolean isNameEmpty() {
+            return TextUtils.isEmpty(firstName) && TextUtils.isEmpty(lastName);
+        }
     }
 
     public SmsContent(IntentContent ic) {
@@ -60,10 +64,14 @@ public class SmsContent {
 
     public void update(IntentContent ic) {
         if(mIntentContent == null) {
-            mIntentContent = ic;
+            setIntentContent(ic);
         } else {
             mIntentContent.update(ic);
         }
+    }
+
+    public void setIntentContent(IntentContent ic) {
+        mIntentContent = ic;
     }
 
     public String getContact() {
@@ -79,7 +87,7 @@ public class SmsContent {
     }
 
     public boolean isContactAvailable() {
-        return !TextUtils.isEmpty(mIntentContent.firstName) || !TextUtils.isEmpty(mIntentContent.lastName);
+        return !mIntentContent.isNameEmpty();
     }
 
     /**
