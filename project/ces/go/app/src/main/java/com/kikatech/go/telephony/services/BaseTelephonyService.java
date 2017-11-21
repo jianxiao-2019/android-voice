@@ -29,6 +29,7 @@ public abstract class BaseTelephonyService
 
 			Uri numberUri = Uri.parse( "tel:" + number );
 			Intent dial = new Intent( Intent.ACTION_CALL, numberUri );
+			dial.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity( dial );
 		}
 		catch( Exception e )

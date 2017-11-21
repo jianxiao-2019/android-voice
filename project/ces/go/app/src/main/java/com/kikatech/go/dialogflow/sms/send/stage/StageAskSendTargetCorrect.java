@@ -2,12 +2,10 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
