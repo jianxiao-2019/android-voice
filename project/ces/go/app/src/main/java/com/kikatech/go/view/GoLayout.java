@@ -33,14 +33,19 @@ public class GoLayout extends FrameLayout {
     }
 
     public enum ViewStatus {
-        SPEAK(R.drawable.gmap_tts),
-        LISTEN(R.drawable.gmap_listening),
-        LOADING(R.drawable.gmap_listening);
+        SPEAK(R.drawable.tts, R.drawable.gmap_tts),
+        LISTEN(R.drawable.listening, R.drawable.gmap_listening),
+        LOADING(R.drawable.listening, R.drawable.gmap_listening);
 
-        int res;
+        int bgRes, res;
 
-        ViewStatus(int res) {
+        ViewStatus(int bgRes, int res) {
+            this.bgRes = bgRes;
             this.res = res;
+        }
+
+        public int getBgRes() {
+            return bgRes;
         }
 
         public int getRes() {
@@ -222,7 +227,7 @@ public class GoLayout extends FrameLayout {
         mOptionsLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
         Glide.with(getContext())
-                .load(R.drawable.gmap_standby)
+                .load(R.drawable.awake_normal)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusAnimationView);
         mStatusAnimationView.setOnClickListener(new OnClickListener() {
@@ -240,7 +245,7 @@ public class GoLayout extends FrameLayout {
         onModeChanged(DisplayMode.AWAKE);
         mSleepLayout.setVisibility(GONE);
         Glide.with(getContext())
-                .load(R.drawable.gmap_awake)
+                .load(R.drawable.standby)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusAnimationView);
         mStatusAnimationView.setOnClickListener(null);
@@ -369,7 +374,7 @@ public class GoLayout extends FrameLayout {
         switch (mCurrentMode) {
             case AWAKE:
                 Glide.with(context)
-                        .load(status.getRes())
+                        .load(status.getBgRes())
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(mStatusAnimationView);
                 NavigationService.processStatusChanged(context, status);

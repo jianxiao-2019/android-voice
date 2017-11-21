@@ -7,9 +7,10 @@
 
     <ImageView
         android:id="@+id/go_layout_status_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:contentDescription="@string/default_img_content_description"
-        android:gravity="center"/>
+        android:src="@drawable/tts"
+        android:scaleType="fitXY"/>
 
 </LinearLayout>

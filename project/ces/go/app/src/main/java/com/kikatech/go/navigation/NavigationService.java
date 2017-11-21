@@ -184,11 +184,6 @@ public class NavigationService extends Service {
         });
 
         addView();
-
-        Glide.with(NavigationService.this)
-                .load(R.drawable.gmap_standby)
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(mStatusView);
     }
 //    private void bindView() {
 //        if (isViewAdded()) {
