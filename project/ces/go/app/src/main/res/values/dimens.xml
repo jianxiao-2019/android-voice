@@ -2,9 +2,11 @@
 <resources>
     <dimen name="go_layout_content_padding_top_bottom">30dp</dimen>
     <dimen name="go_layout_content_padding_left_right">33dp</dimen>
-    <dimen name="go_layout_speak_text_max_size">73dp</dimen>
 
-    <dimen name="go_layout_listen_text_max_size">53dp</dimen>
+    <dimen name="go_layout_speak_text_max_size">73dp</dimen>
+    <dimen name="go_layout_speak_text_min_size">43dp</dimen>
+
+    <dimen name="go_layout_listen_text_max_size">73dp</dimen>
     <dimen name="go_layout_listen_text_min_size">43dp</dimen>
 
     <dimen name="go_layout_option_title_text_max_size">43dp</dimen>

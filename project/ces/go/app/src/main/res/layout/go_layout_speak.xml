@@ -13,5 +13,6 @@
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:textColor="@color/go_layout_speak_text_color"
-        app:max_text_size="@dimen/go_layout_speak_text_max_size"/>
+        app:max_text_size="@dimen/go_layout_speak_text_max_size"
+        app:min_text_size="@dimen/go_layout_speak_text_min_size"/>
 </LinearLayout>
