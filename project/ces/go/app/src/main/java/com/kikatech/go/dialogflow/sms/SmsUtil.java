@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.kikatech.go.message.sms.SmsManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.PermissionUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,6 +82,10 @@ public class SmsUtil {
     }
 
     public static String parseTagAny(@NonNull Bundle parm) {
-        return parm.getString(KEY_ANY, "").replace("\"", "");
+        String c = parm.getString(KEY_ANY, "").replace("\"", "");
+        if(TextUtils.isEmpty(c)) {
+            return parm.getString(Intent.KEY_ANY_WORDS, "");
+        }
+        return c;
     }
 }

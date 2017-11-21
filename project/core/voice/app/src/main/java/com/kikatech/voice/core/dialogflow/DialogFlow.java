@@ -27,16 +27,16 @@ public class DialogFlow {
         mAgent = conf.getAgent().create(context.getApplicationContext());
     }
 
-    public void talk(final String words) {
-        talk(words, null);
+    public void talk(final String words, boolean anyContent) {
+        talk(words, null, anyContent);
     }
 
-    public void talk(final String words, final Map<String, List<String>> entities) {
+    public void talk(final String words, final Map<String, List<String>> entities, final boolean anyContent) {
         if (!TextUtils.isEmpty(words)) {
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = mAgent.query(words, entities);
+                    Intent intent = mAgent.query(words, entities, anyContent);
                     if (intent != null) {
                         onIntent(intent);
                     }

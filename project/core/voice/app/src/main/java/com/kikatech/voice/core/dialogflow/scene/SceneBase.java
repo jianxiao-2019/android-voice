@@ -27,6 +27,10 @@ public abstract class SceneBase implements DialogObserver {
         mSceneManager = manager;
     }
 
+    public void setQueryWords(boolean queryAnyWords) {
+        mSceneManager.setQueryWords(queryAnyWords);
+    }
+
     void detach() {
         mSceneManager = null;
     }

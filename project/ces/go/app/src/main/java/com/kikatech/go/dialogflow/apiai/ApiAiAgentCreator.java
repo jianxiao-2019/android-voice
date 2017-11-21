@@ -13,6 +13,6 @@ public class ApiAiAgentCreator extends AgentCreator {
 
     @Override
     public Agent create(Context context) {
-        return new ApiAiAgent(context);
+        return new AgentManager(context);
     }
 }

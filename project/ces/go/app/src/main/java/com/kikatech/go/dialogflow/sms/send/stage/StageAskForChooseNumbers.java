@@ -93,7 +93,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
 //                speak("2.6 Choose a number from following list. First " + numbers.get(0) + ", or second " + numbers.get(1));
 //            }
         } else {
-            speak("2.6 Error, only one phone number");
+            speak("Error, only one phone number");
         }
     }
 }

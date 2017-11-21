@@ -24,6 +24,7 @@ public class StageAskForSmsBody extends BaseSendSmsStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        setQueryAnyWords(false);
         if(!action.equals(SceneActions.ACTION_SEND_SMS_MSGBODY)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
             return null;
@@ -34,6 +35,7 @@ public class StageAskForSmsBody extends BaseSendSmsStage {
 
     @Override
     public void action() {
+        setQueryAnyWords(true);
         String speech = "Please say your message."; // doc 21
         speak(speech);
     }

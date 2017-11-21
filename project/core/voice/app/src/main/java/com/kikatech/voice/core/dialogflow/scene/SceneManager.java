@@ -18,10 +18,16 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     private String mScene = null;
 
-    private SceneLifecycleObserver mCallback;
+    private final SceneLifecycleObserver mCallback;
+    private final SceneQueryWordsStatus mSceneQueryWordsCallback;
+    private boolean mQueryAnyWords = false;
 
-    public SceneManager(SceneLifecycleObserver callback) {
+    public SceneManager(SceneLifecycleObserver callback, SceneQueryWordsStatus sqwsCallback) {
         mCallback = callback;
+        mSceneQueryWordsCallback = sqwsCallback;
+        if(mSceneQueryWordsCallback != null) {
+            mSceneQueryWordsCallback.onQueryAnyWordsStatusChange(mQueryAnyWords);
+        }
     }
 
     public void register(SceneBase object) {
@@ -36,6 +42,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     @Override
     public void onIntent(Intent intent) {
+        intent.correctScene(mScene);
         String scene = intent.getScene();
         if (!TextUtils.isEmpty(scene)) {
             if (scene.equals(mScene)) {
@@ -72,6 +79,14 @@ public class SceneManager implements DialogObserver, ISceneManager {
         doExitScene(mScene);
     }
 
+    @Override
+    public void setQueryWords(boolean queryAnyWords) {
+        if(mQueryAnyWords != queryAnyWords) {
+            mQueryAnyWords = queryAnyWords;
+            mSceneQueryWordsCallback.onQueryAnyWordsStatusChange(queryAnyWords);
+        }
+    }
+
     private void doExitScene(String scene){
         if (!TextUtils.isEmpty(scene)) {
             notifyObservers(new Intent(scene, Intent.ACTION_EXIT));
@@ -85,5 +100,9 @@ public class SceneManager implements DialogObserver, ISceneManager {
         void onSceneEnter(String scene);
 
         void onSceneExit(String scene);
+    }
+
+    public interface SceneQueryWordsStatus {
+        void onQueryAnyWordsStatusChange(boolean queryAnyWords);
     }
 }

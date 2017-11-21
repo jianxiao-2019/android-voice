@@ -19,6 +19,10 @@ public abstract class SceneStage {
         mSceneBase = scene;
     }
 
+    protected void setQueryAnyWords(boolean queryAnyWords) {
+        mSceneBase.setQueryWords(queryAnyWords);
+    }
+
     /**
      * Move to next stage according to the action from agent
      *

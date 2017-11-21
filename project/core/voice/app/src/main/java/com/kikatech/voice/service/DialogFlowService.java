@@ -34,6 +34,7 @@ public class DialogFlowService implements
     private final IServiceCallback mCallback;
     private VoiceService mVoiceService;
     private DialogFlow mDialogFlow;
+    private boolean mQueryAnyContent = false;
 
     private SceneManager mSceneManager;
 
@@ -42,7 +43,7 @@ public class DialogFlowService implements
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
         mContext = ctx;
         mCallback = callback;
-        mSceneManager = new SceneManager(mSceneCallback);
+        mSceneManager = new SceneManager(mSceneCallback, mSceneQueryWordsStatusCallback);
         initDialogFlow(conf);
         initVoiceService(conf);
         initTts();
@@ -106,7 +107,7 @@ public class DialogFlowService implements
         if (mDialogFlow != null) {
             mDialogFlow.resetContexts();
         }
-        if(mSceneManager != null) {
+        if (mSceneManager != null) {
             mSceneManager.exitCurrentScene();
         }
     }
@@ -115,7 +116,7 @@ public class DialogFlowService implements
     public void talk(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
-            mDialogFlow.talk(words);
+            mDialogFlow.talk(words, mQueryAnyContent);
         }
     }
 
@@ -123,7 +124,7 @@ public class DialogFlowService implements
     public void text(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "text : " + words);
-            mDialogFlow.talk(words);
+            mDialogFlow.talk(words, mQueryAnyContent);
         }
     }
 
@@ -157,7 +158,7 @@ public class DialogFlowService implements
 
             boolean isFinished = message.seqId < 0;
             if (isFinished && mDialogFlow != null) {
-                mDialogFlow.talk(message.text);
+                mDialogFlow.talk(message.text, mQueryAnyContent);
             }
 
             mCallback.onASRResult(message.text, isFinished);
@@ -259,6 +260,14 @@ public class DialogFlowService implements
         @Override
         public void onSceneExit(String scene) {
             mDialogFlow.resetContexts();
+        }
+    };
+
+    private SceneManager.SceneQueryWordsStatus mSceneQueryWordsStatusCallback = new SceneManager.SceneQueryWordsStatus() {
+        @Override
+        public void onQueryAnyWordsStatusChange(boolean queryAnyWords) {
+            mQueryAnyContent = queryAnyWords;
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "QueryAnyContent:" + mQueryAnyContent);
         }
     };
 }

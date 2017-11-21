@@ -9,4 +9,6 @@ public interface ISceneManager {
     void exitScene(SceneBase scene);
 
     void exitCurrentScene();
+
+    void setQueryWords(boolean queryAnyWords);
 }

@@ -1,6 +1,7 @@
 package com.kikatech.voice.core.dialogflow.intent;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 /**
  * Created by tianli on 17-11-2.
@@ -9,6 +10,10 @@ import android.os.Bundle;
 public class Intent {
 
     public final static String ACTION_EXIT = "__Exit__";
+
+    public final static String AS_PREV_SCENE = "as_prev_scene";
+    public final static String ACTION_ANY_WORDS = "action_any_words";
+    public final static String KEY_ANY_WORDS = "any_words";
 
     private String mScene;
     private String mAction;
@@ -43,4 +48,9 @@ public class Intent {
         return mScene;
     }
 
+    public void correctScene(String scene) {
+        if(mScene.equals(AS_PREV_SCENE) && !TextUtils.isEmpty(scene)) {
+            mScene = scene;
+        }
+    }
 }

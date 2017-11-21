@@ -26,6 +26,7 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
+        setQueryAnyWords(false);
         if(action.equals(SceneActions.ACTION_REPLY_SMS_MSG_BODY)) {
             String messageBody = SmsUtil.parseTagAny(extra);
             return new ConfirmMsgBodyReplySmsStage(mSceneBase, mFeedback, mSmsObject, messageBody);
@@ -35,6 +36,7 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
+        setQueryAnyWords(true);
         String msg = "Please say your message."; // doc 20
         if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
         speak(msg);
