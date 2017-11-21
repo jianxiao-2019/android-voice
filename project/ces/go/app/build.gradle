@@ -41,6 +41,9 @@ dependencies {
     compile 'ai.api:sdk:2.0.7@aar'
     // Gson
     compile 'com.google.code.gson:gson:2.8.0'
+    // Glide
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'jp.wasabeef:glide-transformations:2.0.1'
 
     compile project(':voice')
     compile project(':usb')

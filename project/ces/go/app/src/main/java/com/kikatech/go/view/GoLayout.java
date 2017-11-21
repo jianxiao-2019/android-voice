@@ -5,12 +5,16 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.navigation.NavigationService;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.CountingTimer;
 import com.kikatech.go.util.LogUtil;
@@ -28,8 +32,20 @@ public class GoLayout extends FrameLayout {
         SLEEP, AWAKE
     }
 
-    private enum ViewStatus {
-        SPEAK, LISTEN, DISPLAY_OPTIONS, LOADING
+    public enum ViewStatus {
+        SPEAK(R.drawable.gmap_tts),
+        LISTEN(R.drawable.gmap_listening),
+        LOADING(R.drawable.gmap_listening);
+
+        int res;
+
+        ViewStatus(int res) {
+            this.res = res;
+        }
+
+        public int getRes() {
+            return res;
+        }
     }
 
     private DisplayMode mCurrentMode = DisplayMode.SLEEP;
@@ -48,8 +64,7 @@ public class GoLayout extends FrameLayout {
 
 
     private View mStatusLayout;
-    private TextView mStatusAnimationView;
-    private View mStatusSleepView;
+    private ImageView mStatusAnimationView;
 
 
     public GoLayout(Context context) {
@@ -91,19 +106,7 @@ public class GoLayout extends FrameLayout {
         mSleepLayout = findViewById(R.id.go_layout_sleep);
 
         mStatusLayout = findViewById(R.id.go_layout_status);
-        mStatusAnimationView = (TextView) findViewById(R.id.go_layout_status_text);
-        mStatusSleepView = findViewById(R.id.go_layout_status_text_sleep);
-
-        bindListeners();
-    }
-
-    private void bindListeners() {
-        mStatusSleepView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                awake();
-            }
-        });
+        mStatusAnimationView = (ImageView) findViewById(R.id.go_layout_status_img);
     }
 
     @Override
@@ -218,8 +221,16 @@ public class GoLayout extends FrameLayout {
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
-        mStatusSleepView.setVisibility(VISIBLE);
-        mStatusAnimationView.setVisibility(GONE);
+        Glide.with(getContext())
+                .load(R.drawable.gmap_standby)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(mStatusAnimationView);
+        mStatusAnimationView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                awake();
+            }
+        });
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(DisplayMode.SLEEP);
         }
@@ -228,6 +239,11 @@ public class GoLayout extends FrameLayout {
     public void awake() {
         onModeChanged(DisplayMode.AWAKE);
         mSleepLayout.setVisibility(GONE);
+        Glide.with(getContext())
+                .load(R.drawable.gmap_awake)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(mStatusAnimationView);
+        mStatusAnimationView.setOnClickListener(null);
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(DisplayMode.AWAKE);
         }
@@ -288,7 +304,7 @@ public class GoLayout extends FrameLayout {
         }
         lock();
 
-        mCurrentStatus = ViewStatus.DISPLAY_OPTIONS;
+        mCurrentStatus = ViewStatus.SPEAK;
 
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
@@ -349,32 +365,24 @@ public class GoLayout extends FrameLayout {
 
     private void onStatusChanged(ViewStatus status) {
         // TODO: animations
+        Context context = getContext();
         switch (mCurrentMode) {
             case AWAKE:
-                mStatusSleepView.setVisibility(GONE);
-                mStatusAnimationView.setVisibility(VISIBLE);
-                switch (status) {
-                    case LOADING:
-                        mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_circle_blue);
-                        mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
-                        mStatusAnimationView.setText("请说出指令");
-                        break;
-                    case DISPLAY_OPTIONS:
-                    case SPEAK:
-                        mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_circle_red);
-                        mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                        mStatusAnimationView.setText("TTS播放中");
-                        break;
-                    case LISTEN:
-                        mStatusAnimationView.setBackgroundResource(R.drawable.bg_transparent_circle_green);
-                        mStatusAnimationView.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-                        mStatusAnimationView.setText("指令辨识中");
-                        break;
-                }
+                Glide.with(context)
+                        .load(status.getRes())
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .into(mStatusAnimationView);
+                NavigationService.processStatusChanged(context, status);
+//                switch (status) {
+//                    case LOADING:
+//                        break;
+//                    case SPEAK:
+//                        break;
+//                    case LISTEN:
+//                        break;
+//                }
                 break;
             case SLEEP:
-                mStatusSleepView.setVisibility(VISIBLE);
-                mStatusAnimationView.setVisibility(GONE);
                 break;
         }
     }

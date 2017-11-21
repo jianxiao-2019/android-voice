@@ -89,14 +89,14 @@ public class NavigationManager {
     public void startNavigation(Context context, String target, NavigationMode mode, NavigationAvoid... avoids) {
         if (mNavigationProvider != null) {
             mNavigationProvider.startNavigation(context, target, mode, avoids);
-           // NavigationService.processStart(context);
+           NavigationService.processStart(context);
         }
     }
 
     public void startNavigation(Context context, double latitude, double longitude, NavigationMode mode, NavigationAvoid... avoids) {
         if (mNavigationProvider != null) {
             mNavigationProvider.startNavigation(context, latitude, longitude, mode, avoids);
-            // NavigationService.processStart(context);
+            NavigationService.processStart(context);
         }
     }
 
@@ -110,6 +110,7 @@ public class NavigationManager {
                         LogUtil.log(TAG, "onGetLocation, latitude: " + latitude + ", longitude: " + longitude);
                     }
                     mNavigationProvider.stopNavigation(context, latitude, longitude);
+                    NavigationService.processStop(context);
                 }
 
                 @Override
