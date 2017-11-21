@@ -3,6 +3,9 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.sms.SmsContent;
+import com.kikatech.go.dialogflow.sms.send.SceneActions;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -16,18 +19,36 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
     /**
      * SendSMS 2.4 確認傳訊對象
      */
+    private String mCurrentName = "";
+
     StageAskSendTargetCorrect(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
-        return getStageCheckNumberCount(TAG, getSmsContent(), mSceneBase, mFeedback);
+        SmsContent sc = getSmsContent();
+        if (action.equals(SceneActions.ACTION_SEND_SMS_NO) || action.equals(SceneActions.ACTION_SEND_SMS_NAME)) {
+            boolean isContactMatched = sc.isContactMatched(mSceneBase.getContext());
+            if (isContactMatched) {
+                if (mCurrentName.equals(sc.getMatchedName())) {
+                    return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
+                } else {
+                    return new StageAskSendTargetCorrect(mSceneBase, mFeedback);
+                }
+            } else {
+                return new StageAskForSendTarget(mSceneBase, mFeedback);
+            }
+
+        } else {
+            return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
+        }
     }
 
     @Override
     public void action() {
-        String speech = String.format("%s, is it correct?", getSmsContent().getMatchedName()); // doc 18
+        mCurrentName = getSmsContent().getMatchedName();
+        String speech = String.format("%s, is it correct?", mCurrentName); // doc 18
         speak(speech);
     }
 }

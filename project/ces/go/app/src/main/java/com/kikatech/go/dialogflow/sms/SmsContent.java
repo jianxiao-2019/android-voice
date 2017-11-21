@@ -125,6 +125,10 @@ public class SmsContent {
         return isContactMatched(ctx);
     }
 
+    /**
+     * Check if user said contact matched the name in Contact
+     * @return is contact matched
+     */
     public boolean isContactMatched(Context ctx) {
         ContactManager.PhoneBookContact pbc = ContactManager.getIns().findName(ctx, getContact());
         if (pbc != null) {
