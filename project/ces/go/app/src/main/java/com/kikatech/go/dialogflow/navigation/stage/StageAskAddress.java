@@ -44,8 +44,8 @@ public class StageAskAddress extends BaseNaviStage {
     @Override
     public void action() {
         String words = mAgain ?
-                "Sorry, I cannot understand, would you say that again ?" :
-                "Where would you like to go ?";
+                "Sorry, I couldn't find it. Please say again." : // doc 7
+                "Where do you want to go?"; // doc 3
         speak(words);
     }
 }

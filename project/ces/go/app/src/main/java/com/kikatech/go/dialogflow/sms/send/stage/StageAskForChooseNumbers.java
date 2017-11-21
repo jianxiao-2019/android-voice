@@ -3,6 +3,8 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
@@ -74,12 +76,22 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
             LogUtil.log(TAG, "Error Status : " + mErrStatus);
         }
         List<String> numbers = getSmsContent().getPhoneNumbers();
+        // TODO: options, Which one do you like
         if (numbers.size() > 1) {
-            if(mErrStatus == ERR_STATUS_SAY_AGAIN) {
-                speak("2.6 The first number is " + numbers.get(0) + ", the second one is " + numbers.get(1));
-            } else {
-                speak("2.6 Choose a number from following list. First " + numbers.get(0) + ", or second " + numbers.get(1));
+            Bundle extras = new Bundle();
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
+            optionList.setTitle("Which one do you like?");
+            for (String number : numbers) {
+                optionList.add(new Option(number, null));
             }
+            extras.putParcelable(EXTRA_OPTIONS_LIST, optionList);
+            String speech = optionList.getTextToSpeak();
+            speak(speech, extras);
+//            if(mErrStatus == ERR_STATUS_SAY_AGAIN) {
+//                speak("2.6 The first number is " + numbers.get(0) + ", the second one is " + numbers.get(1));
+//            } else {
+//                speak("2.6 Choose a number from following list. First " + numbers.get(0) + ", or second " + numbers.get(1));
+//            }
         } else {
             speak("2.6 Error, only one phone number");
         }

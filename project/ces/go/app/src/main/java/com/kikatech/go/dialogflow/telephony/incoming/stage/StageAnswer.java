@@ -31,35 +31,7 @@ public class StageAnswer extends SceneStage {
 
     @Override
     public void action() {
-        String speech = "Ok, answered this call.";
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, speech);
-        }
-        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
-            @Override
-            public void onTtsStart() {
-            }
-
-            @Override
-            public void onTtsComplete() {
-                answerPhoneCall();
-            }
-
-            @Override
-            public void onTtsError() {
-                answerPhoneCall();
-            }
-
-            @Override
-            public void onTtsInterrupted() {
-                answerPhoneCall();
-            }
-
-            @Override
-            public boolean isEndOfScene() {
-                return true;
-            }
-        });
+        answerPhoneCall();
     }
 
     private void answerPhoneCall() {

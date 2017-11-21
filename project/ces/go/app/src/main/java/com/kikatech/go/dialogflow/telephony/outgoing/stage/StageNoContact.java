@@ -26,7 +26,7 @@ public class StageNoContact extends StageOutgoing {
 
     @Override
     public void action() {
-        String speech = "Could not find in contacts. Please say it again.";
+        String speech = "Sorry, I couldn't find the contact. Please say again."; // doc 19
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }

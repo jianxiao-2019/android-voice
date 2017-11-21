@@ -34,6 +34,7 @@ public class StageAskForSmsBody extends BaseSendSmsStage {
 
     @Override
     public void action() {
-        speak("2.8 What is the message ?");
+        String speech = "Please say your message."; // doc 21
+        speak(speech);
     }
 }

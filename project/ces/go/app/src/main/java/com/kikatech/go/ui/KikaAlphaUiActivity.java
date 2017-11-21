@@ -49,7 +49,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         if (mDialogFlowService != null) {
             mDialogFlowService.quitService();
         }
-        if( mUiManager != null ) {
+        if (mUiManager != null) {
             mUiManager.release();
         }
     }
@@ -104,13 +104,16 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     @Override
                     public void onStagePrepared(String scene, String action, SceneStage stage) {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "scene: " + scene + ", action: " + action + ", stage: " + stage.getClass().getSimpleName());
+                            LogUtil.log(TAG, String.format("scene: %1$s, action: %2$s, stage: %3$s", scene, action, stage.getClass().getSimpleName()));
                         }
                         mUiManager.dispatchStageTask(stage);
                     }
 
                     @Override
                     public void onStageActionDone(boolean isEndOfScene) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("isEndOfScene: %1$s", isEndOfScene));
+                        }
                         mUiManager.onStageActionDone(isEndOfScene);
                     }
                 });
@@ -129,12 +132,17 @@ public class KikaAlphaUiActivity extends BaseActivity {
         mUiManager = new UiTaskManager(mGoLayout, new UiTaskManager.IUiManagerFeedback() {
             @Override
             public void onOptionSelected(byte requestType, int index, Option option) {
+                String textToSend;
                 switch (requestType) {
                     case OptionList.REQUEST_TYPE_ORDINAL:
-                        mDialogFlowService.text(String.valueOf(index + 1));
+                        textToSend = String.valueOf(index + 1);
+                        mDialogFlowService.text(textToSend);
+                        mUiManager.dispatchSpeechTask(textToSend);
                         break;
                     case OptionList.REQUEST_TYPE_TEXT:
-                        mDialogFlowService.text(option.getDisplayText());
+                        textToSend = option.getDisplayText();
+                        mDialogFlowService.text(textToSend);
+                        mUiManager.dispatchSpeechTask(textToSend);
                         break;
                 }
             }

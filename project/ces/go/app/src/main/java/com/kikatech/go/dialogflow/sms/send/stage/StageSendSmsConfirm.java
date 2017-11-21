@@ -28,31 +28,33 @@ public class StageSendSmsConfirm extends BaseSendSmsStage {
 
     @Override
     public void action() {
-        speak("Send Message !!!", new IDialogFlowFeedback.IToSceneFeedback() {
-            @Override
-            public void onTtsStart() {
-            }
-
-            @Override
-            public void onTtsComplete() {
-                sendSms();
-            }
-
-            @Override
-            public void onTtsError() {
-                sendSms();
-            }
-
-            @Override
-            public void onTtsInterrupted() {
-                sendSms();
-            }
-
-            @Override
-            public boolean isEndOfScene() {
-                return true;
-            }
-        });
+//        speak("Send Message !!!", new IDialogFlowFeedback.IToSceneFeedback() {
+//            @Override
+//            public void onTtsStart() {
+//            }
+//
+//            @Override
+//            public void onTtsComplete() {
+//                sendSms();
+//            }
+//
+//            @Override
+//            public void onTtsError() {
+//                sendSms();
+//            }
+//
+//            @Override
+//            public void onTtsInterrupted() {
+//                sendSms();
+//            }
+//
+//            @Override
+//            public boolean isEndOfScene() {
+//                return true;
+//            }
+//        });
+        sendSms();
+        onActionDone(true);
     }
 
     private void sendSms() {

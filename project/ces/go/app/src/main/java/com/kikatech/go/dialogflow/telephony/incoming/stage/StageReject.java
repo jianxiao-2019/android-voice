@@ -30,35 +30,7 @@ public class StageReject extends SceneStage {
 
     @Override
     public void action() {
-        String speech = "Ok, rejected this call.";
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, speech);
-        }
-        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
-            @Override
-            public void onTtsStart() {
-            }
-
-            @Override
-            public void onTtsComplete() {
-                rejectPhoneCall();
-            }
-
-            @Override
-            public void onTtsError() {
-                rejectPhoneCall();
-            }
-
-            @Override
-            public void onTtsInterrupted() {
-                rejectPhoneCall();
-            }
-
-            @Override
-            public boolean isEndOfScene() {
-                return true;
-            }
-        });
+        rejectPhoneCall();
     }
 
     private void rejectPhoneCall() {

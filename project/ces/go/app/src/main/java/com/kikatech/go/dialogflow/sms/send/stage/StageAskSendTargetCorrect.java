@@ -27,6 +27,7 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
 
     @Override
     public void action() {
-        speak("Is " + getSmsContent().getMatchedName() + " correct ?");
+        String speech = String.format("%s, is it correct?", getSmsContent().getMatchedName()); // doc 18
+        speak(speech);
     }
 }

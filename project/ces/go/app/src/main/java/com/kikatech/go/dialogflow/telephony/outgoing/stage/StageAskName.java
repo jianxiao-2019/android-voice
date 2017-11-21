@@ -25,7 +25,7 @@ public class StageAskName extends StageOutgoing {
 
     @Override
     public void action() {
-        String speech = "Who do you want to call?";
+        String speech = "Who do you want to call?"; // doc 33
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }

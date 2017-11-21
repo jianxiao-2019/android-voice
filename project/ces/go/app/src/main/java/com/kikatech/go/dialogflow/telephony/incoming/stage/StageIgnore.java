@@ -31,35 +31,7 @@ public class StageIgnore extends SceneStage {
 
     @Override
     public void action() {
-        String speech = "Ok, ignore this call.";
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, speech);
-        }
-        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
-            @Override
-            public void onTtsStart() {
-            }
-
-            @Override
-            public void onTtsComplete() {
-                ignorePhoneCall();
-            }
-
-            @Override
-            public void onTtsError() {
-                ignorePhoneCall();
-            }
-
-            @Override
-            public void onTtsInterrupted() {
-                ignorePhoneCall();
-            }
-
-            @Override
-            public boolean isEndOfScene() {
-                return true;
-            }
-        });
+        ignorePhoneCall();
     }
 
     private void ignorePhoneCall() {

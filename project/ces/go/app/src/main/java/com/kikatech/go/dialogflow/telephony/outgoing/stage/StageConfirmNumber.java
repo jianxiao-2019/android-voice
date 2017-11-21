@@ -57,7 +57,7 @@ public class StageConfirmNumber extends StageOutgoing {
             if (!mContact.phoneNumbers.isEmpty()) {
                 extras = new Bundle();
                 OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
-                optionList.setTitle("Choose for the following list");
+                optionList.setTitle("Which one do you like?");
                 for (String number : mContact.phoneNumbers) {
                     optionList.add(new Option(number, SceneActions.ACTION_OUTGOING_NUMBERS));
                 }

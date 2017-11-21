@@ -45,6 +45,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public void action() {
-        speak("Are you sure to go to '" + mNaviAddress + "' ?");
+
+        speak("Sure, '" + mNaviAddress + "', right?"); // doc 4
     }
 }

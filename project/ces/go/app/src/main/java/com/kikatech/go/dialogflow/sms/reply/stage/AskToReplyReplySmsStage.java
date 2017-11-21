@@ -39,8 +39,10 @@ public class AskToReplyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-        String msg = mSmsObject.getUserName() + " said : \"" + mSmsObject.getMsgContent() + "\", Do you want to reply ?";
-        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-        speak(msg);
+//        String msg = mSmsObject.getUserName() + " said : \"" + mSmsObject.getMsgContent() + "\", Do you want to reply ?";
+//        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
+//        speak(msg);
+        String speech = String.format("%1$s says \"%2$s\". Do you want to reply?", mSmsObject.getUserName(), mSmsObject.getMsgContent()); // doc 24
+        speak(speech);
     }
 }

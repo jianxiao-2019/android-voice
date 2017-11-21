@@ -35,7 +35,7 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-        String msg = "What is the message ?";
+        String msg = "Please say your message."; // doc 20
         if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
         speak(msg);
     }

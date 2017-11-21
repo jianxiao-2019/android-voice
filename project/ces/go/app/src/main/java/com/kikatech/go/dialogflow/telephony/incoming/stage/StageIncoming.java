@@ -38,7 +38,7 @@ public class StageIncoming extends SceneStage {
 
     @Override
     public void action() {
-        String toast = String.format("%s is calling you", mCaller);
+        String toast = String.format("%s is calling. Answer, reject or ignore.", mCaller); // doc 34
         speak(toast);
     }
 }

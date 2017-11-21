@@ -40,8 +40,10 @@ public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-        String msg = "Send message \"" + mMsgBody + "\" to " + mSmsObject.getUserName() + ". Send it or change it ?";
-        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-        speak(msg);
+//        String msg = "Send message \"" + mMsgBody + "\" to " + mSmsObject.getUserName() + ". Send it or change it ?";
+//        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
+//        speak(msg);
+        String speech = String.format("\"%s\" Send it or change it?", mMsgBody); // doc 24
+        speak(speech);
     }
 }

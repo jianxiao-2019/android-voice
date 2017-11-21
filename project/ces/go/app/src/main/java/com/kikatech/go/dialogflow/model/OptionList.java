@@ -66,11 +66,16 @@ public class OptionList implements Parcelable {
             stringBuilder.append(title).append("\n");
         }
         if (options != null && !options.isEmpty()) {
+            int LIST_SIZE = options.size();
             Option option;
-            for (int i = 0; i < options.size(); i++) {
+            for (int i = 0; i < LIST_SIZE; i++) {
                 option = options.get(i);
                 if (option != null) {
-                    stringBuilder.append(String.valueOf(i + 1)).append(" ").append(option.getDisplayText()).append("\n");
+                    boolean isLast = (i == LIST_SIZE - 1);
+                    stringBuilder.append(option.getDisplayText());
+                    if (!isLast) {
+                        stringBuilder.append(" or ");
+                    }
                 }
             }
         }
@@ -80,7 +85,7 @@ public class OptionList implements Parcelable {
 
     public static OptionList getDefaultOptionList() {
         OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
-        optionList.setTitle("You can Say");
+        optionList.setTitle("You can say");
         optionList.add(new Option("Navigate", null));
         optionList.add(new Option("Message", null));
         optionList.add(new Option("Make a call", null));

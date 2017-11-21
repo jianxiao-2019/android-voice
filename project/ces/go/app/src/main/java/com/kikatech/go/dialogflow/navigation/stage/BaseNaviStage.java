@@ -27,7 +27,8 @@ public class BaseNaviStage extends SceneStage {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
         mStopNavi = action.equals(NaviSceneActions.ACTION_NAV_CANCEL);
         if (mStopNavi) {
-            speak("OK, Stop navigation !", new IDialogFlowFeedback.IToSceneFeedback() {
+            String speech = "OK! Stopping navigation.";
+            speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
                 @Override
                 public void onTtsStart() {
                 }

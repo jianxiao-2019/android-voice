@@ -43,6 +43,8 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     @Override
     public void action() {
         SmsContent sc = getSmsContent();
-        speak("2.9 Send text \"" + sc.getSmsBody() + "\" to " + sc.getMatchedName() + ". Send it or change it ?");
+        String speech = String.format("\"%s\" Send it or change it?", sc.getSmsBody()); // doc 24
+        speak(speech);
+        //speak("2.9 Send text \"" + sc.getSmsBody() + "\" to " + sc.getMatchedName() + ". Send it or change it ?");
     }
 }

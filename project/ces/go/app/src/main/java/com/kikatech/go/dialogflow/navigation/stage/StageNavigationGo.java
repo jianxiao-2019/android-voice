@@ -29,7 +29,8 @@ public class StageNavigationGo extends BaseNaviStage {
 
     @Override
     public void action() {
-        speak("Navigate to " + mNaviAddress, new IDialogFlowFeedback.IToSceneFeedback() {
+        String speech = "OK! Start navigation."; // doc 10
+        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
             @Override
             public void onTtsStart() {
             }

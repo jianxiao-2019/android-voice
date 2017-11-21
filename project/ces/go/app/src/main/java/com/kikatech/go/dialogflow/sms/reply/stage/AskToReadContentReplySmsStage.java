@@ -39,9 +39,11 @@ public class AskToReadContentReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-        String msg = "Receive message from " +
-                mSmsObject.getUserName() + " , would you like to play the message ?";
-        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-        speak(msg);
+//        String msg = "Receive message from " +
+//                mSmsObject.getUserName() + " , would you like to play the message ?";
+//        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
+//        speak(msg);
+        String speech = String.format("You got a message from %s. Play the message?", mSmsObject.getUserName()); // doc 28
+        speak(speech);
     }
 }

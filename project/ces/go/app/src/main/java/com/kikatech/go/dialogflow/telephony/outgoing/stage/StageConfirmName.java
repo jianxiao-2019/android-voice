@@ -45,7 +45,7 @@ public class StageConfirmName extends StageOutgoing {
 
     @Override
     public void action() {
-        String speech = String.format("Do you mean %s?", mContact.displayName);
+        String speech = String.format("%s, is it correct?", mContact.displayName); // doc 19
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }

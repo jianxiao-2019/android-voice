@@ -52,10 +52,10 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
         SmsContent sc = getSmsContent();
         if (sc.isContactAvailable()) {
             // SendSMS 2.3 再次詢問對象
-            speak("2.3 Couldn't find " + sc.getContact() + " in contacts. Please say it again.");
+            speak("Sorry, I couldn't find the contact. Please say again."); // doc 19
         } else {
             // SendSMS 2.1 詢問傳送對象
-            speak("2.1 Who to you want to text ?");
+            speak("Who would you like to text to?"); // doc 16
         }
     }
 }
