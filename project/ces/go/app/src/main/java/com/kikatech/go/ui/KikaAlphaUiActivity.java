@@ -118,7 +118,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         // Register all scenes from scene mangers
         mSceneManagers.add(new TelephonySceneManager(this, mDialogFlowService));
         mSceneManagers.add(new NaviSceneManager(this, mDialogFlowService));
-        mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService));
+        mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService, KikaAlphaUiActivity.class));
         mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
     }
 

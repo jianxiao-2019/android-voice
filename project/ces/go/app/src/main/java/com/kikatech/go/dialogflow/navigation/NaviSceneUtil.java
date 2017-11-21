@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
+import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.util.LogUtil;
 
 import org.json.JSONException;
@@ -51,15 +52,17 @@ public class NaviSceneUtil {
                 } catch (JSONException ignored) {
                 }
                 String addrResult = TextUtils.isEmpty(location) ? addr : location;
-                if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "parseAddress : " + addrResult);
-                return addrResult;
+                if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "parseAddress : " + addrResult);
+                return addrResult.replace("\"", "");
             }
         }
-        if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "parseAddress : <empty>" + ", parm:" + parm.keySet().size());
+        if (LogUtil.DEBUG)
+            LogUtil.log("NaviSceneUtil", "parseAddress : <empty>" + ", parm:" + parm.keySet().size());
         return "";
     }
 
     public synchronized static void navigateToLocation(Context ctx, String loc) {
+        if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "navigateToLocation:" + loc);
         ArrayList<BaseNavigationProvider.NavigationAvoid> avoidList = new ArrayList<>();
         final BaseNavigationProvider.NavigationAvoid[] avoids = avoidList.toArray(new BaseNavigationProvider.NavigationAvoid[0]);
         NavigationManager.getIns().startNavigation(ctx, loc, BaseNavigationProvider.NavigationMode.DRIVE, avoids);
@@ -69,13 +72,13 @@ public class NaviSceneUtil {
     /**
      * This is a workaround ...
      */
-    public synchronized static void stopNavigation(final Context ctx) {
-        if(!sNavigating) {
-            if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Not navigating, ignore command");
-            return;
-        }
+    public synchronized static void stopNavigation(final Context ctx, final Class<?> targetClz) {
+//        if (!sNavigating) {
+//            if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Not navigating, ignore command");
+//            return;
+//        }
 
-        if(LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Start to stop navigation ...");
+        if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Start to stop navigation ..., targetClz:" + targetClz);
 
         Handler uiHandler = new Handler(Looper.getMainLooper());
 
@@ -87,17 +90,19 @@ public class NaviSceneUtil {
             }
         });
 
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                try {
-//                    android.content.Intent intent = new android.content.Intent(KikaDialogFlowActivity.this, KikaDialogFlowActivity.class);
-//                    intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    PendingIntent pendingIntent = PendingIntent.getActivity(KikaDialogFlowActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//                    pendingIntent.send();
-//                } catch (Exception ignore) {
-//                }
-            }
-        }, 4000);
+        if(targetClz != null) {
+            uiHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        android.content.Intent intent = new android.content.Intent(ctx, targetClz);
+                        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        pendingIntent.send();
+                    } catch (Exception ignore) {
+                    }
+                }
+            }, 3000);
+        }
     }
 }

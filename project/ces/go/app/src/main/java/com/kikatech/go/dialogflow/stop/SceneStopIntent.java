@@ -15,6 +15,8 @@ public class SceneStopIntent extends SceneBase {
 
     public static final String SCENE = "Stop Intents";
 
+    private Class<?> mMainUIClass;
+
     SceneStopIntent(Context context, ISceneFeedback feedback) {
         super(context, feedback);
     }
@@ -27,6 +29,13 @@ public class SceneStopIntent extends SceneBase {
     @Override
     protected void onExit() {
 
+    }
+
+    public void setMainUIClass(Class<?> mainUIClass) {
+        mMainUIClass = mainUIClass;
+    }
+    public Class<?> getMainUIClass() {
+        return mMainUIClass;
     }
 
     @Override
