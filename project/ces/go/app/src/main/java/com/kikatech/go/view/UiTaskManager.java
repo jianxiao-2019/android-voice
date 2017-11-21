@@ -194,10 +194,11 @@ public class UiTaskManager {
     }
 
     private void unlock(boolean withAlert) {
-        mLayout.post(new Runnable() {
+        final GoLayout view = mLayout;
+        view.post(new Runnable() {
             @Override
             public void run() {
-                mLayout.unlock();
+                view.unlock();
             }
         });
         if (withAlert) {
