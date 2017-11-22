@@ -29,6 +29,8 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     private final LinkedList<Pair<String, Integer>> mPlayList = new LinkedList<>();
     private int mPlayListSize;
 
+    private boolean mIsTtsInterrupted;
+
     @Override
     public void init(Context context, @Nullable final OnTtsInitListener listener) {
         if (context == null && listener != null) {
@@ -91,9 +93,10 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
                 Logger.d("AndroidTtsSpeaker onDone mPlayList.size() = " + mPlayList.size());
                 if (mPlayList.size() > 0) {
                     playSingleList();
-                } else if (mStateChangedListener != null) {
+                } else if (mStateChangedListener != null && !mIsTtsInterrupted) {
                     mStateChangedListener.onTtsComplete();
                 }
+                mIsTtsInterrupted = false;
             }
 
             @Override
@@ -118,6 +121,7 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     public void speak(final String text) {
         mPlayList.clear();
         mPlayListSize = 0;
+        mIsTtsInterrupted = false;
         Logger.d("Android TtsSpeaker speak text = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
         if (mTts == null) {
             return;
@@ -140,6 +144,7 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
         }
         mPlayList.clear();
         mPlayListSize = sentences.length;
+        mIsTtsInterrupted = false;
         Collections.addAll(mPlayList, sentences);
         if (mPlayList.size() > 0) {
             playSingleList();
@@ -171,7 +176,10 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
 
     @Override
     public void interrupt() {
+        mPlayList.clear();
+        mPlayListSize = 0;
         if (mTts != null && mTts.isSpeaking()) {
+            mIsTtsInterrupted = true;
             mTts.stop();
             if (mStateChangedListener != null) {
                 mStateChangedListener.onTtsInterrupted();
