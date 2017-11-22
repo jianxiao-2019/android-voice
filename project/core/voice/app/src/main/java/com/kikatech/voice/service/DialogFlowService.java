@@ -32,6 +32,7 @@ public class DialogFlowService implements
     private Context mContext;
 
     private final IServiceCallback mCallback;
+    private final IAgentQueryStatus mQueryStatusCallback;
     private VoiceService mVoiceService;
     private DialogFlow mDialogFlow;
     private boolean mQueryAnyContent = false;
@@ -40,9 +41,12 @@ public class DialogFlowService implements
 
     private TtsSpeaker mTtsSpeaker;
 
-    private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
+    private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf,
+                              @NonNull IServiceCallback callback,
+                              @NonNull IAgentQueryStatus queryStatus) {
         mContext = ctx;
         mCallback = callback;
+        mQueryStatusCallback = queryStatus;
         mSceneManager = new SceneManager(mSceneCallback, mSceneQueryWordsStatusCallback);
         initDialogFlow(conf);
         initVoiceService(conf);
@@ -103,8 +107,10 @@ public class DialogFlowService implements
         }
     }
 
-    public static synchronized IDialogFlowService queryService(@NonNull Context ctx, @NonNull VoiceConfiguration conf, @NonNull IServiceCallback callback) {
-        return new DialogFlowService(ctx, conf, callback);
+    public static synchronized IDialogFlowService queryService(
+            @NonNull Context ctx, @NonNull VoiceConfiguration conf,
+            @NonNull IServiceCallback callback, @NonNull IAgentQueryStatus queryStatus) {
+        return new DialogFlowService(ctx, conf, callback, queryStatus);
     }
 
     @Override
@@ -121,7 +127,7 @@ public class DialogFlowService implements
     public void talk(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
-            mDialogFlow.talk(words, mQueryAnyContent);
+            mDialogFlow.talk(words, mQueryAnyContent, mQueryStatusCallback);
         }
     }
 
@@ -129,7 +135,7 @@ public class DialogFlowService implements
     public void text(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "text : " + words);
-            mDialogFlow.talk(words, mQueryAnyContent);
+            mDialogFlow.talk(words, mQueryAnyContent, mQueryStatusCallback);
         }
     }
 
@@ -163,7 +169,7 @@ public class DialogFlowService implements
 
             boolean isFinished = message.seqId < 0;
             if (isFinished && mDialogFlow != null) {
-                mDialogFlow.talk(message.text, mQueryAnyContent);
+                mDialogFlow.talk(message.text, mQueryAnyContent, mQueryStatusCallback);
             }
 
             mCallback.onASRResult(message.text, isFinished);

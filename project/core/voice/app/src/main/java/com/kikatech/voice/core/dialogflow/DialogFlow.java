@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.util.log.LogUtil;
 
@@ -27,17 +28,25 @@ public class DialogFlow {
         mAgent = conf.getAgent().create(context.getApplicationContext());
     }
 
-    public void talk(final String words, boolean anyContent) {
-        talk(words, null, anyContent);
+    public void talk(final String words, boolean anyContent, final IDialogFlowService.IAgentQueryStatus callback) {
+        talk(words, null, anyContent, callback);
     }
 
-    public void talk(final String words, final Map<String, List<String>> entities, final boolean anyContent) {
+    public void talk(final String words, final Map<String, List<String>> entities, final boolean anyContent, final IDialogFlowService.IAgentQueryStatus callback) {
         if (!TextUtils.isEmpty(words)) {
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = mAgent.query(words, entities, anyContent);
+                    if (callback != null) callback.onStart();
+                    Intent intent = null;
+                    try {
+                        intent = mAgent.query(words, entities, anyContent);
+                    } catch (Exception e) {
+                        if (callback != null) callback.onError(e);
+                    }
+
                     if (intent != null) {
+                        if (callback != null) callback.onComplete();
                         onIntent(intent);
                     }
                 }
@@ -55,13 +64,13 @@ public class DialogFlow {
         });
     }
 
-    public void setObserver(DialogObserver observer){
+    public void setObserver(DialogObserver observer) {
         mObserver = observer;
     }
 
     private void onIntent(Intent intent) {
 //        String scene = intent.getScene();
-        if(mObserver != null){
+        if (mObserver != null) {
             mObserver.onIntent(intent);
         }
 //        List<DialogObserver> list = mSubscribe.list(scene);

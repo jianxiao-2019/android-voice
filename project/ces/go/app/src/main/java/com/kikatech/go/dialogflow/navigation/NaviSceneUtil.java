@@ -35,7 +35,7 @@ public class NaviSceneUtil {
     private final static String KEY_STREET_ADDR = "street-address";
     private final static String KEY_BUSINESS_NAME = "business-name";
     private final static String KEY_SHORTCUT = "shortcut";
-    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT, PRM_SUBADMIN_AREA};
+    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT, PRM_SUBADMIN_AREA, PRM_CITY};
 
     private static boolean sNavigating = false;
 

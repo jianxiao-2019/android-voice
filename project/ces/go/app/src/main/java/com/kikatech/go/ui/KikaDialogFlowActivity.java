@@ -14,6 +14,7 @@ import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
@@ -81,7 +82,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
                     @Override
                     public void onASRResult(final String speechText, boolean isFinished) {
-                        if(isFinished) {
+                        if (isFinished) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -102,6 +103,21 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
                     @Override
                     public void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
+                    }
+                }, new IDialogFlowService.IAgentQueryStatus() {
+                    @Override
+                    public void onStart() {
+                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
                     }
                 });
 

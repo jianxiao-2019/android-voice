@@ -25,6 +25,14 @@ public interface IDialogFlowService {
         void onStageActionDone(boolean isEndOfScene, boolean isInterrupted);
     }
 
+    interface IAgentQueryStatus {
+        void onStart();
+
+        void onComplete();
+
+        void onError(Exception e);
+    }
+
     void registerScene(SceneBase scene);
 
     void unregisterScene(SceneBase scene);

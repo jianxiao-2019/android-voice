@@ -91,7 +91,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
                     @Override
                     public void onASRResult(final String speechText, boolean isFinished) {
-                        if(isFinished) {
+                        if (isFinished) {
                             mUiManager.dispatchSpeechTask(speechText);
                         }
                     }
@@ -115,6 +115,21 @@ public class KikaAlphaUiActivity extends BaseActivity {
                             LogUtil.log(TAG, String.format("isEndOfScene: %1$s, isInterrupted: %2$s", isEndOfScene, isInterrupted));
                             mUiManager.onStageActionDone(isEndOfScene, isInterrupted);
                         }
+                    }
+                }, new IDialogFlowService.IAgentQueryStatus() {
+                    @Override
+                    public void onStart() {
+                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
                     }
                 });
 
