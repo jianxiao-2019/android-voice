@@ -87,7 +87,9 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
                 String ttsText = uiAndTtsText[1];
                 OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
                 optionList.setTitle(uiText);
-                for (String number : numbers) {
+                int iteratorSize = numbers.size() > 2 ? 2 : numbers.size();
+                for (int i = 0; i < iteratorSize; i++) {
+                    String number = numbers.get(i);
                     optionList.add(new Option(number, null));
                 }
                 args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);

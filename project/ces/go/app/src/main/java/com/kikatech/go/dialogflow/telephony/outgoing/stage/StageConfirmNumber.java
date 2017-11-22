@@ -75,7 +75,9 @@ public class StageConfirmNumber extends StageOutgoing {
                     String ttsText = uiAndTtsText[1];
                     OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
                     optionList.setTitle(uiText);
-                    for (ContactManager.NumberType nt : mContact.phoneNumbers) {
+                    int iteratorSize = mContact.phoneNumbers.size() > 2 ? 2 : mContact.phoneNumbers.size();
+                    for (int i = 0; i < iteratorSize; i++) {
+                        ContactManager.NumberType nt = mContact.phoneNumbers.get(i);
                         String o = nt.getTypeOrNumber();
                         optionList.add(new Option(o, SceneActions.ACTION_OUTGOING_NUMBERS));
                         mOptions.add(o);
