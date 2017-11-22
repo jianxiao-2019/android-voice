@@ -63,7 +63,7 @@ public class SmsContent {
     }
 
     public void update(IntentContent ic) {
-        if(mIntentContent == null) {
+        if (mIntentContent == null) {
             setIntentContent(ic);
         } else {
             mIntentContent.update(ic);
@@ -92,6 +92,7 @@ public class SmsContent {
 
     /**
      * 檢查是否有 SMS 內容
+     *
      * @return 是否有 SMS 內容
      */
     public boolean isSmsBodyAvailable() {
@@ -115,7 +116,7 @@ public class SmsContent {
     }
 
     public void setChosenNumber(String number) {
-        if(LogUtil.DEBUG) LogUtil.log("SmsContent", "setChosenNumber:" + number);
+        if (LogUtil.DEBUG) LogUtil.log("SmsContent", "setChosenNumber:" + number);
         mChosenNumber = number;
     }
 
@@ -123,7 +124,8 @@ public class SmsContent {
         try {
             return Integer.parseInt(mIntentContent.chosenOption);
         } catch (Exception e) {
-            if(LogUtil.DEBUG) LogUtil.log("SmsContent", "Err, cannot parse chosenOption :" + mIntentContent.chosenOption);
+            if (LogUtil.DEBUG)
+                LogUtil.log("SmsContent", "Err, cannot parse chosenOption :" + mIntentContent.chosenOption);
         }
         return -1;
     }
@@ -135,6 +137,7 @@ public class SmsContent {
 
     /**
      * Check if user said contact matched the name in Contact
+     *
      * @return is contact matched
      */
     public boolean isContactMatched(Context ctx) {
@@ -142,8 +145,8 @@ public class SmsContent {
         if (pbc != null) {
             contactMatchedName = pbc.displayName;
             phoneNumbers.clear();
-            for(String s:pbc.phoneNumbers) {
-                phoneNumbers.add(s.replace(" ", ""));
+            for (ContactManager.NumberType s : pbc.phoneNumbers) {
+                phoneNumbers.add(s.number.replace(" ", ""));
             }
             isContactMatched = true;
 
@@ -155,7 +158,7 @@ public class SmsContent {
                 LogUtil.log("SmsContent", "Find " + contactMatchedName + ", numbers:" + numb);
             }
         } else {
-            if(LogUtil.DEBUG) LogUtil.log("SmsContent", "findName fail");
+            if (LogUtil.DEBUG) LogUtil.log("SmsContent", "findName fail");
             isContactMatched = false;
         }
 

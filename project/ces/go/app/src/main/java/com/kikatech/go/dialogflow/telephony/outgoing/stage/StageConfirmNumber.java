@@ -12,6 +12,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.util.contact.ContactManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author SkeeterWang Created on 2017/11/14.
  */
@@ -19,10 +22,12 @@ public class StageConfirmNumber extends StageOutgoing {
     private static final String TAG = "StageConfirmNumber";
 
     private ContactManager.PhoneBookContact mContact;
+    private List<String> mOptions;
 
     public StageConfirmNumber(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
         super(scene, feedback);
         mContact = contact;
+        mOptions = new ArrayList<>();
     }
 
     @Override
@@ -30,23 +35,28 @@ public class StageConfirmNumber extends StageOutgoing {
         if (!TextUtils.isEmpty(action)) {
             switch (action) {
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
-                    String ordinal = parseOrdinal(extra);
-                    if (!TextUtils.isEmpty(ordinal)) {
-                        ContactManager.PhoneBookContact newContact = queryNumber(ordinal);
-                        if (newContact != null) {
-                            return new StageMakeCall(mSceneBase, mFeedback, newContact);
-                        } else {
-                            return this;
-                        }
-                    }
-                    break;
+                    return getNextStage(parseOrdinal(extra));
                 case SceneActions.ACTION_OUTGOING_CANCEL:
                     return new StageCancel(mSceneBase, mFeedback);
+                case SceneActions.ACTION_OUTGOING_CHANGE:
+                    return getNextStage(parseOrdinalFromPhonePlace(extra));
                 default:
                     return this;
             }
         }
         return null;
+    }
+
+    private SceneStage getNextStage(String ordinal) {
+        if (!TextUtils.isEmpty(ordinal)) {
+            ContactManager.PhoneBookContact newContact = queryNumber(ordinal);
+            if (newContact != null) {
+                return new StageMakeCall(mSceneBase, mFeedback, newContact);
+            } else {
+                return this;
+            }
+        }
+        return this;
     }
 
     @Override
@@ -58,8 +68,10 @@ public class StageConfirmNumber extends StageOutgoing {
                 extras = new Bundle();
                 OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
                 optionList.setTitle("Which one do you like?");
-                for (String number : mContact.phoneNumbers) {
-                    optionList.add(new Option(number, SceneActions.ACTION_OUTGOING_NUMBERS));
+                for (ContactManager.NumberType nt : mContact.phoneNumbers) {
+                    String o = nt.getTypeOrNumber();
+                    optionList.add(new Option(o, SceneActions.ACTION_OUTGOING_NUMBERS));
+                    mOptions.add(o);
                 }
                 extras.putParcelable(EXTRA_OPTIONS_LIST, optionList);
                 speech = optionList.getTextToSpeak();
@@ -69,6 +81,26 @@ public class StageConfirmNumber extends StageOutgoing {
             LogUtil.logv(TAG, speech);
         }
         speak(speech, extras);
+    }
+
+    private String parseOrdinalFromPhonePlace(Bundle param) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, param.toString());
+            LogUtil.log(TAG, "mOptions count:" + mOptions.size());
+        }
+        String option = param.getString("name", null);
+        if (!TextUtils.isEmpty(option)) {
+            option = option.replace("\"", "");
+            LogUtil.log(TAG, "option:" + option);
+            for (int i = 0; i < mOptions.size(); i++) {
+                LogUtil.log(TAG, "option " + i + " : " + mOptions.get(i));
+                if (mOptions.get(i).toLowerCase().equals(option)) {
+                    LogUtil.log(TAG, "return:" + String.valueOf(i + 1));
+                    return String.valueOf(i + 1);
+                }
+            }
+        }
+        return null;
     }
 
     private String parseOrdinal(Bundle param) {

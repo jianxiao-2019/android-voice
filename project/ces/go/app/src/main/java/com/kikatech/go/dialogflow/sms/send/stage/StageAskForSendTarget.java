@@ -43,7 +43,7 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
             return getStageCheckContactMatched(TAG, sc, mSceneBase, mFeedback);
         } else {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-            return null;
+            return new StageAskForSendTarget(mSceneBase, mFeedback);
         }
     }
 

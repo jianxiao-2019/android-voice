@@ -37,7 +37,7 @@ public class StageMakeCall extends StageOutgoing {
         String phoneNumber = null;
         if (mContact != null) {
             if (mContact.phoneNumbers != null && !mContact.phoneNumbers.isEmpty()) {
-                phoneNumber = mContact.phoneNumbers.get(0);
+                phoneNumber = mContact.phoneNumbers.get(0).number;
                 if (!TextUtils.isEmpty(mContact.displayName)) {
                     speech = String.format("ok, calling %1$s", mContact.displayName); // doc 32
                 } else {

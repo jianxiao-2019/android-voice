@@ -21,6 +21,9 @@ public class ContactManager {
 
     private static ContactManager sIns;
 
+    private int mPhoneTypeIdx = -1;
+    private int mPhoneLabelIdx = -1;
+
     public static synchronized ContactManager getIns() {
         if (sIns == null) {
             sIns = new ContactManager();
@@ -39,7 +42,7 @@ public class ContactManager {
         String number = findNumber(name);
 
         if (contactNames == null || contactNames.length == 0) {
-            return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number);
+            return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
         }
 
         FuzzySearchManager.FuzzyResult fuzzySearchResult = FuzzySearchManager.getIns().search(name, contactNames);
@@ -56,13 +59,13 @@ public class ContactManager {
         }
 
         if (TextUtils.isEmpty(foundName)) {
-            return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number);
+            return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
         } else {
             if (confidence <= FuzzySearchManager.getIns().getLowConfidenceCriteria()) {
                 if (LogUtil.DEBUG) {
                     LogUtil.logd(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
                 }
-                return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number);
+                return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
             } else {
                 return phoneBook.get(foundName);
             }
@@ -104,19 +107,20 @@ public class ContactManager {
         while (phones.moveToNext()) {
             String name = phones.getString(nameIdx);
             String phoneNumber = phones.getString(pnIdx);
-
             long id = Long.valueOf(phones.getString(idIdx));
 
             if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phoneNumber)) {
-                if (phoneBook.containsKey(name)) {
-                    phoneBook.get(name).addNumber(phoneNumber);
-                } else {
-                    phoneBook.put(name, new PhoneBookContact(id, name, phoneNumber));
-                }
-            }
 
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "name: " + name + ", number: " + phoneNumber);
+                String numberType = queryPhoneType(ctx, phoneNumber);
+                if (phoneBook.containsKey(name)) {
+                    phoneBook.get(name).addNumber(phoneNumber, numberType);
+                } else {
+                    phoneBook.put(name, new PhoneBookContact(id, name, phoneNumber, numberType));
+                }
+
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "number: " + name + ", number: " + phoneNumber + ", numberType:" + numberType);
+                }
             }
         }
         phones.close();
@@ -124,42 +128,84 @@ public class ContactManager {
         return phoneBook.size() > 0 ? phoneBook : null;
     }
 
+    private String queryPhoneType(Context ctx, String phoneNumber) {
+        Cursor phoneCur = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?", new String[]{phoneNumber}, null);
+
+        String phoneLabel = "";
+        if (phoneCur != null) {
+            if (phoneCur.getCount() > 0) {
+                checkCursorIdx(phoneCur);
+                while (phoneCur.moveToNext()) {
+                    int phonetype = phoneCur.getInt(mPhoneTypeIdx);
+                    String customLabel = phoneCur.getString(mPhoneLabelIdx);
+                    phoneLabel = (String) ContactsContract.CommonDataKinds.Email.getTypeLabel(ctx.getResources(), phonetype, customLabel);
+                }
+            }
+            phoneCur.close();
+        }
+        return phoneLabel;
+    }
+
+    private void checkCursorIdx(Cursor phoneCur) {
+        if (mPhoneTypeIdx == -1) {
+            mPhoneTypeIdx = phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
+        }
+        if (mPhoneLabelIdx == -1) {
+            mPhoneLabelIdx = phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL);
+        }
+    }
+
+    public static class NumberType {
+        public String number;
+        public String type;
+        NumberType(String number, String type) {
+            this.number = number;
+            this.type = type;
+        }
+
+        public String getTypeOrNumber() {
+            return TextUtils.isEmpty(type) ? number : type;
+        }
+    }
     public static class PhoneBookContact {
 
         public long id;
         public String displayName;
-        public List<String> phoneNumbers = new ArrayList<>();
+        public List<NumberType> phoneNumbers = new ArrayList<>();
 
-        PhoneBookContact(String phoneNumber) {
-            this(-1, null, phoneNumber);
+        PhoneBookContact(String phoneNumber, String type) {
+            this(-1, null, phoneNumber, type);
         }
 
-        PhoneBookContact(long id, String displayName, String phoneNumber) {
+        PhoneBookContact(long id, String displayName, String phoneNumber, String type) {
             this.id = id;
             this.displayName = displayName;
             if (!TextUtils.isEmpty(phoneNumber)) {
-                this.phoneNumbers.add(phoneNumber);
+                this.phoneNumbers.add(new NumberType(phoneNumber, type));
+                //phoneNumbers.put(phoneNumber, type);
             }
         }
 
         public PhoneBookContact clone(int idxNumber) {
             if (idxNumber < phoneNumbers.size()) {
-                return new PhoneBookContact(id, displayName, phoneNumbers.get(idxNumber));
+                NumberType nt = phoneNumbers.get(idxNumber);
+                return new PhoneBookContact(id, displayName, nt.number, nt.type);
             }
             return null;
         }
 
-        private void addNumber(String number) {
+        private void addNumber(String number, String type) {
             if (!TextUtils.isEmpty(number)) {
-                this.phoneNumbers.add(number);
+                this.phoneNumbers.add(new NumberType(number, type));
             }
         }
 
         private void print() {
             if (LogUtil.DEBUG) {
-                LogUtil.logd(TAG, "name: " + displayName);
-                for (String number : phoneNumbers) {
-                    LogUtil.logd(TAG, "number: " + number);
+                LogUtil.logd(TAG, "number: " + displayName);
+                for (NumberType nt : phoneNumbers) {
+                    LogUtil.logd(TAG, "number: " +nt.number + ", type:" + nt.type);
                 }
                 LogUtil.logd(TAG, "------------------------------");
             }
