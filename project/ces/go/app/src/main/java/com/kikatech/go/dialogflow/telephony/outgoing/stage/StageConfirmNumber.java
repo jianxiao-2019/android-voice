@@ -1,8 +1,10 @@
 package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
@@ -65,16 +67,22 @@ public class StageConfirmNumber extends StageOutgoing {
         Bundle extras = null;
         if (mContact != null) {
             if (!mContact.phoneNumbers.isEmpty()) {
-                extras = new Bundle();
-                OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
-                optionList.setTitle("Which one do you like?");
-                for (ContactManager.NumberType nt : mContact.phoneNumbers) {
-                    String o = nt.getTypeOrNumber();
-                    optionList.add(new Option(o, SceneActions.ACTION_OUTGOING_NUMBERS));
-                    mOptions.add(o);
+                Context context = mSceneBase.getContext();
+                String[] uiAndTtsText = SceneUtil.getOptionListCommon(context);
+                if (uiAndTtsText.length > 0) {
+                    extras = new Bundle();
+                    String uiText = uiAndTtsText[0];
+                    String ttsText = uiAndTtsText[1];
+                    OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
+                    optionList.setTitle(uiText);
+                    for (ContactManager.NumberType nt : mContact.phoneNumbers) {
+                        String o = nt.getTypeOrNumber();
+                        optionList.add(new Option(o, SceneActions.ACTION_OUTGOING_NUMBERS));
+                        mOptions.add(o);
+                    }
+                    extras.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
+                    speech = optionList.getTextToSpeak(ttsText);
                 }
-                extras.putParcelable(EXTRA_OPTIONS_LIST, optionList);
-                speech = optionList.getTextToSpeak();
             }
         }
         if (LogUtil.DEBUG) {

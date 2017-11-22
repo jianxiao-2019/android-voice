@@ -1,8 +1,10 @@
 package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
@@ -36,12 +38,21 @@ public class StageMakeCall extends StageOutgoing {
         String speech = "error occurred, please contact RD";
         String phoneNumber = null;
         if (mContact != null) {
+            Context context = mSceneBase.getContext();
+            String[] uiAndTtsText;
             if (mContact.phoneNumbers != null && !mContact.phoneNumbers.isEmpty()) {
                 phoneNumber = mContact.phoneNumbers.get(0).number;
                 if (!TextUtils.isEmpty(mContact.displayName)) {
-                    speech = String.format("ok, calling %1$s", mContact.displayName); // doc 32
+                    uiAndTtsText = SceneUtil.getCallContact(context, mContact.displayName);
                 } else {
-                    speech = "ok, calling now"; // doc 33
+                    uiAndTtsText = SceneUtil.getCallNumber(context);
+                }
+                if (uiAndTtsText.length > 0) {
+                    String uiText = uiAndTtsText[0];
+                    String ttsText = uiAndTtsText[1];
+                    Bundle args = new Bundle();
+                    args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+                    speech = ttsText;
                 }
             }
         }

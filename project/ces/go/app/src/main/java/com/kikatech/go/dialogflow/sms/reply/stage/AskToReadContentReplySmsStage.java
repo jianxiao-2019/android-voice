@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
@@ -39,11 +40,13 @@ public class AskToReadContentReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-//        String msg = "Receive message from " +
-//                mSmsObject.getUserName() + " , would you like to play the message ?";
-//        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-//        speak(msg);
-        String speech = String.format("You got a message from %s. Play the message?", mSmsObject.getUserName()); // doc 28
-        speak(speech);
+        String[] uiAndTtsText = SceneUtil.getAskReadMsg(mSceneBase.getContext(), mSmsObject.getUserName());
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -26,10 +27,13 @@ public class StageNoContact extends StageOutgoing {
 
     @Override
     public void action() {
-        String speech = "Sorry, I couldn't find the contact. Please say again."; // doc 19
-        if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, speech);
+        String[] uiAndTtsText = SceneUtil.getContactNotFound(mSceneBase.getContext());
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
         }
-        speak(speech);
     }
 }

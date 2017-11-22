@@ -60,7 +60,7 @@ public class OptionList implements Parcelable {
     }
 
 
-    public String getTextToSpeak() {
+    public String getTextToSpeak( String title ) {
         StringBuilder stringBuilder = new StringBuilder();
         if (!TextUtils.isEmpty(title)) {
             stringBuilder.append(title).append("\n");

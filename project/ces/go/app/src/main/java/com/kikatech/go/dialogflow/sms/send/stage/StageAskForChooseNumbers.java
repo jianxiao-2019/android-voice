@@ -1,8 +1,10 @@
 package com.kikatech.go.dialogflow.sms.send.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.SmsContent;
@@ -43,7 +45,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
-        if(action.equals(SceneActions.ACTION_SEND_SMS_AGAIN)) {
+        if (action.equals(SceneActions.ACTION_SEND_SMS_AGAIN)) {
             return new StageAskForChooseNumbers(mSceneBase, mFeedback, ERR_STATUS_SAY_AGAIN);
         }
 
@@ -76,22 +78,22 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
             LogUtil.log(TAG, "Error Status : " + mErrStatus);
         }
         List<String> numbers = getSmsContent().getPhoneNumbers();
-        // TODO: options, Which one do you like
         if (numbers.size() > 1) {
-            Bundle extras = new Bundle();
-            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
-            optionList.setTitle("Which one do you like?");
-            for (String number : numbers) {
-                optionList.add(new Option(number, null));
+            Context context = mSceneBase.getContext();
+            String[] uiAndTtsText = SceneUtil.getOptionListCommon(context);
+            if (uiAndTtsText.length > 0) {
+                Bundle args = new Bundle();
+                String uiText = uiAndTtsText[0];
+                String ttsText = uiAndTtsText[1];
+                OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
+                optionList.setTitle(uiText);
+                for (String number : numbers) {
+                    optionList.add(new Option(number, null));
+                }
+                args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
+                String speech = optionList.getTextToSpeak(ttsText);
+                speak(speech, args);
             }
-            extras.putParcelable(EXTRA_OPTIONS_LIST, optionList);
-            String speech = optionList.getTextToSpeak();
-            speak(speech, extras);
-//            if(mErrStatus == ERR_STATUS_SAY_AGAIN) {
-//                speak("2.6 The first number is " + numbers.get(0) + ", the second one is " + numbers.get(1));
-//            } else {
-//                speak("2.6 Choose a number from following list. First " + numbers.get(0) + ", or second " + numbers.get(1));
-//            }
         } else {
             speak("Error, only one phone number");
         }

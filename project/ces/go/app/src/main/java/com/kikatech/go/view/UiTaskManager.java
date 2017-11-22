@@ -3,7 +3,7 @@ package com.kikatech.go.view;
 import android.os.Bundle;
 
 import com.kikatech.go.R;
-import com.kikatech.go.dialogflow.BaseSceneStage;
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.ui.MediaPlayerUtil;
@@ -88,13 +88,14 @@ public class UiTaskManager {
 
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
         OptionList optionList = null;
-        if (extras != null && extras.containsKey(BaseSceneStage.EXTRA_OPTIONS_LIST)) {
-            optionList = extras.getParcelable(BaseSceneStage.EXTRA_OPTIONS_LIST);
+        if (extras != null && extras.containsKey(SceneUtil.EXTRA_OPTIONS_LIST)) {
+            optionList = extras.getParcelable(SceneUtil.EXTRA_OPTIONS_LIST);
         }
         if (optionList != null && !optionList.isEmpty()) {
             displayOptions(optionList);
         } else {
-            speak(text);
+            String uiText = extras != null ? extras.getString(SceneUtil.EXTRA_UI_TEXT, text) : text;
+            speak(uiText);
         }
     }
 

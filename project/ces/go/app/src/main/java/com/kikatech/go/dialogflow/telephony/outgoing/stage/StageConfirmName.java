@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -45,10 +46,13 @@ public class StageConfirmName extends StageOutgoing {
 
     @Override
     public void action() {
-        String speech = String.format("%s, is it correct?", mContact.displayName); // doc 19
-        if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, speech);
+        String[] uiAndTtsText = SceneUtil.getConfirmContact(mSceneBase.getContext(), mContact.displayName);
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
         }
-        speak(speech);
     }
 }

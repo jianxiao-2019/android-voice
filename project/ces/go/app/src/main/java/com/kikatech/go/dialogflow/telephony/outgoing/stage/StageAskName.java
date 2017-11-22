@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -25,10 +26,13 @@ public class StageAskName extends StageOutgoing {
 
     @Override
     public void action() {
-        String speech = "Who do you want to call?"; // doc 33
-        if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, speech);
+        String[] uiAndTtsText = SceneUtil.getAskContactToCall(mSceneBase.getContext());
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
         }
-        speak(speech);
     }
 }

@@ -1,8 +1,12 @@
 package com.kikatech.go.dialogflow.sms.send.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
@@ -43,8 +47,20 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     @Override
     public void action() {
         SmsContent sc = getSmsContent();
-        String speech = String.format("\"%s\" Send it or change it?", sc.getSmsBody()); // doc 24
-        speak(speech);
-        //speak("2.9 Send text \"" + sc.getSmsBody() + "\" to " + sc.getMatchedName() + ". Send it or change it ?");
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, sc.getSmsBody());
+        if (uiAndTtsText.length > 0) {
+            Bundle args = new Bundle();
+            String[] options = SceneUtil.getConfirmMsgOptions(context);
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+            optionList.setTitle(uiText);
+            for (String option : options) {
+                optionList.add(new Option(option, null));
+            }
+            args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
+            speak(ttsText, args);
+        }
     }
 }

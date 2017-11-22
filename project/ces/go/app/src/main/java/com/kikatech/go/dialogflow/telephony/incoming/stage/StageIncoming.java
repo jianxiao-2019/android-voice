@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -38,7 +39,13 @@ public class StageIncoming extends SceneStage {
 
     @Override
     public void action() {
-        String toast = String.format("%s is calling. Answer, reject or ignore.", mCaller); // doc 34
-        speak(toast);
+        String[] uiAndTtsText = SceneUtil.getAskActionForIncoming(mSceneBase.getContext(), mCaller);
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
@@ -45,7 +46,13 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public void action() {
-
-        speak("Sure, '" + mNaviAddress + "', right?"); // doc 4
+        String[] uiAndTtsText = SceneUtil.getConfirmAddress(mSceneBase.getContext(), mNaviAddress);
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
+        }
     }
 }

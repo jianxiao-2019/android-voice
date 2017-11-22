@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
@@ -29,32 +30,38 @@ public class StageNavigationGo extends BaseNaviStage {
 
     @Override
     public void action() {
-        String speech = "OK! Start navigation."; // doc 10
-        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
-            @Override
-            public void onTtsStart() {
-            }
+        String[] uiAndTtsText = SceneUtil.getStartNavigation(mSceneBase.getContext());
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args, new IDialogFlowFeedback.IToSceneFeedback() {
+                @Override
+                public void onTtsStart() {
+                }
 
-            @Override
-            public void onTtsComplete() {
-                startNavigate();
-            }
+                @Override
+                public void onTtsComplete() {
+                    startNavigate();
+                }
 
-            @Override
-            public void onTtsError() {
-                startNavigate();
-            }
+                @Override
+                public void onTtsError() {
+                    startNavigate();
+                }
 
-            @Override
-            public void onTtsInterrupted() {
-                startNavigate();
-            }
+                @Override
+                public void onTtsInterrupted() {
+                    startNavigate();
+                }
 
-            @Override
-            public boolean isEndOfScene() {
-                return true;
-            }
-        });
+                @Override
+                public boolean isEndOfScene() {
+                    return true;
+                }
+            });
+        }
     }
 
     private void startNavigate() {

@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
@@ -37,8 +38,13 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
     @Override
     public void action() {
         setQueryAnyWords(true);
-        String msg = "Please say your message."; // doc 20
-        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-        speak(msg);
+        String[] uiAndTtsText = SceneUtil.getAskMsg(mSceneBase.getContext());
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
@@ -50,12 +51,20 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
     @Override
     public void action() {
         SmsContent sc = getSmsContent();
+        String[] uiAndTtsText;
         if (sc.isContactAvailable()) {
             // SendSMS 2.3 再次詢問對象
-            speak("Sorry, I couldn't find the contact. Please say again."); // doc 19
+            uiAndTtsText = SceneUtil.getContactNotFound(mSceneBase.getContext());
         } else {
             // SendSMS 2.1 詢問傳送對象
-            speak("Who would you like to text to?"); // doc 16
+            uiAndTtsText = SceneUtil.getAskContact(mSceneBase.getContext());
+        }
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
         }
     }
 }

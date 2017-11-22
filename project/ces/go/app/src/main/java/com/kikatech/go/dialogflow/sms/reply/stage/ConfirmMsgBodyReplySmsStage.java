@@ -1,8 +1,12 @@
 package com.kikatech.go.dialogflow.sms.reply.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
@@ -40,10 +44,20 @@ public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-//        String msg = "Send message \"" + mMsgBody + "\" to " + mSmsObject.getUserName() + ". Send it or change it ?";
-//        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-//        speak(msg);
-        String speech = String.format("\"%s\" Send it or change it?", mMsgBody); // doc 24
-        speak(speech);
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, mMsgBody);
+        if (uiAndTtsText.length > 0) {
+            Bundle args = new Bundle();
+            String[] options = SceneUtil.getConfirmMsgOptions(context);
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+            optionList.setTitle(uiText);
+            for (String option : options) {
+                optionList.add(new Option(option, null));
+            }
+            args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
+            speak(ttsText, args);
+        }
     }
 }

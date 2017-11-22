@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -43,9 +44,18 @@ public class StageAskAddress extends BaseNaviStage {
 
     @Override
     public void action() {
-        String words = mAgain ?
-                "Sorry, I couldn't find it. Please say again." : // doc 7
-                "Where do you want to go?"; // doc 3
-        speak(words);
+        String[] uiAndTtsText;
+        if (mAgain) {
+            uiAndTtsText = SceneUtil.getAskAddressAgain(mSceneBase.getContext());
+        } else {
+            uiAndTtsText = SceneUtil.getAskAddress(mSceneBase.getContext());
+        }
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
+        }
     }
 }
