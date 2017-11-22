@@ -71,7 +71,7 @@ public class USBAudioActivity extends Activity {
 
         mUsbAudio = new UsbAudio();
 
-        AudioPlayBack.setup();
+        // AudioPlayBack.setup();
 
         // Buttons
 //	final Button startButton = (Button) findViewById(R.id.button1);

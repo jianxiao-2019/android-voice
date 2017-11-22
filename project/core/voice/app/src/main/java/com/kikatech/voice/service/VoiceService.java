@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
@@ -63,7 +64,13 @@ public class VoiceService {
                 }
             }
         });
-        mVoiceRecorder = new VoiceRecorder(new VoiceSource(), new FileWriter(mConf.getDebugFilePath(), mVoiceDetector));
+
+        IVoiceSource voiceSource = conf.getVoiceSource();
+        Logger.i("VoiceService voiceSource = " + voiceSource);
+        if (voiceSource == null) {
+            voiceSource = new VoiceSource();
+        }
+        mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mVoiceDetector));
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {

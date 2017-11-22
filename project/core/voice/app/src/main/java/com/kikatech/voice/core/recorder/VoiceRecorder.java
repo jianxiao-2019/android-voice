@@ -69,14 +69,21 @@ public class VoiceRecorder {
         }
 
         private void record() {
-            Logger.i("AudioRecordThread record");
+            Logger.i("VoiceRecorder record");
             byte[] audioData = new byte[mVoiceSource.getBufferSize()];
             int readSize;
             while (mIsRunning.get()) {
                 readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
+                Logger.i("VoiceRecorder record readSize = " + readSize);
 //                if (AudioRecord.ERROR_INVALID_OPERATION != readSize /*&& fos != null*/) {
                 if (readSize > 0) {
                     copy(audioData, readSize);
+                } else if (readSize == 0) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

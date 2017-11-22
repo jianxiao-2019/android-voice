@@ -4,6 +4,7 @@ import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.support.annotation.NonNull;
 
+import com.xiao.usbaudio.AudioPlayBack;
 import com.xiao.usbaudio.UsbAudio;
 
 /**
@@ -13,6 +14,8 @@ import com.xiao.usbaudio.UsbAudio;
 public class KikaAudioDriver extends UsbHostDriver {
 
     private UsbAudio mUsbAudio = new UsbAudio();
+
+    private AudioBuffer mAudioBuffer = new AudioBuffer(4096);
 
     public KikaAudioDriver(Context context, UsbDevice device) {
         super(context, device);
@@ -31,12 +34,19 @@ public class KikaAudioDriver extends UsbHostDriver {
 
     @Override
     public void startRecording() {
-        mUsbAudio.loop();
+        AudioPlayBack.setup(mAudioBuffer);
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                mUsbAudio.loop();
+            }
+        }).start();
     }
 
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
-        return 0;
+        return mAudioBuffer.read(audioData, offsetInBytes, sizeInBytes);
     }
 
     @Override

@@ -140,7 +140,7 @@ class UsbDeviceManager {
         public void onUsbAttached(UsbDevice device) {
             if (isAudioDevice(device)) {
                 Log.d(TAG, "Audio class device: " + device);
-                Log.d(TAG, "Audio class device name: " + mDevice.getDeviceName());
+                Log.d(TAG, "Audio class device name: " + device.getDeviceName());
                 if (hasPermission(device)) {
                     mDevice = device;
                     mListener.onDeviceAttached(mDevice);

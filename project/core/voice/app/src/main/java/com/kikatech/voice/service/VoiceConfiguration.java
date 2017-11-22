@@ -40,6 +40,10 @@ public class VoiceConfiguration {
         return mAgentCreator;
     }
 
+    public IVoiceSource getVoiceSource() {
+        return mVoiceSource;
+    }
+
     public void setDebugFilePath(String filePath) {
         mDebugFilePath = filePath;
     }

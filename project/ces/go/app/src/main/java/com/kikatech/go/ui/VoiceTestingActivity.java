@@ -15,6 +15,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.kikatech.go.R;
+import com.kikatech.usb.IUsbAudioListener;
+import com.kikatech.usb.UsbAudioService;
+import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -35,7 +38,7 @@ import java.util.Locale;
 
 public class VoiceTestingActivity extends BaseActivity
         implements VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener,
-        TtsSpeaker.TtsStateChangedListener {
+        TtsSpeaker.TtsStateChangedListener, IUsbAudioListener {
 
     private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
     private static final String SERVER_COMMAND_CONTENT = "CONTENT";
@@ -59,17 +62,11 @@ public class VoiceTestingActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_testing);
 
-        VoiceConfiguration conf = new VoiceConfiguration();
-        conf.setDebugFilePath(getDebugFilePath(this));
-        conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
-                .setUrl(WEB_SOCKET_URL_DEV)
-                .setLocale(getCurrentLocale())
-                .setSign(RequestManager.getSign(this))
-                .setUserAgent(RequestManager.generateUserAgent(this))
-                .setEngine("google")
-                .build());
-        mVoiceService = VoiceService.getService(this, conf);
-        mVoiceService.setVoiceRecognitionListener(this);
+        UsbAudioService audioService = UsbAudioService.getInstance(this);
+        audioService.setListener(this);
+        audioService.scanDevices();
+
+        // attachService(null);
 
         findViewById(R.id.button_permission).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +133,21 @@ public class VoiceTestingActivity extends BaseActivity
             mTtsSpeaker.init(this, null);
             mTtsSpeaker.setTtsStateChangedListener(VoiceTestingActivity.this);
         }
+    }
+
+    private void attachService(UsbAudioSource audioSource) {
+        VoiceConfiguration conf = new VoiceConfiguration();
+        conf.setDebugFilePath(getDebugFilePath(this));
+        conf.source(audioSource);
+        conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
+                .setUrl(WEB_SOCKET_URL_DEV)
+                .setLocale(getCurrentLocale())
+                .setSign(RequestManager.getSign(this))
+                .setUserAgent(RequestManager.generateUserAgent(this))
+                .setEngine("google")
+                .build());
+        mVoiceService = VoiceService.getService(this, conf);
+        mVoiceService.setVoiceRecognitionListener(this);
     }
 
     @Override
@@ -252,5 +264,17 @@ public class VoiceTestingActivity extends BaseActivity
     @Override
     public void onTtsError() {
         Logger.d("Tts onTtsError");
+    }
+
+
+    @Override
+    public void onDeviceAttached(UsbAudioSource audioSource) {
+        Logger.d("VoiceTestingActivity onDeviceAttached audioSource = " + audioSource);
+        attachService(audioSource);
+    }
+
+    @Override
+    public void onDeviceDetached() {
+
     }
 }
