@@ -32,7 +32,7 @@
     <EditText
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_marginTop="20dp"
         android:ems="10"
         android:text="Where are you going?"
@@ -49,4 +49,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Tts" />
+
+    <Button
+        android:id="@+id/button_interrupt_tts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Interrupt Tts" />
 </LinearLayout>

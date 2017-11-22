@@ -126,6 +126,13 @@ public class VoiceTestingActivity extends BaseActivity
             }
         });
 
+        findViewById(R.id.button_interrupt_tts).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTtsSpeaker.interrupt();
+            }
+        });
+
         mEditText = (EditText) findViewById(R.id.edit_text);
 
         if (mTtsSpeaker == null) {
