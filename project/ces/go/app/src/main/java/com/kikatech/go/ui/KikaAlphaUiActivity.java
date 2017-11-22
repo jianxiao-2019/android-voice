@@ -92,7 +92,10 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     @Override
                     public void onASRResult(final String speechText, boolean isFinished) {
                         if (isFinished) {
-                            mUiManager.dispatchSpeechTask(speechText);
+                            String concat =
+                                    String.valueOf(speechText.charAt(0)).toUpperCase() +
+                                    speechText.substring(1, speechText.length());
+                            mUiManager.dispatchSpeechTask(concat);
                         }
                     }
 
