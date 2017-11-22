@@ -35,7 +35,7 @@ public class NaviSceneUtil {
     private final static String KEY_STREET_ADDR = "street-address";
     private final static String KEY_BUSINESS_NAME = "business-name";
     private final static String KEY_SHORTCUT = "shortcut";
-    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT};
+    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT, PRM_SUBADMIN_AREA};
 
     private static boolean sNavigating = false;
 
@@ -73,10 +73,10 @@ public class NaviSceneUtil {
      * This is a workaround ...
      */
     public synchronized static void stopNavigation(final Context ctx, final Class<?> targetClz) {
-//        if (!sNavigating) {
-//            if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Not navigating, ignore command");
-//            return;
-//        }
+        if (!sNavigating) {
+            if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Not navigating, ignore command");
+            return;
+        }
 
         if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Start to stop navigation ..., targetClz:" + targetClz);
 
