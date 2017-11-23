@@ -77,9 +77,8 @@ public class UiTaskManager {
                         break;
                     case TaskType.TYPE_SPEECH:
                         String speech = (String) obj;
-                        listen(speech);
+                        listen(speech, true);
                         break;
-
                 }
             }
         });
@@ -108,10 +107,14 @@ public class UiTaskManager {
     }
 
     public synchronized void dispatchSpeechTask(String speech) {
-        if (isLayoutPerformTask()) {
+        dispatchSpeechTask(speech, true);
+    }
+
+    public synchronized void dispatchSpeechTask(String speech, boolean isFinished) {
+        if (isLayoutPerformTask() && !GoLayout.ViewStatus.LISTEN.equals(mLayout.getCurrentStatus()) && isFinished) {
             addToQueue(new Task(TaskType.TYPE_SPEECH, speech));
         } else {
-            listen(speech);
+            listen(speech, isFinished);
         }
     }
 
@@ -152,10 +155,10 @@ public class UiTaskManager {
 
 
     private void sleep() {
-        if (mLayout == null) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
             return;
         }
-        final GoLayout layout = mLayout;
         layout.post(new Runnable() {
             @Override
             public void run() {
@@ -165,10 +168,10 @@ public class UiTaskManager {
     }
 
     private void speak(final String text) {
-        if (mLayout == null) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
             return;
         }
-        final GoLayout layout = mLayout;
         layout.post(new Runnable() {
             @Override
             public void run() {
@@ -177,24 +180,24 @@ public class UiTaskManager {
         });
     }
 
-    private void listen(final String text) {
-        if (mLayout == null) {
+    private void listen(final String text, final boolean isFinished) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
             return;
         }
-        final GoLayout layout = mLayout;
         layout.post(new Runnable() {
             @Override
             public void run() {
-                layout.listen(text);
+                layout.listen(text, isFinished);
             }
         });
     }
 
     private void displayOptions(final OptionList optionList) {
-        if (mLayout == null) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
             return;
         }
-        final GoLayout layout = mLayout;
         layout.post(new Runnable() {
             @Override
             public void run() {
@@ -211,10 +214,10 @@ public class UiTaskManager {
     }
 
     private void unlock(final boolean withAlert) {
-        if (mLayout == null) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
             return;
         }
-        final GoLayout layout = mLayout;
         layout.post(new Runnable() {
             @Override
             public void run() {

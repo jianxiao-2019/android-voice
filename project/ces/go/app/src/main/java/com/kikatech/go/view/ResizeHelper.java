@@ -90,7 +90,9 @@ public class ResizeHelper {
      * hide view for resizing
      **/
     public void prepareResize() {
-        mTextView.setVisibility(View.INVISIBLE);
+        if (mResizeEnabled) {
+            mTextView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void resize() {
@@ -133,6 +135,23 @@ public class ResizeHelper {
                 mTextView.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    public void enableResize() {
+        mResizeEnabled = true;
+    }
+
+    public void disableResize(float targetSize) {
+        mResizeEnabled = false;
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, targetSize);
+    }
+
+    public float getMaxTextSize() {
+        return mMaxTextSize;
+    }
+
+    public float getMinTextSize() {
+        return mMinTextSize;
     }
 
     // Set the text size of the text paint object and use a static layout to render text off screen before measuring

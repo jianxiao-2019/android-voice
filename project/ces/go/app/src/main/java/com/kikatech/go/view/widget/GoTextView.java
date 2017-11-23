@@ -40,4 +40,30 @@ public class GoTextView extends AppCompatTextView {
         }
         super.onLayout(changed, left, top, right, bottom);
     }
+
+    public void enableResize() {
+        if (mHelper != null) {
+            mHelper.enableResize();
+        }
+    }
+
+    public void disableResize(float targetSize) {
+        if (mHelper != null) {
+            mHelper.disableResize(targetSize);
+        }
+    }
+
+    public float getMaxTextSize() {
+        if (mHelper != null) {
+            return mHelper.getMaxTextSize();
+        }
+        return getTextSize();
+    }
+
+    public float getMinTextSize() {
+        if (mHelper != null) {
+            return mHelper.getMinTextSize();
+        }
+        return getTextSize();
+    }
 }

@@ -93,12 +93,15 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
                     @Override
                     public void onASRResult(final String speechText, boolean isFinished) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("speechText: %1$s, isFinished: %2$s", speechText, isFinished));
+                        }
+                        String concat =
+                                String.valueOf(speechText.charAt(0)).toUpperCase() +
+                                        speechText.substring(1, speechText.length());
+                        mUiManager.dispatchSpeechTask(concat, isFinished);
                         if (isFinished) {
                             mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
-                            String concat =
-                                    String.valueOf(speechText.charAt(0)).toUpperCase() +
-                                            speechText.substring(1, speechText.length());
-                            mUiManager.dispatchSpeechTask(concat);
                         } else {
                             mUiManager.writeDebugLog(DebugLogType.ASR_STOP);
                         }

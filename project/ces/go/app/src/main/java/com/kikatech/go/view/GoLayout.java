@@ -224,7 +224,7 @@ public class GoLayout extends FrameLayout {
         }
     }
 
-    public boolean isViewLocking() {
+    public synchronized boolean isViewLocking() {
         return isViewLocking;
     }
 
@@ -292,7 +292,7 @@ public class GoLayout extends FrameLayout {
     /**
      * display content spoken by user (voice input)
      **/
-    public synchronized void listen(final String text) {
+    public synchronized void listen(final String text, final boolean isFinished) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "listen");
         }
@@ -300,6 +300,13 @@ public class GoLayout extends FrameLayout {
 
         mCurrentStatus = ViewStatus.LISTEN;
 
+        if (!isFinished) {
+            mListenView.disableResize(mListenView.getMinTextSize());
+            mListenView.setAlpha(0.5f);
+        } else {
+            mListenView.enableResize();
+            mListenView.setAlpha(1.0f);
+        }
         mListenView.setText(text);
 
         mSpeakLayout.setVisibility(GONE);
@@ -401,6 +408,10 @@ public class GoLayout extends FrameLayout {
         }
     }
 
+
+    public ViewStatus getCurrentStatus() {
+        return mCurrentStatus;
+    }
 
     public void writeDebugInfo(String info) {
         if (DEBUG && mDebugLogView != null) {
