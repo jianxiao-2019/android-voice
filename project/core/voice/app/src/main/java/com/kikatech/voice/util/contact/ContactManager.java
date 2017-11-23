@@ -62,7 +62,7 @@ public class ContactManager {
         if (TextUtils.isEmpty(foundName)) {
             return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
         } else {
-            if (confidence <= FuzzySearchManager.getIns().getLowConfidenceCriteria()) {
+            if (confidence < FuzzySearchManager.getIns().getLowConfidenceCriteria()) {
                 if (LogUtil.DEBUG) {
                     LogUtil.logd(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
                 }
@@ -162,7 +162,7 @@ public class ContactManager {
     public static class NumberType {
         public String number;
         public String type;
-        NumberType(String number, String type) {
+        public NumberType(String number, String type) {
             this.number = number;
             this.type = type;
         }
