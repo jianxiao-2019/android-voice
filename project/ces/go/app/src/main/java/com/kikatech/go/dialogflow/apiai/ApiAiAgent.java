@@ -164,9 +164,7 @@ public class ApiAiAgent extends Agent {
             LogUtil.logd(TAG, "scene: " + scene + ", action: " + action);
         }
 
-        checkToUploadContacts(scene);
-
-        Intent intent = new Intent(scene, action);
+        Intent intent = new Intent(scene, action, result.getResolvedQuery());
 
         final Map<String, JsonElement> params = result.getParameters();
 
@@ -187,16 +185,6 @@ public class ApiAiAgent extends Agent {
         }
 
         return intent;
-    }
-
-    private void checkToUploadContacts(String scene) {
-        if(scene.equals(SceneType.SEND_SMS.name())) {
-            final long now = System.currentTimeMillis();
-            if (now - mLatestContactUploadTime > 30 * TimeUtil.MILLIS_IN_MINUTE) {
-                // TODO upload contacts to api.ai server
-                mLatestContactUploadTime = now;
-            }
-        }
     }
 
     private void printOriginalData(AIResponse response) {

@@ -18,7 +18,7 @@ public class SmsContent {
     private IntentContent mIntentContent;
 
     private String contactMatchedName;
-    private final List<String> phoneNumbers;
+    private final List<ContactManager.NumberType> phoneNumbers;
     private String mChosenNumber;
 
     private boolean isContactMatched;
@@ -42,6 +42,8 @@ public class SmsContent {
         }
 
         void update(IntentContent ic) {
+            if (LogUtil.DEBUG)
+                LogUtil.log("SmsContent", "update target:" + ic);
             smsBody = checkNUpdate(smsBody, ic.smsBody);
             firstName = checkNUpdate(firstName, ic.firstName);
             lastName = checkNUpdate(lastName, ic.lastName);
@@ -60,6 +62,10 @@ public class SmsContent {
 
     private static String getDisplayString(String filed) {
         return TextUtils.isEmpty(filed) ? "<empty>" : filed;
+    }
+
+    public void updateName(String name) {
+        mIntentContent.firstName = name;
     }
 
     public void update(IntentContent ic) {
@@ -107,7 +113,7 @@ public class SmsContent {
         return phoneNumbers.size();
     }
 
-    public List<String> getPhoneNumbers() {
+    public List<ContactManager.NumberType> getPhoneNumbers() {
         return phoneNumbers;
     }
 
@@ -145,15 +151,15 @@ public class SmsContent {
         if (pbc != null) {
             contactMatchedName = pbc.displayName;
             phoneNumbers.clear();
-            for (ContactManager.NumberType s : pbc.phoneNumbers) {
-                phoneNumbers.add(s.number.replace(" ", ""));
+            for (ContactManager.NumberType nt : pbc.phoneNumbers) {
+                phoneNumbers.add(new ContactManager.NumberType(nt.number.replace(" ", ""), nt.type));
             }
             isContactMatched = true;
 
             if (LogUtil.DEBUG) {
                 StringBuilder numb = new StringBuilder();
-                for (String n : phoneNumbers) {
-                    numb.append(n).append(", ");
+                for (ContactManager.NumberType n : phoneNumbers) {
+                    numb.append(n.number).append(":").append(n.type).append(", ");
                 }
                 LogUtil.log("SmsContent", "Find " + contactMatchedName + ", numbers:" + numb);
             }

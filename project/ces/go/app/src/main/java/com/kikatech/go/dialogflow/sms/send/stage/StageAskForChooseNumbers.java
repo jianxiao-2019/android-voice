@@ -13,6 +13,7 @@ import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.contact.ContactManager;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
                 return new StageAskForChooseNumbers(mSceneBase, mFeedback, ERR_STATUS_OPTION_OOI);
             }
 
-            sc.setChosenNumber(sc.getPhoneNumbers().get(chosenIdx));
+            sc.setChosenNumber(sc.getPhoneNumbers().get(chosenIdx).number);
             return getStageCheckSmsBody(TAG, sc, mSceneBase, mFeedback);
         }
     }
@@ -77,7 +78,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
         if (LogUtil.DEBUG && mErrStatus != ERR_STATUS_NONE) {
             LogUtil.log(TAG, "Error Status : " + mErrStatus);
         }
-        List<String> numbers = getSmsContent().getPhoneNumbers();
+        List<ContactManager.NumberType> numbers = getSmsContent().getPhoneNumbers();
         if (numbers.size() > 1) {
             Context context = mSceneBase.getContext();
             String[] uiAndTtsText = SceneUtil.getOptionListCommon(context);
@@ -89,8 +90,10 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
                 optionList.setTitle(uiText);
                 int iteratorSize = numbers.size() > 2 ? 2 : numbers.size();
                 for (int i = 0; i < iteratorSize; i++) {
-                    String number = numbers.get(i);
-                    optionList.add(new Option(number, null));
+                    String number = numbers.get(i).number;
+                    String type = numbers.get(i).type;
+                    LogUtil.log(TAG, "action, number:" + number + ", type:" + type);
+                    optionList.add(new Option(type, null));
                 }
                 args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
                 String speech = optionList.getTextToSpeak(ttsText);

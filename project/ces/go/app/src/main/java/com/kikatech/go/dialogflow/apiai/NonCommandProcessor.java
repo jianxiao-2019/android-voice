@@ -13,8 +13,8 @@ import java.util.Map;
 public class NonCommandProcessor extends Agent {
     @Override
     public Intent query(String words, Map<String, List<String>> entities, boolean anyContent) {
-        Intent intent = new Intent(Intent.AS_PREV_SCENE, Intent.ACTION_ANY_WORDS);
-        intent.putExtra(Intent.KEY_ANY_WORDS, words);
+        Intent intent = new Intent(Intent.AS_PREV_SCENE, Intent.ACTION_USER_INPUT, words);
+        intent.putExtra(Intent.KEY_USER_INPUT, words);
         return intent;
     }
 

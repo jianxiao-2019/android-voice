@@ -8,6 +8,7 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -35,6 +36,16 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
                 supportedCommand = sc.tryParseContact(mSceneBase.getContext(), sc.getSmsBody());
                 if (LogUtil.DEBUG && !supportedCommand)
                     LogUtil.log(TAG, "" + sc.getSmsBody() + " is not the contact ...");
+            } else if (SceneActions.ACTION_SEND_SMS_FALLBACK.equals(action)) {
+                String name = extra.getString(Intent.KEY_USER_INPUT);
+                if (LogUtil.DEBUG)
+                    LogUtil.log(TAG, "User said some name but api.ai doesn't recognize ..., name:" + name);
+                if (!TextUtils.isEmpty(name)) {
+                    if (LogUtil.DEBUG)
+                        LogUtil.log(TAG, "Parsed name : " + name);
+                    sc.updateName(name);
+                    supportedCommand = true;
+                }
             }
         } else {
             supportedCommand = true;

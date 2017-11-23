@@ -34,6 +34,7 @@ public class SceneStopIntent extends SceneBase {
     public void setMainUIClass(Class<?> mainUIClass) {
         mMainUIClass = mainUIClass;
     }
+
     public Class<?> getMainUIClass() {
         return mMainUIClass;
     }

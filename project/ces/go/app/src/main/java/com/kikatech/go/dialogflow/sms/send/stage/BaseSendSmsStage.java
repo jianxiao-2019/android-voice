@@ -8,6 +8,7 @@ import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -35,14 +36,20 @@ public class BaseSendSmsStage extends SceneStage {
     @Override
     public SceneStage next(String action, Bundle extra) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
-        ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseContactName(extra));
-        if(action.equals(SceneActions.ACTION_SEND_SMS_CANCEL)) {
+        int tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_MSG_BODY;
+        if (action.equals(SceneActions.ACTION_SEND_SMS_NO)) {
+            tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_NAME;
+        } else if (action.equals(Intent.ACTION_USER_INPUT)) {
+            tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_USER_INPUT;
+        }
+        ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseContactName(extra, tagAnyTarget));
+        if (action.equals(SceneActions.ACTION_SEND_SMS_CANCEL)) {
             return new StageCancel(mSceneBase, mFeedback);
         }
         return getNextStage(action, extra);
     }
 
-    protected SceneStage getNextStage(String action, Bundle extra) {
+    protected SceneStage getNextStage(String aStageAskSendTargetCorrecttion, Bundle extra) {
         return null;
     }
 
@@ -93,7 +100,7 @@ public class BaseSendSmsStage extends SceneStage {
     static SceneStage getStageCheckNumberCount(String TAG, SmsContent sc, SceneBase mSceneBase, ISceneFeedback mFeedback) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "Tel Number count : " + sc.getNumberCount());
         if (sc.getNumberCount() == 1) {
-            sc.setChosenNumber(sc.getPhoneNumbers().get(0));
+            sc.setChosenNumber(sc.getPhoneNumbers().get(0).number);
             return getStageCheckSmsBody(TAG, sc, mSceneBase, mFeedback);
         } else {
             // SendSMS 2.6 向用戶進一步確認號碼或識別標籤
