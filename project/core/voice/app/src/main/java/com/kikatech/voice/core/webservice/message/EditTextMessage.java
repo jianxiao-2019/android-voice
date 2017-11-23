@@ -22,4 +22,9 @@ public class EditTextMessage extends Message {
         context = dataObj.optString("context");
         altered = dataObj.optString("altered");
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " text = " + text;
+    }
 }

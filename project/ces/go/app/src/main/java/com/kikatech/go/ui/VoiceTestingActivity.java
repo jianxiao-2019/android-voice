@@ -248,6 +248,8 @@ public class VoiceTestingActivity extends BaseActivity
                 public void run() {
                     if (message instanceof TextMessage) {
                         mEditText.setText(((TextMessage) message).text);
+                    } else if (message instanceof IntermediateMessage) {
+                        mEditText.setText(((IntermediateMessage) message).text);
                     } else if (message instanceof EditTextMessage) {
                         mEditText.setText(((EditTextMessage) message).text);
                     }

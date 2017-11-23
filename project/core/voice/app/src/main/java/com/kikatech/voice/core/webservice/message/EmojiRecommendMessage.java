@@ -16,4 +16,9 @@ public class EmojiRecommendMessage extends Message {
         emoji = dataObj.optString("type");
         descriptionText = dataObj.optString("value");
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " description = " + descriptionText;
+    }
 }
