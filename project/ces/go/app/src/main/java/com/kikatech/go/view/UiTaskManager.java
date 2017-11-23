@@ -136,7 +136,7 @@ public class UiTaskManager {
     }
 
     private boolean isLayoutPerformTask() {
-        return mLayout.isViewLocking() || !mTaskQueue.isEmpty();
+        return mLayout != null && (mLayout.isViewLocking() || !mTaskQueue.isEmpty());
     }
 
     private synchronized Task pollFromQueue() {
@@ -152,37 +152,53 @@ public class UiTaskManager {
 
 
     private void sleep() {
-        mLayout.post(new Runnable() {
+        if (mLayout == null) {
+            return;
+        }
+        final GoLayout layout = mLayout;
+        layout.post(new Runnable() {
             @Override
             public void run() {
-                mLayout.sleep();
+                layout.sleep();
             }
         });
     }
 
     private void speak(final String text) {
-        mLayout.post(new Runnable() {
+        if (mLayout == null) {
+            return;
+        }
+        final GoLayout layout = mLayout;
+        layout.post(new Runnable() {
             @Override
             public void run() {
-                mLayout.speak(text);
+                layout.speak(text);
             }
         });
     }
 
     private void listen(final String text) {
-        mLayout.post(new Runnable() {
+        if (mLayout == null) {
+            return;
+        }
+        final GoLayout layout = mLayout;
+        layout.post(new Runnable() {
             @Override
             public void run() {
-                mLayout.listen(text);
+                layout.listen(text);
             }
         });
     }
 
     private void displayOptions(final OptionList optionList) {
-        mLayout.post(new Runnable() {
+        if (mLayout == null) {
+            return;
+        }
+        final GoLayout layout = mLayout;
+        layout.post(new Runnable() {
             @Override
             public void run() {
-                mLayout.displayOptions(optionList, new GoLayout.IOnOptionSelectListener() {
+                layout.displayOptions(optionList, new GoLayout.IOnOptionSelectListener() {
                     @Override
                     public void onSelected(byte requestType, int index, Option option) {
                         if (mFeedback != null) {
@@ -194,20 +210,51 @@ public class UiTaskManager {
         });
     }
 
-    private void unlock(boolean withAlert) {
-        final GoLayout view = mLayout;
-        view.post(new Runnable() {
+    private void unlock(final boolean withAlert) {
+        if (mLayout == null) {
+            return;
+        }
+        final GoLayout layout = mLayout;
+        layout.post(new Runnable() {
             @Override
             public void run() {
-                view.unlock();
+                layout.unlock();
+                if (withAlert) {
+                    MediaPlayerUtil.playAlert(layout.getContext(), R.raw.alert_dot, null);
+                }
             }
         });
-        if (withAlert) {
-            MediaPlayerUtil.playAlert(mLayout.getContext(), R.raw.alert_dot, null);
-        }
     }
 
     public interface IUiManagerFeedback {
         void onOptionSelected(byte requestType, int index, Option option);
+    }
+
+
+    public enum DebugLogType {
+        ASR_LISTENING("ASR listening"),
+        ASR_STOP("ASR result"),
+        API_AI_START("Api.ai start query"),
+        API_AI_STOP("Api.ai stop query"),
+        API_AI_ERROR("Api.ai query error");
+
+        private String log;
+
+        DebugLogType(String log) {
+            this.log = log;
+        }
+    }
+
+    public synchronized void writeDebugLog(final DebugLogType logType) {
+        if (mLayout == null) {
+            return;
+        }
+        final GoLayout layout = mLayout;
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.writeDebugInfo(logType.log);
+            }
+        });
     }
 }

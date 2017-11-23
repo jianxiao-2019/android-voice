@@ -14,6 +14,7 @@ import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
+import com.kikatech.go.view.UiTaskManager.DebugLogType;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
@@ -85,6 +86,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                             public void run() {
                                 initUiTaskManager();
                                 mUiManager.dispatchDefaultOptionsTask();
+                                mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
                             }
                         }, 800);
                     }
@@ -92,10 +94,13 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     @Override
                     public void onASRResult(final String speechText, boolean isFinished) {
                         if (isFinished) {
+                            mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
                             String concat =
                                     String.valueOf(speechText.charAt(0)).toUpperCase() +
-                                    speechText.substring(1, speechText.length());
+                                            speechText.substring(1, speechText.length());
                             mUiManager.dispatchSpeechTask(concat);
+                        } else {
+                            mUiManager.writeDebugLog(DebugLogType.ASR_STOP);
                         }
                     }
 
@@ -116,23 +121,26 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     public void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("isEndOfScene: %1$s, isInterrupted: %2$s", isEndOfScene, isInterrupted));
-                            mUiManager.onStageActionDone(isEndOfScene, isInterrupted);
                         }
+                        mUiManager.onStageActionDone(isEndOfScene, isInterrupted);
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {
-                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
+                        mUiManager.writeDebugLog(DebugLogType.API_AI_START);
                     }
 
                     @Override
                     public void onComplete() {
-                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
+                        mUiManager.writeDebugLog(DebugLogType.API_AI_STOP);
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
+                        mUiManager.writeDebugLog(DebugLogType.API_AI_ERROR);
                     }
                 });
 

@@ -1,6 +1,7 @@
 package com.kikatech.go.view;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -25,6 +27,8 @@ import com.kikatech.go.view.widget.GoTextView;
  */
 public class GoLayout extends FrameLayout {
     private static final String TAG = "GoLayout";
+
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
 
@@ -67,9 +71,10 @@ public class GoLayout extends FrameLayout {
     private GoTextView mOptionsTitle;
     private View mSleepLayout;
 
-
     private View mStatusLayout;
     private ImageView mStatusAnimationView;
+
+    private TextView mDebugLogView;
 
 
     public GoLayout(Context context) {
@@ -96,7 +101,7 @@ public class GoLayout extends FrameLayout {
 
     private void bindView() {
         mLayoutInflater = LayoutInflater.from(getContext());
-        mLayoutInflater.inflate(R.layout.go_layout, this);
+        mLayoutInflater.inflate(DEBUG ? R.layout.go_layout_debug : R.layout.go_layout, this);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
         mSpeakView = (GoTextView) findViewById(R.id.go_layout_speak_text);
@@ -112,6 +117,10 @@ public class GoLayout extends FrameLayout {
 
         mStatusLayout = findViewById(R.id.go_layout_status);
         mStatusAnimationView = (ImageView) findViewById(R.id.go_layout_status_img);
+
+        if( DEBUG ) {
+            mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
+        }
     }
 
     @Override
@@ -389,6 +398,18 @@ public class GoLayout extends FrameLayout {
                 break;
             case SLEEP:
                 break;
+        }
+    }
+
+
+    public void writeDebugInfo(String info) {
+        if (DEBUG && mDebugLogView != null) {
+            if (!TextUtils.isEmpty(info)) {
+                mDebugLogView.setText(info);
+                mDebugLogView.setVisibility(VISIBLE);
+            } else {
+                mDebugLogView.setVisibility(GONE);
+            }
         }
     }
 

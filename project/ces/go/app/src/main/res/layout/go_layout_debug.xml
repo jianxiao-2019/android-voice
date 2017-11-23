@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/go_layout_content_padding_top_bottom"
+            android:paddingLeft="@dimen/go_layout_content_padding_left_right"
+            android:paddingRight="@dimen/go_layout_content_padding_left_right"
+            android:paddingTop="@dimen/go_layout_content_padding_top_bottom">
+
+            <include
+                android:id="@+id/go_layout_speak"
+                layout="@layout/go_layout_speak"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <include
+                android:id="@+id/go_layout_listen"
+                layout="@layout/go_layout_listen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <include
+                android:id="@+id/go_layout_options"
+                layout="@layout/go_layout_options"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <include
+                android:id="@+id/go_layout_sleep"
+                layout="@layout/go_layout_sleep"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/go_layout_debug_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="16sp"/>
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/go_layout_status"
+        layout="@layout/go_layout_status"/>
+
+</LinearLayout>
