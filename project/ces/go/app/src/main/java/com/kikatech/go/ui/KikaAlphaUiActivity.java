@@ -101,9 +101,9 @@ public class KikaAlphaUiActivity extends BaseActivity {
                                         speechText.substring(1, speechText.length());
                         mUiManager.dispatchSpeechTask(concat, isFinished);
                         if (isFinished) {
-                            mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
-                        } else {
                             mUiManager.writeDebugLog(DebugLogType.ASR_STOP);
+                        } else {
+                            mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
                         }
                     }
 
