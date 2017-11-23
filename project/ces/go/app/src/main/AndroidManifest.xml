@@ -30,24 +30,35 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.kikatech.go.ui.KikaGoActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.KikaAccessibilityActivity" />
+        <activity android:name=".ui.KikaAccessibilityActivity"
+                  android:screenOrientation="portrait"/>
         <activity android:name=".ui.TelephonyActivity"
-                  android:launchMode="singleTask"/>
-        <activity android:name=".ui.KikaIMReplyActivity" />
-        <activity android:name=".ui.KikaSMSActivity" />
-        <activity android:name=".ui.HotWordActivity"/>
-        <activity android:name=".ui.KikaApiAiActivity" />
+                  android:launchMode="singleTask"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".ui.KikaIMReplyActivity"
+                  android:screenOrientation="portrait" />
+        <activity android:name=".ui.KikaSMSActivity"
+                  android:screenOrientation="portrait" />
+        <activity android:name=".ui.HotWordActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".ui.KikaApiAiActivity"
+                  android:screenOrientation="portrait" />
         <activity android:name=".ui.KikaNavigationActivity"
-                  android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".ui.VoiceTestingActivity" />
-        <activity android:name=".ui.KikaDialogFlowActivity"/>
-        <activity android:name=".ui.KikaAlphaUiActivity"/>
+                  android:windowSoftInputMode="adjustResize"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".ui.VoiceTestingActivity"
+                  android:screenOrientation="portrait" />
+        <activity android:name=".ui.KikaDialogFlowActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".ui.KikaAlphaUiActivity"
+                  android:screenOrientation="portrait"/>
 
         <receiver android:name="com.kikatech.go.dialogflow.telephony.PhoneStateReceiver">
             <intent-filter>
