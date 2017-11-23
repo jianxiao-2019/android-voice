@@ -68,4 +68,14 @@ public abstract class SceneBase implements DialogObserver {
             mStage = idle();
         }
     }
+
+    /**
+     * for local stages only
+     **/
+    public void nextStage(SceneStage stage) {
+        if (stage != null) {
+            mStage = stage;
+            stage.prepareAction(scene(), "", stage);
+        }
+    }
 }

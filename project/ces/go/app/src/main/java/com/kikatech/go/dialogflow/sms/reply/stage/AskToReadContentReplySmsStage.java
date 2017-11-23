@@ -28,7 +28,7 @@ public class AskToReadContentReplySmsStage extends BaseReplySmsStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_SMS_YES:
-                return new AskToReplyReplySmsStage(mSceneBase, mFeedback, mSmsObject);
+                return new AskToReplySmsReadStage(mSceneBase, mFeedback, mSmsObject);
             case SceneActions.ACTION_REPLY_SMS_NO:
             case SceneActions.ACTION_REPLY_SMS_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");

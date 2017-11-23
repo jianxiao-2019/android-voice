@@ -47,7 +47,7 @@ public class StageIdle extends BaseReplySmsStage {
             } else if (mReplySmsSetting == SETTING_REPLY_SMS_ASK_USER) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_ASK_USER");
                 // 3.2
-                return new AskToReplyReplySmsStage(mSceneBase, mFeedback, sms);
+                return new AskToReplySmsReadStage(mSceneBase, mFeedback, sms);
             } else {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Err, Unsupported setting:" + mReplySmsSetting);
             }

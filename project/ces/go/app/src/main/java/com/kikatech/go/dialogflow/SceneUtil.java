@@ -185,7 +185,7 @@ public class SceneUtil {
 
     public static String[] getOptionsCommon(Context context) {
         Resources resource = context.getResources();
-        return resource.getStringArray(R.array.tts_start_navigation);
+        return resource.getStringArray(R.array.options_common);
     }
 
     private static String tryFormat(String string, Object... variables) {

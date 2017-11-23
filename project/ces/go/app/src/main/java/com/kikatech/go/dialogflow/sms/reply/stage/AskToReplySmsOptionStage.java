@@ -1,8 +1,12 @@
 package com.kikatech.go.dialogflow.sms.reply.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
@@ -14,11 +18,11 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/20.
  */
 
-public class AskToReplyReplySmsStage extends BaseReplySmsStage {
+public class AskToReplySmsOptionStage extends BaseReplySmsStage {
 
     private final SmsObject mSmsObject;
 
-    AskToReplyReplySmsStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
+    AskToReplySmsOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
         super(scene, feedback);
         mSmsObject = sms;
     }
@@ -39,10 +43,20 @@ public class AskToReplyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-//        String msg = mSmsObject.getUserName() + " said : \"" + mSmsObject.getMsgContent() + "\", Do you want to reply ?";
-//        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-//        speak(msg);
-        String speech = String.format("%1$s says \"%2$s\". Do you want to reply?", mSmsObject.getUserName(), mSmsObject.getMsgContent()); // doc 24
-        speak(speech);
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText = SceneUtil.getAskReplyMsg(context);
+        if (uiAndTtsText.length > 0) {
+            Bundle args = new Bundle();
+            String[] options = SceneUtil.getOptionsCommon(context);
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+            optionList.setTitle(uiText);
+            for (String option : options) {
+                optionList.add(new Option(option, null));
+            }
+            args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
+            speak(ttsText, args);
+        }
     }
 }
