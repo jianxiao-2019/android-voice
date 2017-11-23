@@ -16,6 +16,7 @@ import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.util.log.LogUtil;
 
 
@@ -52,6 +53,10 @@ public class DialogFlowService implements
         initVoiceService(conf);
         initTts();
         callback.onInitComplete();
+
+        Message.register("INTERMEDIATE", IntermediateMessage.class);
+        Message.register("ALTER", EditTextMessage.class);
+        Message.register("ASR", TextMessage.class);
     }
 
     @Override
@@ -148,6 +153,8 @@ public class DialogFlowService implements
             mTtsSpeaker.close();
             mTtsSpeaker = null;
         }
+
+        Message.unregisterAll();
     }
 
 //    mVoiceService.sendCommand(SERVER_COMMAND_CONTENT, mEditText.getText().toString());
@@ -161,18 +168,25 @@ public class DialogFlowService implements
             String alter = ((EditTextMessage) message).context;
             if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
         }
-        if (!TextUtils.isEmpty(message.text)) {
+
+        if (message instanceof IntermediateMessage) {
+            IntermediateMessage intermediateMessage = (IntermediateMessage) message;
             if (LogUtil.DEBUG) {
-                String s = message.seqId < 0 ? "[done]" : "";
-                LogUtil.log(TAG, "Speech spoken" + s + " : " + message.text);
+                LogUtil.log(TAG, "Speech spoken" + " : " + intermediateMessage.text);
             }
 
-            boolean isFinished = message.seqId < 0;
-            if (isFinished && mDialogFlow != null) {
-                mDialogFlow.talk(message.text, mQueryAnyContent, mQueryStatusCallback);
+            mCallback.onASRResult(intermediateMessage.text, false);
+        }
+        if (message instanceof TextMessage) {
+            TextMessage textMessage = (TextMessage) message;
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
             }
 
-            mCallback.onASRResult(message.text, isFinished);
+            if (mDialogFlow != null) {
+                mDialogFlow.talk(textMessage.text, mQueryAnyContent, mQueryStatusCallback);
+            }
+            mCallback.onASRResult(textMessage.text, true);
         }
     }
 

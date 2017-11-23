@@ -11,12 +11,15 @@ public class EditTextMessage extends Message {
     public int alterStart;
     public int alterEnd;
     public String context;
+    public String altered;
+    public String text;
 
     @Override
-    public void fromJson(JSONObject json) {
-        super.fromJson(json);
-        alterStart = json.optInt("alterStart", 0);
-        alterEnd = json.optInt("alterEnd", 0);
-        context = json.optString("context");
+    protected void parseData(JSONObject dataObj) {
+        text = dataObj.optString("transcript");
+        alterStart = dataObj.optInt("alterStart", 0);
+        alterEnd = dataObj.optInt("alterEnd", 0);
+        context = dataObj.optString("context");
+        altered = dataObj.optString("altered");
     }
 }

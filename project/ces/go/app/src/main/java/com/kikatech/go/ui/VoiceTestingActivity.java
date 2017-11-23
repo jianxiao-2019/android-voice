@@ -20,7 +20,10 @@ import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.util.PreferenceUtil;
@@ -62,11 +65,11 @@ public class VoiceTestingActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_testing);
 
-        UsbAudioService audioService = UsbAudioService.getInstance(this);
-        audioService.setListener(this);
-        audioService.scanDevices();
+//        UsbAudioService audioService = UsbAudioService.getInstance(this);
+//        audioService.setListener(this);
+//        audioService.scanDevices();
 
-        // attachService(null);
+         attachService(null);
 
         findViewById(R.id.button_permission).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +143,10 @@ public class VoiceTestingActivity extends BaseActivity
             mTtsSpeaker.init(this, null);
             mTtsSpeaker.setTtsStateChangedListener(VoiceTestingActivity.this);
         }
+
+        Message.register("INTERMEDIATE", IntermediateMessage.class);
+        Message.register("ALTER", EditTextMessage.class);
+        Message.register("ASR", TextMessage.class);
     }
 
     private void attachService(UsbAudioSource audioSource) {
@@ -152,6 +159,9 @@ public class VoiceTestingActivity extends BaseActivity
                 .setSign(RequestManager.getSign(this))
                 .setUserAgent(RequestManager.generateUserAgent(this))
                 .setEngine("google")
+                .setAlterEnabled(true)
+                .setEmojiEnabled(true)
+                .setPunctuationEnabled(true)
                 .build());
         mVoiceService = VoiceService.getService(this, conf);
         mVoiceService.setVoiceRecognitionListener(this);
@@ -167,6 +177,8 @@ public class VoiceTestingActivity extends BaseActivity
             mTtsSpeaker.close();
             mTtsSpeaker = null;
         }
+
+        Message.unregisterAll();
     }
 
     @Override
@@ -230,12 +242,15 @@ public class VoiceTestingActivity extends BaseActivity
 
     @Override
     public void onRecognitionResult(final Message message) {
-        Logger.i("onMessage message = " + message.text);
         if (mEditText != null) {
             mEditText.post(new Runnable() {
                 @Override
                 public void run() {
-                    mEditText.setText(message.text);
+                    if (message instanceof TextMessage) {
+                        mEditText.setText(((TextMessage) message).text);
+                    } else if (message instanceof EditTextMessage) {
+                        mEditText.setText(((EditTextMessage) message).text);
+                    }
                 }
             });
         }

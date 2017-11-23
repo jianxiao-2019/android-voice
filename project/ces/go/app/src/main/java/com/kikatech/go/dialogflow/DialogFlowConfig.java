@@ -36,6 +36,9 @@ public class DialogFlowConfig {
                 .setLocale(getCurrentLocale(ctx, LOCALE_LIST))
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
+                .setAlterEnabled(true)
+                .setEmojiEnabled(true)
+                .setPunctuationEnabled(false)
                 .build());
 
         return conf;

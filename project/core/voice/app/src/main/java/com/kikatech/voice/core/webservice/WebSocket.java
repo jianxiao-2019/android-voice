@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 public class WebSocket {
-    private static final String VERSION = "2";
+    private static final String VERSION = "3";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
     private static final int MAX_RECONNECT_TIME = 3;
@@ -69,13 +69,17 @@ public class WebSocket {
                     return;
                 }
                 mConf = conf;
-                Map<String, String> httpHeaders = new HashMap<String, String>();
+                Map<String, String> httpHeaders = new HashMap<>();
                 httpHeaders.put("version", VERSION);
                 httpHeaders.put("sign", conf.sign);
                 httpHeaders.put("User-Agent", conf.userAgent);
                 httpHeaders.put("lang", conf.locale);
                 httpHeaders.put("locale", conf.locale);
                 httpHeaders.put("engine", conf.engine);
+
+                httpHeaders.put("alter-enabled", String.valueOf(conf.isAlterEnabled));
+                httpHeaders.put("emoji-enabled", String.valueOf(conf.isEmojiEnabled));
+                httpHeaders.put("punctuation-enabled", String.valueOf(conf.isPunctuationEnabled));
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));
                 }

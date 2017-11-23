@@ -66,15 +66,24 @@ public class VoiceConfiguration {
         public final String sign;
         public final String userAgent;
         public final String engine;
+
+        public final boolean isAlterEnabled;
+        public final boolean isEmojiEnabled;
+        public final boolean isPunctuationEnabled;
+
         public final Bundle bundle = new Bundle();
 
-        public ConnectionConfiguration(String url, String locale, String sign, String userAgent,
-                                       String engine, Bundle bundle) {
+        private ConnectionConfiguration(String url, String locale, String sign, String userAgent,
+                                       String engine, boolean isAlterEnabled, boolean isEmojiEnabled, boolean isPunctuationEnabled, Bundle bundle) {
             this.url = url;
             this.locale = locale;
             this.sign = sign;
             this.userAgent = userAgent;
             this.engine = engine;
+
+            this.isAlterEnabled = isAlterEnabled;
+            this.isEmojiEnabled = isEmojiEnabled;
+            this.isPunctuationEnabled = isPunctuationEnabled;
 
             this.bundle.putAll(bundle);
         }
@@ -85,6 +94,11 @@ public class VoiceConfiguration {
             String sign;
             String userAgent;
             String engine;
+
+            boolean isAlterEnabled = false;
+            boolean isEmojiEnabled = false;
+            boolean isPunctuationEnabled = false;
+
             Bundle bundle = new Bundle();
 
             public Builder setUrl(String url) {
@@ -112,6 +126,21 @@ public class VoiceConfiguration {
                 return this;
             }
 
+            public Builder setAlterEnabled(boolean isAlterEnabled) {
+                this.isAlterEnabled = isAlterEnabled;
+                return this;
+            }
+
+            public Builder setEmojiEnabled(boolean isEmojiEnabled) {
+                this.isEmojiEnabled = isEmojiEnabled;
+                return this;
+            }
+
+            public Builder setPunctuationEnabled(boolean isPunctuationEnabled) {
+                this.isPunctuationEnabled = isPunctuationEnabled;
+                return this;
+            }
+			
             public ConnectionConfiguration build() {
                 if (TextUtils.isEmpty(url) || TextUtils.isEmpty(sign)
                         || TextUtils.isEmpty(userAgent)) {
@@ -123,7 +152,7 @@ public class VoiceConfiguration {
                 if (TextUtils.isEmpty(locale)) {
                     locale = DEFAULT_LOCALE;
                 }
-                return new ConnectionConfiguration(url, locale, sign, userAgent, engine, bundle);
+                return new ConnectionConfiguration(url, locale, sign, userAgent, engine, isAlterEnabled, isEmojiEnabled, isPunctuationEnabled, bundle);
             }
         }
     }

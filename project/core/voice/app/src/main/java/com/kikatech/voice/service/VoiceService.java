@@ -87,10 +87,6 @@ public class VoiceService {
         mWebService = WebSocket.openConnection(mWebSocketListener);
         mWebService.connect(mConf.getConnectionConfiguration());
 
-        Message.register("NONE", IntermediateMessage.class);
-        Message.register("ALTER", EditTextMessage.class);
-        Message.register("SPEECH", TextMessage.class);
-
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStartListening();
         }
