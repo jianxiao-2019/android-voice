@@ -3,6 +3,7 @@ package com.kikatech.voice.util.contact;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
 import com.kikatech.voice.util.fuzzy.FuzzySearchManager;
@@ -110,10 +111,12 @@ public class ContactManager {
             long id = Long.valueOf(phones.getString(idIdx));
 
             if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phoneNumber)) {
-
                 String numberType = queryPhoneType(ctx, phoneNumber);
                 if (phoneBook.containsKey(name)) {
-                    phoneBook.get(name).addNumber(phoneNumber, numberType);
+                    PhoneBookContact contact = phoneBook.get(name);
+                    if (!contact.containNumber(phoneNumber)) {
+                        contact.addNumber(phoneNumber, numberType);
+                    }
                 } else {
                     phoneBook.put(name, new PhoneBookContact(id, name, phoneNumber, numberType));
                 }
@@ -199,6 +202,15 @@ public class ContactManager {
             if (!TextUtils.isEmpty(number)) {
                 this.phoneNumbers.add(new NumberType(number, type));
             }
+        }
+
+        private boolean containNumber(String number) {
+            for (NumberType numberType : phoneNumbers) {
+                if (PhoneNumberUtils.compare(number, numberType.number)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void print() {
