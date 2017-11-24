@@ -66,6 +66,7 @@ public class VoiceConfiguration {
         public final String sign;
         public final String userAgent;
         public final String engine;
+        public final String appName;
 
         public final boolean isAlterEnabled;
         public final boolean isEmojiEnabled;
@@ -73,8 +74,10 @@ public class VoiceConfiguration {
 
         public final Bundle bundle = new Bundle();
 
-        private ConnectionConfiguration(String url, String locale, String sign, String userAgent,
+        private ConnectionConfiguration(String appName, String url, String locale, String sign, String userAgent,
                                        String engine, boolean isAlterEnabled, boolean isEmojiEnabled, boolean isPunctuationEnabled, Bundle bundle) {
+
+            this.appName = appName;
             this.url = url;
             this.locale = locale;
             this.sign = sign;
@@ -89,6 +92,7 @@ public class VoiceConfiguration {
         }
 
         public static class Builder {
+            String appName;
             String url;
             String locale;
             String sign;
@@ -100,6 +104,11 @@ public class VoiceConfiguration {
             boolean isPunctuationEnabled = false;
 
             Bundle bundle = new Bundle();
+
+            public Builder setAppName(String appName) {
+                this.appName = appName;
+                return this;
+            }
 
             public Builder setUrl(String url) {
                 this.url = url;
@@ -152,7 +161,7 @@ public class VoiceConfiguration {
                 if (TextUtils.isEmpty(locale)) {
                     locale = DEFAULT_LOCALE;
                 }
-                return new ConnectionConfiguration(url, locale, sign, userAgent, engine, isAlterEnabled, isEmojiEnabled, isPunctuationEnabled, bundle);
+                return new ConnectionConfiguration(appName, url, locale, sign, userAgent, engine, isAlterEnabled, isEmojiEnabled, isPunctuationEnabled, bundle);
             }
         }
     }

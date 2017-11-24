@@ -76,6 +76,7 @@ public class WebSocket {
                 httpHeaders.put("lang", conf.locale);
                 httpHeaders.put("locale", conf.locale);
                 httpHeaders.put("engine", conf.engine);
+                httpHeaders.put("app-name", conf.appName);
 
                 httpHeaders.put("alter-enabled", String.valueOf(conf.isAlterEnabled));
                 httpHeaders.put("emoji-enabled", String.valueOf(conf.isEmojiEnabled));

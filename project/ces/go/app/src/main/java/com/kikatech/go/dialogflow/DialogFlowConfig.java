@@ -20,6 +20,8 @@ import java.util.Locale;
 
 public class DialogFlowConfig {
 
+    private static final String APP_NAME = "KikaGo";
+
     public static VoiceConfiguration queryDemoConfig(Context ctx) {
         String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
 
@@ -32,6 +34,7 @@ public class DialogFlowConfig {
         conf.agent(new ApiAiAgentCreator());
         conf.setDebugFilePath(getDebugFilePath(ctx));
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
+                .setAppName(APP_NAME)
                 .setUrl(WEB_SOCKET_URL_DEV)
                 .setLocale(getCurrentLocale(ctx, LOCALE_LIST))
                 .setSign(RequestManager.getSign(ctx))

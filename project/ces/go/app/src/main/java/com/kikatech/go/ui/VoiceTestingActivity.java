@@ -154,6 +154,7 @@ public class VoiceTestingActivity extends BaseActivity
         conf.setDebugFilePath(getDebugFilePath(this));
         conf.source(audioSource);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
+                .setAppName("KikaGoTest")
                 .setUrl(WEB_SOCKET_URL_DEV)
                 .setLocale(getCurrentLocale())
                 .setSign(RequestManager.getSign(this))
