@@ -1,6 +1,7 @@
 package com.kikatech.go.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -58,5 +59,29 @@ public abstract class BaseActivity extends Activity {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+    public void startAnotherActivity(Class<?> cls, boolean isFinishSelf) {
+        Intent startActivityIntent = new Intent(this, cls);
+        Intent intent = getIntent();
+        if (intent != null) {
+            if (intent.getData() != null) {
+                startActivityIntent.setData(intent.getData());
+            }
+            if (intent.getAction() != null) {
+                startActivityIntent.setAction(intent.getAction());
+            }
+            if (intent.getExtras() != null) {
+                startActivityIntent.putExtras(intent.getExtras());
+            }
+            if (intent.getType() != null) {
+                startActivityIntent.setType(intent.getType());
+            }
+        }
+        startActivity(startActivityIntent);
+        overridePendingTransition(0, 0);
+        if (isFinishSelf) {
+            finish();
+        }
     }
 }

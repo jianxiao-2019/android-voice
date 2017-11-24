@@ -2,6 +2,11 @@
 <resources>
     <string name="default_img_content_description">none</string>
 
+    <string name="tmp_permission_title">"Please turn on the settings below,
+then back to this page.
+We will have a full process in beta version,
+it's the alpha version now."</string>
+
     <string name="ui_ask_address">"Where?"</string>
     <string-array name="tts_ask_address">
         <item>"Where do you want to go?"</item>
