@@ -57,21 +57,22 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
     private void bindView() {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
-        mGoLayout.sleep();
-        mGoLayout.setOnModeChangedListener(new GoLayout.IOnModeChangedListener() {
-            @Override
-            public void onChanged(GoLayout.DisplayMode mode) {
-                switch (mode) {
-                    case AWAKE:
-                        if (mDialogFlowService == null) {
-                            initDialogFlowService();
-                        }
-                        break;
-                    case SLEEP:
-                        break;
-                }
-            }
-        });
+        mGoLayout.awake();
+//        mGoLayout.setOnModeChangedListener(new GoLayout.IOnModeChangedListener() {
+//            @Override
+//            public void onChanged(GoLayout.DisplayMode mode) {
+//                switch (mode) {
+//                    case AWAKE:
+//                        if (mDialogFlowService == null) {
+//                            initDialogFlowService();
+//                        }
+//                        break;
+//                    case SLEEP:
+//                        break;
+//                }
+//            }
+//        });
+        initDialogFlowService();
     }
 
     private void initDialogFlowService() {
