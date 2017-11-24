@@ -1,10 +1,12 @@
 package com.kikatech.go.dialogflow.im;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.util.AppConstants;
+import com.kikatech.go.util.AppUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 
@@ -61,10 +63,16 @@ public class IMUtil {
         return "";
     }
 
-    public static boolean isIMAppSupported(String pkgName) {
+    public static boolean isIMAppSupported(Context ctx, String pkgName) {
         if (TextUtils.isEmpty(pkgName)) {
             return false;
         }
+
+        if(!AppUtil.isAppInstalled(ctx, pkgName)) {
+            if (LogUtil.DEBUG) LogUtil.log("IMUtil", pkgName + " is not installed !!");
+            return false;
+        }
+
         // Check if package is supported
         for (String s : SUPPORTED_IM) {
             if (s.equals(pkgName)) {

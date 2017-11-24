@@ -99,8 +99,9 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
     protected Intent getShareIntent(String packageName, String message) {
         Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setPackage(packageName);
-        intent.setType("speak/plain");
+        intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, message);
         return intent;
     }

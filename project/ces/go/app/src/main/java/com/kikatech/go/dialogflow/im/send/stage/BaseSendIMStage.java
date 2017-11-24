@@ -96,7 +96,7 @@ public class BaseSendIMStage extends SceneStage {
             // 6.1 詢問使用何者 IM
             return new StageAskIMApp(scene, feedback, false);
         } else {
-            if (IMUtil.isIMAppSupported(imAppPackageName)) {
+            if (IMUtil.isIMAppSupported(scene.getContext(), imAppPackageName)) {
                 return getCheckSendTargetStage(TAG, imc, scene, feedback);
             } else {
                 // TODO check im app

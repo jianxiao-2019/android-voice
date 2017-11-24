@@ -94,15 +94,4 @@ public class IMContent {
     public void updateMsgBody(String msgBody) {
         this.msgBody = msgBody;
     }
-
-//    public boolean isSimilarContact() {
-//        return !TextUtils.isEmpty(contactMatchedName) && !contactMatchedName.equals(targetName);
-//    }
-//
-//    public boolean isContactMatched(Context ctx) {
-//        ContactUtil.MatchedContact mc = ContactUtil.matchContact(ctx, targetName);
-//        contactMatchedName = mc.contactMatchedName;
-//        isContactMatched = mc.isContactMatched;
-//        return isContactMatched;
-//    }
 }

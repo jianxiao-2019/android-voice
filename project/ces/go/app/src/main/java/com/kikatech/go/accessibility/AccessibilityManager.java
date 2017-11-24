@@ -94,6 +94,9 @@ public class AccessibilityManager {
         if (scene != null) {
             String name = scene.getClass().getName();
             List<Object> subscribers = mSubscribers.get(name);
+            if(subscribers == null) {
+                return;
+            }
             for (Object subscriber : subscribers) {
                 // notify all
                 Method[] methods = subscriber.getClass().getMethods();
