@@ -15,10 +15,41 @@ android {
             abiFilters "armeabi-v7a","arm64-v8a"
         }
     }
+
+    signingConfigs {
+        release {
+            storeFile file('debug.keystore')
+            keyAlias 'debug'
+            keyPassword 'android'
+            storePassword 'android'
+        }
+        debug {
+            storeFile file('debug.keystore')
+            keyAlias 'debug'
+            keyPassword 'android'
+            storePassword 'android'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError true
+        disable 'MissingTranslation', 'InvalidPackage', 'InflateParams', 'ContentDescription', 'GradleCompatible'
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a'
+            universalApk false
         }
     }
 }
@@ -48,15 +79,4 @@ dependencies {
     compile project(':voice')
     compile project(':usb')
     testCompile 'junit:junit:4.12'
-}
-
-android {
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'armeabi-v7a'
-            universalApk false
-        }
-    }
 }

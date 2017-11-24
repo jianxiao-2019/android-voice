@@ -7,7 +7,7 @@
 #include <USBMidiStreamConfig.h>
 #endif
 #include <USBInterruptConfig.h>
-
+#include <string.h>
 #include "InputMonitorBuffer.h"
 #include "PortDefs.h"
 #include "ToJava.h"

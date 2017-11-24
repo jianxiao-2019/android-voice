@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <stdarg.h>
+#include <string.h>
 #include <sys/time.h>
 #include <math.h>
 #include "AEException.h"
