@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.im.send.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.IMContent;
 import com.kikatech.go.dialogflow.im.send.SceneActions;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -37,6 +38,13 @@ public class StageConfirmSendTarget extends BaseSendIMStage {
     @Override
     public void action() {
         IMContent imc = getIMContent();
-        speak("Do you mean " + imc.getSendTarget() + " ?");
+        String[] uiAndTtsText = SceneUtil.getConfirmContact(mSceneBase.getContext(), imc.getSendTarget());
+        if (uiAndTtsText.length > 0) {
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            speak(ttsText, args);
+        }
     }
 }
