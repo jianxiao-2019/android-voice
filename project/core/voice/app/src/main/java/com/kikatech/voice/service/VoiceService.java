@@ -47,7 +47,6 @@ public class VoiceService {
 
     private VoiceService(VoiceConfiguration conf) {
         mConf = conf;
-        // TODO : base on the VoiceConfiguration.
         mVoiceDetector = new VoiceDetector(
                 new FileWriter(mConf.getDebugFilePath() + "_speex", new VoiceDataSender()), new VoiceDetector.OnVadProbabilityChangeListener() {
             @Override
