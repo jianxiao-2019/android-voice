@@ -161,7 +161,7 @@ public class ApiAiAgent extends Agent {
         String action = result.getAction();
 
         if (LogUtil.DEBUG) {
-            LogUtil.logd(TAG, "scene: " + scene + ", action: " + action);
+            LogUtil.logd(TAG, "scene:" + scene + ", action:" + action);
         }
 
         Intent intent = new Intent(scene, action, result.getResolvedQuery());

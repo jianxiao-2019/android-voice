@@ -1,5 +1,7 @@
 package com.kikatech.go.dialogflow.apiai;
 
+import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
+import com.kikatech.go.dialogflow.im.send.SceneSendIM;
 import com.kikatech.go.dialogflow.navigation.SceneNavigation;
 import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
 import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
@@ -17,6 +19,8 @@ public enum SceneType {
     NAVIGATION(SceneNavigation.SCENE),
     SEND_SMS(SceneSendSms.SCENE),
     REPLY_SMS(SceneReplySms.SCENE),
+    SEND_IM(SceneSendIM.SCENE),
+    REPLY_IM(SceneReplyIM.SCENE),
     TELEPHONY_INCOMING(SceneIncoming.SCENE),
     TELEPHONY_OUTGOING(SceneOutgoing.SCENE);
 

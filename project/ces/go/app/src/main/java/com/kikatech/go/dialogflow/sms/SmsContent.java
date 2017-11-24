@@ -3,6 +3,8 @@ package com.kikatech.go.dialogflow.sms;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.kikatech.go.contact.Contact;
+import com.kikatech.go.dialogflow.ContactUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
 
@@ -18,7 +20,7 @@ public class SmsContent {
     private IntentContent mIntentContent;
 
     private String contactMatchedName;
-    private final List<ContactManager.NumberType> phoneNumbers;
+    private List<ContactManager.NumberType> phoneNumbers;
     private String mChosenNumber;
 
     private boolean isContactMatched;
@@ -141,36 +143,11 @@ public class SmsContent {
         return isContactMatched(ctx);
     }
 
-    /**
-     * Check if user said contact matched the name in Contact
-     *
-     * @return is contact matched
-     */
     public boolean isContactMatched(Context ctx) {
-        ContactManager.PhoneBookContact pbc = ContactManager.getIns().findName(ctx, getContact());
-        if (pbc != null) {
-            contactMatchedName = pbc.displayName;
-            phoneNumbers.clear();
-            for (ContactManager.NumberType nt : pbc.phoneNumbers) {
-                phoneNumbers.add(new ContactManager.NumberType(nt.number.replace(" ", ""), nt.type));
-            }
-            isContactMatched = true;
-
-            if (LogUtil.DEBUG) {
-                StringBuilder numb = new StringBuilder();
-                for (ContactManager.NumberType n : phoneNumbers) {
-                    numb.append(n.number).append(":").append(n.type).append(", ");
-                }
-                LogUtil.log("SmsContent", "Find " + contactMatchedName + ", numbers:" + numb);
-            }
-        } else {
-            if (LogUtil.DEBUG) LogUtil.log("SmsContent", "findName fail");
-            isContactMatched = false;
-        }
-
-        if (LogUtil.DEBUG)
-            LogUtil.log("SmsContent", "isContactMatched:" + isContactMatched + ", isSimilarContact:" + isSimilarContact());
-
+        ContactUtil.MatchedContact mc = ContactUtil.matchContact(ctx, getContact());
+        contactMatchedName = mc.contactMatchedName;
+        phoneNumbers = mc.phoneNumbers;
+        isContactMatched = mc.isContactMatched;
         return isContactMatched;
     }
 
@@ -180,6 +157,6 @@ public class SmsContent {
                 ", matched:" + getDisplayString(getMatchedName()) +
                 "\nChosen Number:" + mChosenNumber + ", phoneNumber count:" + phoneNumbers.size() +
                 "\nisSimilarContact:" + isSimilarContact() +
-                ", isContactMatched:" + isContactMatched;
+                ", matchContact:" + isContactMatched;
     }
 }

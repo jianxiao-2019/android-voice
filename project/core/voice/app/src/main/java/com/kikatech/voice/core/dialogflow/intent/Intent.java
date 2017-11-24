@@ -1,6 +1,7 @@
 package com.kikatech.voice.core.dialogflow.intent;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.voice.util.log.LogUtil;
@@ -59,5 +60,9 @@ public class Intent {
                 LogUtil.log("Intent", "Find " + AS_PREV_SCENE + ", correct scene to " + mScene);
 
         }
+    }
+
+    public static String parseUserInput(@NonNull Bundle extra) {
+        return extra.getString(KEY_USER_INPUT, "");
     }
 }

@@ -37,7 +37,7 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
                 if (LogUtil.DEBUG && !supportedCommand)
                     LogUtil.log(TAG, "" + sc.getSmsBody() + " is not the contact ...");
             } else if (SceneActions.ACTION_SEND_SMS_FALLBACK.equals(action)) {
-                String name = extra.getString(Intent.KEY_USER_INPUT);
+                String name = Intent.parseUserInput(extra);
                 if (LogUtil.DEBUG)
                     LogUtil.log(TAG, "User said some name but api.ai doesn't recognize ..., name:" + name);
                 if (!TextUtils.isEmpty(name)) {

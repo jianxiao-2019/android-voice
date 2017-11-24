@@ -19,8 +19,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class BaseSendSmsStage extends SceneStage {
 
-    protected final String TAG = getClass().getSimpleName();
-
     BaseSendSmsStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
         if (LogUtil.DEBUG) LogUtil.log(TAG, "init");

@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 
 public abstract class SceneStage {
 
-    public final static String TAG = "SceneStage";
+    protected final String TAG = getClass().getSimpleName();
     protected final ISceneFeedback mFeedback;
 
     protected final SceneBase mSceneBase;

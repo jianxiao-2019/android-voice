@@ -80,7 +80,7 @@ public class SmsUtil {
         }
 
 
-        String userInputs = parm.getString(Intent.KEY_USER_INPUT, "");
+        String userInputs = Intent.parseUserInput(parm);
         List<String> tagAny = parseAny(parm);
 
         if (tagAnyStandFor == TAG_ANY_STAND_FOR_MSG_BODY) {
@@ -107,7 +107,7 @@ public class SmsUtil {
         }
 
         if (TextUtils.isEmpty(ic.smsBody) && tagAnyStandFor == TAG_ANY_STAND_FOR_USER_INPUT) {
-            ic.smsBody = parm.getString(Intent.KEY_USER_INPUT, "");
+            ic.smsBody = Intent.parseUserInput(parm);
             if (LogUtil.DEBUG)
                 LogUtil.log("SmsUtil", "[TAG_ANY_STAND_FOR_USER_INPUT]Set smsBody : " + ic.smsBody);
         }
@@ -136,27 +136,26 @@ public class SmsUtil {
     }
 
 
-    public static boolean sendSms(Context ctx, String phoneNum, String msgContent) {
+    public static void sendSms(@NonNull Context ctx, String phoneNum, String msgContent) {
         if (!PermissionUtil.hasPermissionsSMS(ctx)) {
             if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Get SMS permission first!");
-            return false;
+            return;
         }
 
         if (TextUtils.isEmpty(phoneNum) || TextUtils.isEmpty(msgContent)) {
             if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Empty target or message!");
-            return false;
+            return;
         }
 
         boolean sent = SmsManager.getInstance().sendMessage(ctx, phoneNum, "", msgContent);
         if (LogUtil.DEBUG)
             LogUtil.log("SmsUtil", "phoneNum:" + phoneNum + ", msgContent:" + msgContent + ", send status:" + sent);
-        return sent;
     }
 
     public static String parseTagAny(@NonNull Bundle parm) {
         String c = parm.getString(KEY_ANY, "").replace("\"", "");
         if (TextUtils.isEmpty(c)) {
-            return parm.getString(Intent.KEY_USER_INPUT, "");
+            return Intent.parseUserInput(parm);
         }
         return c;
     }

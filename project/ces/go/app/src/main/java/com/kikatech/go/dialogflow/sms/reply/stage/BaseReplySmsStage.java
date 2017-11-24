@@ -16,8 +16,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class BaseReplySmsStage extends SceneStage {
 
-    protected final String TAG = getClass().getSimpleName();
-
     //TODO Define following variables in Settings
     final static byte SETTING_REPLY_SMS_IGNORE = 0;
     final static byte SETTING_REPLY_SMS_READ = 1;

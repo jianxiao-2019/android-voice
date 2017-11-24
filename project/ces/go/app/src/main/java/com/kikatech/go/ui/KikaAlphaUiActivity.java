@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
+import com.kikatech.go.dialogflow.im.IMSceneManager;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
@@ -153,6 +154,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         mSceneManagers.add(new NaviSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService, KikaAlphaUiActivity.class));
         mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new IMSceneManager(this, mDialogFlowService));
     }
 
     /**

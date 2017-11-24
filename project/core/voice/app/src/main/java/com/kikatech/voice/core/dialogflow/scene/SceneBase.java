@@ -15,7 +15,7 @@ public abstract class SceneBase implements DialogObserver {
     protected ISceneFeedback mFeedback;
     protected Context mContext;
     private ISceneManager mSceneManager = null;
-    protected SceneStage mStage;
+    private SceneStage mStage;
 
     public SceneBase(Context context, ISceneFeedback feedback) {
         mContext = context.getApplicationContext();
@@ -27,7 +27,7 @@ public abstract class SceneBase implements DialogObserver {
         mSceneManager = manager;
     }
 
-    public void setQueryWords(boolean queryAnyWords) {
+    void setQueryWords(boolean queryAnyWords) {
         mSceneManager.setQueryWords(queryAnyWords);
     }
 
