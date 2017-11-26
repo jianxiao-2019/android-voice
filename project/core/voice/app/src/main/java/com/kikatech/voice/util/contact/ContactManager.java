@@ -21,6 +21,7 @@ public class ContactManager {
     public static final String TAG = "ContactManager";
 
     private static ContactManager sIns;
+    private HashMap<String, PhoneBookContact> mPhoneBook;
 
     private int mPhoneTypeIdx = -1;
     private int mPhoneLabelIdx = -1;
@@ -32,14 +33,28 @@ public class ContactManager {
         return sIns;
     }
 
+    public void init(Context ctx) {
+        if (mPhoneBook == null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "init phone book info");
+            }
+            mPhoneBook = getPhoneBook(ctx);
+        } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "no need to init phone book info");
+            }
+        }
+    }
+
     public PhoneBookContact findName(Context ctx, String name) {
 
         if (TextUtils.isEmpty(name)) {
             return null;
         }
 
-        HashMap<String, PhoneBookContact> phoneBook = getPhoneBook(ctx);
-        String[] contactNames = phoneBook != null ? phoneBook.keySet().toArray(new String[phoneBook.size()]) : null;
+        init(ctx);
+
+        String[] contactNames = mPhoneBook != null ? mPhoneBook.keySet().toArray(new String[mPhoneBook.size()]) : null;
         String number = findNumber(name);
 
         if (contactNames == null || contactNames.length == 0) {
@@ -68,7 +83,7 @@ public class ContactManager {
                 }
                 return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
             } else {
-                return phoneBook.get(foundName);
+                return mPhoneBook.get(foundName);
             }
         }
     }
@@ -162,6 +177,7 @@ public class ContactManager {
     public static class NumberType {
         public String number;
         public String type;
+
         public NumberType(String number, String type) {
             this.number = number;
             this.type = type;
@@ -171,6 +187,7 @@ public class ContactManager {
             return TextUtils.isEmpty(type) ? number : type;
         }
     }
+
     public static class PhoneBookContact {
 
         public long id;
@@ -217,7 +234,7 @@ public class ContactManager {
             if (LogUtil.DEBUG) {
                 LogUtil.logd(TAG, "number: " + displayName);
                 for (NumberType nt : phoneNumbers) {
-                    LogUtil.logd(TAG, "number: " +nt.number + ", type:" + nt.type);
+                    LogUtil.logd(TAG, "number: " + nt.number + ", type:" + nt.type);
                 }
                 LogUtil.logd(TAG, "------------------------------");
             }

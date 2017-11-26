@@ -19,6 +19,7 @@ import com.kikatech.go.view.UiTaskManager.DebugLogType;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.util.contact.ContactManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_alpha_ui);
         bindView();
+        ContactManager.getIns().init(this);
         //initDialogFlowService();
     }
 
