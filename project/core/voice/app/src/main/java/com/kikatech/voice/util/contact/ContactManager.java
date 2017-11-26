@@ -175,7 +175,7 @@ public class ContactManager {
 
         public long id;
         public String displayName;
-        public List<NumberType> phoneNumbers = new ArrayList<>();
+        public final List<NumberType> phoneNumbers = new ArrayList<>();
 
         PhoneBookContact(String phoneNumber, String type) {
             this(-1, null, phoneNumber, type);

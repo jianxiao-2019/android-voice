@@ -5,6 +5,7 @@ import android.content.Context;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class ContactUtil {
     public static class MatchedContact {
         public boolean isContactMatched = false;
         public String contactMatchedName = "";
-        public List<ContactManager.NumberType> phoneNumbers;
+        public List<ContactManager.NumberType> phoneNumbers = new ArrayList<>();
     }
 
     /**

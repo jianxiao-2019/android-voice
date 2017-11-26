@@ -112,10 +112,13 @@ public class SmsContent {
     }
 
     public int getNumberCount() {
-        return phoneNumbers.size();
+        return getPhoneNumbers().size();
     }
 
     public List<ContactManager.NumberType> getPhoneNumbers() {
+        if (phoneNumbers == null) {
+            return new ArrayList<>();
+        }
         return phoneNumbers;
     }
 
@@ -155,7 +158,8 @@ public class SmsContent {
     public String toString() {
         return "contact:" + getDisplayString(getContact()) + ", smsBody:" + getDisplayString(mIntentContent.smsBody) +
                 ", matched:" + getDisplayString(getMatchedName()) +
-                "\nChosen Number:" + mChosenNumber + ", phoneNumber count:" + phoneNumbers.size() +
+                "\nChosen Number:" + mChosenNumber +
+                ", phoneNumber count:" + getNumberCount() +
                 "\nisSimilarContact:" + isSimilarContact() +
                 ", matchContact:" + isContactMatched;
     }
