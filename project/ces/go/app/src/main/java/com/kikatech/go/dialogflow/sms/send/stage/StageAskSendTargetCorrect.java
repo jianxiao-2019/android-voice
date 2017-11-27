@@ -29,29 +29,30 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
         SmsContent sc = getSmsContent();
-        if (action.equals(SceneActions.ACTION_SEND_SMS_NO) || action.equals(SceneActions.ACTION_SEND_SMS_NAME)) {
+        switch (action) {
+            case SceneActions.ACTION_SEND_SMS_NO:
 
-            SmsContent.IntentContent ic = SmsUtil.parseContactName(extra);
-            if (ic.isNameEmpty()) {
-                sc.setIntentContent(ic);
-                return new StageAskForSendTarget(mSceneBase, mFeedback);
-            }
-
-            boolean isContactMatched = sc.isContactMatched(mSceneBase.getContext());
-            if (isContactMatched) {
-                if (mCurrentName.equals(sc.getMatchedName())) {
-                    return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
-                } else {
-                    return new StageAskSendTargetCorrect(mSceneBase, mFeedback);
+                SmsContent.IntentContent ic = SmsUtil.parseContactName(extra);
+                if (ic.isNameEmpty()) {
+                    sc.setIntentContent(ic);
+                    return new StageAskForSendTarget(mSceneBase, mFeedback);
                 }
-            } else {
-                return new StageAskForSendTarget(mSceneBase, mFeedback);
-            }
 
-        } else if (action.equals(SceneActions.ACTION_SEND_SMS_YES)) {
-            return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
-        } else {
-            return this;
+                boolean isContactMatched = sc.isContactMatched(mSceneBase.getContext());
+                if (isContactMatched) {
+                    if (mCurrentName.equals(sc.getMatchedName())) {
+                        return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
+                    } else {
+                        return new StageAskSendTargetCorrect(mSceneBase, mFeedback);
+                    }
+                } else {
+                    return new StageAskForSendTarget(mSceneBase, mFeedback);
+                }
+
+            case SceneActions.ACTION_SEND_SMS_YES:
+                return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
+            default:
+                return this;
         }
     }
 

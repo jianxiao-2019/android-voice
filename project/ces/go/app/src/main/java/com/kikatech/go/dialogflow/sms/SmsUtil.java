@@ -101,7 +101,7 @@ public class SmsUtil {
         } else if (tagAnyStandFor == TAG_ANY_STAND_FOR_NAME) {
             // No, it's xxx
             if (tagAny.size() > 0) {
-                ic.firstName = tagAny.get(1);
+                ic.firstName = tagAny.get(0);
                 if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Set firstName : " + ic.firstName);
             }
         }

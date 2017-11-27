@@ -31,15 +31,20 @@ public class BaseSendSmsStage extends SceneStage {
         return ((SceneSendSms) mSceneBase).getSmsContent();
     }
 
-    @Override
-    public SceneStage next(String action, Bundle extra) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
+    protected int getAnyTAgParseTarget(String action) {
         int tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_MSG_BODY;
         if (action.equals(SceneActions.ACTION_SEND_SMS_NO)) {
             tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_NAME;
         } else if (action.equals(Intent.ACTION_USER_INPUT)) {
             tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_USER_INPUT;
         }
+        return tagAnyTarget;
+    }
+
+    @Override
+    public SceneStage next(String action, Bundle extra) {
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
+        int tagAnyTarget = getAnyTAgParseTarget(action);
         ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseContactName(extra, tagAnyTarget));
         if (action.equals(SceneActions.ACTION_SEND_SMS_CANCEL)) {
             return new StageCancel(mSceneBase, mFeedback);

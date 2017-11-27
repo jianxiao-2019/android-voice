@@ -9,7 +9,6 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 public class SceneActions {
 
     public static final String ACTION_SEND_SMS = "send.sms";
-    public static final String ACTION_SEND_SMS_NAME = "SendSMS.SendSMS-name";
     public static final String ACTION_SEND_SMS_MSGBODY = Intent.ACTION_USER_INPUT;
     public static final String ACTION_SEND_SMS_NO = "SendSMS.SendSMS-no";
     public static final String ACTION_SEND_SMS_YES = "SendSMS.SendSMS-yes";

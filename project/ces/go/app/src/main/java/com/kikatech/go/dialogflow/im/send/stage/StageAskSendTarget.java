@@ -25,7 +25,7 @@ public class StageAskSendTarget extends BaseSendIMStage {
         setQueryAnyWords(false);
         IMContent imc = getIMContent();
         if (TextUtils.isEmpty(imc.getSendTarget())) {
-            String userSay = extra.getString(Intent.KEY_USER_INPUT, "");
+            String userSay = Intent.parseUserInput(extra);
             if (!TextUtils.isEmpty(userSay)) {
                 imc.updateSendTarget(userSay);
             }

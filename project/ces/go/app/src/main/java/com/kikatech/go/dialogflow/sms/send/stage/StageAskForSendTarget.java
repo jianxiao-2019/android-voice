@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.SmsContent;
+import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
@@ -26,37 +27,21 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
     }
 
     @Override
-    protected SceneStage getNextStage(String action, Bundle extra) {
-        SmsContent sc = getSmsContent();
-        boolean supportedCommand = false;
-        if (!SceneActions.ACTION_SEND_SMS_NAME.equals(action)) {
-            if (SceneActions.ACTION_SEND_SMS_MSGBODY.equals(action) && !TextUtils.isEmpty(sc.getSmsBody())) {
-                if (LogUtil.DEBUG)
-                    LogUtil.log(TAG, "Try to parse sms content, it might be the contact");
-                supportedCommand = sc.tryParseContact(mSceneBase.getContext(), sc.getSmsBody());
-                if (LogUtil.DEBUG && !supportedCommand)
-                    LogUtil.log(TAG, "" + sc.getSmsBody() + " is not the contact ...");
-            } else if (SceneActions.ACTION_SEND_SMS_FALLBACK.equals(action)) {
-                String name = Intent.parseUserInput(extra);
-                if (LogUtil.DEBUG)
-                    LogUtil.log(TAG, "User said some name but api.ai doesn't recognize ..., name:" + name);
-                if (!TextUtils.isEmpty(name)) {
-                    if (LogUtil.DEBUG)
-                        LogUtil.log(TAG, "Parsed name : " + name);
-                    sc.updateName(name);
-                    supportedCommand = true;
-                }
-            }
-        } else {
-            supportedCommand = true;
-        }
+    protected int getAnyTAgParseTarget(String action) {
+        return SmsUtil.TAG_ANY_STAND_FOR_NAME;
+    }
 
-        if (supportedCommand) {
-            return getStageCheckContactMatched(TAG, sc, mSceneBase, mFeedback);
-        } else {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-            return new StageAskForSendTarget(mSceneBase, mFeedback);
+    @Override
+    protected SceneStage getNextStage(String action, Bundle extra) {
+        setQueryAnyWords(false);
+        SmsContent sc = getSmsContent();
+        if (TextUtils.isEmpty(sc.getContact())) {
+            String userSay = Intent.parseUserInput(extra);
+            if (!TextUtils.isEmpty(userSay)) {
+                sc.updateName(userSay);
+            }
         }
+        return getStageCheckContactMatched(TAG, sc, mSceneBase, mFeedback);
     }
 
     @Override
@@ -66,6 +51,8 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
 
     @Override
     public void action() {
+        setQueryAnyWords(true);
+
         SmsContent sc = getSmsContent();
         String[] uiAndTtsText;
         if (sc.isContactAvailable()) {
