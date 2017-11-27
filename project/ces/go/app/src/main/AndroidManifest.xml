@@ -63,6 +63,7 @@
         <activity android:name=".ui.KikaDialogFlowActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaAlphaUiActivity"
+                  android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
 
         <receiver android:name="com.kikatech.go.dialogflow.telephony.PhoneStateReceiver">

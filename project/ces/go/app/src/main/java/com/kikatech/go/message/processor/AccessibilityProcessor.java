@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.kikatech.go.accessibility.scene.Scene;
+import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.KikaGoActivity;
 import com.kikatech.go.util.LogUtil;
 
@@ -47,8 +48,8 @@ public abstract class AccessibilityProcessor {
 
     protected void returnToApp() {
         try {
-            Intent intent = new Intent(mContext, KikaGoActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Intent intent = new Intent(mContext, KikaAlphaUiActivity.class);
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
             mContext.startActivity(intent);
         } catch(Exception e) {
