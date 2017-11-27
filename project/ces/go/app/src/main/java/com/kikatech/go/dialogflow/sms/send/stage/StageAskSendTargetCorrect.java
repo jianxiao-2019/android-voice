@@ -48,8 +48,10 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
                 return new StageAskForSendTarget(mSceneBase, mFeedback);
             }
 
-        } else {
+        } else if (action.equals(SceneActions.ACTION_SEND_SMS_YES)) {
             return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
+        } else {
+            return this;
         }
     }
 
