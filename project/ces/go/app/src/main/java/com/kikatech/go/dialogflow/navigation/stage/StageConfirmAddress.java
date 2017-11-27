@@ -45,7 +45,7 @@ public class StageConfirmAddress extends BaseNaviStage {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
                 return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
         }
-        return null;
+        return this;
     }
 
     @Override

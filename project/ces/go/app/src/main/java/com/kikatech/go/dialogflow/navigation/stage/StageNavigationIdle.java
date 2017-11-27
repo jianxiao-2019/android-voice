@@ -35,7 +35,7 @@ public class StageNavigationIdle extends BaseNaviStage {
             }
         }
 
-        return null;
+        return this;
     }
 
     @Override

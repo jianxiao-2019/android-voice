@@ -99,6 +99,7 @@ public class StageConfirmNumber extends StageOutgoing {
             LogUtil.log(TAG, "mOptions count:" + mOptions.size());
         }
         String option = param.getString("name", null);
+        mOptions.clear();
         if (!TextUtils.isEmpty(option)) {
             option = option.replace("\"", "");
             LogUtil.log(TAG, "option:" + option);
