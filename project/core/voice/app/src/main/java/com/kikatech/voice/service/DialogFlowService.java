@@ -164,30 +164,35 @@ public class DialogFlowService implements
         if (LogUtil.DEBUG && !(message instanceof IntermediateMessage)) {
             LogUtil.logd(TAG, "onMessage message = " + message);
         }
-        if (message instanceof EditTextMessage) {
-            String alter = ((EditTextMessage) message).context;
-            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
-        }
 
+        boolean finished = true;
+        String query = "";
         if (message instanceof IntermediateMessage) {
             IntermediateMessage intermediateMessage = (IntermediateMessage) message;
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "Speech spoken" + " : " + intermediateMessage.text);
             }
 
-            mCallback.onASRResult(intermediateMessage.text, false);
-        }
-        if (message instanceof TextMessage) {
+            finished = false;
+            query = intermediateMessage.text;
+        } else if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
             }
 
-            if (mDialogFlow != null) {
-                mDialogFlow.talk(textMessage.text, mQueryAnyContent, mQueryStatusCallback);
-            }
-            mCallback.onASRResult(textMessage.text, true);
+            query = textMessage.text;
+        } else if (message instanceof EditTextMessage) {
+            String alter = ((EditTextMessage) message).context;
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
+
+            query = alter;
         }
+
+        if (finished && mDialogFlow != null) {
+            mDialogFlow.talk(query, mQueryAnyContent, mQueryStatusCallback);
+        }
+        mCallback.onASRResult(query, finished);
     }
 
     @Override

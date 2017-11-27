@@ -40,6 +40,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_alpha_ui);
         bindView();
+        // TODO fine tune init timing
         ContactManager.getIns().init(this);
         //initDialogFlowService();
     }

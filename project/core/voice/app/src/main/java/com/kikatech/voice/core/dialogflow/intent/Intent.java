@@ -66,7 +66,7 @@ public class Intent {
             mScene = scene;
             if (LogUtil.DEBUG)
                 LogUtil.log("Intent", "Find " + AS_PREV_SCENE + ", correct scene to " + mScene);
-        } else if (mScene.equals("Default") && !TextUtils.isEmpty(mAction) && mAction.equals("input.unknown")) {
+        } else if (mScene.equals("Default") && !TextUtils.isEmpty(scene) && !mScene.equals(scene) && !TextUtils.isEmpty(mAction) && mAction.equals("input.unknown")) {
             mScene = scene;
             if (LogUtil.DEBUG)
                 LogUtil.log("Intent", "Find Default::input.unknown, let the current scene " + mScene + " to handle it");

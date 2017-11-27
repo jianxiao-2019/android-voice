@@ -8,6 +8,7 @@ import com.kikatech.go.dialogflow.im.IMContent;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -36,6 +37,10 @@ public class BaseSendIMStage extends SceneStage {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action : " + action);
         IMContent imc = IMUtil.parse(extra);
         ((SceneSendIM) mSceneBase).updateIMContent(imc);
+        if (action.equals(Intent.ACTION_UNKNOWN)) {
+            if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unknown Action, repeat current stage");
+            return this;
+        }
         return getNextStage(action, extra);
     }
 
@@ -45,7 +50,7 @@ public class BaseSendIMStage extends SceneStage {
 
     @Override
     public void prepare() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "prepare : do nothing");
+        //if (LogUtil.DEBUG) LogUtil.log(TAG, "prepare : do nothing");
     }
 
     @Override

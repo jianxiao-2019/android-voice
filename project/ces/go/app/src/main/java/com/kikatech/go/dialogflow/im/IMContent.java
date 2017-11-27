@@ -94,4 +94,8 @@ public class IMContent {
     public void updateMsgBody(String msgBody) {
         this.msgBody = msgBody;
     }
+
+    public void setSendTarget(String sendTarget) {
+        targetName = sendTarget;
+    }
 }
