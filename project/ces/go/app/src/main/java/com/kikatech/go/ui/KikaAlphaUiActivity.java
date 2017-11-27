@@ -1,6 +1,7 @@
 package com.kikatech.go.ui;
 
 import android.os.Bundle;
+import android.util.Pair;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
@@ -115,6 +116,17 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     @Override
                     public void onText(String text, Bundle extras) {
                         mUiManager.dispatchTtsTask(text, extras);
+                    }
+
+                    @Override
+                    public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras) {
+                        StringBuilder builder = new StringBuilder();
+                        if (pairs != null && pairs.length > 0) {
+                            for (Pair<String, Integer> pair : pairs) {
+                                builder.append(pair.first);
+                            }
+                        }
+                        mUiManager.dispatchTtsTask(builder.toString(), extras);
                     }
 
                     @Override

@@ -2,6 +2,7 @@ package com.kikatech.go.ui;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -95,6 +96,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
                     @Override
                     public void onText(String text, Bundle extras) {
+                    }
+
+                    @Override
+                    public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras) {
                     }
 
                     @Override

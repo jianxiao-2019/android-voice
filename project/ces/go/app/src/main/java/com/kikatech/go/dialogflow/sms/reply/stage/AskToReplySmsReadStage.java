@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.sms.reply.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
@@ -11,6 +12,7 @@ import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.core.tts.TtsSpeaker;
 
 /**
  * Created by brad_chang on 2017/11/20.
@@ -41,13 +43,27 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-        String[] uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), mSmsObject.getUserName(), mSmsObject.getMsgContent());
+        String[] uiAndTtsText;
+        switch (mReplySmsSetting) {
+            case SETTING_REPLY_SMS_READ:
+                uiAndTtsText = SceneUtil.getReadMsgDirectly(mSceneBase.getContext(), mSmsObject.getUserName(), mSmsObject.getMsgContent());
+                break;
+            default:
+            case SETTING_REPLY_SMS_ASK_USER:
+                uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), mSmsObject.getUserName(), mSmsObject.getMsgContent());
+                break;
+        }
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
-            String ttsText = uiAndTtsText[1];
+            String ttsPart1 = uiAndTtsText[1];
+            String ttsPart2 = uiAndTtsText[2];
             Bundle args = new Bundle();
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
-            speak(ttsText, args, new IDialogFlowFeedback.IToSceneFeedback() {
+
+            Pair<String, Integer>[] pairs = new Pair[2];
+            pairs[0] = new Pair<>(ttsPart1, TtsSpeaker.TTS_VOICE_1);
+            pairs[1] = new Pair<>(ttsPart2, TtsSpeaker.TTS_VOICE_2);
+            speak(pairs, args, new IDialogFlowFeedback.IToSceneFeedback() {
                 @Override
                 public void onTtsStart() {
                 }
@@ -72,12 +88,6 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
                 }
             });
         }
-//        String msg = mSmsObject.getUserName() + " said : \"" + mSmsObject.getMsgContent() + "\", Do you want to reply ?";
-//        if (LogUtil.DEBUG) LogUtil.log(TAG, msg);
-//        speak(msg);
-
-//        String speech = String.format("%1$s says \"%2$s\". Do you want to reply?", mSmsObject.getUserName(), mSmsObject.getMsgContent()); // doc 24
-//        speak(speech);
     }
 
     private void goToAskReplyStage() {

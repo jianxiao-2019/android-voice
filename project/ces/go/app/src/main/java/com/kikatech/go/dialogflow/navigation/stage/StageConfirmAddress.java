@@ -1,8 +1,11 @@
 package com.kikatech.go.dialogflow.navigation.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
@@ -21,13 +24,14 @@ public class StageConfirmAddress extends BaseNaviStage {
     StageConfirmAddress(SceneBase scene, ISceneFeedback feedback, String naviAddress) {
         super(scene, feedback);
         mNaviAddress = naviAddress;
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "StageConfirmAddress init, mNaviAddress:" + mNaviAddress);
+        if (LogUtil.DEBUG)
+            LogUtil.log(TAG, "StageConfirmAddress init, mNaviAddress:" + mNaviAddress);
     }
 
     @Override
     public SceneStage next(String action, Bundle extra) {
         super.next(action, extra);
-        if(mStopNavi) {
+        if (mStopNavi) {
             return null;
         }
 
@@ -38,7 +42,7 @@ public class StageConfirmAddress extends BaseNaviStage {
                 return new StageAskAddress(mSceneBase, mFeedback, false);
             case NaviSceneActions.ACTION_NAV_CHANGE:
                 String naviAddress = NaviSceneUtil.parseAddress(extra);
-                if(LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
                 return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
         }
         return null;
@@ -46,12 +50,19 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public void action() {
-        String[] uiAndTtsText = SceneUtil.getConfirmAddress(mSceneBase.getContext(), mNaviAddress);
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText = SceneUtil.getConfirmAddress(context, mNaviAddress);
         if (uiAndTtsText.length > 0) {
+            String[] options = SceneUtil.getOptionsCommon(context);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+            optionList.setTitle(uiText);
+            for (String option : options) {
+                optionList.add(new Option(option, null));
+            }
             Bundle args = new Bundle();
-            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }
     }

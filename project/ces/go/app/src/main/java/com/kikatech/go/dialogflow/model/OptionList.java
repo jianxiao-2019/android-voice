@@ -87,7 +87,7 @@ public class OptionList implements Parcelable {
         OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
         optionList.setTitle("You can say");
         optionList.add(new Option("Navigate", null));
-        optionList.add(new Option("Text", null));
+        optionList.add(new Option("Message", null));
         optionList.add(new Option("Make a call", null));
         return optionList;
     }

@@ -21,7 +21,7 @@ public class BaseReplySmsStage extends SceneStage {
     final static byte SETTING_REPLY_SMS_READ = 1;
     final static byte SETTING_REPLY_SMS_ASK_USER = 2;
 
-    byte mReplySmsSetting = SETTING_REPLY_SMS_READ;
+    byte mReplySmsSetting = SETTING_REPLY_SMS_ASK_USER;//SETTING_REPLY_SMS_READ;
 
     BaseReplySmsStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);

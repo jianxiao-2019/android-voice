@@ -16,7 +16,7 @@ it's the alpha version now."</string>
 
     <string name="ui_confirm_address">"%s?"</string>
     <string-array name="tts_confirm_address">
-        <item>"Sure, %s, right?"</item>
+        <item>"%s, right?"</item> <!-- %s: address/name of place -->
         <item>"OK, %s, right?"</item>
         <item>"%s, am I right? "</item>
     </string-array>
@@ -56,14 +56,14 @@ it's the alpha version now."</string>
         <item>"Sorry, I couldn't find the contact. Please say again."</item>
     </string-array>
 
-    <string name="ui_ask_msg">"Please say your message"</string>
+    <string name="ui_ask_msg">"What's the message?"</string>
     <string-array name="tts_ask_msg">
-        <item>"Please say your message."</item>
+        <item>"What's the message?"</item>
     </string-array>
 
     <string name="ui_confirm_msg">"%s"</string>
     <string-array name="tts_confirm_msg">
-        <item>""%s" Send it or change it?"</item>
+        <item>""%s" is it correct?"</item>
     </string-array>
     <string-array name="options_confirm_msg">
         <item>"Send"</item>
@@ -76,14 +76,25 @@ it's the alpha version now."</string>
         <item>"Add the emoji to the message?"</item>
     </string-array>
 
+    <string name="ui_read_msg_directly">"%s"</string>
+    <string-array name="tts_read_msg_directly_1">
+        <item>"You got a message from %s."</item> <!-- user name -->
+    </string-array>
+    <string-array name="tts_read_msg_directly_2">
+        <item>""%s""</item> <!-- msg content -->
+    </string-array>
+
     <string name="ui_ask_read_msg">"Play the message?"</string>
     <string-array name="tts_ask_read_msg">
         <item>"You got a message from %s. Play the message?"</item>
     </string-array>
 
-    <string name="ui_read_msg">"%s?"</string> <!-- msg content -->
-    <string-array name="tts_read_msg">
-        <item>"%1$s says "%2$s"."</item> <!-- user name, msg content -->
+    <string name="ui_read_msg">"%s"</string> <!-- msg content -->
+    <string-array name="tts_read_msg_1">
+        <item>"%s says "</item> <!-- user name -->
+    </string-array>
+    <string-array name="tts_read_msg_2">
+        <item>""%s"."</item> <!-- msg content -->
     </string-array>
 
     <string name="ui_ask_reply_msg">"Reply?"</string>
@@ -117,6 +128,10 @@ it's the alpha version now."</string>
     <string name="ui_ask_app">"Which App?"</string>
     <string-array name="tts_ask_app">
         <item>"Which app do you want to use?"</item>
+    </string-array>
+    <string-array name="options_ask_app">
+        <item>"Facebook"</item>
+        <item>"WhatsApp"</item>
     </string-array>
 
     <string name="tts_emoji_added">"Emoji added"</string>

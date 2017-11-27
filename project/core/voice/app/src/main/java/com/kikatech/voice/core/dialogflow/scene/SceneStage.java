@@ -2,6 +2,7 @@ package com.kikatech.voice.core.dialogflow.scene;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
 /**
  * Created by tianli on 17-11-11.
@@ -40,6 +41,7 @@ public abstract class SceneStage {
 
     final protected void exitScene() {
         mSceneBase.exit();
+        onActionDone(true, false);
     }
 
     final void prepareAction(String scene, String action, SceneStage stage) {
@@ -75,6 +77,13 @@ public abstract class SceneStage {
         if (mFeedback != null) {
             mDefaultToSceneFeedback.bindFeedback(feedback);
             mFeedback.onText(text, extras, mDefaultToSceneFeedback);
+        }
+    }
+
+    protected void speak(Pair<String, Integer>[] pairs, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
+        if (mFeedback != null) {
+            mDefaultToSceneFeedback.bindFeedback(feedback);
+            mFeedback.onTextPairs(pairs, extras, mDefaultToSceneFeedback);
         }
     }
 

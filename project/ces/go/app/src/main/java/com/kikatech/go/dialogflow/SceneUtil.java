@@ -97,6 +97,16 @@ public class SceneUtil {
         return new String[]{ui, getStringFromArray(ttsArray)};
     }
 
+    public static String[] getReadMsgDirectly(Context context, String userName, String msgContent) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_read_msg_directly);
+        String[] ttsPart1 = resource.getStringArray(R.array.tts_read_msg_directly_1);
+        String[] ttsPart2 = resource.getStringArray(R.array.tts_read_msg_directly_2);
+        return new String[]{tryFormat(ui, msgContent),
+                tryFormat(getStringFromArray(ttsPart1), userName),
+                tryFormat(getStringFromArray(ttsPart2), msgContent)};
+    }
+
     public static String[] getAskReadMsg(Context context, String userName) {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_ask_read_msg);
@@ -107,8 +117,11 @@ public class SceneUtil {
     public static String[] getReadMsg(Context context, String userName, String msgContent) {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_read_msg);
-        String[] ttsArray = resource.getStringArray(R.array.tts_read_msg);
-        return new String[]{tryFormat(ui, msgContent), tryFormat(getStringFromArray(ttsArray), userName, msgContent)};
+        String[] ttsPart1 = resource.getStringArray(R.array.tts_read_msg_1);
+        String[] ttsPart2 = resource.getStringArray(R.array.tts_read_msg_2);
+        return new String[]{tryFormat(ui, msgContent),
+                tryFormat(getStringFromArray(ttsPart1), userName),
+                tryFormat(getStringFromArray(ttsPart2), msgContent)};
     }
 
     public static String[] getAskReplyMsg(Context context) {
@@ -161,6 +174,11 @@ public class SceneUtil {
         String ui = resource.getString(R.string.ui_ask_app);
         String[] ttsArray = resource.getStringArray(R.array.tts_ask_app);
         return new String[]{ui, getStringFromArray(ttsArray)};
+    }
+
+    public static String[] getAskAppOptions(Context context) {
+        Resources resource = context.getResources();
+        return resource.getStringArray(R.array.options_ask_app);
     }
 
     public static String getEmojiAdded(Context context) {

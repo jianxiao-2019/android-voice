@@ -1,10 +1,13 @@
 package com.kikatech.go.dialogflow.im.send.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -40,25 +43,32 @@ public class StageAskIMApp extends BaseSendIMStage {
     @Override
     public void action() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "mIMNotSupported:" + mIMNotSupported);
+        Context context = mSceneBase.getContext();
         String[] uiAndTtsText;
         if (!TextUtils.isEmpty(usedSaidImApp)) {
             // TODO
             if (LogUtil.DEBUG)
                 LogUtil.log(TAG, "User wants to use '" + usedSaidImApp + "', but we don't support ... ");
-            uiAndTtsText = SceneUtil.getAskApp(mSceneBase.getContext());
+            uiAndTtsText = SceneUtil.getAskApp(context);
             uiAndTtsText[1] = "I cannot get what you said, " + uiAndTtsText[1];
         } else if (mIMNotSupported) {
             // TODO: should we tell users that app is not installed or not supported, instead of asking again?
-            uiAndTtsText = SceneUtil.getAskApp(mSceneBase.getContext());
+            uiAndTtsText = SceneUtil.getAskApp(context);
             uiAndTtsText[1] = getIMContent().getIMAppPackageName() + " is not available, " + uiAndTtsText[1];
         } else {
-            uiAndTtsText = SceneUtil.getAskApp(mSceneBase.getContext());
+            uiAndTtsText = SceneUtil.getAskApp(context);
         }
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             Bundle args = new Bundle();
-            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            String[] options = SceneUtil.getAskAppOptions(context);
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+            optionList.setTitle(uiText);
+            for (String option : options) {
+                optionList.add(new Option(option, null));
+            }
+            args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }
     }

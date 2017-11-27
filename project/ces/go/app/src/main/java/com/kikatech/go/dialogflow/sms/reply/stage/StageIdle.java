@@ -40,11 +40,11 @@ public class StageIdle extends BaseReplySmsStage {
             }
 
             // TODO Check setting
-            if (mReplySmsSetting == SETTING_REPLY_SMS_READ) {
+            if (mReplySmsSetting == SETTING_REPLY_SMS_ASK_USER) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_READ");
                 // 3.1
                 return new AskToReadContentReplySmsStage(mSceneBase, mFeedback, sms);
-            } else if (mReplySmsSetting == SETTING_REPLY_SMS_ASK_USER) {
+            } else if (mReplySmsSetting == SETTING_REPLY_SMS_READ) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_ASK_USER");
                 // 3.2
                 return new AskToReplySmsReadStage(mSceneBase, mFeedback, sms);

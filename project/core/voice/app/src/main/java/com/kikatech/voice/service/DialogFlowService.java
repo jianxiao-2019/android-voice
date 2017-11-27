@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
 import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
@@ -89,6 +90,23 @@ public class DialogFlowService implements
             mTtsSpeaker = TtsService.getInstance().getSpeaker();
             mTtsSpeaker.init(mContext, null);
             mTtsSpeaker.setTtsStateChangedListener(mTtsListener);
+        }
+    }
+
+    private void tts(Pair<String, Integer>[] pairs, IDialogFlowFeedback.IToSceneFeedback listener) {
+        if (mTtsSpeaker == null) {
+            return;
+        }
+        try {
+            if (mTtsSpeaker.isTtsSpeaking()) {
+                mTtsSpeaker.interrupt();
+                tts(pairs, listener);
+            } else {
+                mTtsListener.bindListener(listener);
+                mTtsSpeaker.speak(pairs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -215,6 +233,12 @@ public class DialogFlowService implements
     }
 
     private final ISceneFeedback mSceneFeedback = new ISceneFeedback() {
+        @Override
+        public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
+            mCallback.onTextPairs(pairs, extras);
+            tts(pairs, feedback);
+        }
+
         @Override
         public void onText(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
             mCallback.onText(text, extras);
