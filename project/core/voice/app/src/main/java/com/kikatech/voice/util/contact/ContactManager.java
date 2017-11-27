@@ -21,7 +21,7 @@ public class ContactManager {
     public static final String TAG = "ContactManager";
 
     private static ContactManager sIns;
-    private HashMap<String, PhoneBookContact> mPhoneBook;
+    private final HashMap<String, PhoneBookContact> mPhoneBook = new HashMap<>();
 
     private int mPhoneTypeIdx = -1;
     private int mPhoneLabelIdx = -1;
@@ -33,12 +33,33 @@ public class ContactManager {
         return sIns;
     }
 
-    public void init(Context ctx) {
-        if (mPhoneBook == null) {
+    public void init(final Context ctx) {
+        int phoneBookCount;
+        synchronized (mPhoneBook) {
+            phoneBookCount = mPhoneBook.size();
+        }
+
+        if (phoneBookCount == 0) {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "init phone book info");
             }
-            mPhoneBook = getPhoneBook(ctx);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (mPhoneBook) {
+
+                        final long t = System.currentTimeMillis();
+
+                        HashMap<String, PhoneBookContact> pb = getPhoneBook(ctx);
+                        mPhoneBook.clear();
+                        mPhoneBook.putAll(pb);
+
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
+                        }
+                    }
+                }
+            }).start();
         } else {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "no need to init phone book info");
@@ -46,15 +67,8 @@ public class ContactManager {
         }
     }
 
-    public PhoneBookContact findName(Context ctx, String name) {
-
-        if (TextUtils.isEmpty(name)) {
-            return null;
-        }
-
-        init(ctx);
-
-        String[] contactNames = mPhoneBook != null ? mPhoneBook.keySet().toArray(new String[mPhoneBook.size()]) : null;
+    private PhoneBookContact findName(String name, HashMap<String, PhoneBookContact> phoneBook) {
+        String[] contactNames = phoneBook.size() > 0 ? phoneBook.keySet().toArray(new String[phoneBook.size()]) : null;
         String number = findNumber(name);
 
         if (contactNames == null || contactNames.length == 0) {
@@ -83,8 +97,21 @@ public class ContactManager {
                 }
                 return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
             } else {
-                return mPhoneBook.get(foundName);
+                return phoneBook.get(foundName);
             }
+        }
+    }
+
+    public PhoneBookContact findName(final Context ctx, final String name) {
+
+        if (TextUtils.isEmpty(name)) {
+            return null;
+        }
+
+        init(ctx);
+
+        synchronized (mPhoneBook) {
+            return findName(name, mPhoneBook);
         }
     }
 
@@ -102,7 +129,7 @@ public class ContactManager {
         return number;
     }
 
-    private HashMap<String, PhoneBookContact> getPhoneBook(Context ctx) {
+    private synchronized HashMap<String, PhoneBookContact> getPhoneBook(Context ctx) {
         Cursor phones = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
 
         if (phones == null || phones.getCount() == 0) {

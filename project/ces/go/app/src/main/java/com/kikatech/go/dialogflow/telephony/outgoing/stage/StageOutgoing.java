@@ -92,7 +92,7 @@ public class StageOutgoing extends SceneStage {
                     } else {
                         return NAME_STATE_FUZZY_MATCH;
                     }
-                } else if (mContact.phoneNumbers != null && !mContact.phoneNumbers.isEmpty()) {
+                } else if (!mContact.phoneNumbers.isEmpty()) {
                     return NAME_STATE_NUMBER_MATCH;
                 }
             } else {
