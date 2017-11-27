@@ -38,7 +38,7 @@ public class AskToReplySmsOptionStage extends BaseReplySmsStage {
                 exitScene();
                 break;
         }
-        return null;
+        return this;
     }
 
     @Override

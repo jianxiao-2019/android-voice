@@ -23,7 +23,7 @@ public class StageSendSmsIdle extends BaseSendSmsStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         if (!action.equals(SceneActions.ACTION_SEND_SMS)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-            return null;
+            return this;
         }
 
         return checkSendTargetAvailable(TAG, getSmsContent(), mSceneBase, mFeedback);

@@ -30,14 +30,14 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
                 return new StageSendIMConfirm(mSceneBase, mFeedback);
             case SceneActions.ACTION_SEND_IM_NO:
             case SceneActions.ACTION_SEND_IM_CHANGE_IM_BODY:
-                return new StageConfirmSendMessage(mSceneBase, mFeedback);
+                return new StageAskMsgBody(mSceneBase, mFeedback);
             case SceneActions.ACTION_SEND_IM_MSGBODY:
                 return new StageConfirmSendMessage(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
                 break;
         }
-        return new StageConfirmSendMessage(mSceneBase, mFeedback);
+        return this;
     }
 
     @Override

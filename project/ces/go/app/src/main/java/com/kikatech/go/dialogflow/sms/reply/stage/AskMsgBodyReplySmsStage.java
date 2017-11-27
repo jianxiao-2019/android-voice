@@ -32,7 +32,7 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
             String messageBody = SmsUtil.parseTagAny(extra);
             return new ConfirmMsgBodyReplySmsStage(mSceneBase, mFeedback, mSmsObject, messageBody);
         }
-        return null;
+        return this;
     }
 
     @Override

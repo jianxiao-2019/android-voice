@@ -28,7 +28,7 @@ public class StageAskForSmsBody extends BaseSendSmsStage {
         setQueryAnyWords(false);
         if(!action.equals(SceneActions.ACTION_SEND_SMS_MSGBODY)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-            return null;
+            return this;
         }
 
         return getStageCheckSmsBody(TAG, getSmsContent(), mSceneBase, mFeedback);

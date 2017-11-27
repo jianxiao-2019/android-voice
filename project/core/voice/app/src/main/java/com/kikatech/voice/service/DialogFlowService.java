@@ -15,6 +15,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSpeaker;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
@@ -183,7 +184,7 @@ public class DialogFlowService implements
             LogUtil.logd(TAG, "onMessage message = " + message);
         }
 
-        boolean finished = true;
+        boolean finished = false;
         String query = "";
         if (message instanceof IntermediateMessage) {
             IntermediateMessage intermediateMessage = (IntermediateMessage) message;
@@ -191,7 +192,6 @@ public class DialogFlowService implements
                 LogUtil.log(TAG, "Speech spoken" + " : " + intermediateMessage.text);
             }
 
-            finished = false;
             query = intermediateMessage.text;
         } else if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
@@ -200,17 +200,24 @@ public class DialogFlowService implements
             }
 
             query = textMessage.text;
+            finished = true;
         } else if (message instanceof EditTextMessage) {
             String alter = ((EditTextMessage) message).context;
             if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
 
             query = alter;
+            finished = true;
+        } else if(message instanceof EmojiRecommendMessage) {
+            EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EmojiRecommendMessage descriptionText = " + emoji.descriptionText + " : " + emoji.emoji);
         }
 
-        if (finished && mDialogFlow != null) {
-            mDialogFlow.talk(query, mQueryAnyContent, mQueryStatusCallback);
+        if(!TextUtils.isEmpty(query)) {
+            if (finished && mDialogFlow != null) {
+                mDialogFlow.talk(query, mQueryAnyContent, mQueryStatusCallback);
+            }
+            mCallback.onASRResult(query, finished);
         }
-        mCallback.onASRResult(query, finished);
     }
 
     @Override

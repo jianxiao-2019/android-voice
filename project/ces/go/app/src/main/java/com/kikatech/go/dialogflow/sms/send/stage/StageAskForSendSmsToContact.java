@@ -41,7 +41,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
                 break;
         }
-        return null;
+        return this;
     }
 
     @Override

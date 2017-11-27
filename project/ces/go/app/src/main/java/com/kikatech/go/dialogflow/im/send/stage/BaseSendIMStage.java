@@ -37,10 +37,6 @@ public class BaseSendIMStage extends SceneStage {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action : " + action);
         IMContent imc = IMUtil.parse(extra);
         ((SceneSendIM) mSceneBase).updateIMContent(imc);
-        if (action.equals(Intent.ACTION_UNKNOWN)) {
-            if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unknown Action, repeat current stage");
-            return this;
-        }
         return getNextStage(action, extra);
     }
 
