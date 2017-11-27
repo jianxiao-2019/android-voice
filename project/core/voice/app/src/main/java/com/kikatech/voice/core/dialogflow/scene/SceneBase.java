@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.util.log.LogUtil;
 
 /**
  * Created by tianli on 17-11-10.
@@ -56,6 +57,9 @@ public abstract class SceneBase implements DialogObserver {
         String action = intent.getAction();
         if (TextUtils.isEmpty(action)) {
             return;
+        }
+        if(LogUtil.DEBUG) {
+            LogUtil.logw("SceneBase", "onIntent : " + intent);
         }
         if (!Intent.ACTION_EXIT.equals(action)) {
             SceneStage stage = mStage.next(action, intent.getExtra());
