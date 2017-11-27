@@ -60,6 +60,11 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         SmsContent sc = getSmsContent();
         String[] uiAndTtsText;

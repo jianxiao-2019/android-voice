@@ -56,6 +56,11 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         mCurrentName = getSmsContent().getMatchedName();
         String[] uiAndTtsText = SceneUtil.getConfirmContact(mSceneBase.getContext(), mCurrentName);

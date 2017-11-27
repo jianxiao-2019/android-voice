@@ -25,6 +25,11 @@ public class StageAskName extends StageOutgoing {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         String[] uiAndTtsText = SceneUtil.getAskContactToCall(mSceneBase.getContext());
         if (uiAndTtsText.length > 0) {

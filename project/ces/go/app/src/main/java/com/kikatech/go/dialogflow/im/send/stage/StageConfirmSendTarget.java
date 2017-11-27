@@ -37,6 +37,11 @@ public class StageConfirmSendTarget extends BaseSendIMStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         IMContent imc = getIMContent();
         String[] uiAndTtsText = SceneUtil.getConfirmContact(mSceneBase.getContext(), imc.getSendTarget());

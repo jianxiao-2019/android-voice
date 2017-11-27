@@ -12,6 +12,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class StageAskAddEmoji extends BaseSendIMStage {
+
     StageAskAddEmoji(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
@@ -19,6 +20,11 @@ public class StageAskAddEmoji extends BaseSendIMStage {
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
         return new StageSendIMConfirm(mSceneBase, mFeedback);
+    }
+
+    @Override
+    public void doAction() {
+        action();
     }
 
     @Override

@@ -41,6 +41,11 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         IMContent imc = getIMContent();
         Context context = mSceneBase.getContext();

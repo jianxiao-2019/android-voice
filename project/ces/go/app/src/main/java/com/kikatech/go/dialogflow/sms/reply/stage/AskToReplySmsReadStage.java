@@ -8,7 +8,6 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -42,6 +41,11 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         String[] uiAndTtsText;
         switch (mReplySmsSetting) {
@@ -63,34 +67,13 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
             Pair<String, Integer>[] pairs = new Pair[2];
             pairs[0] = new Pair<>(ttsPart1, TtsSpeaker.TTS_VOICE_1);
             pairs[1] = new Pair<>(ttsPart2, TtsSpeaker.TTS_VOICE_2);
-            speak(pairs, args, new IDialogFlowFeedback.IToSceneFeedback() {
-                @Override
-                public void onTtsStart() {
-                }
-
-                @Override
-                public void onTtsComplete() {
-                    goToAskReplyStage();
-                }
-
-                @Override
-                public void onTtsError() {
-                    goToAskReplyStage();
-                }
-
-                @Override
-                public void onTtsInterrupted() {
-                }
-
-                @Override
-                public boolean isEndOfScene() {
-                    return false;
-                }
-            });
+            speak(pairs, args);
         }
     }
 
-    private void goToAskReplyStage() {
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
         mSceneBase.nextStage(new AskToReplySmsOptionStage(mSceneBase, mFeedback, mSmsObject));
+        super.onStageActionDone(isInterrupted);
     }
 }

@@ -62,6 +62,11 @@ public class StageConfirmNumber extends StageOutgoing {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         String speech = "error occurred, please contact RD";
         Bundle extras = null;

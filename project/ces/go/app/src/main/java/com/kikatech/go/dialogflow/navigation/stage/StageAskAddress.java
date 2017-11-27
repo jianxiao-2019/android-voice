@@ -22,24 +22,29 @@ public class StageAskAddress extends BaseNaviStage {
     StageAskAddress(@NonNull SceneBase scene, ISceneFeedback feedback, boolean again) {
         super(scene, feedback);
         mAgain = again;
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "StageAskAddress init");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "StageAskAddress init");
     }
 
     @Override
     public SceneStage next(String action, Bundle extra) {
-        super.next(action, extra);
-        if(mStopNavi) {
-            return null;
+        SceneStage superStage = super.next(action, extra);
+        if (superStage != null) {
+            return superStage;
         }
 
         String naviAddress = NaviSceneUtil.parseAddress(extra);
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
 
         if (TextUtils.isEmpty(naviAddress)) {
             return new StageAskAddress(mSceneBase, mFeedback, true);
         } else {
             return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
         }
+    }
+
+    @Override
+    public void doAction() {
+        action();
     }
 
     @Override

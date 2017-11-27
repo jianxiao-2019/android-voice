@@ -34,6 +34,11 @@ public class StageAskSendTarget extends BaseSendIMStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         setQueryAnyWords(true);
         String[] uiAndTtsText = SceneUtil.getAskContact(mSceneBase.getContext());

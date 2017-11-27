@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.util.AudioManagerUtil;
-import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -40,6 +39,11 @@ public class StageIncoming extends SceneStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         String[] uiAndTtsText = SceneUtil.getAskActionForIncoming(mSceneBase.getContext(), mCaller);
         if (uiAndTtsText.length > 0) {
@@ -49,31 +53,13 @@ public class StageIncoming extends SceneStage {
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
 
             AudioManagerUtil.getIns().muteRing();
-            speak(ttsText, args, new IDialogFlowFeedback.IToSceneFeedback() {
-                @Override
-                public void onTtsStart() {
-                }
-
-                @Override
-                public void onTtsComplete() {
-                    AudioManagerUtil.getIns().unmuteRing();
-                }
-
-                @Override
-                public void onTtsError() {
-                    AudioManagerUtil.getIns().unmuteRing();
-                }
-
-                @Override
-                public void onTtsInterrupted() {
-                    AudioManagerUtil.getIns().unmuteRing();
-                }
-
-                @Override
-                public boolean isEndOfScene() {
-                    return false;
-                }
-            });
+            speak(ttsText, args);
         }
+    }
+
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
+        AudioManagerUtil.getIns().unmuteRing();
+        super.onStageActionDone(isInterrupted);
     }
 }

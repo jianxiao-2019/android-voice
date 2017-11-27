@@ -34,7 +34,6 @@ public class StageSendSmsConfirm extends BaseSendSmsStage {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "Send Message : \n" + getSmsContent().toString());
         SmsContent sc = getSmsContent();
         SmsUtil.sendSms(mSceneBase.getContext(), sc.getChosenPhoneNumber(), sc.getSmsBody());
-        onActionDone(true);
         exitScene();
     }
 }

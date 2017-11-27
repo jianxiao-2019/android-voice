@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
-import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
+import com.kikatech.voice.core.dialogflow.scene.ISceneStageFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneManager;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -94,7 +94,7 @@ public class DialogFlowService implements
         }
     }
 
-    private void tts(Pair<String, Integer>[] pairs, IDialogFlowFeedback.IToSceneFeedback listener) {
+    private void tts(Pair<String, Integer>[] pairs, ISceneStageFeedback listener) {
         if (mTtsSpeaker == null) {
             return;
         }
@@ -111,7 +111,7 @@ public class DialogFlowService implements
         }
     }
 
-    private void tts(String words, IDialogFlowFeedback.IToSceneFeedback listener) {
+    private void tts(String words, ISceneStageFeedback listener) {
         if (mTtsSpeaker == null) {
             return;
         }
@@ -241,13 +241,13 @@ public class DialogFlowService implements
 
     private final ISceneFeedback mSceneFeedback = new ISceneFeedback() {
         @Override
-        public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
+        public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, ISceneStageFeedback feedback) {
             mCallback.onTextPairs(pairs, extras);
             tts(pairs, feedback);
         }
 
         @Override
-        public void onText(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
+        public void onText(String text, Bundle extras, ISceneStageFeedback feedback) {
             mCallback.onText(text, extras);
             tts(text, feedback);
         }
@@ -258,17 +258,17 @@ public class DialogFlowService implements
         }
 
         @Override
-        public void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
-            mCallback.onStageActionDone(isEndOfScene, isInterrupted);
+        public void onStageActionDone(boolean isInterrupted) {
+            mCallback.onStageActionDone(isInterrupted);
         }
     };
 
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
 
     private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {
-        private IDialogFlowFeedback.IToSceneFeedback listener;
+        private ISceneStageFeedback listener;
 
-        private void bindListener(IDialogFlowFeedback.IToSceneFeedback listener) {
+        private void bindListener(ISceneStageFeedback listener) {
             this.listener = listener;
         }
 
@@ -278,7 +278,7 @@ public class DialogFlowService implements
                 LogUtil.logv(TAG, "onTtsStart");
             }
             if (listener != null) {
-                listener.onTtsStart();
+                listener.onStageActionStart();
             }
         }
 
@@ -288,7 +288,7 @@ public class DialogFlowService implements
                 LogUtil.logv(TAG, "onTtsComplete");
             }
             if (listener != null) {
-                listener.onTtsComplete();
+                listener.onStageActionDone(false);
             }
         }
 
@@ -298,7 +298,7 @@ public class DialogFlowService implements
                 LogUtil.logv(TAG, "onTtsInterrupted");
             }
             if (listener != null) {
-                listener.onTtsInterrupted();
+                listener.onStageActionDone(true);
             }
         }
 
@@ -308,7 +308,7 @@ public class DialogFlowService implements
                 LogUtil.logv(TAG, "onTtsError");
             }
             if (listener != null) {
-                listener.onTtsError();
+                listener.onStageActionDone(true);
             }
         }
     }
@@ -321,6 +321,7 @@ public class DialogFlowService implements
         @Override
         public void onSceneExit(String scene) {
             mDialogFlow.resetContexts();
+            mCallback.onSceneExit();
         }
     };
 

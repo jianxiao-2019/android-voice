@@ -1,28 +1,30 @@
-package com.kikatech.go.dialogflow.telephony.outgoing.stage;
+package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
- * Created by tianli on 17-11-11.
+ * @author SkeeterWang Created on 2017/11/27.
  */
 
-public class StageNoContact extends StageOutgoing {
-    private static final String TAG = "StageNoContact";
+public class StageCancelNaviation extends SceneStage {
 
-    public StageNoContact(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    public StageCancelNaviation(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
     @Override
     public SceneStage next(String action, Bundle extra) {
-        return super.next(action, extra);
+        return null;
+    }
+
+    @Override
+    public void prepare() {
     }
 
     @Override
@@ -32,7 +34,7 @@ public class StageNoContact extends StageOutgoing {
 
     @Override
     public void action() {
-        String[] uiAndTtsText = SceneUtil.getContactNotFound(mSceneBase.getContext());
+        String[] uiAndTtsText = SceneUtil.getStopCommon(mSceneBase.getContext());
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
@@ -40,5 +42,14 @@ public class StageNoContact extends StageOutgoing {
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
             speak(ttsText, args);
         }
+    }
+
+    @Override
+    public void onStageActionStart() {
+    }
+
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
+        exitScene();
     }
 }

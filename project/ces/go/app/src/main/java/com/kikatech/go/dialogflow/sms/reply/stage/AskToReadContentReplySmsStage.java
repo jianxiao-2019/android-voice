@@ -39,6 +39,11 @@ public class AskToReadContentReplySmsStage extends BaseReplySmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         String[] uiAndTtsText = SceneUtil.getAskReadMsg(mSceneBase.getContext(), mSmsObject.getUserName());
         if (uiAndTtsText.length > 0) {

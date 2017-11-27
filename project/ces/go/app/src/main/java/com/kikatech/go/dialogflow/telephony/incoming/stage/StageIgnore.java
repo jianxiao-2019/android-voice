@@ -3,8 +3,6 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 import android.os.Bundle;
 
 import com.kikatech.go.telephony.TelephonyServiceManager;
-import com.kikatech.go.util.LogUtil;
-import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -31,11 +29,11 @@ public class StageIgnore extends SceneStage {
 
     @Override
     public void action() {
-        ignorePhoneCall();
+        TelephonyServiceManager.getIns().turnOnSilentMode(mSceneBase.getContext());
     }
 
-    private void ignorePhoneCall() {
-        TelephonyServiceManager.getIns().turnOnSilentMode(mSceneBase.getContext());
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
         exitScene();
     }
 }

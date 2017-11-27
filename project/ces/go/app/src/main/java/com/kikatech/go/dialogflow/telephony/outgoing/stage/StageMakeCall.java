@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -22,6 +21,7 @@ public class StageMakeCall extends StageOutgoing {
     private static final String TAG = "StageMakeCall";
 
     private ContactManager.PhoneBookContact mContact;
+    private String mNumberToCall;
 
     public StageMakeCall(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
         super(scene, feedback);
@@ -34,13 +34,18 @@ public class StageMakeCall extends StageOutgoing {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         String speech = "error occurred, please contact RD";
         String phoneNumber = null;
         if (mContact != null) {
             Context context = mSceneBase.getContext();
             String[] uiAndTtsText;
-            if (mContact.phoneNumbers != null && !mContact.phoneNumbers.isEmpty()) {
+            if (!mContact.phoneNumbers.isEmpty()) {
                 phoneNumber = mContact.phoneNumbers.get(0).number;
                 if (!TextUtils.isEmpty(mContact.displayName)) {
                     uiAndTtsText = SceneUtil.getCallContact(context, mContact.displayName);
@@ -59,38 +64,15 @@ public class StageMakeCall extends StageOutgoing {
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, speech);
         }
-        final String finalPhoneNumber = phoneNumber;
-        speak(speech, new IDialogFlowFeedback.IToSceneFeedback() {
-            @Override
-            public void onTtsStart() {
-            }
-
-            @Override
-            public void onTtsComplete() {
-                makePhoneCall(finalPhoneNumber);
-            }
-
-            @Override
-            public void onTtsError() {
-                makePhoneCall(finalPhoneNumber);
-            }
-
-            @Override
-            public void onTtsInterrupted() {
-                makePhoneCall(finalPhoneNumber);
-            }
-
-            @Override
-            public boolean isEndOfScene() {
-                return true;
-            }
-        });
+        mNumberToCall = phoneNumber;
+        speak(speech);
     }
 
-    private void makePhoneCall(String number) {
-        if (!TextUtils.isEmpty(number)) {
-            TelephonyServiceManager.getIns().makePhoneCall(mSceneBase.getContext(), number);
-            exitScene();
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
+        if (!TextUtils.isEmpty(mNumberToCall)) {
+            TelephonyServiceManager.getIns().makePhoneCall(mSceneBase.getContext(), mNumberToCall);
         }
+        exitScene();
     }
 }

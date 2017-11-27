@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.dialogflow.stop.SceneStopIntent;
-import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -27,41 +26,22 @@ public class StageStopNavigation extends SceneStage {
 
     @Override
     public void prepare() {
+    }
 
+    @Override
+    public void doAction() {
+        action();
     }
 
     @Override
     public void action() {
         String ttsText = SceneUtil.getStopNavigation(mSceneBase.getContext());
-        speak(ttsText, new IDialogFlowFeedback.IToSceneFeedback() {
-            @Override
-            public void onTtsStart() {
-            }
-
-            @Override
-            public void onTtsComplete() {
-                stopNavigation();
-            }
-
-            @Override
-            public void onTtsError() {
-                stopNavigation();
-            }
-
-            @Override
-            public void onTtsInterrupted() {
-                stopNavigation();
-            }
-
-            @Override
-            public boolean isEndOfScene() {
-                return true;
-            }
-        });
+        speak(ttsText);
     }
 
-    private void stopNavigation() {
-        NaviSceneUtil.stopNavigation(mSceneBase.getContext(), ((SceneStopIntent)mSceneBase).getMainUIClass());
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
+        NaviSceneUtil.stopNavigation(mSceneBase.getContext(), ((SceneStopIntent) mSceneBase).getMainUIClass());
         exitScene();
     }
 }

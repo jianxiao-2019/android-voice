@@ -45,6 +45,11 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         SmsContent sc = getSmsContent();
         Context context = mSceneBase.getContext();

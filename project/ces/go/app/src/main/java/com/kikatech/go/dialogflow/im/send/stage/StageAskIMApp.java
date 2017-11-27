@@ -41,6 +41,11 @@ public class StageAskIMApp extends BaseSendIMStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "mIMNotSupported:" + mIMNotSupported);
         Context context = mSceneBase.getContext();

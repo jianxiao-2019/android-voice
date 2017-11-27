@@ -104,11 +104,15 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
                     @Override
                     public void onStagePrepared(String scene, String action, SceneStage sceneStage) {
-                        sceneStage.action();
+                        sceneStage.doAction();
                     }
 
                     @Override
-                    public void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
+                    public void onStageActionDone(boolean isInterrupted) {
+                    }
+
+                    @Override
+                    public void onSceneExit() {
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override

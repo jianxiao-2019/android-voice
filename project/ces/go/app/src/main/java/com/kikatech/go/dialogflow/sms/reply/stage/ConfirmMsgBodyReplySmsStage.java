@@ -43,6 +43,11 @@ public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, mMsgBody);

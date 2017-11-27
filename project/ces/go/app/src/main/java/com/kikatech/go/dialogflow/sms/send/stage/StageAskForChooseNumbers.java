@@ -74,6 +74,11 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         if (LogUtil.DEBUG && mErrStatus != ERR_STATUS_NONE) {
             LogUtil.log(TAG, "Error Status : " + mErrStatus);

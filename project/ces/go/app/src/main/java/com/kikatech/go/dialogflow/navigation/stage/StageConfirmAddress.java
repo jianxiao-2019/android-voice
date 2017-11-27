@@ -30,9 +30,9 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public SceneStage next(String action, Bundle extra) {
-        super.next(action, extra);
-        if (mStopNavi) {
-            return null;
+        SceneStage superStage = super.next(action, extra);
+        if (superStage != null) {
+            return superStage;
         }
 
         switch (action) {
@@ -46,6 +46,11 @@ public class StageConfirmAddress extends BaseNaviStage {
                 return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
         }
         return this;
+    }
+
+    @Override
+    public void doAction() {
+        action();
     }
 
     @Override

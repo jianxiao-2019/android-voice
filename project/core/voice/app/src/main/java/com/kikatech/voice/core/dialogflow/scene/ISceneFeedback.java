@@ -8,11 +8,11 @@ import android.util.Pair;
  */
 
 public interface ISceneFeedback {
-    void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback);
+    void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, ISceneStageFeedback feedback);
 
-    void onText(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback);
+    void onText(String text, Bundle extras, ISceneStageFeedback feedback);
 
     void onStagePrepared(String scene, String action, SceneStage sceneStage);
 
-    void onStageActionDone(boolean isEndOfScene, boolean isInterrupted);
+    void onStageActionDone(boolean isInterrupted);
 }

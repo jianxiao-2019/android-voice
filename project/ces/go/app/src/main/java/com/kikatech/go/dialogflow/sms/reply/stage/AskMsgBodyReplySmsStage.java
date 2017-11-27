@@ -36,6 +36,11 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         setQueryAnyWords(true);
         String[] uiAndTtsText = SceneUtil.getAskMsg(mSceneBase.getContext());

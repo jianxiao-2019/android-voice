@@ -3,8 +3,6 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 import android.os.Bundle;
 
 import com.kikatech.go.telephony.TelephonyServiceManager;
-import com.kikatech.go.util.LogUtil;
-import com.kikatech.voice.core.dialogflow.scene.IDialogFlowFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -30,12 +28,11 @@ public class StageReject extends SceneStage {
 
     @Override
     public void action() {
-        rejectPhoneCall();
+        TelephonyServiceManager.getIns().killPhoneCall(mSceneBase.getContext());
     }
 
-    private void rejectPhoneCall() {
-        TelephonyServiceManager.getIns().killPhoneCall(mSceneBase.getContext());
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
         exitScene();
     }
-
 }

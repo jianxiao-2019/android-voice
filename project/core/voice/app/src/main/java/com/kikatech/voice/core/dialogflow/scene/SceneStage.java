@@ -8,7 +8,7 @@ import android.util.Pair;
  * Created by tianli on 17-11-11.
  */
 
-public abstract class SceneStage {
+public abstract class SceneStage implements ISceneStageFeedback {
 
     protected final String TAG = getClass().getSimpleName();
     protected final ISceneFeedback mFeedback;
@@ -32,16 +32,18 @@ public abstract class SceneStage {
      */
     public abstract SceneStage next(String action, Bundle extra);
 
-    public abstract void prepare();
+    protected abstract void prepare();
 
     /**
-     * Perform the action, must be invoked after call {@link #next(String, Bundle) next}
+     * Define the action that the stage should perform, <p>
+     * this action will be performed by {@link #doAction doAction} and is synchronized by default. <p>
+     * If asynchronized feature is needed(ex: tts), override {@link #doAction doAction} method,
+     * and maintain the stage status via {@link ISceneStageFeedback}
      */
-    public abstract void action();
+    protected abstract void action();
 
     final protected void exitScene() {
         mSceneBase.exit();
-        onActionDone(true, false);
     }
 
     final void prepareAction(String scene, String action, SceneStage stage) {
@@ -51,87 +53,41 @@ public abstract class SceneStage {
         }
     }
 
-    protected void onActionDone(boolean isEndOfScene) {
-        onActionDone(isEndOfScene, false);
-    }
-
-    protected void onActionDone(boolean isEndOfScene, boolean isInterrupted) {
-        if (mFeedback != null) {
-            mFeedback.onStageActionDone(isEndOfScene, isInterrupted);
-        }
+    /**
+     * Perform the action, must be invoked after call {@link #next(String, Bundle) next} <p>
+     * Override and call {@link #action()} instead of super if asynchronized feature(ex: tts) is needed, <p>
+     * and maintain the stage status via {@link ISceneStageFeedback}
+     */
+    public void doAction() {
+        action();
+        onStageActionDone(false);
     }
 
     protected void speak(String text) {
-        speak(text, null, null);
-    }
-
-    protected void speak(String text, IDialogFlowFeedback.IToSceneFeedback feedback) {
-        speak(text, null, feedback);
+        speak(text, null);
     }
 
     protected void speak(String text, Bundle extras) {
-        speak(text, extras, null);
-    }
-
-    protected void speak(String text, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
         if (mFeedback != null) {
-            mDefaultToSceneFeedback.bindFeedback(feedback);
-            mFeedback.onText(text, extras, mDefaultToSceneFeedback);
+            mFeedback.onText(text, extras, this);
         }
     }
 
-    protected void speak(Pair<String, Integer>[] pairs, Bundle extras, IDialogFlowFeedback.IToSceneFeedback feedback) {
+    protected void speak(Pair<String, Integer>[] pairs, Bundle extras) {
         if (mFeedback != null) {
-            mDefaultToSceneFeedback.bindFeedback(feedback);
-            mFeedback.onTextPairs(pairs, extras, mDefaultToSceneFeedback);
+            mFeedback.onTextPairs(pairs, extras, this);
         }
     }
 
-    private IToSceneFeedbackDispatcher mDefaultToSceneFeedback = new IToSceneFeedbackDispatcher();
+    @Override
+    public void onStageActionStart() {
+    }
 
-    private class IToSceneFeedbackDispatcher implements IDialogFlowFeedback.IToSceneFeedback {
-        private IDialogFlowFeedback.IToSceneFeedback mToFeedback;
-
-        private void bindFeedback(IDialogFlowFeedback.IToSceneFeedback feedback) {
-            mToFeedback = feedback;
-        }
-
-        @Override
-        public void onTtsStart() {
-            if (mToFeedback != null) {
-                mToFeedback.onTtsStart();
-            }
-        }
-
-        @Override
-        public void onTtsComplete() {
-            onActionDone(isEndOfScene());
-            if (mToFeedback != null) {
-                mToFeedback.onTtsComplete();
-            }
-        }
-
-        @Override
-        public void onTtsError() {
-            onActionDone(isEndOfScene());
-            if (mToFeedback != null) {
-                mToFeedback.onTtsError();
-            }
-        }
-
-        @Override
-        public void onTtsInterrupted() {
-            onActionDone(isEndOfScene(), true);
-            if (mToFeedback != null) {
-                mToFeedback.onTtsInterrupted();
-            }
-        }
-
-        @Override
-        public boolean isEndOfScene() {
-            return mToFeedback != null && mToFeedback.isEndOfScene();
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
+        if (mFeedback != null) {
+            mFeedback.onStageActionDone(isInterrupted);
         }
     }
 }
-
 

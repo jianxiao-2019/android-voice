@@ -73,7 +73,7 @@ public class UiTaskManager {
                 switch (type) {
                     case TaskType.TYPE_SCENE_STAGE:
                         SceneStage stage = (SceneStage) obj;
-                        stage.action();
+                        stage.doAction();
                         break;
                     case TaskType.TYPE_SPEECH:
                         String speech = (String) obj;
@@ -102,7 +102,7 @@ public class UiTaskManager {
         if (isLayoutPerformTask()) {
             addToQueue(new Task(TaskType.TYPE_SCENE_STAGE, sceneStage));
         } else {
-            sceneStage.action();
+            sceneStage.doAction();
         }
     }
 
@@ -125,12 +125,14 @@ public class UiTaskManager {
         }
     }
 
-    public synchronized void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
-        unlock(!isEndOfScene && !isInterrupted);
-        if (isEndOfScene) {
-            displayOptions(mDefaultOptionList);
-            unlock(false);
-        }
+    public synchronized void onStageActionDone(boolean isInterrupted) {
+        unlock(!isInterrupted);
+    }
+
+    public synchronized void onSceneExit() {
+        clearQueue();
+        displayOptions(mDefaultOptionList);
+        unlock(false);
     }
 
     public synchronized void release() {
@@ -140,6 +142,10 @@ public class UiTaskManager {
 
     private boolean isLayoutPerformTask() {
         return mLayout != null && (mLayout.isViewLocking() || !mTaskQueue.isEmpty());
+    }
+
+    private synchronized void clearQueue() {
+        mTaskQueue.clear();
     }
 
     private synchronized Task pollFromQueue() {

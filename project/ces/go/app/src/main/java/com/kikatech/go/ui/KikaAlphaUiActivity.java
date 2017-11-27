@@ -138,11 +138,19 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onStageActionDone(boolean isEndOfScene, boolean isInterrupted) {
+                    public void onStageActionDone(boolean isInterrupted) {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("isEndOfScene: %1$s, isInterrupted: %2$s", isEndOfScene, isInterrupted));
+                            LogUtil.log(TAG, String.format("isInterrupted: %s", isInterrupted));
                         }
-                        mUiManager.onStageActionDone(isEndOfScene, isInterrupted);
+                        mUiManager.onStageActionDone(isInterrupted);
+                    }
+
+                    @Override
+                    public void onSceneExit() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onSceneExit");
+                        }
+                        mUiManager.onSceneExit();
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override

@@ -45,6 +45,11 @@ public class StageConfirmName extends StageOutgoing {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
         String[] uiAndTtsText = SceneUtil.getConfirmContact(mSceneBase.getContext(), mContact.displayName);
         if (uiAndTtsText.length > 0) {
