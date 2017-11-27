@@ -1,14 +1,18 @@
 package com.kikatech.go.dialogflow.im.send.stage;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.AccessibilityUtils;
+import com.kikatech.go.accessibility.im.MessageEventDispatcher;
 import com.kikatech.go.dialogflow.im.IMContent;
 import com.kikatech.go.message.processor.IMProcessor;
+import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -20,6 +24,17 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 public class StageSendIMConfirm extends BaseSendIMStage {
     StageSendIMConfirm(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    private void backToMainActivity(Context ctx) {
+        android.content.Intent intent = new android.content.Intent(ctx, KikaAlphaUiActivity.class);
+        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -44,8 +59,24 @@ public class StageSendIMConfirm extends BaseSendIMStage {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+
+                    final MessageEventDispatcher messageEventDispatcher = new MessageEventDispatcher();
+                    AccessibilityManager.getInstance().registerDispatcher(messageEventDispatcher);
+
                     IMProcessor processor = IMProcessor.createIMProcessor(
-                            ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody());
+                            ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody()).registerCallback(new IMProcessor.IIMProcessorFlow() {
+                        @Override
+                        public void onStart() {
+                            if (LogUtil.DEBUG) LogUtil.log(TAG, "Start ...");
+                        }
+
+                        @Override
+                        public void onStop() {
+                            if (LogUtil.DEBUG) LogUtil.log(TAG, "End ...");
+                            AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
+                            backToMainActivity(ctx);
+                        }
+                    });
                     if (processor != null) {
                         processor.start();
                     }

@@ -29,6 +29,18 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
     abstract public String getPackage();
 
+    public interface IIMProcessorFlow {
+        void onStart();
+
+        void onStop();
+    }
+
+    private IIMProcessorFlow mIIMProcessorFlow;
+    public IMProcessor registerCallback(IIMProcessorFlow callback) {
+        mIIMProcessorFlow = callback;
+        return this;
+    }
+
     @Override
     public void start() {
         setRunning(true);
@@ -47,33 +59,41 @@ public abstract class IMProcessor extends AccessibilityProcessor {
         if (openShareIntent()) {
             updateStage(ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT);
         }
+
+        if(mIIMProcessorFlow != null) {
+            mIIMProcessorFlow.onStart();
+        }
     }
 
     @Override
     public void stop() {
         setRunning(false);
-        returnToApp();
+
         String stage = getStage();
-        LogUtil.logw(TAG, "Send message failed with stage: " + stage);
+        if(LogUtil.DEBUG) LogUtil.logw(TAG, "Send message failed with stage: " + stage);
         switch (stage) {
             case ProcessingStage.IMProcessStage.STAGE_INITIAL:
-                showToast("Not install app: " + getPackage());
+                if(LogUtil.DEBUG) showToast("Not install app: " + getPackage());
                 break;
             case ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT:
-                showToast("Cannot find search button");
+                if(LogUtil.DEBUG) showToast("Cannot find search button");
                 break;
             case ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON:
-                showToast("Cannot enter search name");
+                if(LogUtil.DEBUG) showToast("Cannot enter search name");
                 break;
             case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
-                showToast("Cannot find user: " + mTarget);
+                if(LogUtil.DEBUG) showToast("Cannot find user: " + mTarget);
                 break;
             case ProcessingStage.IMProcessStage.STAGE_DONE:
-                showToast("Message sent.");
+                if(LogUtil.DEBUG) showToast("Message sent.");
                 break;
             default:
-                showToast("Send message failed.");
+                if(LogUtil.DEBUG) showToast("Send message failed.");
                 break;
+        }
+
+        if(mIIMProcessorFlow != null) {
+            mIIMProcessorFlow.onStop();
         }
     }
 
