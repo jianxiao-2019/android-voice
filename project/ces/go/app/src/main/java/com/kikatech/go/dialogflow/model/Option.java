@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * @author SkeeterWang Created on 2017/11/16.
  */
 
-public class Option implements Parcelable {
+public class Option extends UiModel {
     private String displayText;
     private String nextSceneAction;
 
@@ -23,6 +23,14 @@ public class Option implements Parcelable {
     public String getNextSceneAction() {
         return nextSceneAction;
     }
+
+
+    @Override
+    void print(String MAIN_TAG) {
+    }
+
+
+    /*---------- Parcelable impl ----------*/
 
     @Override
     public int describeContents() {
@@ -51,4 +59,5 @@ public class Option implements Parcelable {
             return new Option[size];
         }
     };
+
 }

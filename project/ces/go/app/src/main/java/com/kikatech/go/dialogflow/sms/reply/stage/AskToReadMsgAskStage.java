@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -15,11 +17,11 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/20.
  */
 
-public class AskToReadContentReplySmsStage extends BaseReplySmsStage {
+public class AskToReadMsgAskStage extends BaseReplySmsStage {
 
     private final SmsObject mSmsObject;
 
-    AskToReadContentReplySmsStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
+    AskToReadMsgAskStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
         super(scene, feedback);
         mSmsObject = sms;
     }
@@ -45,13 +47,18 @@ public class AskToReadContentReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
-        String[] uiAndTtsText = SceneUtil.getAskReadMsg(mSceneBase.getContext(), mSmsObject.getUserName());
-        if (uiAndTtsText.length > 0) {
-            String uiText = uiAndTtsText[0];
-            String ttsText = uiAndTtsText[1];
-            Bundle args = new Bundle();
-            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
-            speak(ttsText, args);
+        String ttsText = SceneUtil.getNewMsgUsrInfo(mSceneBase.getContext(), mSmsObject.getUserName());
+        UserInfo userInfo = new UserInfo(mSmsObject.getPhotoUri(), mSmsObject.getUserName(), AppInfo.SMS);
+        Bundle args = new Bundle();
+        args.putParcelable(SceneUtil.EXTRA_USR_INFO, userInfo);
+        speak(ttsText, args);
+    }
+
+    @Override
+    public void onStageActionDone(boolean isInterrupted) {
+        if (!isInterrupted) {
+            mSceneBase.nextStage(new AskToReadMsgOptionStage(mSceneBase, mFeedback, mSmsObject));
         }
+        super.onStageActionDone(true);
     }
 }

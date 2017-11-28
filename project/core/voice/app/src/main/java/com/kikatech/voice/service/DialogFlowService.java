@@ -99,6 +99,11 @@ public class DialogFlowService implements
             return;
         }
         try {
+            if (LogUtil.DEBUG) {
+                for (Pair<String, Integer> pair : pairs) {
+                    LogUtil.logv(TAG, "tts, words: " + pair.first);
+                }
+            }
             if (mTtsSpeaker.isTtsSpeaking()) {
                 mTtsSpeaker.interrupt();
                 tts(pairs, listener);
@@ -260,6 +265,11 @@ public class DialogFlowService implements
         @Override
         public void onStageActionDone(boolean isInterrupted) {
             mCallback.onStageActionDone(isInterrupted);
+        }
+
+        @Override
+        public void onStageEvent(Bundle extras) {
+            mCallback.onStageEvent(extras);
         }
     };
 

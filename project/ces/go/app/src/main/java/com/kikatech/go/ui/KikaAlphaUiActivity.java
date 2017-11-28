@@ -146,6 +146,11 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     }
 
                     @Override
+                    public void onStageEvent(Bundle extras) {
+                        mUiManager.dispatchEventTask(extras);
+                    }
+
+                    @Override
                     public void onSceneExit() {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSceneExit");

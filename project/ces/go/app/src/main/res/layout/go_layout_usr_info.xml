@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginTop="65dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/default_img_content_description"
+            android:src="@drawable/kika_userpic_bg"/>
+
+        <ImageView
+            android:id="@+id/usr_info_avatar_mask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/default_img_content_description"
+            android:src="@drawable/kika_userpic_mask"/>
+
+        <ImageView
+            android:id="@+id/go_layout_usr_info_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/usr_info_avatar_mask"
+            android:layout_alignLeft="@+id/usr_info_avatar_mask"
+            android:layout_alignRight="@+id/usr_info_avatar_mask"
+            android:layout_alignTop="@+id/usr_info_avatar_mask"
+            android:contentDescription="@string/default_img_content_description"/>
+
+        <ImageView
+            android:id="@+id/go_layout_usr_info_im_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="155dp"
+            android:contentDescription="@string/default_img_content_description"
+            android:src="@drawable/im_kik"/>
+    </RelativeLayout>
+
+    <com.kikatech.go.view.widget.GoTextView
+        android:id="@+id/go_layout_usr_info_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="#b3bdd9"
+        app:max_text_size="53dp"
+        app:min_text_size="33dp"/>
+
+</LinearLayout>

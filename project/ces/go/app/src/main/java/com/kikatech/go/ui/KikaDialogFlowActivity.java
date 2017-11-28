@@ -112,6 +112,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
+                    public void onStageEvent(Bundle extras) {
+                    }
+
+                    @Override
                     public void onSceneExit() {
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {

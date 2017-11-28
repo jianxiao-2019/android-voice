@@ -11,7 +11,7 @@ import java.util.List;
  * @author SkeeterWang Created on 2017/11/16.
  */
 
-public class OptionList implements Parcelable {
+public class OptionList extends UiModel {
     public static final byte REQUEST_TYPE_ORDINAL = 0x01;
     public static final byte REQUEST_TYPE_TEXT = 0x02;
 
@@ -60,7 +60,7 @@ public class OptionList implements Parcelable {
     }
 
 
-    public String getTextToSpeak( String title ) {
+    public String getTextToSpeak(String title) {
         StringBuilder stringBuilder = new StringBuilder();
         if (!TextUtils.isEmpty(title)) {
             stringBuilder.append(title).append("\n");
@@ -92,6 +92,13 @@ public class OptionList implements Parcelable {
         return optionList;
     }
 
+
+    @Override
+    void print(String MAIN_TAG) {
+    }
+
+
+    /*---------- Parcelable impl ----------*/
 
     @Override
     public int describeContents() {

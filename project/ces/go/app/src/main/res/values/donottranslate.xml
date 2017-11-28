@@ -84,9 +84,13 @@ it's the alpha version now."</string>
         <item>""%s""</item> <!-- msg content -->
     </string-array>
 
+    <string-array name="tts_new_msg_user_info">
+        <item>"You got a message from %s."</item> <!-- user name -->
+    </string-array>
+
     <string name="ui_ask_read_msg">"Play the message?"</string>
     <string-array name="tts_ask_read_msg">
-        <item>"You got a message from %s. Play the message?"</item>
+        <item>"Play the message?"</item>
     </string-array>
 
     <string name="ui_read_msg">"%s"</string> <!-- msg content -->

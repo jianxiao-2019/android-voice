@@ -6,8 +6,10 @@ import android.util.Pair;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.UserSettings;
+import com.kikatech.go.dialogflow.model.UserMsg;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -63,6 +65,9 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
             String ttsPart1 = uiAndTtsText[1];
             String ttsPart2 = uiAndTtsText[2];
             Bundle args = new Bundle();
+
+            UserMsg userMsg = new UserMsg(mSmsObject.getPhotoUri(), mSmsObject.getUserName(), AppInfo.SMS, mSmsObject.getMsgContent());
+            args.putParcelable(SceneUtil.EXTRA_USR_MSG, userMsg);
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
 
             Pair<String, Integer>[] pairs = new Pair[2];
@@ -74,7 +79,9 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        mSceneBase.nextStage(new AskToReplySmsOptionStage(mSceneBase, mFeedback, mSmsObject));
-        super.onStageActionDone(isInterrupted);
+        if (!isInterrupted) {
+            mSceneBase.nextStage(new AskToReplySmsOptionStage(mSceneBase, mFeedback, mSmsObject));
+        }
+        super.onStageActionDone(true);
     }
 }

@@ -27,6 +27,8 @@ public interface IDialogFlowService {
 
         void onStageActionDone(boolean isInterrupted);
 
+        void onStageEvent(Bundle extras);
+
         void onSceneExit();
     }
 

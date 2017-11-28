@@ -45,7 +45,7 @@ public class StageIdle extends BaseReplySmsStage {
             if (rms == UserSettings.SETTING_REPLY_SMS_ASK_USER) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_READ");
                 // 3.1
-                return new AskToReadContentReplySmsStage(mSceneBase, mFeedback, sms);
+                return new AskToReadMsgAskStage(mSceneBase, mFeedback, sms);
             } else if (rms == UserSettings.SETTING_REPLY_SMS_READ) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_ASK_USER");
                 // 3.2

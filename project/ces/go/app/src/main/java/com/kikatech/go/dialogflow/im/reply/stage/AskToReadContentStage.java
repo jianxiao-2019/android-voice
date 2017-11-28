@@ -51,7 +51,7 @@ public class AskToReadContentStage extends BaseStage {
         if(LogUtil.DEBUG) {
             LogUtil.log(TAG, "Receive message form " + mIMObject.getUserName() + ", do you want to play the message ?");
         }
-        String[] uiAndTtsText = SceneUtil.getAskReadMsg(mSceneBase.getContext(), mIMObject.getUserName());
+        String[] uiAndTtsText = SceneUtil.getAskReadMsg(mSceneBase.getContext());
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];

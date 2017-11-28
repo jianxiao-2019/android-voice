@@ -8,28 +8,52 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingTop="@dimen/go_layout_content_padding_top_bottom"
         android:paddingBottom="@dimen/go_layout_content_padding_top_bottom"
         android:paddingLeft="@dimen/go_layout_content_padding_left_right"
-        android:paddingRight="@dimen/go_layout_content_padding_left_right">
+        android:paddingRight="@dimen/go_layout_content_padding_left_right"
+        android:paddingTop="@dimen/go_layout_content_padding_top_bottom">
 
         <include
             android:id="@+id/go_layout_speak"
             layout="@layout/go_layout_speak"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
         <include
             android:id="@+id/go_layout_listen"
             layout="@layout/go_layout_listen"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
         <include
             android:id="@+id/go_layout_options"
             layout="@layout/go_layout_options"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/go_layout_usr_info"
+            layout="@layout/go_layout_usr_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/go_layout_usr_msg"
+            layout="@layout/go_layout_usr_msg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/go_layout_msg_sent"
+            layout="@layout/go_layout_msg_sent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
         <include
             android:id="@+id/go_layout_sleep"

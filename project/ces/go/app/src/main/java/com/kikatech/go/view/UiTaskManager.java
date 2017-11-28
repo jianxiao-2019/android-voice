@@ -1,11 +1,15 @@
 package com.kikatech.go.view;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.dialogflow.model.UserInfo;
+import com.kikatech.go.dialogflow.model.UserMsg;
+import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.ui.MediaPlayerUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -86,15 +90,51 @@ public class UiTaskManager {
 
 
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
-        OptionList optionList = null;
-        if (extras != null && extras.containsKey(SceneUtil.EXTRA_OPTIONS_LIST)) {
-            optionList = extras.getParcelable(SceneUtil.EXTRA_OPTIONS_LIST);
-        }
-        if (optionList != null && !optionList.isEmpty()) {
-            displayOptions(optionList);
+        if (extras != null) {
+            String uiText = extras.getString(SceneUtil.EXTRA_UI_TEXT, text);
+            if (extras.containsKey(SceneUtil.EXTRA_OPTIONS_LIST)) {
+                OptionList optionList = extras.getParcelable(SceneUtil.EXTRA_OPTIONS_LIST);
+                if (optionList != null && !optionList.isEmpty()) {
+                    displayOptions(optionList);
+                } else {
+                    speak(uiText);
+                }
+            } else if (extras.containsKey(SceneUtil.EXTRA_USR_INFO)) {
+                UserInfo userInfo = extras.getParcelable(SceneUtil.EXTRA_USR_INFO);
+                if (userInfo != null) {
+                    displayUsrInfo(userInfo.getAvatar(), userInfo.getName());
+                } else {
+                    speak(uiText);
+                }
+            } else if (extras.containsKey(SceneUtil.EXTRA_USR_MSG)) {
+                UserMsg userMsg = extras.getParcelable(SceneUtil.EXTRA_USR_MSG);
+                if (userMsg != null) {
+                    displayUsrMsg(userMsg.getAvatar(), userMsg.getName(), userMsg.getMsg());
+                } else {
+                    speak(uiText);
+                }
+            } else {
+                speak(uiText);
+            }
         } else {
-            String uiText = extras != null ? extras.getString(SceneUtil.EXTRA_UI_TEXT, text) : text;
-            speak(uiText);
+            speak(text);
+        }
+    }
+
+    public synchronized void dispatchEventTask(Bundle extras) {
+        if (extras != null) {
+            String event = extras.getString(SceneUtil.EXTRA_EVENT, null);
+            int alertRes = extras.getInt(SceneUtil.EXTRA_ALERT, 0);
+            if (!TextUtils.isEmpty(event)) {
+                switch (event) {
+                    case SceneUtil.EVENT_DISPLAY_MSG_SENT:
+                        if (alertRes > 0) {
+                            playAlert(alertRes);
+                        }
+                        displayMsgSent();
+                        break;
+                }
+            }
         }
     }
 
@@ -219,6 +259,45 @@ public class UiTaskManager {
         });
     }
 
+    private void displayUsrInfo(final String userAvatar, final String userName) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.displayUsrInfo(userAvatar, userName);
+            }
+        });
+    }
+
+    private void displayUsrMsg(final String usrAvatar, final String usrName, final String msgContent) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.displayUsrMsg(usrAvatar, usrName, msgContent);
+            }
+        });
+    }
+
+    private void displayMsgSent() {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.displayMsgSent();
+            }
+        });
+    }
+
     private void unlock(final boolean withAlert) {
         final GoLayout layout = mLayout;
         if (layout == null) {
@@ -231,6 +310,19 @@ public class UiTaskManager {
                 if (withAlert) {
                     MediaPlayerUtil.playAlert(layout.getContext(), R.raw.alert_dot, null);
                 }
+            }
+        });
+    }
+
+    private void playAlert(final int alertRes) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                MediaPlayerUtil.playAlert(layout.getContext(), alertRes, null);
             }
         });
     }

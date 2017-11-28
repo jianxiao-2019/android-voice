@@ -59,6 +59,7 @@ public abstract class SceneStage implements ISceneStageFeedback {
      * and maintain the stage status via {@link ISceneStageFeedback}
      */
     public void doAction() {
+        onStageActionStart();
         action();
         onStageActionDone(false);
     }
@@ -76,6 +77,12 @@ public abstract class SceneStage implements ISceneStageFeedback {
     protected void speak(Pair<String, Integer>[] pairs, Bundle extras) {
         if (mFeedback != null) {
             mFeedback.onTextPairs(pairs, extras, this);
+        }
+    }
+
+    protected void send(Bundle extras) {
+        if (mFeedback != null) {
+            mFeedback.onStageEvent(extras);
         }
     }
 

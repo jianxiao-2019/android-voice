@@ -12,8 +12,14 @@ import com.kikatech.go.R;
 public class SceneUtil {
     private static final String TAG = "SceneUtil";
 
+    public static final String EVENT_DISPLAY_MSG_SENT = "event_display_msg_sent";
+
+    public static final String EXTRA_EVENT = "extra_event";
+    public static final String EXTRA_ALERT = "extra_alert";
     public static final String EXTRA_OPTIONS_LIST = "extra_options_list";
     public static final String EXTRA_UI_TEXT = "extra_ui_text";
+    public static final String EXTRA_USR_INFO = "extra_usr_info";
+    public static final String EXTRA_USR_MSG = "extra_usr_msg";
 
     public static String[] getAskAddress(Context context) {
         Resources resource = context.getResources();
@@ -107,11 +113,17 @@ public class SceneUtil {
                 tryFormat(getStringFromArray(ttsPart2), msgContent)};
     }
 
-    public static String[] getAskReadMsg(Context context, String userName) {
+    public static String getNewMsgUsrInfo(Context context, String userName) {
+        Resources resource = context.getResources();
+        String[] ttsArray = resource.getStringArray(R.array.tts_new_msg_user_info);
+        return tryFormat(getStringFromArray(ttsArray), userName);
+    }
+
+    public static String[] getAskReadMsg(Context context) {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_ask_read_msg);
         String[] ttsArray = resource.getStringArray(R.array.tts_ask_read_msg);
-        return new String[]{ui, tryFormat(getStringFromArray(ttsArray), userName)};
+        return new String[]{ui, getStringFromArray(ttsArray)};
     }
 
     public static String[] getReadMsg(Context context, String userName, String msgContent) {

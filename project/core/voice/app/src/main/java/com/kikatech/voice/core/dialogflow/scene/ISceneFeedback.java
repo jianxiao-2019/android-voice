@@ -15,4 +15,6 @@ public interface ISceneFeedback {
     void onStagePrepared(String scene, String action, SceneStage sceneStage);
 
     void onStageActionDone(boolean isInterrupted);
+
+    void onStageEvent(Bundle extras);
 }

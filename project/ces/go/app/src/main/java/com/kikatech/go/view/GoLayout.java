@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
@@ -21,6 +22,8 @@ import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.CountingTimer;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * @author SkeeterWang Created on 2017/11/10.
@@ -38,6 +41,7 @@ public class GoLayout extends FrameLayout {
 
     public enum ViewStatus {
         SPEAK(R.drawable.tts, R.drawable.gmap_tts),
+        STANDY_BY(R.drawable.standby, R.drawable.gmap_standby),
         LISTEN(R.drawable.listening, R.drawable.gmap_listening),
         LOADING(R.drawable.listening, R.drawable.gmap_listening);
 
@@ -64,11 +68,26 @@ public class GoLayout extends FrameLayout {
 
     private View mSpeakLayout;
     private GoTextView mSpeakView;
+
     private View mListenLayout;
     private GoTextView mListenView;
+
     private View mOptionsLayout;
     private LinearLayout mOptionsItemLayout;
     private GoTextView mOptionsTitle;
+
+    private View mUsrInfoLayout;
+    private ImageView mUsrInfoAvatar;
+    private GoTextView mUsrInfoName;
+
+    private View mUsrMsgLayout;
+    private ImageView mUsrMsgAvatar;
+    private ImageView mUsrMsgImIcon;
+    private TextView mUsrMsgName;
+    private GoTextView mUsrMsgContent;
+
+    private View mMsgSentLayout;
+
     private View mSleepLayout;
 
     private View mStatusLayout;
@@ -113,12 +132,24 @@ public class GoLayout extends FrameLayout {
         mOptionsTitle = (GoTextView) findViewById(R.id.go_layout_options_title);
         mOptionsItemLayout = (LinearLayout) findViewById(R.id.go_layout_options_item);
 
+        mUsrInfoLayout = findViewById(R.id.go_layout_usr_info);
+        mUsrInfoAvatar = (ImageView) findViewById(R.id.go_layout_usr_info_avatar);
+        mUsrInfoName = (GoTextView) findViewById(R.id.go_layout_usr_info_name);
+
+        mUsrMsgLayout = findViewById(R.id.go_layout_usr_msg);
+        mUsrMsgAvatar = (ImageView) findViewById(R.id.go_layout_usr_msg_avatar);
+        mUsrMsgImIcon = (ImageView) findViewById(R.id.go_layout_usr_msg_im_icon);
+        mUsrMsgName = (TextView) findViewById(R.id.go_layout_usr_msg_name);
+        mUsrMsgContent = (GoTextView) findViewById(R.id.go_layout_usr_msg_content);
+
+        mMsgSentLayout = findViewById(R.id.go_layout_msg_sent);
+
         mSleepLayout = findViewById(R.id.go_layout_sleep);
 
         mStatusLayout = findViewById(R.id.go_layout_status);
         mStatusAnimationView = (ImageView) findViewById(R.id.go_layout_status_img);
 
-        if( DEBUG ) {
+        if (DEBUG) {
             mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
         }
     }
@@ -234,6 +265,9 @@ public class GoLayout extends FrameLayout {
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
+        mUsrInfoLayout.setVisibility(GONE);
+        mUsrMsgLayout.setVisibility(GONE);
+        mMsgSentLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
         Glide.with(getContext())
                 .load(R.drawable.awake_normal)
@@ -253,6 +287,12 @@ public class GoLayout extends FrameLayout {
     public void awake() {
         onModeChanged(DisplayMode.AWAKE);
         mSleepLayout.setVisibility(GONE);
+        mSpeakLayout.setVisibility(GONE);
+        mListenLayout.setVisibility(GONE);
+        mOptionsLayout.setVisibility(GONE);
+        mUsrInfoLayout.setVisibility(GONE);
+        mUsrMsgLayout.setVisibility(GONE);
+        mMsgSentLayout.setVisibility(GONE);
         Glide.with(getContext())
                 .load(R.drawable.standby)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -285,6 +325,9 @@ public class GoLayout extends FrameLayout {
         mSpeakLayout.setVisibility(VISIBLE);
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
+        mUsrInfoLayout.setVisibility(GONE);
+        mUsrMsgLayout.setVisibility(GONE);
+        mMsgSentLayout.setVisibility(GONE);
 
         onStatusChanged(mCurrentStatus);
     }
@@ -312,6 +355,9 @@ public class GoLayout extends FrameLayout {
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(VISIBLE);
         mOptionsLayout.setVisibility(GONE);
+        mUsrInfoLayout.setVisibility(GONE);
+        mUsrMsgLayout.setVisibility(GONE);
+        mMsgSentLayout.setVisibility(GONE);
 
         onStatusChanged(mCurrentStatus);
     }
@@ -330,6 +376,9 @@ public class GoLayout extends FrameLayout {
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(VISIBLE);
+        mUsrInfoLayout.setVisibility(GONE);
+        mUsrMsgLayout.setVisibility(GONE);
+        mMsgSentLayout.setVisibility(GONE);
 
         mOptionsItemLayout.removeAllViews();
 
@@ -383,6 +432,79 @@ public class GoLayout extends FrameLayout {
         onStatusChanged(mCurrentStatus);
     }
 
+    public synchronized void displayUsrInfo(String usrAvatar, String usrName) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "displayUsrInfo");
+        }
+        lock();
+
+        mCurrentStatus = ViewStatus.SPEAK;
+
+        mSpeakLayout.setVisibility(GONE);
+        mListenLayout.setVisibility(GONE);
+        mOptionsLayout.setVisibility(GONE);
+        mUsrInfoLayout.setVisibility(VISIBLE);
+        mUsrMsgLayout.setVisibility(GONE);
+        mMsgSentLayout.setVisibility(GONE);
+
+        Context context = getContext();
+        Glide.with(context)
+                .load(usrAvatar)
+                .asBitmap()
+                .transform(new FitCenter(context), new CropCircleTransformation(context))
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .into(mUsrInfoAvatar);
+
+        mUsrInfoName.setText(usrName);
+
+        onStatusChanged(mCurrentStatus);
+    }
+
+    public synchronized void displayUsrMsg(String usrAvatar, String usrName, String msgContent) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "displayUsrMsg");
+        }
+        lock();
+
+        mCurrentStatus = ViewStatus.SPEAK;
+
+        mSpeakLayout.setVisibility(GONE);
+        mListenLayout.setVisibility(GONE);
+        mOptionsLayout.setVisibility(GONE);
+        mUsrInfoLayout.setVisibility(GONE);
+        mUsrMsgLayout.setVisibility(VISIBLE);
+
+        Context context = getContext();
+        Glide.with(context)
+                .load(usrAvatar)
+                .asBitmap()
+                .transform(new FitCenter(context), new CropCircleTransformation(context))
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .into(mUsrMsgAvatar);
+
+        mUsrMsgName.setText(usrName);
+        mUsrMsgContent.setText(msgContent);
+
+        onStatusChanged(mCurrentStatus);
+    }
+
+    public synchronized void displayMsgSent() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "displayMsgSent");
+        }
+        lock();
+
+        mCurrentStatus = ViewStatus.STANDY_BY;
+
+        mSpeakLayout.setVisibility(GONE);
+        mListenLayout.setVisibility(GONE);
+        mOptionsLayout.setVisibility(GONE);
+        mUsrInfoLayout.setVisibility(GONE);
+        mUsrMsgLayout.setVisibility(GONE);
+        mMsgSentLayout.setVisibility(VISIBLE);
+
+        onStatusChanged(mCurrentStatus);
+    }
 
     private void onStatusChanged(ViewStatus status) {
         // TODO: animations
