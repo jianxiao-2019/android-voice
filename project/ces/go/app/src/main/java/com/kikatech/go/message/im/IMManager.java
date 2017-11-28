@@ -272,6 +272,39 @@ public class IMManager {
                     imObject = new IMWeChat( statusBarNotification );
                     if( imObject.getActionIntent() == null ) return;
                     break;
+                case AppConstants.PACKAGE_WHATSAPP:
+                    if (!DeviceUtil.overLollipop()) {
+                        return;
+                    }
+                    LogUtil.log(TAG, "onNotificationPosted, AppInfo: WHATSAPP");
+                    imObject = new IMWhatsApp(statusBarNotification);
+                    resultAction = imObject.getResultAction();
+                    if (resultAction == null) {
+                        return;
+                    }
+                    switch (resultAction) {
+                        case GET_REFERENCE_AND_SHOW:
+                            BaseIMObject imObjectReference = IMManager.getInstance().getReferenceIfExist(imObject);
+                            if (imObjectReference == null) {
+                                // no reference available.
+                                return;
+                            } else {
+                                // reference available
+                                imObject.setActionIntent(imObjectReference.getActionIntent());
+                            }
+                            break;
+                        case UPDATE_REFERENCE:
+                            if (imObject.getActionIntent() != null) {
+                                IMManager.getInstance().updateReference(imObject);
+                            }
+                            return;
+                        case SHOW_BUBBLE:
+                            if (imObject.getActionIntent() == null) {
+                                return;
+                            }
+                            break;
+                    }
+                    break;
                 default:
                     return;
             }
