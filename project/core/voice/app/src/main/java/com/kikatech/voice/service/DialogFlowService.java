@@ -207,8 +207,8 @@ public class DialogFlowService implements
             query = textMessage.text;
             finished = true;
         } else if (message instanceof EditTextMessage) {
-            String alter = ((EditTextMessage) message).context;
-            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage original = " + alter);
+            String alter = ((EditTextMessage) message).altered;
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
 
             query = alter;
             finished = true;
