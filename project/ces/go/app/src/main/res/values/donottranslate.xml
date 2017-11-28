@@ -134,7 +134,6 @@ it's the alpha version now."</string>
         <item>"Which app do you want to use?"</item>
     </string-array>
     <string-array name="options_ask_app">
-        <item>"Facebook"</item>
         <item>"WhatsApp"</item>
     </string-array>
 
