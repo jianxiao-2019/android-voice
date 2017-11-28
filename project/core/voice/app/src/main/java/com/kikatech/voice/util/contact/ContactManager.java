@@ -183,13 +183,27 @@ public class ContactManager {
                 checkCursorIdx(phoneCur);
                 while (phoneCur.moveToNext()) {
                     int phonetype = phoneCur.getInt(mPhoneTypeIdx);
-                    String customLabel = phoneCur.getString(mPhoneLabelIdx);
-                    phoneLabel = (String) ContactsContract.CommonDataKinds.Email.getTypeLabel(ctx.getResources(), phonetype, customLabel);
+                    phoneLabel = getPhoneType(phonetype);
                 }
             }
             phoneCur.close();
         }
         return phoneLabel;
+    }
+
+    private String getPhoneType(int phonetype) {
+        switch (phonetype) {
+            case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
+                return "Home";
+            case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
+                return "Work";
+            case ContactsContract.CommonDataKinds.Email.TYPE_OTHER:
+                return "Other";
+            case ContactsContract.CommonDataKinds.Email.TYPE_MOBILE:
+                return "Mobile";
+            default:
+                return "Custom";
+        }
     }
 
     private void checkCursorIdx(Cursor phoneCur) {
@@ -205,7 +219,7 @@ public class ContactManager {
         public String number;
         public String type;
 
-        public NumberType(String number, String type) {
+        NumberType(String number, String type) {
             this.number = number;
             this.type = type;
         }

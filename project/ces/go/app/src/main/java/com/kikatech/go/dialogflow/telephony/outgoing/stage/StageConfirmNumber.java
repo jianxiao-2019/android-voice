@@ -26,7 +26,7 @@ public class StageConfirmNumber extends StageOutgoing {
     private ContactManager.PhoneBookContact mContact;
     private List<String> mOptions;
 
-    public StageConfirmNumber(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
+    StageConfirmNumber(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
         super(scene, feedback);
         mContact = contact;
         mOptions = new ArrayList<>();
@@ -38,10 +38,21 @@ public class StageConfirmNumber extends StageOutgoing {
             switch (action) {
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
                     return getNextStage(parseOrdinal(extra));
+                case SceneActions.ACTION_OUTGOING_CHANGE:
+                    String target = extra.getString("name", "");
+                    if (TextUtils.isEmpty(target)) {
+                        return this;
+                    } else {
+                        for (int i = 0; i < mContact.phoneNumbers.size(); i++) {
+                            ContactManager.NumberType nt = mContact.phoneNumbers.get(i);
+                            if (target.contains(nt.type.toLowerCase())) {
+                                return getNextStage(String.valueOf(i + 1));
+                            }
+                        }
+                    }
+                    return this;
                 case SceneActions.ACTION_OUTGOING_CANCEL:
                     return new StageCancel(mSceneBase, mFeedback);
-                case SceneActions.ACTION_OUTGOING_CHANGE:
-                    return getNextStage(parseOrdinalFromPhonePlace(extra));
                 default:
                     return this;
             }

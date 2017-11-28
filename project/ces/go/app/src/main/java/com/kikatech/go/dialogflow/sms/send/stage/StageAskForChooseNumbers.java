@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
@@ -10,6 +11,7 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -56,6 +58,20 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
         }
 
         SmsContent sc = getSmsContent();
+
+        if (action.equals(SceneActions.ACTION_SEND_SMS_FALLBACK)) {
+            List<ContactManager.NumberType> numbers = sc.getPhoneNumbers();
+            String userSays = Intent.parseUserInput(extra);
+            if (!TextUtils.isEmpty(userSays)) {
+                for (int i = 0; i < numbers.size(); i++) {
+                    if (userSays.contains(numbers.get(i).type.toLowerCase())) {
+                        sc.setChosenNumber(sc.getPhoneNumbers().get(i).number);
+                        return getStageCheckSmsBody(TAG, sc, mSceneBase, mFeedback);
+                    }
+                }
+            }
+        }
+
         int chosenOption = sc.getChosenOption();
         if (chosenOption == -1) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Error, chosenOption is empty , Fallback !!");
