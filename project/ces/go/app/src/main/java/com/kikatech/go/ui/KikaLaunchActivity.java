@@ -28,7 +28,7 @@ public class KikaLaunchActivity extends BaseActivity {
                 || !PermissionUtil.hasAllKikaPermissions(context)) {
             startAnotherActivity(KikaPermissionsActivity.class, true);
         } else {
-            startAnotherActivity(KikaGoActivity.class, true);
+            startAnotherActivity(KikaAlphaUiActivity.class, true);
         }
     }
 }
