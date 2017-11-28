@@ -52,11 +52,6 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
             return new StageAskForChooseNumbers(mSceneBase, mFeedback, ERR_STATUS_SAY_AGAIN);
         }
 
-        if (!action.equals(SceneActions.ACTION_SEND_SMS_SELECT_NUM)) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-            return new StageAskForChooseNumbers(mSceneBase, mFeedback, ERR_STATUS_ACTION_NOT_SUPPORTED);
-        }
-
         SmsContent sc = getSmsContent();
 
         if (action.equals(SceneActions.ACTION_SEND_SMS_FALLBACK)) {
@@ -70,6 +65,11 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
                     }
                 }
             }
+        }
+
+        if (!action.equals(SceneActions.ACTION_SEND_SMS_SELECT_NUM)) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
+            return new StageAskForChooseNumbers(mSceneBase, mFeedback, ERR_STATUS_ACTION_NOT_SUPPORTED);
         }
 
         int chosenOption = sc.getChosenOption();

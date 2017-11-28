@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
+import com.kikatech.go.dialogflow.stop.SceneStopIntent;
+import com.kikatech.go.dialogflow.stop.stage.StageStopNavigation;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -33,6 +35,8 @@ public class StageNavigationIdle extends BaseNaviStage {
             } else {
                 return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
             }
+        } else if(action.equals(NaviSceneActions.ACTION_NAV_CANCEL)) {
+            return new StageStopNavigation(mSceneBase, mFeedback);
         }
 
         return this;
