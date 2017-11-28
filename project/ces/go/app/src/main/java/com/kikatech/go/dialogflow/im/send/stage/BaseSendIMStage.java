@@ -79,7 +79,7 @@ public class BaseSendIMStage extends SceneStage {
         if (TextUtils.isEmpty(sendTarget)) {
             return new StageAskSendTarget(scene, feedback);
         } else {
-            if (imc.isExplicitTarget()) {
+            if (imc.isExplicitTarget(scene.getContext())) {
                 return getCheckIMBodyStage(TAG, imc, scene, feedback);
             } else {
                 return new StageConfirmSendTarget(scene, feedback);

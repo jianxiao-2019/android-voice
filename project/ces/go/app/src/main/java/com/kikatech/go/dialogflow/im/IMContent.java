@@ -1,7 +1,9 @@
 package com.kikatech.go.dialogflow.im;
 
+import android.content.Context;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.ContactUtil;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.LogUtil;
 
@@ -64,7 +66,14 @@ public class IMContent {
         return targetName;
     }
 
-    public boolean isExplicitTarget() {
+    public boolean isExplicitTarget(Context ctx) {
+        if(imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
+            ContactUtil.MatchedContact mc = ContactUtil.matchContact(ctx, targetName);
+            explicitTarget = mc.isContactMatched;
+
+            if (LogUtil.DEBUG)
+                LogUtil.log("IMContent", "Find WhatsApp, Match Contact:" + mc.contactMatchedName + ", matched:" + mc.isContactMatched);
+        }
         return explicitTarget;
     }
 

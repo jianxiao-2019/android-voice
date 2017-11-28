@@ -29,7 +29,7 @@ public class IMUtil {
     private static final String KEY_IM_APP = "im-app";
 
     // TODO should bind settings
-    private static final String[] SUPPORTED_IM = {AppConstants.PACKAGE_WHATSAPP, AppConstants.PACKAGE_MESSENGER};
+    private static final String[] SUPPORTED_IM = {AppConstants.PACKAGE_WHATSAPP};//, AppConstants.PACKAGE_MESSENGER};
 
     private static String getBundleString(@NonNull Bundle parm, String key) {
         return parm.getString(key, "").replace("\"", "");
@@ -68,7 +68,7 @@ public class IMUtil {
             return false;
         }
 
-        if(!AppUtil.isAppInstalled(ctx, pkgName)) {
+        if (!AppUtil.isAppInstalled(ctx, pkgName)) {
             if (LogUtil.DEBUG) LogUtil.log("IMUtil", pkgName + " is not installed !!");
             return false;
         }
