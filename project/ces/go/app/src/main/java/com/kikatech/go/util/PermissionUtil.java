@@ -90,6 +90,7 @@ public class PermissionUtil {
 
     private static Permission[] getKikaRequestPermissions() {
         ArrayList<Permission> kikaPermissions = new ArrayList<>();
+        kikaPermissions.add(Permission.WRITE_EXTERNAL_STORAGE);
         kikaPermissions.addAll(Arrays.asList(MICROPHONE_PERMISSIONS));
         kikaPermissions.addAll(Arrays.asList(PHONE_PERMISSIONS));
         kikaPermissions.addAll(Arrays.asList(LOCATION_PERMISSIONS));

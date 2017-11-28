@@ -3,6 +3,7 @@ package com.kikatech.go.message.im;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
@@ -14,7 +15,9 @@ import com.kikatech.go.message.Message;
 import com.kikatech.go.notification.ParcelableRemoteInput;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.AppInfo;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.DeviceUtil;
+import com.kikatech.go.util.FileUtil;
 import com.kikatech.go.util.LogUtil;
 
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ public class IMManager {
     private static IMManager sIMManager;
 
     public static IMManager getInstance() {
-        if(sIMManager == null) {
+        if (sIMManager == null) {
             sIMManager = new IMManager();
         }
         return sIMManager;
@@ -48,22 +51,22 @@ public class IMManager {
         mReferenceList = new ArrayList<>();
     }
 
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public List<BaseIMObject> getAllIMObjects() {
         List<BaseIMObject> imObjects = new ArrayList<>();
-        for(BaseIMObject imObject : mReferenceList) {
-            if(imObject.isValidContent() && imObject.getActionIntent() != null) {
+        for (BaseIMObject imObject : mReferenceList) {
+            if (imObject.isValidContent() && imObject.getActionIntent() != null) {
                 imObjects.add(imObject);
             }
         }
         return imObjects;
     }
 
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public List<BaseIMObject> getAllSortedIMObjects() {
         List<BaseIMObject> imObjects = new ArrayList<>();
-        for(BaseIMObject imObject : mReferenceList) {
-            if(imObject.isValidContent() && imObject.getActionIntent() != null) {
+        for (BaseIMObject imObject : mReferenceList) {
+            if (imObject.isValidContent() && imObject.getActionIntent() != null) {
                 imObjects.add(imObject);
             }
         }
@@ -72,130 +75,122 @@ public class IMManager {
             public int compare(BaseIMObject o1, BaseIMObject o2) {
                 long t1 = o1.getLatestTimestamp();
                 long t2 = o2.getLatestTimestamp();
-                if(t1 > t2) return 1;
-                if(t2 > t1) return -1;
+                if (t1 > t2) return 1;
+                if (t2 > t1) return -1;
                 return 0;
             }
         });
         return imObjects;
     }
 
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void printAllIMObjects() {
-        if(!LogUtil.DEBUG) return;
+        if (!LogUtil.DEBUG) return;
         List<BaseIMObject> imObjects = getAllIMObjects();
-        for(BaseIMObject imObject : imObjects) {
+        for (BaseIMObject imObject : imObjects) {
             LogUtil.logv(TAG, "------------(START)------------ " + imObject.getAppName() + "   " + imObject.getUserName());
             List<Message> messages = imObject.getLatestMessages();
-            for(Message message : messages) {
+            for (Message message : messages) {
                 LogUtil.logv(TAG, "" + message.getContent());
             }
             LogUtil.logv(TAG, "------------(END)------------ ");
         }
     }
 
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
-    public synchronized void updateReference( BaseIMObject target ) {
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public synchronized void updateReference(BaseIMObject target) {
         updateReference(target, true);
     }
 
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
-    public synchronized void updateReference( BaseIMObject target, boolean updateContent )
-    {
-        if( LogUtil.DEBUG ) LogUtil.log( TAG, "[updateReference]" );
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public synchronized void updateReference(BaseIMObject target, boolean updateContent) {
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "[updateReference]");
 
-        if( target == null ) return;
+        if (target == null) return;
 
-        try
-        {
-            BaseIMObject reference = getReferenceIfExist( target );
+        try {
+            BaseIMObject reference = getReferenceIfExist(target);
 
             boolean isMessageDuplicated = false;
             String newMessageContent = target.getMsgContent();
 
-            if( reference != null )
-            {
-                if( LogUtil.DEBUG ) LogUtil.logv( TAG, "[updateReference] reference not null, retrieveReferenceContent: " + updateContent );
-                mReferenceList.remove( reference );
-                if( updateContent )
-                {
-                    target.setLatestMessages( reference.getLatestMessages() );
-                    target.setCombinedGroupName( reference.getCombinedGroupName() );
-                    target.setCombinedAvatar( reference.getCombinedAvatar() );
+            if (reference != null) {
+                if (LogUtil.DEBUG)
+                    LogUtil.logv(TAG, "[updateReference] reference not null, retrieveReferenceContent: " + updateContent);
+                mReferenceList.remove(reference);
+                if (updateContent) {
+                    target.setLatestMessages(reference.getLatestMessages());
+                    target.setCombinedGroupName(reference.getCombinedGroupName());
+                    target.setCombinedAvatar(reference.getCombinedAvatar());
                 }
-                target.setIsInvited( reference.getIsInvited() );
-                if( target.getActionIntent() == null ) target.setActionIntent( reference.getActionIntent() );
-                target.setRemoteInputs( reference.getRemoteInputs() );
+                target.setIsInvited(reference.getIsInvited());
+                if (target.getActionIntent() == null)
+                    target.setActionIntent(reference.getActionIntent());
+                target.setRemoteInputs(reference.getRemoteInputs());
 
                 // checking if the message is duplicated
                 Message lastMessage = target.getLatestMessage();
-                if( lastMessage != null && newMessageContent != null)
-                    isMessageDuplicated = newMessageContent.equals( lastMessage.getContent() );
+                if (lastMessage != null && newMessageContent != null)
+                    isMessageDuplicated = newMessageContent.equals(lastMessage.getContent());
             }
 
-            if( !isMessageDuplicated )
-            {
-                Message message = Message.createMessage(System.currentTimeMillis(), target.getUserName(),target.getUserName(), target.getMsgContent());
+            if (!isMessageDuplicated) {
+                Message message = Message.createMessage(System.currentTimeMillis(), target.getUserName(), target.getUserName(), target.getMsgContent());
                 target.addToLatestMessages(message);
             }
 
-            if( LogUtil.DEBUG )
-            {
-                LogUtil.logd( TAG, "[updateReference] Messages saved, " + target.getUserName() );
-                for( Message msg: target.getLatestMessages() )
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, "[updateReference] Messages saved, " + target.getUserName());
+                for (Message msg : target.getLatestMessages())
                     LogUtil.logd(TAG, "[IM Message] " + target.getAppInfo().getAppName()
                             + msg.getUserName() + " -> " + msg.getContent());
             }
 
-            mReferenceList.add( target );
+            mReferenceList.add(target);
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
         }
-        catch( Exception e ) { if( LogUtil.DEBUG ) LogUtil.printStackTrace( TAG, e.getMessage(), e ); }
     }
 
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
-    public synchronized BaseIMObject getReferenceIfExist( BaseIMObject target )
-    {
-        return getReferenceIfExist( target.getAppInfo(), target.getId() );
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public synchronized BaseIMObject getReferenceIfExist(BaseIMObject target) {
+        return getReferenceIfExist(target.getAppInfo(), target.getId());
     }
 
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
-    public synchronized BaseIMObject getReferenceIfExist( AppInfo appInfo, String id )
-    {
-        if( LogUtil.DEBUG ) LogUtil.log( TAG, "[getReferenceIfExist] app: " + appInfo.getAppName() + ", id: " + id );
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public synchronized BaseIMObject getReferenceIfExist(AppInfo appInfo, String id) {
+        if (LogUtil.DEBUG)
+            LogUtil.log(TAG, "[getReferenceIfExist] app: " + appInfo.getAppName() + ", id: " + id);
 
-        for( BaseIMObject referenceIM : mReferenceList )
-        {
+        for (BaseIMObject referenceIM : mReferenceList) {
             AppInfo referenceAppInfo = referenceIM.getAppInfo();
 
-            if( !referenceAppInfo.equals( appInfo ) ) continue;
+            if (!referenceAppInfo.equals(appInfo)) continue;
 
-            if( referenceIM.getId().equals( id ) )
-            {
-                if( LogUtil.DEBUG )
-                {
-                    LogUtil.logd( TAG, "[getReferenceIfExist] app: " + referenceAppInfo.getAppName() + ", getId: " + referenceIM.getId() );
-                    LogUtil.logd( TAG, "\n ---------- ---------- ---------- ----------" );
+            if (referenceIM.getId().equals(id)) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logd(TAG, "[getReferenceIfExist] app: " + referenceAppInfo.getAppName() + ", getId: " + referenceIM.getId());
+                    LogUtil.logd(TAG, "\n ---------- ---------- ---------- ----------");
                 }
                 return referenceIM;
             }
         }
-        if( LogUtil.DEBUG )
-        {
-            LogUtil.logd( TAG, "[getReferenceIfExist] not exist." );
-            LogUtil.logd( TAG, "\n ---------- ---------- ---------- ----------" );
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "[getReferenceIfExist] not exist.");
+            LogUtil.logd(TAG, "\n ---------- ---------- ---------- ----------");
         }
         return null;
     }
 
     public boolean sendMessage(Context context, BaseIMObject imObject, String msg) {
-        if(!DeviceUtil.overKitKat()) return false;
-        if(imObject == null) {
-            LogUtil.logwtf( TAG, "Send message with null IMObject" );
+        if (!DeviceUtil.overKitKat()) return false;
+        if (imObject == null) {
+            LogUtil.logwtf(TAG, "Send message with null IMObject");
             return false;
         }
 
         Intent localIntent = new Intent();
-        localIntent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         List<ParcelableRemoteInput> parcelableRemoteInputs = imObject.getRemoteInputs();
         PendingIntent actionIntent = imObject.getActionIntent();
@@ -232,9 +227,7 @@ public class IMManager {
                 Message message = Message.createMessage(null, msg);
                 imObject.addToLatestMessages(message);
             }
-        }
-		catch( Exception e )
-        {
+        } catch (Exception e) {
             if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
             LogUtil.reportToFabric(e);
             return false;
@@ -243,34 +236,29 @@ public class IMManager {
     }
 
 
-
-
-
-    @RequiresApi( api = Build.VERSION_CODES.KITKAT )
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void processNotification(Context context, StatusBarNotification statusBarNotification) {
         String packageName = statusBarNotification.getPackageName();
 
-        if( !TextUtils.isEmpty( packageName ) )
-        {
+        if (!TextUtils.isEmpty(packageName)) {
             BaseIMObject imObject;
             BaseIMObject reference;
             BaseIMObject.ResultAction resultAction;
-            switch( packageName )
-            {
+            switch (packageName) {
                 case AppConstants.PACKAGE_MESSENGER:
-                    LogUtil.log( TAG, "onNotificationPosted, AppInfo: MESSENGER" );
-                    imObject = new IMMessenger( statusBarNotification );
-                    if( !imObject.isValidContent() ) return;
+                    LogUtil.log(TAG, "onNotificationPosted, AppInfo: MESSENGER");
+                    imObject = new IMMessenger(statusBarNotification);
+                    if (!imObject.isValidContent()) return;
                     break;
                 case AppConstants.PACKAGE_TELEGRAM:
-                    LogUtil.log( TAG, "onNotificationPosted, AppInfo: PACKAGE_TELEGRAM" );
-                    imObject = new IMTelegram( statusBarNotification );
-                    if( !imObject.isValidContent() ) return;
+                    LogUtil.log(TAG, "onNotificationPosted, AppInfo: PACKAGE_TELEGRAM");
+                    imObject = new IMTelegram(statusBarNotification);
+                    if (!imObject.isValidContent()) return;
                     break;
                 case AppConstants.PACKAGE_WECHAT:
-                    LogUtil.log( TAG, "onNotificationPosted, AppInfo: WECHAT" );
-                    imObject = new IMWeChat( statusBarNotification );
-                    if( imObject.getActionIntent() == null ) return;
+                    LogUtil.log(TAG, "onNotificationPosted, AppInfo: WECHAT");
+                    imObject = new IMWeChat(statusBarNotification);
+                    if (imObject.getActionIntent() == null) return;
                     break;
                 case AppConstants.PACKAGE_WHATSAPP:
                     if (!DeviceUtil.overLollipop()) {
@@ -308,7 +296,18 @@ public class IMManager {
                 default:
                     return;
             }
-            if( !imObject.isValidContent() ) return;
+            if (!imObject.isValidContent()) {
+                return;
+            }
+
+            Bitmap photo = imObject.getCombinedAvatar() != null ? imObject.getCombinedAvatar() : imObject.getPhoto();
+            if (photo != null) {
+                String name = imObject.isGroup() ? imObject.getGroupName() : imObject.getUserName();
+                String filePath = FileUtil.getImAvatarFilePath(imObject.getAppName(), name);
+                FileUtil.saveInPNG(photo, filePath);
+                imObject.setAvatarFilePath(filePath);
+            }
+
             // TODO update reference in IMManager
             IMManager.getInstance().updateReference(imObject);
 

@@ -19,6 +19,7 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.navigation.NavigationService;
 import com.kikatech.go.ui.ResolutionUtil;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.CountingTimer;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
@@ -79,12 +80,14 @@ public class GoLayout extends FrameLayout {
     private View mUsrInfoLayout;
     private ImageView mUsrInfoAvatar;
     private GoTextView mUsrInfoName;
+    private ImageView mUsrInfoImIcon;
 
     private View mUsrMsgLayout;
     private ImageView mUsrMsgAvatar;
     private ImageView mUsrMsgImIcon;
     private TextView mUsrMsgName;
     private GoTextView mUsrMsgContent;
+    private ImageView mUsrMsgAppIcon;
 
     private View mMsgSentLayout;
 
@@ -134,6 +137,7 @@ public class GoLayout extends FrameLayout {
 
         mUsrInfoLayout = findViewById(R.id.go_layout_usr_info);
         mUsrInfoAvatar = (ImageView) findViewById(R.id.go_layout_usr_info_avatar);
+        mUsrInfoImIcon = (ImageView) findViewById(R.id.go_layout_usr_info_im_icon);
         mUsrInfoName = (GoTextView) findViewById(R.id.go_layout_usr_info_name);
 
         mUsrMsgLayout = findViewById(R.id.go_layout_usr_msg);
@@ -432,7 +436,7 @@ public class GoLayout extends FrameLayout {
         onStatusChanged(mCurrentStatus);
     }
 
-    public synchronized void displayUsrInfo(String usrAvatar, String usrName) {
+    public synchronized void displayUsrInfo(String usrAvatar, String usrName, AppInfo appInfo) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayUsrInfo");
         }
@@ -455,12 +459,21 @@ public class GoLayout extends FrameLayout {
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(mUsrInfoAvatar);
 
+        if (appInfo != null) {
+            Glide.with(context)
+                    .load(appInfo.getAppIconSmall())
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .into(mUsrInfoImIcon);
+        } else {
+            Glide.clear(mUsrInfoImIcon);
+        }
+
         mUsrInfoName.setText(usrName);
 
         onStatusChanged(mCurrentStatus);
     }
 
-    public synchronized void displayUsrMsg(String usrAvatar, String usrName, String msgContent) {
+    public synchronized void displayUsrMsg(String usrAvatar, String usrName, String msgContent, AppInfo appInfo) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayUsrMsg");
         }
@@ -481,6 +494,15 @@ public class GoLayout extends FrameLayout {
                 .transform(new FitCenter(context), new CropCircleTransformation(context))
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(mUsrMsgAvatar);
+
+        if (appInfo != null) {
+            Glide.with(context)
+                    .load(appInfo.getAppIconSmall())
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .into(mUsrMsgImIcon);
+        } else {
+            Glide.clear(mUsrMsgImIcon);
+        }
 
         mUsrMsgName.setText(usrName);
         mUsrMsgContent.setText(msgContent);

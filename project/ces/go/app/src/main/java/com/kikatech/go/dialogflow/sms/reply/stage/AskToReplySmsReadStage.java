@@ -64,6 +64,7 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
             String uiText = uiAndTtsText[0];
             String ttsPart1 = uiAndTtsText[1];
             String ttsPart2 = uiAndTtsText[2];
+
             Bundle args = new Bundle();
 
             UserMsg userMsg = new UserMsg(mSmsObject.getPhotoUri(), mSmsObject.getUserName(), AppInfo.SMS, mSmsObject.getMsgContent());

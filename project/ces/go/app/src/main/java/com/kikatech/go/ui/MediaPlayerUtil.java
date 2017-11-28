@@ -20,7 +20,7 @@ public class MediaPlayerUtil {
     private static MediaPlayer mMediaPlayer = new MediaPlayer();
     private static IPlayStatusListener playStatusListener;
 
-    public static void playAlert(Context context, int alertRes, IPlayStatusListener listener) {
+    public synchronized static void playAlert(Context context, int alertRes, IPlayStatusListener listener) {
         try {
             playStatusListener = listener;
 
@@ -90,7 +90,7 @@ public class MediaPlayerUtil {
         }
     }
 
-    private static void safeSetMediaPlayerSource(MediaPlayer mediaPlayer, FileDescriptor fd, long offset, long length) throws IOException {
+    private synchronized static void safeSetMediaPlayerSource(MediaPlayer mediaPlayer, FileDescriptor fd, long offset, long length) throws IOException {
         // http://stackoverflow.com/questions/7816551/java-lang-illegalstateexception-what-does-it-mean
         if (mediaPlayer != null) {
             try {

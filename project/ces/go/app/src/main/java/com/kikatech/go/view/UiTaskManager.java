@@ -11,6 +11,7 @@ import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.model.UserMsg;
 import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.ui.MediaPlayerUtil;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
@@ -102,14 +103,14 @@ public class UiTaskManager {
             } else if (extras.containsKey(SceneUtil.EXTRA_USR_INFO)) {
                 UserInfo userInfo = extras.getParcelable(SceneUtil.EXTRA_USR_INFO);
                 if (userInfo != null) {
-                    displayUsrInfo(userInfo.getAvatar(), userInfo.getName());
+                    displayUsrInfo(userInfo.getAvatar(), userInfo.getName(), userInfo.getAppInfo());
                 } else {
                     speak(uiText);
                 }
             } else if (extras.containsKey(SceneUtil.EXTRA_USR_MSG)) {
                 UserMsg userMsg = extras.getParcelable(SceneUtil.EXTRA_USR_MSG);
                 if (userMsg != null) {
-                    displayUsrMsg(userMsg.getAvatar(), userMsg.getName(), userMsg.getMsg());
+                    displayUsrMsg(userMsg.getAvatar(), userMsg.getName(), userMsg.getMsg(), userMsg.getAppInfo());
                 } else {
                     speak(uiText);
                 }
@@ -259,7 +260,7 @@ public class UiTaskManager {
         });
     }
 
-    private void displayUsrInfo(final String userAvatar, final String userName) {
+    private void displayUsrInfo(final String userAvatar, final String userName, final AppInfo appInfo) {
         final GoLayout layout = mLayout;
         if (layout == null) {
             return;
@@ -267,12 +268,12 @@ public class UiTaskManager {
         layout.post(new Runnable() {
             @Override
             public void run() {
-                layout.displayUsrInfo(userAvatar, userName);
+                layout.displayUsrInfo(userAvatar, userName, appInfo);
             }
         });
     }
 
-    private void displayUsrMsg(final String usrAvatar, final String usrName, final String msgContent) {
+    private void displayUsrMsg(final String usrAvatar, final String usrName, final String msgContent, final AppInfo appInfo) {
         final GoLayout layout = mLayout;
         if (layout == null) {
             return;
@@ -280,7 +281,7 @@ public class UiTaskManager {
         layout.post(new Runnable() {
             @Override
             public void run() {
-                layout.displayUsrMsg(usrAvatar, usrName, msgContent);
+                layout.displayUsrMsg(usrAvatar, usrName, msgContent, appInfo);
             }
         });
     }

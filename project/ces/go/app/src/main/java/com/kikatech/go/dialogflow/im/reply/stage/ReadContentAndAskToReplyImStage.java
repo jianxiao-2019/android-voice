@@ -7,6 +7,7 @@ import android.util.Pair;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
+import com.kikatech.go.dialogflow.model.UserMsg;
 import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -21,6 +22,7 @@ import com.kikatech.voice.core.tts.TtsSpeaker;
 public class ReadContentAndAskToReplyImStage extends BaseStage {
 
     private final BaseIMObject mIMObject;
+
     ReadContentAndAskToReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback, BaseIMObject imo) {
         super(scene, feedback);
         mIMObject = imo;
@@ -47,7 +49,7 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
 
     @Override
     public void action() {
-        if(LogUtil.DEBUG) {
+        if (LogUtil.DEBUG) {
             LogUtil.log(TAG, mIMObject.getUserName() + " said: " + mIMObject.getMsgContent() + ", do you want to reply ?");
         }
         String[] uiAndTtsText;
@@ -64,7 +66,11 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
             String uiText = uiAndTtsText[0];
             String ttsPart1 = uiAndTtsText[1];
             String ttsPart2 = uiAndTtsText[2];
+
             Bundle args = new Bundle();
+
+            UserMsg userMsg = new UserMsg(mIMObject.getAvatarFilePath(), mIMObject.getUserName(), mIMObject.getAppInfo(), mIMObject.getMsgContent());
+            args.putParcelable(SceneUtil.EXTRA_USR_MSG, userMsg);
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
 
             Pair<String, Integer>[] pairs = new Pair[2];
@@ -76,7 +82,9 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        mSceneBase.nextStage(new AskToReplyImOptionStage(mSceneBase, mFeedback, mIMObject));
-        super.onStageActionDone(isInterrupted);
+        if (!isInterrupted) {
+            mSceneBase.nextStage(new AskToReplyImOptionStage(mSceneBase, mFeedback, mIMObject));
+        }
+        super.onStageActionDone(true);
     }
 }
