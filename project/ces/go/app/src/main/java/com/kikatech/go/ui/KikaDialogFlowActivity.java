@@ -121,7 +121,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onComplete() {
+                    public void onComplete(String[] dbgMsg) {
                         if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
                     }
 

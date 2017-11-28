@@ -23,9 +23,15 @@ public class DialogFlow {
 
     private DialogObserver mObserver;
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    private final String[] dbgMsg;
 
     public DialogFlow(Context context, VoiceConfiguration conf) {
         mAgent = conf.getAgent().create(context.getApplicationContext());
+        if(LogUtil.DEBUG) {
+            dbgMsg = new String[]{"", ""};
+        } else {
+            dbgMsg = null;
+        }
     }
 
     public void talk(final String words, boolean anyContent, final IDialogFlowService.IAgentQueryStatus callback) {
@@ -46,7 +52,13 @@ public class DialogFlow {
                     }
 
                     if (intent != null) {
-                        if (callback != null) callback.onComplete();
+                        if (callback != null) {
+                            if(LogUtil.DEBUG) {
+                                dbgMsg[0] = intent.getScene() + "-" + intent.getAction();
+                                dbgMsg[1] = intent.getExtra().toString();
+                            }
+                            callback.onComplete(dbgMsg);
+                        }
                         onIntent(intent);
                     }
                 }

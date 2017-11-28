@@ -160,8 +160,10 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onComplete() {
+                    public void onComplete(String[] dbgMsg) {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
+                        // dbgMsg[0] : scene - action
+                        // dbgMsg[1] : parameters
                         mUiManager.writeDebugLog(DebugLogType.API_AI_STOP);
                     }
 

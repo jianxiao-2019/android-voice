@@ -38,7 +38,7 @@ public class ConfirmMsgBodyReplyImStage extends BaseStage {
             case SceneActions.ACTION_REPLY_IM_NO:
                 return new AskMsgBodyReplyImStage(mSceneBase, mFeedback, mIMObject);
             default:
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported command : " + action + ", ask again");
+                if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
                 return this;
         }
     }

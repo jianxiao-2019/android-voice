@@ -33,7 +33,7 @@ public interface IDialogFlowService {
     interface IAgentQueryStatus {
         void onStart();
 
-        void onComplete();
+        void onComplete(String[] dbgMsg);
 
         void onError(Exception e);
     }
