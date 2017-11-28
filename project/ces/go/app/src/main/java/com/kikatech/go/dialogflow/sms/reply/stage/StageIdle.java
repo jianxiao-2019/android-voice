@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
 import com.kikatech.go.message.sms.SmsObject;
@@ -40,16 +41,17 @@ public class StageIdle extends BaseReplySmsStage {
             }
 
             // TODO Check setting
-            if (mReplySmsSetting == SETTING_REPLY_SMS_ASK_USER) {
+            byte rms = UserSettings.getReplyMessageSetting();
+            if (rms == UserSettings.SETTING_REPLY_SMS_ASK_USER) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_READ");
                 // 3.1
                 return new AskToReadContentReplySmsStage(mSceneBase, mFeedback, sms);
-            } else if (mReplySmsSetting == SETTING_REPLY_SMS_READ) {
+            } else if (rms == UserSettings.SETTING_REPLY_SMS_READ) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_ASK_USER");
                 // 3.2
                 return new AskToReplySmsReadStage(mSceneBase, mFeedback, sms);
             } else {
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "Err, Unsupported setting:" + mReplySmsSetting);
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Err, Unsupported setting:" + rms);
             }
         }
         return null;

@@ -35,11 +35,9 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         setQueryAnyWords(false);
         SmsContent sc = getSmsContent();
-        if (TextUtils.isEmpty(sc.getContact())) {
-            String userSay = Intent.parseUserInput(extra);
-            if (!TextUtils.isEmpty(userSay)) {
-                sc.updateName(userSay);
-            }
+        String userSay = Intent.parseUserInput(extra);
+        if (!TextUtils.isEmpty(userSay)) {
+            sc.updateName(userSay);
         }
         return getStageCheckContactMatched(TAG, sc, mSceneBase, mFeedback);
     }

@@ -24,11 +24,9 @@ public class StageAskSendTarget extends BaseSendIMStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         setQueryAnyWords(false);
         IMContent imc = getIMContent();
-        if (TextUtils.isEmpty(imc.getSendTarget())) {
-            String userSay = Intent.parseUserInput(extra);
-            if (!TextUtils.isEmpty(userSay)) {
-                imc.updateSendTarget(userSay);
-            }
+        String userSay = Intent.parseUserInput(extra);
+        if (!TextUtils.isEmpty(userSay)) {
+            imc.updateSendTarget(userSay);
         }
         return getCheckSendTargetStage(TAG, getIMContent(), mSceneBase, mFeedback);
     }

@@ -33,7 +33,7 @@ public class AskToReadContentReplySmsStage extends BaseReplySmsStage {
             case SceneActions.ACTION_REPLY_SMS_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
                 exitScene();
-                break;
+                return null;
         }
         return this;
     }

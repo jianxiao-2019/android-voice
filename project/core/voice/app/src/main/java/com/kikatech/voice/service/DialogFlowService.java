@@ -188,9 +188,9 @@ public class DialogFlowService implements
         String query = "";
         if (message instanceof IntermediateMessage) {
             IntermediateMessage intermediateMessage = (IntermediateMessage) message;
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "Speech spoken" + " : " + intermediateMessage.text);
-            }
+//            if (LogUtil.DEBUG) {
+//                LogUtil.log(TAG, "Speech spoken" + " : " + intermediateMessage.text);
+//            }
 
             query = intermediateMessage.text;
         } else if (message instanceof TextMessage) {

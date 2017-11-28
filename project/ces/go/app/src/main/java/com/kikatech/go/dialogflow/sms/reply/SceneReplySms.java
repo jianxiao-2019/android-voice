@@ -23,7 +23,7 @@ public class SceneReplySms extends SceneBase {
 
     private final ISmsFunc mSmsFunc;
 
-    public SceneReplySms(Context context, ISceneFeedback feedback,@NonNull ISmsFunc smsFunc) {
+    public SceneReplySms(Context context, ISceneFeedback feedback, @NonNull ISmsFunc smsFunc) {
         super(context, feedback);
         mSmsFunc = smsFunc;
     }

@@ -129,7 +129,7 @@ public class WebSocket {
             @Override
             public void run() {
                 if(mClient != null){
-                    Logger.v("WebSocket sendData, data.length = " + data.length + " isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen() + " mOpened = " + mOpened);
+                    //Logger.v("WebSocket sendData, data.length = " + data.length + " isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen() + " mOpened = " + mOpened);
                 }
                 if (mClient != null && mOpened) {
                     try {
@@ -216,14 +216,14 @@ public class WebSocket {
 
         @Override
         public void onOpen(ServerHandshake handshakeData) {
-            Logger.i("VoiceWebSocketClient onOpen");
+            //Logger.i("VoiceWebSocketClient onOpen");
             mOpened = true;
             mReconnectTimes = 0;
         }
 
         @Override
         public void onMessage(String message) {
-            Logger.i("VoiceWebSocketClient onMessage message = " + message);
+            //Logger.i("VoiceWebSocketClient onMessage message = " + message);
             final Message msg = handleMessage(message);
             if (msg != null && mListener != null) {
                 mListener.onMessage(msg);
@@ -232,7 +232,7 @@ public class WebSocket {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            Logger.i("VoiceWebSocketClient onClose code = [" + code + "]");
+            //Logger.i("VoiceWebSocketClient onClose code = [" + code + "]");
             mOpened = false;
             if (!reconnect()) {
                 if (mListener != null) {

@@ -1,45 +1,45 @@
-package com.kikatech.go.dialogflow.sms.reply.stage;
+package com.kikatech.go.dialogflow.im.reply.stage;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
-import com.kikatech.go.dialogflow.sms.reply.SceneActions;
-import com.kikatech.go.message.sms.SmsObject;
+import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
- * Created by brad_chang on 2017/11/20.
+ * Created by brad_chang on 2017/11/28.
  */
 
-public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
-
+public class ConfirmMsgBodyReplyImStage extends BaseStage {
+    
     private final String mMsgBody;
-    private final SmsObject mSmsObject;
-
-    ConfirmMsgBodyReplySmsStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms, String messageBody) {
+    private final BaseIMObject mIMObject;
+    
+    ConfirmMsgBodyReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback, BaseIMObject imo, String messageBody) {
         super(scene, feedback);
-        mSmsObject = sms;
+        mIMObject = imo;
         mMsgBody = messageBody;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
-            case SceneActions.ACTION_REPLY_SMS_YES:
-                return new SendMessageReplySmsStage(mSceneBase, mFeedback, mSmsObject.getId(), mMsgBody);
-            case SceneActions.ACTION_REPLY_SMS_CHANGE:
-            case SceneActions.ACTION_REPLY_SMS_NO:
-                return new AskMsgBodyReplySmsStage(mSceneBase, mFeedback, mSmsObject);
+            case SceneActions.ACTION_REPLY_IM_YES:
+                return new SendMessageReplyImStage(mSceneBase, mFeedback, mIMObject, mMsgBody);
+            case SceneActions.ACTION_REPLY_IM_CHANGE:
+            case SceneActions.ACTION_REPLY_IM_NO:
+                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback, mIMObject);
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported command : " + action + ", ask again");
-                return new ConfirmMsgBodyReplySmsStage(mSceneBase, mFeedback, mSmsObject, mMsgBody);
+                return this;
         }
     }
 

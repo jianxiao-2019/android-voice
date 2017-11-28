@@ -129,7 +129,7 @@ public class IMManager {
 
                 // checking if the message is duplicated
                 Message lastMessage = target.getLatestMessage();
-                if( lastMessage != null )
+                if( lastMessage != null && newMessageContent != null)
                     isMessageDuplicated = newMessageContent.equals( lastMessage.getContent() );
             }
 

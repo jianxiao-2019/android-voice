@@ -83,9 +83,11 @@ public class ApiAiAgent extends Agent {
 
     @Override
     public void resetContexts() {
-        mAIService.resetContexts();
+        boolean ret = mAIService.resetContexts();
+        if(LogUtil.DEBUG) {
+            LogUtil.logw(TAG, "api.ai resetContexts : " + ret);
+        }
     }
-
 
 
     private List<Entity> createEntities(Map<String, List<String>> entities) {
@@ -161,7 +163,7 @@ public class ApiAiAgent extends Agent {
         String action = result.getAction();
 
         if (LogUtil.DEBUG) {
-            LogUtil.logd(TAG, "scene:" + scene + ", action:" + action);
+            LogUtil.logw(TAG, "scene:" + scene + ", action:" + action);
         }
 
         Intent intent = new Intent(scene, action, result.getResolvedQuery());
