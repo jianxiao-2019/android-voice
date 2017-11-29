@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.kikatech.go.accessibility.im.IMScene;
 import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.util.AppConstants;
+import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 
 /**
@@ -107,19 +108,14 @@ public abstract class IMProcessor extends AccessibilityProcessor {
             return false;
         }
         LogUtil.logd(TAG, "Open intent = " + packageName);
-        try {
-            Intent sharingIntent = getShareIntent(packageName, mMessage);
-            mContext.startActivity(sharingIntent);
-        } catch (Exception e) {
-            LogUtil.logwtf(TAG, "Open intent with error: " + e.getMessage());
-            return false;
-        }
-        return true;
+        Intent sharingIntent = getShareIntent(packageName, mMessage);
+        return IntentUtil.sendPendingIntent(mContext, sharingIntent);
     }
 
     protected Intent getShareIntent(String packageName, String message) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.setPackage(packageName);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, message);
