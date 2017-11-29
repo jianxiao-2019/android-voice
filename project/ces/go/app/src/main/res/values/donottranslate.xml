@@ -14,7 +14,7 @@ it's the alpha version now."</string>
         <item>"What's your destination?"</item>
     </string-array>
 
-    <string name="ui_confirm_address">"%s?"</string>
+    <string name="ui_confirm_address">"\"%s\"?"</string>
     <string-array name="tts_confirm_address">
         <item>"%s, right?"</item> <!-- %s: address/name of place -->
         <item>"OK, %s, right?"</item>
