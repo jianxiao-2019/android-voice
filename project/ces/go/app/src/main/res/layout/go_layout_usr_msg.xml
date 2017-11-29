@@ -49,7 +49,7 @@
         android:id="@+id/go_layout_usr_msg_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="1dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
         android:textColor="#b3bdd9"
