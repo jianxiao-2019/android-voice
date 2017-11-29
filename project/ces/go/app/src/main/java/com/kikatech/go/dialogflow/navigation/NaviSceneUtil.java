@@ -12,6 +12,7 @@ import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.StringUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +55,7 @@ public class NaviSceneUtil {
                 }
                 String addrResult = TextUtils.isEmpty(location) ? addr : location;
                 if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "parseAddress : " + addrResult);
-                return addrResult.replace("\"", "");
+                return StringUtil.upperCaseFirstWord(addrResult.replace("\"", ""));
             }
         }
         if (LogUtil.DEBUG)

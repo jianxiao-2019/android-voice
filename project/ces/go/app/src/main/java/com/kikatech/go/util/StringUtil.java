@@ -13,105 +13,102 @@ import java.util.regex.Pattern;
 /**
  * @author SkeeterWang Created on 2017/5/10.
  */
-public class StringUtil
-{
-	public static final String CEMENT_COMMA = ", ";
+public class StringUtil {
+    public static final String CEMENT_COMMA = ", ";
 
-	public static boolean equals( String string1, String string2 )
-	{
-		return ( TextUtils.isEmpty( string1 ) && TextUtils.isEmpty( string2 ) )
-				|| ( !TextUtils.isEmpty( string1 ) && string1.equals( string2 ) );
-	}
+    public static boolean equals(String string1, String string2) {
+        return (TextUtils.isEmpty(string1) && TextUtils.isEmpty(string2))
+                || (!TextUtils.isEmpty(string1) && string1.equals(string2));
+    }
 
-	public static <T> String join( List< T > list, String cement )
-	{
-		StringBuilder builder = new StringBuilder();
+    public static <T> String join(List<T> list, String cement) {
+        StringBuilder builder = new StringBuilder();
 
-		if( list == null || list.isEmpty() ) return null;
+        if (list == null || list.isEmpty()) return null;
 
-		for( T item : list )
-			builder.append( item ).append( cement );
+        for (T item : list)
+            builder.append(item).append(cement);
 
-		builder.delete( builder.length() - cement.length(), builder.length() );
+        builder.delete(builder.length() - cement.length(), builder.length());
 
-		return builder.toString();
-	}
+        return builder.toString();
+    }
 
-	public static List< String > split( String source, String cement )
-	{
-		if( source == null ) return null;
+    public static List<String> split(String source, String cement) {
+        if (source == null) return null;
 
-		String[] output = source.split( cement );
+        String[] output = source.split(cement);
 
-		return Arrays.asList( output );
-	}
+        return Arrays.asList(output);
+    }
 
-	public static List< Boolean > splitToBoolean( String source, String cement )
-	{
-		if( source == null ) return null;
+    public static List<Boolean> splitToBoolean(String source, String cement) {
+        if (source == null) return null;
 
-		List<Boolean> output = new ArrayList<>();
+        List<Boolean> output = new ArrayList<>();
 
-		String[] sourceArray = source.split( cement );
+        String[] sourceArray = source.split(cement);
 
-		for( String string : sourceArray )
-			output.add( Boolean.parseBoolean( string ) );
+        for (String string : sourceArray)
+            output.add(Boolean.parseBoolean(string));
 
-		return output;
-	}
+        return output;
+    }
 
-	public static boolean matchRegularExpression( String targetStr, String regex )
-	{
-		if( TextUtils.isEmpty( targetStr ) ) return false;
-		Pattern pattern = Pattern.compile( regex );
-		Matcher matcher = pattern.matcher( targetStr );
-		return matcher.matches();
-	}
+    public static boolean matchRegularExpression(String targetStr, String regex) {
+        if (TextUtils.isEmpty(targetStr)) return false;
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(targetStr);
+        return matcher.matches();
+    }
 
-	/**
-	 * Convert string into URL encoded one.
-	 *
-	 * @param string the original string
-	 * @return the URLEncodes string
-	 */
-	public static String toURLEncodeString( String string )
-	{
-		try
-		{
-			String url = URLEncoder.encode( string, "UTF-8" );
-			return url.replaceAll( "\\+", "%20" );
-		}
-		catch ( UnsupportedEncodingException e )
-		{
-			return string;
-		}
-	}
+    /**
+     * Convert string into URL encoded one.
+     *
+     * @param string the original string
+     * @return the URLEncodes string
+     */
+    public static String toURLEncodeString(String string) {
+        try {
+            String url = URLEncoder.encode(string, "UTF-8");
+            return url.replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            return string;
+        }
+    }
 
-	public static int getStringLength( String string )
-	{
-		return !TextUtils.isEmpty( string ) ? string.length() : 0;
-	}
+    public static int getStringLength(String string) {
+        return !TextUtils.isEmpty(string) ? string.length() : 0;
+    }
 
-	public static String removeZeroWidthSpace( String string )
-	{
-		return string == null ? null : string.replaceAll( "[\\p{Cf}]", "" );
-	}
+    public static String removeZeroWidthSpace(String string) {
+        return string == null ? null : string.replaceAll("[\\p{Cf}]", "");
+    }
 
+    public static String upperCaseFirstWord(String text) {
+        try {
+            return String.valueOf(text.charAt(0)).toUpperCase() +
+                    text.substring(1, text.length());
+        } catch (Exception ignore) {
+        }
+        return text;
+    }
 
+    // AndroidCommon https://github.com/xybCoder/AndroidCommon
 
-	// AndroidCommon https://github.com/xybCoder/AndroidCommon
-	/**
-	 * 獲取字串的相似度
-	 */
-	public static double SimilarityRatio(String str, String target) {
-		return 1 - (double) compareSimilarty( str, target ) / Math.max( str.length(), target.length() );
-	}
-	/**
-	 * 快速比較倆個字串的相似度
-	 * 讓長的字串放到前面有助於提交效率
-	 */
-	/*public static double SimilarDegree(String strA, String strB) {
-		String newStrA = removeSign(strA);
+    /**
+     * 獲取字串的相似度
+     */
+    public static double SimilarityRatio(String str, String target) {
+        return 1 - (double) compareSimilarty(str, target) / Math.max(str.length(), target.length());
+    }
+
+    /**
+     * 快速比較倆個字串的相似度
+     * 讓長的字串放到前面有助於提交效率
+     */
+    /*public static double SimilarDegree(String strA, String strB) {
+        String newStrA = removeSign(strA);
 		String newStrB = removeSign(strB);
 		int temp = Math.max(newStrA.length(), newStrB.length());
 		int temp2 = longestCommonSubstring(newStrA, newStrB).length();
@@ -163,49 +160,50 @@ public class StringUtil
 			}
 		return sb.toString();
 	}*/
-	//第二種實現方式
-	private static int compareSimilarty( String str, String target ) {
-		int d[][]; // 矩阵
-		int n = str.length();
-		int m = target.length();
-		int i; // 遍历str的
-		int j; // 遍历target的
-		char ch1; // str的
-		char ch2; // target的
-		int temp; // 记录相同字符,在某个矩阵位置值的增量,不是0就是1
-		if (n == 0) {
-			return m;
-		}
-		if (m == 0) {
-			return n;
-		}
-		d = new int[n + 1][m + 1];
-		for (i = 0; i <= n; i++) { // 初始化第一列
-			d[i][0] = i;
-		}
+    //第二種實現方式
+    private static int compareSimilarty(String str, String target) {
+        int d[][]; // 矩阵
+        int n = str.length();
+        int m = target.length();
+        int i; // 遍历str的
+        int j; // 遍历target的
+        char ch1; // str的
+        char ch2; // target的
+        int temp; // 记录相同字符,在某个矩阵位置值的增量,不是0就是1
+        if (n == 0) {
+            return m;
+        }
+        if (m == 0) {
+            return n;
+        }
+        d = new int[n + 1][m + 1];
+        for (i = 0; i <= n; i++) { // 初始化第一列
+            d[i][0] = i;
+        }
 
-		for (j = 0; j <= m; j++) { // 初始化第一行
-			d[0][j] = j;
-		}
+        for (j = 0; j <= m; j++) { // 初始化第一行
+            d[0][j] = j;
+        }
 
-		for (i = 1; i <= n; i++) { // 遍历str
-			ch1 = str.charAt(i - 1);
-			// 去匹配target
-			for (j = 1; j <= m; j++) {
-				ch2 = target.charAt(j - 1);
-				if (ch1 == ch2) {
-					temp = 0;
-				} else {
-					temp = 1;
-				}
+        for (i = 1; i <= n; i++) { // 遍历str
+            ch1 = str.charAt(i - 1);
+            // 去匹配target
+            for (j = 1; j <= m; j++) {
+                ch2 = target.charAt(j - 1);
+                if (ch1 == ch2) {
+                    temp = 0;
+                } else {
+                    temp = 1;
+                }
 
-				// 左边+1,上边+1, 左上角+temp取最小
-				d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + temp);
-			}
-		}
-		return d[n][m];
-	}
-	private static int min(int one, int two, int three) {
-		return (one = one < two ? one : two) < three ? one : three;
-	}
+                // 左边+1,上边+1, 左上角+temp取最小
+                d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + temp);
+            }
+        }
+        return d[n][m];
+    }
+
+    private static int min(int one, int two, int three) {
+        return (one = one < two ? one : two) < three ? one : three;
+    }
 }

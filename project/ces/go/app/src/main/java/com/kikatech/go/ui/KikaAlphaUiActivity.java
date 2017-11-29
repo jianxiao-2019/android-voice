@@ -13,6 +13,7 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.services.DialogFlowForegroundService.SendBroadcastInfos;
+import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
 import com.kikatech.go.view.UiTaskManager.DebugLogType;
@@ -60,8 +61,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 case SendBroadcastInfos.ACTION_ON_ASR_RESULT:
                     text = intent.getStringExtra(SendBroadcastInfos.PARAM_TEXT);
                     isFinished = intent.getBooleanExtra(SendBroadcastInfos.PARAM_IS_FINISHED, false);
-                    String concat = String.valueOf(text.charAt(0)).toUpperCase() +
-                            text.substring(1, text.length());
+                    String concat = StringUtil.upperCaseFirstWord(text);
                     mUiManager.dispatchSpeechTask(concat, isFinished);
                     if (isFinished) {
                         mUiManager.writeDebugLog(DebugLogType.ASR_STOP);
@@ -119,13 +119,11 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     case OptionList.REQUEST_TYPE_ORDINAL:
                         textToSend = String.valueOf(index + 1);
                         DialogFlowForegroundService.processDialogFlowTalk(KikaAlphaUiActivity.this, textToSend);
-//                        mDialogFlowService.text(textToSend);
                         mUiManager.dispatchSpeechTask(textToSend);
                         break;
                     case OptionList.REQUEST_TYPE_TEXT:
                         textToSend = option.getDisplayText();
                         DialogFlowForegroundService.processDialogFlowTalk(KikaAlphaUiActivity.this, textToSend);
-//                        mDialogFlowService.text(textToSend);
                         mUiManager.dispatchSpeechTask(textToSend);
                         break;
                 }
