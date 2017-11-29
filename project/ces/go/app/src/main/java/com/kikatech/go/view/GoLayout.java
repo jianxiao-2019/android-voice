@@ -17,7 +17,7 @@ import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
-import com.kikatech.go.navigation.NavigationService;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.CountingTimer;
@@ -537,7 +537,7 @@ public class GoLayout extends FrameLayout {
                         .load(status.getBgRes())
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(mStatusAnimationView);
-                NavigationService.processStatusChanged(context, status);
+                DialogFlowForegroundService.processStatusChanged(context, status);
 //                switch (status) {
 //                    case LOADING:
 //                        break;

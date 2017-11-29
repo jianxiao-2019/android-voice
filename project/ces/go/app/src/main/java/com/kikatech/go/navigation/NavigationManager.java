@@ -7,6 +7,7 @@ import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider.NavigationAvoid;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider.NavigationMode;
 import com.kikatech.go.navigation.provider.GoogleIntentProvider;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.LogUtil;
 
 /**
@@ -89,19 +90,19 @@ public class NavigationManager {
     public void startNavigation(Context context, String target, NavigationMode mode, NavigationAvoid... avoids) {
         if (mNavigationProvider != null) {
             mNavigationProvider.startNavigation(context, target, mode, avoids);
-           NavigationService.processStart(context);
+            DialogFlowForegroundService.processNavigationStarted(context);
         }
     }
 
     public void startNavigation(Context context, double latitude, double longitude, NavigationMode mode, NavigationAvoid... avoids) {
         if (mNavigationProvider != null) {
             mNavigationProvider.startNavigation(context, latitude, longitude, mode, avoids);
-            NavigationService.processStart(context);
+            DialogFlowForegroundService.processNavigationStarted(context);
         }
     }
 
 
-    public void stopNavigation(final Context context) {
+    public void stopNavigation(final Context context, final INavigationCallback callback) {
         if (mNavigationProvider != null) {
             LocationMgr.fetchLocation(context, new LocationMgr.ILocationCallback() {
                 @Override
@@ -110,15 +111,34 @@ public class NavigationManager {
                         LogUtil.log(TAG, "onGetLocation, latitude: " + latitude + ", longitude: " + longitude);
                     }
                     mNavigationProvider.stopNavigation(context, latitude, longitude);
-                    NavigationService.processStop(context);
+                    DialogFlowForegroundService.processNavigationStopped(context);
+                    if (callback != null) {
+                        callback.onStop();
+                    }
                 }
 
                 @Override
                 public void onFetchTimeOut() {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, "onFetchTimeOut");
+                    }
+                    mNavigationProvider.stopNavigation(context, 0, 0);
+                    DialogFlowForegroundService.processNavigationStopped(context);
+                    if (callback != null) {
+                        callback.onStop();
+                    }
                 }
 
                 @Override
                 public void onLocationNotSupportError(boolean isLocationNotEnabled) {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, String.format("onLocationNotSupportError, isLocationNotEnabled: %s", isLocationNotEnabled));
+                    }
+                    mNavigationProvider.stopNavigation(context, 0, 0);
+                    DialogFlowForegroundService.processNavigationStopped(context);
+                    if (callback != null) {
+                        callback.onStop();
+                    }
                 }
             });
         }
@@ -148,5 +168,10 @@ public class NavigationManager {
                 }
             });
         }
+    }
+
+
+    public interface INavigationCallback {
+        void onStop();
     }
 }

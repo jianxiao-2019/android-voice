@@ -13,6 +13,8 @@ import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.go.navigation.NavigationManager;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
@@ -58,6 +60,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         if (mUiManager != null) {
             mUiManager.release();
         }
+        DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
     }
 
     private void bindView() {
@@ -90,6 +93,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                         mGoLayout.postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
                                 initUiTaskManager();
                                 mUiManager.dispatchDefaultOptionsTask();
                                 mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dialog_margin"
+        android:layout_marginRight="@dimen/dialog_margin"
+        android:background="@drawable/bg_white_round_black"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/dialog_padding_left_right"
+        android:paddingRight="@dimen/dialog_padding_left_right"
+        android:paddingTop="@dimen/dialog_padding">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingLeft="@dimen/dialog_text_content_padding_left_right"
+            android:paddingRight="@dimen/dialog_text_content_padding_left_right"
+            android:text="Kika Go"
+            android:textColor="@color/dialog_text_title_color"
+            android:textDirection="locale"
+            android:textSize="@dimen/dialog_text_title_size"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dialog_content_margin_space"
+            android:paddingLeft="@dimen/dialog_text_content_padding_left_right"
+            android:paddingRight="@dimen/dialog_text_content_padding_left_right"
+            android:text="结束Kika Go?"
+            android:textColor="@color/dialog_text_content_color"
+            android:textDirection="locale"
+            android:textSize="@dimen/dialog_text_content_size"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/underline_width"
+            android:layout_marginTop="15dp"
+            android:background="@color/underline_color"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialog_button_height"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/activity_dialog_stop_service_btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="Cancel"
+                android:textColor="@color/dialog_btn_negative_color"
+                android:textSize="@dimen/dialog_button_text_size"/>
+
+            <View
+                android:layout_width="@dimen/underline_width"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/underline_color"/>
+
+            <TextView
+                android:id="@+id/activity_dialog_stop_service_btn_apply"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="OK"
+                android:textColor="@color/dialog_btn_positive_color"
+                android:textSize="@dimen/dialog_button_text_size"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

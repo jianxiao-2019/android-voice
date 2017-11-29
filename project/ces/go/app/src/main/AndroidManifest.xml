@@ -66,12 +66,15 @@
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
 
-        <receiver android:name="com.kikatech.go.dialogflow.telephony.PhoneStateReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE"/>
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
-            </intent-filter>
-        </receiver>
+
+        <activity
+            android:name=".ui.dialog.KikaStopServiceDialogActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:taskAffinity=".Dialog"
+            android:theme="@style/DialogActivityStyle"/>
+
 
         <service
             android:name="com.kikatech.go.accessibility.AccessibilityWatchDog"
@@ -93,7 +96,15 @@
             </intent-filter>
         </service>
         <service android:name=".navigation.NavigationService"/>
+        <service android:name=".services.DialogFlowForegroundService"/>
 
+
+        <receiver android:name="com.kikatech.go.dialogflow.telephony.PhoneStateReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE"/>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
+            </intent-filter>
+        </receiver>
         <receiver android:name=".message.sms.SmsBroadcastReceiver"
             android:enabled="true"
             android:exported="true" >

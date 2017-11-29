@@ -81,29 +81,33 @@ public class NaviSceneUtil {
 
         if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Start to stop navigation ..., targetClz:" + targetClz);
 
-        Handler uiHandler = new Handler(Looper.getMainLooper());
+        final Handler uiHandler = new Handler(Looper.getMainLooper());
 
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
                 sNavigating = false;
-                NavigationManager.getIns().stopNavigation(ctx);
+                NavigationManager.getIns().stopNavigation(ctx, new NavigationManager.INavigationCallback() {
+                    @Override
+                    public void onStop() {
+                        if (targetClz == null) {
+                            return;
+                        }
+                        uiHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    android.content.Intent intent = new android.content.Intent(ctx, targetClz);
+                                    intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                    pendingIntent.send();
+                                } catch (Exception ignore) {
+                                }
+                            }
+                        }, 3000);
+                    }
+                });
             }
         });
-
-        if(targetClz != null) {
-            uiHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        android.content.Intent intent = new android.content.Intent(ctx, targetClz);
-                        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        pendingIntent.send();
-                    } catch (Exception ignore) {
-                    }
-                }
-            }, 3000);
-        }
     }
 }
