@@ -2,17 +2,21 @@ package com.kikatech.go.dialogflow.im.send.stage;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.kikatech.go.R;
 import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.MessageEventDispatcher;
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.IMContent;
 import com.kikatech.go.message.processor.IMProcessor;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
+import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -26,15 +30,15 @@ public class StageSendIMConfirm extends BaseSendIMStage {
         super(scene, feedback);
     }
 
-    private void backToMainActivity(Context ctx) {
+    private boolean backToMainActivity(Context ctx) {
         android.content.Intent intent = new android.content.Intent(ctx, KikaAlphaUiActivity.class);
-        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
-        }
+        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+        return IntentUtil.sendPendingIntent(ctx, intent);
+    }
+
+    @Override
+    public void doAction() {
+        action();
     }
 
     @Override
@@ -56,7 +60,8 @@ public class StageSendIMConfirm extends BaseSendIMStage {
         } else {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Send IM !!!!" + getIMContent().toString());
 
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
+            final Handler uiHandler = new Handler(Looper.getMainLooper());
+            uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
 
@@ -74,7 +79,20 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                         public void onStop() {
                             if (LogUtil.DEBUG) LogUtil.log(TAG, "End ...");
                             AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
-                            backToMainActivity(ctx);
+                            boolean succeed = backToMainActivity(ctx);
+
+                            if (succeed) {
+                                Bundle args = new Bundle();
+                                args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_DISPLAY_MSG_SENT);
+                                args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_succeed);
+                                send(args);
+                                uiHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        exitScene();
+                                    }
+                                }, 1500);
+                            }
                         }
                     });
                     if (processor != null) {
