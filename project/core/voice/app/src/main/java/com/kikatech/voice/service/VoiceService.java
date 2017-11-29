@@ -35,6 +35,8 @@ public class VoiceService {
 
     private Handler mMainHandler;
 
+    private boolean mIsAsrPaused = false;
+
     public interface VoiceRecognitionListener {
         void onRecognitionResult(Message message);
     }
@@ -91,6 +93,14 @@ public class VoiceService {
         }
 
         mMainHandler = new Handler();
+    }
+
+    public void resumeAsr() {
+        mIsAsrPaused = false;
+    }
+
+    public void pauseAsr() {
+        mIsAsrPaused = true;
     }
 
     public void stop() {
@@ -156,6 +166,10 @@ public class VoiceService {
         @Override
         public void onData(byte[] data) {
             Logger.i("VoiceDataSender onData");
+            if (mIsAsrPaused) {
+                Logger.i("VoiceDataSender onData is pausing, drop data.");
+                return;
+            }
             if (mWebService != null) {
                 mWebService.sendData(data);
             }
