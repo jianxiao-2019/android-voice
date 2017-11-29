@@ -343,10 +343,11 @@ public class DialogFlowService implements
         }
 
         @Override
-        public void onSceneExit(String scene) {
-            // Don't reset context since it would clear the context of the following scenario
-            //mDialogFlow.resetContexts();
-            
+        public void onSceneExit(String scene, boolean activated) {
+            // if not activated, Don't reset context since it would clear the context of the following scenario
+            if (activated) {
+                mDialogFlow.resetContexts();
+            }
             mCallback.onSceneExit();
         }
     };
