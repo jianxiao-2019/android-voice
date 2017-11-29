@@ -169,6 +169,20 @@ public class DialogFlowService implements
     }
 
     @Override
+    public void pauseAsr() {
+        if (mVoiceService != null) {
+            mVoiceService.pauseAsr();
+        }
+    }
+
+    @Override
+    public void resumeAsr() {
+        if (mVoiceService != null) {
+            mVoiceService.resumeAsr();
+        }
+    }
+
+    @Override
     public void quitService() {
         if (mVoiceService != null) {
             mVoiceService.stop();

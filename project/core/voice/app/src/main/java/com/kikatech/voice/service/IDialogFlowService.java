@@ -52,5 +52,9 @@ public interface IDialogFlowService {
 
     void text(final String words);
 
+    void pauseAsr();
+
+    void resumeAsr();
+
     void quitService();
 }

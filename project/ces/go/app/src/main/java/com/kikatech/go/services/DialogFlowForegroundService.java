@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +22,26 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.BaseSceneManager;
+import com.kikatech.go.dialogflow.DialogFlowConfig;
+import com.kikatech.go.dialogflow.im.IMSceneManager;
+import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
+import com.kikatech.go.dialogflow.sms.SmsSceneManager;
+import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
+import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.usb.util.ImageUtil;
+import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.service.DialogFlowService;
+import com.kikatech.voice.service.IDialogFlowService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author SkeeterWang Created on 2017/11/28.
@@ -34,12 +50,37 @@ import com.kikatech.usb.util.ImageUtil;
 public class DialogFlowForegroundService extends BaseForegroundService {
     private static final String TAG = "DialogFlowForegroundService";
 
-    private final class BroadcastInfos {
+    public final class SendBroadcastInfos {
+        public static final String ACTION_ON_DIALOG_FLOW_INIT = "action_on_dialog_flow_init";
+        public static final String ACTION_ON_ASR_RESULT = "action_on_asr_result";
+        public static final String ACTION_ON_TEXT = "action_on_text";
+        public static final String ACTION_ON_TEXT_PAIRS = "action_on_text_pairs";
+        public static final String ACTION_ON_STAGE_PREPARED = "action_on_stage_prepared";
+        public static final String ACTION_ON_STAGE_ACTION_DONE = "action_on_stage_action_done";
+        public static final String ACTION_ON_STAGE_EVENT = "action_on_stage_event";
+        public static final String ACTION_ON_SCENE_EXIT = "action_on_scene_exit";
+        public static final String ACTION_ON_AGENT_QUERY_START = "action_on_agent_query_start";
+        public static final String ACTION_ON_AGENT_QUERY_STOP = "action_on_agent_query_stop";
+        public static final String ACTION_ON_AGENT_QUERY_ERROR = "action_on_agent_query_error";
+
+        public static final String PARAM_EXTRAS = "param_extras";
+        public static final String PARAM_TEXT = "param_text";
+        public static final String PARAM_IS_FINISHED = "param_is_finished";
+        public static final String PARAM_SCENE = "param_scene";
+        public static final String PARAM_SCENE_ACTION = "param_scene_action";
+        public static final String PARAM_SCENE_STAGE = "param_scene_stage";
+        public static final String PARAM_IS_INTERRUPTED = "param_is_interrupted";
+    }
+
+    private final class ReceiveBroadcastInfos {
         private static final String ACTION_ON_STATUS_CHANGED = "action_status_changed";
         private static final String ACTION_ON_NAVIGATION_STARTED = "action_navigation_started";
         private static final String ACTION_ON_NAVIGATION_STOPPED = "action_navigation_stopped";
 
+        private static final String ACTION_DIALOG_FLOW_TALK = "action_dialog_flow_talk";
+
         private static final String PARAM_STATUS = "param_status";
+        private static final String PARAM_TEXT = "param_text";
     }
 
     private static WindowManager mWindowManager;
@@ -53,6 +94,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     );
     private View mView;
     private ImageView mStatusView;
+
+    private IDialogFlowService mDialogFlowService;
+    private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -69,16 +113,22 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 return;
             }
             switch (action) {
-                case BroadcastInfos.ACTION_ON_STATUS_CHANGED:
-                    if (isViewAdded()) {
+                case ReceiveBroadcastInfos.ACTION_ON_STATUS_CHANGED:
+                    if (isViewAdded() && asrActive) {
                         handleStatusChanged(intent);
                     }
                     break;
-                case BroadcastInfos.ACTION_ON_NAVIGATION_STARTED:
+                case ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED:
+                    asrActive = false;
+                    mDialogFlowService.pauseAsr();
                     showGMap();
                     break;
-                case BroadcastInfos.ACTION_ON_NAVIGATION_STOPPED:
+                case ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED:
                     removeView();
+                    break;
+                case ReceiveBroadcastInfos.ACTION_DIALOG_FLOW_TALK:
+                    String text = intent.getStringExtra(ReceiveBroadcastInfos.PARAM_TEXT);
+                    mDialogFlowService.talk(text);
                     break;
             }
         }
@@ -88,12 +138,19 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     @Override
     protected void onStartForeground() {
         registerReceiver();
+        initDialogFlowService();
     }
 
     @Override
     protected void onStopForeground() {
         unregisterReceiver();
         removeView();
+        for (BaseSceneManager bcm : mSceneManagers) {
+            if (bcm != null) bcm.close();
+        }
+        if (mDialogFlowService != null) {
+            mDialogFlowService.quitService();
+        }
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
@@ -105,6 +162,130 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
 
+    private void initDialogFlowService() {
+        mDialogFlowService = DialogFlowService.queryService(this,
+                DialogFlowConfig.queryDemoConfig(this),
+                new IDialogFlowService.IServiceCallback() {
+                    @Override
+                    public void onInitComplete() {
+                        sendLocalBroadcast(new Intent(SendBroadcastInfos.ACTION_ON_DIALOG_FLOW_INIT));
+                    }
+
+                    @Override
+                    public void onASRResult(final String speechText, boolean isFinished) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("speechText: %1$s, isFinished: %2$s", speechText, isFinished));
+                        }
+                        if (isFinished) {
+                            mDialogFlowService.pauseAsr();
+                        }
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_ASR_RESULT);
+                        intent.putExtra(SendBroadcastInfos.PARAM_TEXT, speechText);
+                        intent.putExtra(SendBroadcastInfos.PARAM_IS_FINISHED, isFinished);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onText(String text, Bundle extras) {
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_TEXT);
+                        intent.putExtra(SendBroadcastInfos.PARAM_TEXT, text);
+                        intent.putExtra(SendBroadcastInfos.PARAM_EXTRAS, extras);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras) {
+                        StringBuilder builder = new StringBuilder();
+                        if (pairs != null && pairs.length > 0) {
+                            for (Pair<String, Integer> pair : pairs) {
+                                builder.append(pair.first);
+                            }
+                        }
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_TEXT_PAIRS);
+                        intent.putExtra(SendBroadcastInfos.PARAM_TEXT, builder.toString());
+                        intent.putExtra(SendBroadcastInfos.PARAM_EXTRAS, extras);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onStagePrepared(String scene, String action, SceneStage stage) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("scene: %1$s, action: %2$s, stage: %3$s", scene, action, stage.getClass().getSimpleName()));
+                        }
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_STAGE_PREPARED);
+                        intent.putExtra(SendBroadcastInfos.PARAM_SCENE, scene);
+                        intent.putExtra(SendBroadcastInfos.PARAM_SCENE_ACTION, action);
+                        intent.putExtra(SendBroadcastInfos.PARAM_SCENE_STAGE, stage);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onStageActionDone(boolean isInterrupted) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("isInterrupted: %s", isInterrupted));
+                        }
+                        mDialogFlowService.resumeAsr();
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_STAGE_ACTION_DONE);
+                        intent.putExtra(SendBroadcastInfos.PARAM_IS_INTERRUPTED, isInterrupted);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onStageEvent(Bundle extras) {
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_STAGE_EVENT);
+                        intent.putExtra(SendBroadcastInfos.PARAM_EXTRAS, extras);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onSceneExit() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onSceneExit");
+                        }
+                        mDialogFlowService.resumeAsr();
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_SCENE_EXIT);
+                        sendLocalBroadcast(intent);
+                    }
+                }, new IDialogFlowService.IAgentQueryStatus() {
+                    @Override
+                    public void onStart() {
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_AGENT_QUERY_START);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onComplete(String[] dbgMsg) {
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
+                        // dbgMsg[0] : scene - action
+                        // dbgMsg[1] : parameters
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_AGENT_QUERY_STOP);
+                        sendLocalBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
+                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_AGENT_QUERY_ERROR);
+                        sendLocalBroadcast(intent);
+                    }
+                });
+
+        // Register all scenes from scene mangers
+        mSceneManagers.add(new TelephonySceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new NaviSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService, KikaAlphaUiActivity.class));
+        mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new IMSceneManager(this, mDialogFlowService));
+    }
+
+    private void sendLocalBroadcast(Intent intent) {
+        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).sendBroadcast(intent);
+    }
+
+
+    private boolean asrActive;
+
     private void showGMap() {
         if (isViewAdded()) {
             return;
@@ -113,6 +294,18 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mView = mLayoutInflater.inflate(R.layout.go_layout_gmap, null);
 
         mStatusView = (ImageView) mView.findViewById(R.id.gmap_status);
+
+        mStatusView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogFlowService.resumeAsr();
+                asrActive = true;
+                Glide.with(DialogFlowForegroundService.this)
+                        .load(R.drawable.gmap_awake)
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .into(mStatusView);
+            }
+        });
 
         addView();
     }
@@ -148,9 +341,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
 
     private void registerReceiver() {
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(BroadcastInfos.ACTION_ON_STATUS_CHANGED));
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(BroadcastInfos.ACTION_ON_NAVIGATION_STARTED));
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(BroadcastInfos.ACTION_ON_NAVIGATION_STOPPED));
+        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_STATUS_CHANGED));
+        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED));
+        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED));
+        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_DIALOG_FLOW_TALK));
     }
 
     private void unregisterReceiver() {
@@ -159,6 +353,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         } catch (Exception ignore) {
         }
     }
+
 
     @Override
     public void onCreate() {
@@ -179,7 +374,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private void handleStatusChanged(Intent intent) {
-        GoLayout.ViewStatus status = (GoLayout.ViewStatus) intent.getSerializableExtra(BroadcastInfos.PARAM_STATUS);
+        GoLayout.ViewStatus status = (GoLayout.ViewStatus) intent.getSerializableExtra(ReceiveBroadcastInfos.PARAM_STATUS);
         Glide.with(DialogFlowForegroundService.this)
                 .load(status.getRes())
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -188,19 +383,24 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
 
     public synchronized static void processStatusChanged(Context context, GoLayout.ViewStatus status) {
-        Intent intent = new Intent(BroadcastInfos.ACTION_ON_STATUS_CHANGED);
-        intent.putExtra(BroadcastInfos.PARAM_STATUS, status);
+        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_ON_STATUS_CHANGED);
+        intent.putExtra(ReceiveBroadcastInfos.PARAM_STATUS, status);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     public synchronized static void processNavigationStarted(Context context) {
-        Intent intent = new Intent(BroadcastInfos.ACTION_ON_NAVIGATION_STARTED);
+        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
     }
 
     public synchronized static void processNavigationStopped(Context context) {
-        Intent intent = new Intent(BroadcastInfos.ACTION_ON_NAVIGATION_STOPPED);
+        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public synchronized static void processDialogFlowTalk(Context context, String text) {
+        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_DIALOG_FLOW_TALK);
+        intent.putExtra(ReceiveBroadcastInfos.PARAM_TEXT, text);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 

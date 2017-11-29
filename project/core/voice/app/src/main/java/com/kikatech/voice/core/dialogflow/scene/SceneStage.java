@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
+import java.io.Serializable;
+
 /**
  * Created by tianli on 17-11-11.
  */
 
-public abstract class SceneStage implements ISceneStageFeedback {
+public abstract class SceneStage implements ISceneStageFeedback, Serializable {
 
     protected final String TAG = getClass().getSimpleName();
     protected final ISceneFeedback mFeedback;
