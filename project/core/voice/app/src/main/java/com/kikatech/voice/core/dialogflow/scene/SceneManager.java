@@ -100,11 +100,11 @@ public class SceneManager implements DialogObserver, ISceneManager {
         }
     }
 
-    private void doExitScene(String scene, boolean activated) {
+    private void doExitScene(String scene, boolean proactive) {
         if (!TextUtils.isEmpty(scene)) {
             notifyObservers(new Intent(scene, Intent.ACTION_EXIT));
             if (mCallback != null) {
-                mCallback.onSceneExit(scene, activated);
+                mCallback.onSceneExit(scene, proactive);
             }
         }
     }
@@ -112,7 +112,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
     public interface SceneLifecycleObserver {
         void onSceneEnter(String scene);
 
-        void onSceneExit(String scene, boolean activated);
+        void onSceneExit(String scene, boolean proactive);
     }
 
     public interface SceneQueryWordsStatus {
