@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
+import com.bumptech.glide.request.target.Target;
 import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
@@ -41,10 +42,10 @@ public class GoLayout extends FrameLayout {
     }
 
     public enum ViewStatus {
-        SPEAK(R.drawable.tts, R.drawable.gmap_tts),
-        STANDY_BY(R.drawable.standby, R.drawable.gmap_standby),
-        LISTEN(R.drawable.listening, R.drawable.gmap_listening),
-        LOADING(R.drawable.listening, R.drawable.gmap_listening);
+        SPEAK(R.drawable.kika_tts, R.drawable.kika_gmap_tts),
+        STAND_BY_AWAKE(R.drawable.kika_awake, R.drawable.kika_gmap_awake),
+        LISTEN(R.drawable.kika_listening, R.drawable.kika_gmap_listening),
+        LOADING(R.drawable.kika_listening, R.drawable.kika_gmap_listening);
 
         int bgRes, res;
 
@@ -274,7 +275,8 @@ public class GoLayout extends FrameLayout {
         mMsgSentLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
         Glide.with(getContext())
-                .load(R.drawable.awake_normal)
+                .load(R.drawable.kika_standby)
+                .dontTransform()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusAnimationView);
         mStatusAnimationView.setOnClickListener(new OnClickListener() {
@@ -298,7 +300,8 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
         Glide.with(getContext())
-                .load(R.drawable.standby)
+                .load(R.drawable.kika_awake)
+                .dontTransform()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusAnimationView);
         mStatusAnimationView.setOnClickListener(null);
@@ -461,7 +464,8 @@ public class GoLayout extends FrameLayout {
 
         if (appInfo != null) {
             Glide.with(context)
-                    .load(appInfo.getAppIconSmall())
+                    .load(appInfo.getAppIcon())
+                    .dontTransform()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(mUsrInfoImIcon);
         } else {
@@ -498,6 +502,7 @@ public class GoLayout extends FrameLayout {
         if (appInfo != null) {
             Glide.with(context)
                     .load(appInfo.getAppIconSmall())
+                    .dontTransform()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(mUsrMsgImIcon);
         } else {
@@ -516,7 +521,7 @@ public class GoLayout extends FrameLayout {
         }
         lock();
 
-        mCurrentStatus = ViewStatus.STANDY_BY;
+        mCurrentStatus = ViewStatus.STAND_BY_AWAKE;
 
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
@@ -535,6 +540,7 @@ public class GoLayout extends FrameLayout {
             case AWAKE:
                 Glide.with(context)
                         .load(status.getBgRes())
+                        .dontTransform()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(mStatusAnimationView);
                 DialogFlowForegroundService.processStatusChanged(context, status);

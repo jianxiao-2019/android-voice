@@ -301,7 +301,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 mDialogFlowService.resumeAsr();
                 asrActive = true;
                 Glide.with(DialogFlowForegroundService.this)
-                        .load(R.drawable.gmap_awake)
+                        .load(R.drawable.kika_gmap_awake)
+                        .dontTransform()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(mStatusView);
             }
@@ -377,6 +378,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         GoLayout.ViewStatus status = (GoLayout.ViewStatus) intent.getSerializableExtra(ReceiveBroadcastInfos.PARAM_STATUS);
         Glide.with(DialogFlowForegroundService.this)
                 .load(status.getRes())
+                .dontTransform()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusView);
     }

@@ -144,6 +144,7 @@ public class NavigationService extends Service {
         GoLayout.ViewStatus status = (GoLayout.ViewStatus) intent.getSerializableExtra(Params.STATUS);
         Glide.with(NavigationService.this)
                 .load(status.getRes())
+                .dontTransform()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusView);
     }
@@ -176,7 +177,8 @@ public class NavigationService extends Service {
                     isActive = true;
                     registerReceiver();
                     Glide.with(NavigationService.this)
-                            .load(R.drawable.gmap_awake)
+                            .load(R.drawable.kika_gmap_awake)
+                            .dontTransform()
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .into(mStatusView);
                 }

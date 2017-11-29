@@ -8,16 +8,29 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="220dp"
+        android:contentDescription="@string/default_img_content_description"
+        android:src="@drawable/kika_success_bg"/>
+
+    <ImageView
+        android:id="@+id/msg_sent_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="79dp"
         android:contentDescription="@string/default_img_content_description"
         android:src="@drawable/kika_ic_success"/>
 
-    <ImageView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="220dp"
-        android:contentDescription="@string/default_img_content_description"
-        android:src="@drawable/kika_success_bg"/>
+        android:layout_below="@+id/msg_sent_bg"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:text="Sent!"
+        android:textColor="#b3bdd9"
+        android:textSize="53dp"/>
 
 </RelativeLayout>
