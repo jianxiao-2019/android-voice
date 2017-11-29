@@ -14,12 +14,15 @@ public class SceneUtil {
 
     public static final String EVENT_DISPLAY_MSG_SENT = "event_display_msg_sent";
 
+    public static final long MSG_SENT_PAGE_DELAY = 2500;
+
     public static final String EXTRA_EVENT = "extra_event";
     public static final String EXTRA_ALERT = "extra_alert";
     public static final String EXTRA_OPTIONS_LIST = "extra_options_list";
     public static final String EXTRA_UI_TEXT = "extra_ui_text";
     public static final String EXTRA_USR_INFO = "extra_usr_info";
     public static final String EXTRA_USR_MSG = "extra_usr_msg";
+
 
     public static String[] getAskAddress(Context context) {
         Resources resource = context.getResources();

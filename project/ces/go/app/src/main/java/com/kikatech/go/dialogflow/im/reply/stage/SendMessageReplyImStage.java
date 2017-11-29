@@ -47,6 +47,6 @@ public class SendMessageReplyImStage extends BaseStage {
             public void run() {
                 exitScene();
             }
-        }, 1500);
+        }, SceneUtil.MSG_SENT_PAGE_DELAY);
     }
 }
