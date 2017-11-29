@@ -15,6 +15,7 @@ public class Intent {
     public final static String ACTION_EXIT = "__Exit__";
     public final static String ACTION_UNKNOWN = "input.unknown";
 
+    public final static String DEFAULT_SCENE = "Default";
     public final static String AS_PREV_SCENE = "as_prev_scene";
     public final static String ACTION_USER_INPUT = "custom_intent_action_user_input";
     public final static String KEY_USER_INPUT = "custom_intent_key_user_input";

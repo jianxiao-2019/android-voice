@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.util.Subscribe;
+import com.kikatech.voice.util.log.LogUtil;
 
 import java.util.List;
 
@@ -44,11 +45,23 @@ public class SceneManager implements DialogObserver, ISceneManager {
     public void onIntent(Intent intent) {
         intent.correctScene(mScene);
         String scene = intent.getScene();
+        if(LogUtil.DEBUG) {
+            LogUtil.log("Intent", String.format("mScene: %s", mScene));
+            LogUtil.log("Intent", String.format("scene: %s", scene));
+        }
         if (!TextUtils.isEmpty(scene)) {
-            if (scene.equals(mScene)) {
-                notifyObservers(intent);
+            if (!TextUtils.isEmpty(mScene)) {
+                if (scene.equals(mScene)) {
+                    notifyObservers(intent);
+                } else {
+                    doExitScene(mScene);
+                    mScene = scene;
+                    if (mCallback != null) {
+                        mCallback.onSceneEnter(mScene);
+                    }
+                    notifyObservers(intent);
+                }
             } else {
-                doExitScene(mScene);
                 mScene = scene;
                 if (mCallback != null) {
                     mCallback.onSceneEnter(mScene);

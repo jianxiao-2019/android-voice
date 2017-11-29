@@ -174,14 +174,14 @@ public class SceneUtil {
         return new String[]{tryFormat(ui, caller), tryFormat(getStringFromArray(ttsArray), caller)};
     }
 
-    public static String getResponseNotGet(Context context) {
+    public static String getResponseNotGet(Context context, String preTts) {
         Resources resource = context.getResources();
-        return resource.getString(R.string.tts_response_not_get);
+        return tryFormat(resource.getString(R.string.tts_response_not_get), preTts);
     }
 
-    public static String getIntentUnknown(Context context) {
+    public static String getIntentUnknown(Context context, String preTts) {
         Resources resource = context.getResources();
-        return resource.getString(R.string.tts_intent_unknown);
+        return tryFormat(resource.getString(R.string.tts_intent_unknown), preTts);
     }
 
     public static String[] getAskApp(Context context) {

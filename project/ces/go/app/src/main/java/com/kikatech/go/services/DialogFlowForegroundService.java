@@ -24,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
+import com.kikatech.go.dialogflow.common.CommonSceneManager;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
@@ -277,6 +278,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService, KikaAlphaUiActivity.class));
         mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new IMSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new CommonSceneManager(this, mDialogFlowService));
     }
 
     private void sendLocalBroadcast(Intent intent) {

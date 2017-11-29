@@ -64,9 +64,9 @@ public abstract class SceneBase implements DialogObserver {
         if (Intent.ACTION_EXIT.equals(action)) {
             onExit();
             mStage = idle();
-        } else if(Intent.ACTION_UNKNOWN.equals(action)) {
+        } else if (!Intent.DEFAULT_SCENE.equals(scene()) && Intent.ACTION_UNKNOWN.equals(action)) {
             if (LogUtil.DEBUG) LogUtil.logw("SceneBase", "Unknown Action, repeat current stage");
-            if(mStage != null) {
+            if (mStage != null) {
                 mStage.prepareAction(scene(), action, mStage);
             }
         } else {
