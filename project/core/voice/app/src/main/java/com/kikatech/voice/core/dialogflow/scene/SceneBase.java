@@ -18,6 +18,8 @@ public abstract class SceneBase implements DialogObserver {
     private ISceneManager mSceneManager = null;
     private SceneStage mStage;
 
+    private final static int BACK_TO_MAIN_ERR_COUNT = 2;
+
     public SceneBase(Context context, ISceneFeedback feedback) {
         mContext = context.getApplicationContext();
         mFeedback = feedback;
@@ -52,6 +54,8 @@ public abstract class SceneBase implements DialogObserver {
 
     protected abstract SceneStage idle();
 
+    private int mStageCondCount = 1;
+
     @Override
     public void onIntent(Intent intent) {
         String action = intent.getAction();
@@ -72,8 +76,25 @@ public abstract class SceneBase implements DialogObserver {
         } else {
             SceneStage stage = mStage.next(action, intent.getExtra());
             if (stage != null) {
-                mStage = stage;
-                stage.prepareAction(scene(), action, stage);
+                boolean enterAgain = mStage.getClass() == stage.getClass();
+                if (enterAgain) {
+                    mStageCondCount += 1;
+                    if (LogUtil.DEBUG)
+                        LogUtil.log("SceneBase", "<" + mStage.getClass() + "> EnterCount:" + mStageCondCount);
+                }
+                if (mStageCondCount > BACK_TO_MAIN_ERR_COUNT) {
+                    if (LogUtil.DEBUG)
+                        LogUtil.logw("SceneBase", "Enter Count = " + mStageCondCount + ", Go back to main page");
+                    mStage.exitScene();
+                    mStageCondCount = 1;
+
+                    // TODO
+                    // 1. reset context
+                    // 2. Add UI response
+                } else {
+                    mStage = stage;
+                    stage.prepareAction(scene(), action, stage);
+                }
             }
         }
     }
