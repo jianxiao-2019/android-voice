@@ -135,6 +135,7 @@ it's the alpha version now."</string>
     </string-array>
     <string-array name="options_ask_app">
         <item>"WhatsApp"</item>
+        <item>"SMS"</item>
     </string-array>
 
     <string name="tts_emoji_added">"Emoji added"</string>
