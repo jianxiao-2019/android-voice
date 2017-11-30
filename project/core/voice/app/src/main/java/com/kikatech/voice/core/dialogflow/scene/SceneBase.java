@@ -81,7 +81,10 @@ public abstract class SceneBase implements DialogObserver {
                     mStageCondCount += 1;
                     if (LogUtil.DEBUG)
                         LogUtil.log("SceneBase", "<" + mStage.getClass() + "> EnterCount:" + mStageCondCount);
+                } else {
+                    mStageCondCount = 1;
                 }
+                
                 if (mStageCondCount > BACK_TO_MAIN_ERR_COUNT) {
                     if (LogUtil.DEBUG)
                         LogUtil.logw("SceneBase", "Enter Count = " + mStageCondCount + ", Go back to main page");
