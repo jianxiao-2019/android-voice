@@ -120,8 +120,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                     break;
                 case ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED:
-                    asrActive = false;
-                    mDialogFlowService.pauseAsr();
+                    pauseAsr();
                     showGMap();
                     break;
                 case ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED:
@@ -177,8 +176,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("speechText: %1$s, isFinished: %2$s", speechText, isFinished));
                         }
-                        if (isFinished) {
-                            mDialogFlowService.pauseAsr();
+                        if (!asrActive) {
+                            return;
+                        } else if (isFinished) {
+                            pauseAsr();
                         }
                         Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_ASR_RESULT);
                         intent.putExtra(SendBroadcastInfos.PARAM_TEXT, speechText);
@@ -225,7 +226,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("isInterrupted: %s", isInterrupted));
                         }
-                        mDialogFlowService.resumeAsr();
+                        resumeAsr();
                         Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_STAGE_ACTION_DONE);
                         intent.putExtra(SendBroadcastInfos.PARAM_IS_INTERRUPTED, isInterrupted);
                         sendLocalBroadcast(intent);
@@ -243,7 +244,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSceneExit");
                         }
-                        mDialogFlowService.resumeAsr();
+                        resumeAsr();
                         Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_SCENE_EXIT);
                         sendLocalBroadcast(intent);
                     }
@@ -288,6 +289,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private boolean asrActive;
 
+    private void pauseAsr() {
+        asrActive = false;
+        mDialogFlowService.pauseAsr();
+    }
+
+    private void resumeAsr() {
+        mDialogFlowService.resumeAsr();
+        asrActive = true;
+    }
+
     private void showGMap() {
         if (isViewAdded()) {
             return;
@@ -300,8 +311,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mStatusView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialogFlowService.resumeAsr();
-                asrActive = true;
+                resumeAsr();
                 Glide.with(DialogFlowForegroundService.this)
                         .load(R.drawable.kika_gmap_awake)
                         .dontTransform()
