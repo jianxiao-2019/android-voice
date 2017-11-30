@@ -37,6 +37,7 @@ public class StageOutgoing extends SceneStage {
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
                 case SceneActions.ACTION_OUTGOING_START:
                 case SceneActions.ACTION_OUTGOING_CHANGE:
+                case SceneActions.ACTION_OUTGOING_YES:
                     if (extra != null && extra.containsKey(SceneActions.PARAM_OUTGOING_NAME)) {
                         mTargetName = extra.getString(SceneActions.PARAM_OUTGOING_NAME);
                     }
@@ -58,6 +59,7 @@ public class StageOutgoing extends SceneStage {
                         case NAME_STATE_NULL:
                             return new StageAskName(mSceneBase, mFeedback);
                     }
+                case SceneActions.ACTION_OUTGOING_NO:
                 case SceneActions.ACTION_OUTGOING_CANCEL:
                     return new StageCancel(mSceneBase, mFeedback);
             }
