@@ -74,27 +74,33 @@ public abstract class SceneBase implements DialogObserver {
         } else {
             boolean isDefaultScene = Intent.DEFAULT_SCENE.equals(scene());
             boolean isUnknownIntent = Intent.ACTION_UNKNOWN.equals(action);
+            boolean isUserInput = Intent.ACTION_USER_INPUT.equals(action);
             SceneStage stage = mStage.next(action, intent.getExtra());
             if (stage != null) {
-                boolean enterAgain = mStage.getClass().equals(stage.getClass());
-                if (enterAgain) {
-                    mStageCondCount += 1;
-                    if (LogUtil.DEBUG) {
-                        LogUtil.log(TAG, String.format("<%1$s> EnterCount: %2$s", mStage.getClass(), mStageCondCount));
+                if (isUserInput || isUnknownIntent) {
+                    boolean enterAgain = mStage.getClass().equals(stage.getClass());
+                    if (enterAgain) {
+                        mStageCondCount += 1;
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("<%1$s> EnterCount: %2$s", mStage.getClass(), mStageCondCount));
+                        }
+                    } else {
+                        mStageCondCount = 1;
                     }
+                    if (mStageCondCount > BACK_TO_MAIN_ERR_COUNT) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logw(TAG, String.format("Enter Count = %s, Go back to main page", mStageCondCount));
+                        }
+                        mStage = onOverCounts();
+                        mStageCondCount = 1;
+                    } else if ((isDefaultScene && isUnknownIntent) || !isUnknownIntent) {
+                        mStage = stage;
+                    }
+                    mStage.prepareAction(scene(), action, mStage);
                 } else {
-                    mStageCondCount = 1;
-                }
-                if (mStageCondCount > BACK_TO_MAIN_ERR_COUNT) {
-                    if (LogUtil.DEBUG) {
-                        LogUtil.logw(TAG, String.format("Enter Count = %s, Go back to main page", mStageCondCount));
-                    }
-                    mStage = onOverCounts();
-                    mStageCondCount = 1;
-                } else if ((isDefaultScene && isUnknownIntent) || !isUnknownIntent) {
                     mStage = stage;
+                    mStage.prepareAction(scene(), action, mStage);
                 }
-                mStage.prepareAction(scene(), action, mStage);
             } else if (!isDefaultScene && isUnknownIntent) {
                 mStage.prepareAction(scene(), action, mStage);
             }
