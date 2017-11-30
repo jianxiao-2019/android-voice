@@ -32,6 +32,8 @@ public class StageProcessStopIdle extends SceneStage {
 
             if(STOP_TARGET_NAVIGATE.equals(target)) {
                 return new StageStopNavigation(mSceneBase, mFeedback);
+            } else {
+                return new StageStop(mSceneBase, mFeedback);
             }
         } else {
             if(LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "Unsupported action:" + action);
