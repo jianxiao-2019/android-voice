@@ -293,7 +293,7 @@ public class DialogFlowService implements
     private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {
         private ISceneStageFeedback listener;
 
-        private long DELAY = 1000;
+        private long DELAY = 200;
 
         private void bindListener(ISceneStageFeedback listener) {
             this.listener = listener;
