@@ -32,12 +32,13 @@ public class NaviSceneUtil {
     private final static String PRM_CITY = "city";
     private final static String PRM_SUBADMIN_AREA = "subadmin-area";
     private final static String PRM_ADMIN_AREA = "admin-area";
-    private final static String[] PRM_ARRAY = {PRM_LOCATION, PRM_ADDRESS, PRM_ATTRACTION_US, PRM_SPECIFIC_LOC, PRM_CITY, PRM_SUBADMIN_AREA};
+    private final static String PRM_ZIP_CODE = "zip-code";
+    private final static String[] PRM_ARRAY = {PRM_LOCATION, PRM_ADDRESS, PRM_ATTRACTION_US, PRM_SPECIFIC_LOC, PRM_CITY, PRM_SUBADMIN_AREA, PRM_ZIP_CODE};
 
     private final static String KEY_STREET_ADDR = "street-address";
     private final static String KEY_BUSINESS_NAME = "business-name";
     private final static String KEY_SHORTCUT = "shortcut";
-    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT, PRM_SUBADMIN_AREA, PRM_CITY, PRM_ADMIN_AREA};
+    private final static String[] LOC_KEYS = {KEY_STREET_ADDR, KEY_BUSINESS_NAME, KEY_SHORTCUT, PRM_SUBADMIN_AREA, PRM_CITY, PRM_ADMIN_AREA, PRM_ZIP_CODE};
 
     private static boolean sNavigating = false;
 
