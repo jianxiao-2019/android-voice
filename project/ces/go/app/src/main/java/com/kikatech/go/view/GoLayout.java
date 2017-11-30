@@ -113,6 +113,7 @@ public class GoLayout extends FrameLayout {
     private View mStatusLayout;
     private ImageView mStatusAnimationView;
 
+    private TextView mDebugVersionView;
     private TextView mDebugLogView;
 
 
@@ -171,7 +172,9 @@ public class GoLayout extends FrameLayout {
         mStatusAnimationView = (ImageView) findViewById(R.id.go_layout_status_img);
 
         if (DEBUG) {
+            mDebugVersionView = (TextView) findViewById(R.id.go_layout_debug_version);
             mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
+            mDebugVersionView.setText(BuildConfig.VERSION_NAME);
         }
     }
 

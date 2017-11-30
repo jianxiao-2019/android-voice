@@ -19,6 +19,7 @@ import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
+import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.log.LogUtil;
 
 
@@ -292,6 +293,8 @@ public class DialogFlowService implements
     private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {
         private ISceneStageFeedback listener;
 
+        private long DELAY = 1000;
+
         private void bindListener(ISceneStageFeedback listener) {
             this.listener = listener;
         }
@@ -311,8 +314,14 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsComplete");
             }
-            if (listener != null) {
-                listener.onStageActionDone(false);
+            final ISceneStageFeedback feedback = listener;
+            if (feedback != null) {
+                AsyncThread.getIns().executeDelay(new Runnable() {
+                    @Override
+                    public void run() {
+                        feedback.onStageActionDone(false);
+                    }
+                }, DELAY);
             }
         }
 
@@ -321,8 +330,14 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsInterrupted");
             }
-            if (listener != null) {
-                listener.onStageActionDone(true);
+            final ISceneStageFeedback feedback = listener;
+            if (feedback != null) {
+                AsyncThread.getIns().executeDelay(new Runnable() {
+                    @Override
+                    public void run() {
+                        feedback.onStageActionDone(true);
+                    }
+                }, DELAY);
             }
         }
 
@@ -331,8 +346,14 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onTtsError");
             }
-            if (listener != null) {
-                listener.onStageActionDone(true);
+            final ISceneStageFeedback feedback = listener;
+            if (feedback != null) {
+                AsyncThread.getIns().executeDelay(new Runnable() {
+                    @Override
+                    public void run() {
+                        feedback.onStageActionDone(true);
+                    }
+                }, DELAY);
             }
         }
     }
