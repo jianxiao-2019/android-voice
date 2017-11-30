@@ -144,9 +144,9 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         LocalBroadcastManager.getInstance(KikaAlphaUiActivity.this).unregisterReceiver(mReceiver);
         DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+        super.onDestroy();
     }
 
     private void bindView() {

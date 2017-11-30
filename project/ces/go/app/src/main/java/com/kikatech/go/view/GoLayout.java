@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
-import com.bumptech.glide.request.target.Target;
 import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
@@ -38,28 +37,46 @@ public class GoLayout extends FrameLayout {
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
 
     public enum DisplayMode {
-        SLEEP, AWAKE
-    }
+        SLEEP(R.drawable.kika_awake_bg, ViewStatus.STAND_BY),
+        AWAKE(R.drawable.kika_normal_bg, ViewStatus.STAND_BY_AWAKE);
 
-    public enum ViewStatus {
-        SPEAK(R.drawable.kika_tts, R.drawable.kika_gmap_tts),
-        STAND_BY_AWAKE(R.drawable.kika_awake, R.drawable.kika_gmap_awake),
-        LISTEN(R.drawable.kika_listening, R.drawable.kika_gmap_listening),
-        LOADING(R.drawable.kika_listening, R.drawable.kika_gmap_listening);
+        int bgRes;
+        ViewStatus defaultStatus;
 
-        int bgRes, res;
-
-        ViewStatus(int bgRes, int res) {
+        DisplayMode(int bgRes, ViewStatus defaultStatus) {
             this.bgRes = bgRes;
-            this.res = res;
+            this.defaultStatus = defaultStatus;
         }
 
         public int getBgRes() {
             return bgRes;
         }
 
-        public int getRes() {
-            return res;
+        public ViewStatus getDefaultStatus() {
+            return defaultStatus;
+        }
+    }
+
+    public enum ViewStatus {
+        SPEAK(R.drawable.kika_tts, R.drawable.kika_gmap_tts),
+        STAND_BY(R.drawable.kika_standby, R.drawable.kika_gmap_standby),
+        STAND_BY_AWAKE(R.drawable.kika_awake, R.drawable.kika_gmap_awake),
+        LISTEN(R.drawable.kika_listening, R.drawable.kika_gmap_listening),
+        LOADING(R.drawable.kika_listening, R.drawable.kika_gmap_listening);
+
+        int normalRes, smallRes;
+
+        ViewStatus(int bgRes, int res) {
+            this.normalRes = bgRes;
+            this.smallRes = res;
+        }
+
+        public int getNormalRes() {
+            return normalRes;
+        }
+
+        public int getSmallRes() {
+            return smallRes;
         }
     }
 
@@ -88,7 +105,6 @@ public class GoLayout extends FrameLayout {
     private ImageView mUsrMsgImIcon;
     private TextView mUsrMsgName;
     private GoTextView mUsrMsgContent;
-    private ImageView mUsrMsgAppIcon;
 
     private View mMsgSentLayout;
 
@@ -162,13 +178,8 @@ public class GoLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        switch (mCurrentMode) {
-            case SLEEP:
-                setBackgroundResource(R.drawable.kika_awake_bg);
-                break;
-            case AWAKE:
-                setBackgroundResource(R.drawable.kika_normal_bg);
-                break;
+        if (mCurrentMode != null) {
+            setBackgroundResource(mCurrentMode.getBgRes());
         }
     }
 
@@ -266,7 +277,8 @@ public class GoLayout extends FrameLayout {
 
 
     public void sleep() {
-        onModeChanged(DisplayMode.SLEEP);
+        DisplayMode targetMode = DisplayMode.SLEEP;
+        onModeChanged(targetMode);
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
@@ -274,11 +286,6 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
-        Glide.with(getContext())
-                .load(R.drawable.kika_standby)
-                .dontTransform()
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(mStatusAnimationView);
         mStatusAnimationView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -286,12 +293,13 @@ public class GoLayout extends FrameLayout {
             }
         });
         if (mModeChangedListener != null) {
-            mModeChangedListener.onChanged(DisplayMode.SLEEP);
+            mModeChangedListener.onChanged(targetMode);
         }
     }
 
     public void awake() {
-        onModeChanged(DisplayMode.AWAKE);
+        DisplayMode targetMode = DisplayMode.AWAKE;
+        onModeChanged(targetMode);
         mSleepLayout.setVisibility(GONE);
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
@@ -299,20 +307,20 @@ public class GoLayout extends FrameLayout {
         mUsrInfoLayout.setVisibility(GONE);
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
-        Glide.with(getContext())
-                .load(R.drawable.kika_awake)
-                .dontTransform()
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(mStatusAnimationView);
         mStatusAnimationView.setOnClickListener(null);
         if (mModeChangedListener != null) {
-            mModeChangedListener.onChanged(DisplayMode.AWAKE);
+            mModeChangedListener.onChanged(targetMode);
         }
     }
 
     private void onModeChanged(DisplayMode mode) {
         mCurrentMode = mode;
         requestLayout();
+        Glide.with(getContext())
+                .load(mode.getDefaultStatus().getNormalRes())
+                .dontTransform()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(mStatusAnimationView);
     }
 
 
@@ -325,8 +333,6 @@ public class GoLayout extends FrameLayout {
         }
         lock();
 
-        mCurrentStatus = ViewStatus.SPEAK;
-
         mSpeakView.setText(text);
 
         mSpeakLayout.setVisibility(VISIBLE);
@@ -336,7 +342,7 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
 
-        onStatusChanged(mCurrentStatus);
+        onStatusChanged(ViewStatus.SPEAK);
     }
 
     /**
@@ -347,8 +353,6 @@ public class GoLayout extends FrameLayout {
             LogUtil.log(TAG, "listen");
         }
         lock();
-
-        mCurrentStatus = ViewStatus.LISTEN;
 
         if (!isFinished) {
             mListenView.disableResize(mListenView.getMinTextSize());
@@ -366,7 +370,7 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
 
-        onStatusChanged(mCurrentStatus);
+        onStatusChanged(ViewStatus.LISTEN);
     }
 
     /**
@@ -377,8 +381,6 @@ public class GoLayout extends FrameLayout {
             LogUtil.log(TAG, "displayOptions");
         }
         lock();
-
-        mCurrentStatus = ViewStatus.SPEAK;
 
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
@@ -436,7 +438,7 @@ public class GoLayout extends FrameLayout {
             }
         }
 
-        onStatusChanged(mCurrentStatus);
+        onStatusChanged(ViewStatus.SPEAK);
     }
 
     public synchronized void displayUsrInfo(String usrAvatar, String usrName, AppInfo appInfo) {
@@ -444,8 +446,6 @@ public class GoLayout extends FrameLayout {
             LogUtil.log(TAG, "displayUsrInfo");
         }
         lock();
-
-        mCurrentStatus = ViewStatus.SPEAK;
 
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
@@ -475,7 +475,7 @@ public class GoLayout extends FrameLayout {
 
         mUsrInfoName.setText(usrName);
 
-        onStatusChanged(mCurrentStatus);
+        onStatusChanged(ViewStatus.SPEAK);
     }
 
     public synchronized void displayUsrMsg(String usrAvatar, String usrName, String msgContent, AppInfo appInfo) {
@@ -483,8 +483,6 @@ public class GoLayout extends FrameLayout {
             LogUtil.log(TAG, "displayUsrMsg");
         }
         lock();
-
-        mCurrentStatus = ViewStatus.SPEAK;
 
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
@@ -514,7 +512,7 @@ public class GoLayout extends FrameLayout {
         mUsrMsgName.setText(usrName);
         mUsrMsgContent.setText(msgContent);
 
-        onStatusChanged(mCurrentStatus);
+        onStatusChanged(ViewStatus.SPEAK);
     }
 
     public synchronized void displayMsgSent() {
@@ -523,8 +521,6 @@ public class GoLayout extends FrameLayout {
         }
         lock();
 
-        mCurrentStatus = ViewStatus.STAND_BY_AWAKE;
-
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
@@ -532,28 +528,21 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(VISIBLE);
 
-        onStatusChanged(mCurrentStatus);
+        onStatusChanged(ViewStatus.STAND_BY_AWAKE);
     }
 
     private void onStatusChanged(ViewStatus status) {
         // TODO: animations
+        mCurrentStatus = status;
         Context context = getContext();
         switch (mCurrentMode) {
             case AWAKE:
                 Glide.with(context)
-                        .load(status.getBgRes())
+                        .load(status.getNormalRes())
                         .dontTransform()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(mStatusAnimationView);
                 DialogFlowForegroundService.processStatusChanged(context, status);
-//                switch (status) {
-//                    case LOADING:
-//                        break;
-//                    case SPEAK:
-//                        break;
-//                    case LISTEN:
-//                        break;
-//                }
                 break;
             case SLEEP:
                 break;

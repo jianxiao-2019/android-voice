@@ -21,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,16 +30,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
-import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.navigation.view.FlexibleOnTouchListener;
 import com.kikatech.go.ui.KikaGoActivity;
 import com.kikatech.go.ui.ResolutionUtil;
-import com.kikatech.go.util.KeyboardUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.usb.util.ImageUtil;
-
-import java.util.ArrayList;
 
 /**
  * @author SkeeterWang Created on 2017/10/30.
@@ -143,7 +138,7 @@ public class NavigationService extends Service {
     private void handleStatusChanged(Intent intent) {
         GoLayout.ViewStatus status = (GoLayout.ViewStatus) intent.getSerializableExtra(Params.STATUS);
         Glide.with(NavigationService.this)
-                .load(status.getRes())
+                .load(status.getSmallRes())
                 .dontTransform()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusView);

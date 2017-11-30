@@ -344,6 +344,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
 
     private void registerReceiver() {
+        unregisterReceiver();
         LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_STATUS_CHANGED));
         LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED));
         LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED));
@@ -379,7 +380,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private void handleStatusChanged(Intent intent) {
         GoLayout.ViewStatus status = (GoLayout.ViewStatus) intent.getSerializableExtra(ReceiveBroadcastInfos.PARAM_STATUS);
         Glide.with(DialogFlowForegroundService.this)
-                .load(status.getRes())
+                .load(status.getSmallRes())
                 .dontTransform()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusView);
