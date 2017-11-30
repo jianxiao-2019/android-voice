@@ -128,6 +128,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     break;
                 case ReceiveBroadcastInfos.ACTION_DIALOG_FLOW_TALK:
                     String text = intent.getStringExtra(ReceiveBroadcastInfos.PARAM_TEXT);
+                    pauseAsr();
                     mDialogFlowService.talk(text);
                     break;
             }
@@ -169,6 +170,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     @Override
                     public void onInitComplete() {
                         sendLocalBroadcast(new Intent(SendBroadcastInfos.ACTION_ON_DIALOG_FLOW_INIT));
+                        asrActive = true;
                     }
 
                     @Override
