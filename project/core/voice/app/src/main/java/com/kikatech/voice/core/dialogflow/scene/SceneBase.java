@@ -71,19 +71,17 @@ public abstract class SceneBase implements DialogObserver {
         if (Intent.ACTION_EXIT.equals(action)) {
             onExit();
             mStage = idle();
-        } else if (!Intent.DEFAULT_SCENE.equals(scene()) && Intent.ACTION_UNKNOWN.equals(action)) {
-            if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unknown Action, repeat current stage");
-            if (mStage != null) {
-                mStage.prepareAction(scene(), action, mStage);
-            }
         } else {
+            boolean isDefaultScene = Intent.DEFAULT_SCENE.equals(scene());
+            boolean isUnknownIntent = Intent.ACTION_UNKNOWN.equals(action);
             SceneStage stage = mStage.next(action, intent.getExtra());
             if (stage != null) {
                 boolean enterAgain = mStage.getClass().equals(stage.getClass());
                 if (enterAgain) {
                     mStageCondCount += 1;
-                    if (LogUtil.DEBUG)
-                        LogUtil.log("SceneBase", "<" + mStage.getClass() + "> EnterCount:" + mStageCondCount);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, String.format("<%1$s> EnterCount: %2$s", mStage.getClass(), mStageCondCount));
+                    }
                 } else {
                     mStageCondCount = 1;
                 }
@@ -93,9 +91,11 @@ public abstract class SceneBase implements DialogObserver {
                     }
                     mStage = onOverCounts();
                     mStageCondCount = 1;
-                } else {
+                } else if ((isDefaultScene && isUnknownIntent) || !isUnknownIntent) {
                     mStage = stage;
                 }
+                mStage.prepareAction(scene(), action, mStage);
+            } else if (!isDefaultScene && isUnknownIntent) {
                 mStage.prepareAction(scene(), action, mStage);
             }
         }
