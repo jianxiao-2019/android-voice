@@ -2,17 +2,17 @@ package com.kikatech.go.dialogflow.sms.send;
 
 import android.content.Context;
 
+import com.kikatech.go.dialogflow.NonLoopSceneBase;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.stage.StageSendSmsIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
-import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
  * Created by brad_chang on 2017/11/15.
  */
 
-public class SceneSendSms extends SceneBase {
+public class SceneSendSms extends NonLoopSceneBase {
 
     public static final String SCENE = "SendSMS";
 

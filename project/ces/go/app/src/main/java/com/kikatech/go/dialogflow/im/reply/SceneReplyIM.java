@@ -3,17 +3,17 @@ package com.kikatech.go.dialogflow.im.reply;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.NonLoopSceneBase;
 import com.kikatech.go.dialogflow.im.reply.stage.StageIdle;
 import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
-import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
  * Created by brad_chang on 2017/11/23.
  */
 
-public class SceneReplyIM extends SceneBase {
+public class SceneReplyIM extends NonLoopSceneBase {
 
     public static final String SCENE = "Reply IM";
 

@@ -12,6 +12,7 @@ import com.kikatech.voice.util.log.LogUtil;
  */
 
 public abstract class SceneBase implements DialogObserver {
+    private static final String TAG = "SceneBase";
 
     protected ISceneFeedback mFeedback;
     protected Context mContext;
@@ -54,6 +55,8 @@ public abstract class SceneBase implements DialogObserver {
 
     protected abstract SceneStage idle();
 
+    protected abstract SceneStage onOverCounts();
+
     private int mStageCondCount = 1;
 
     @Override
@@ -63,20 +66,20 @@ public abstract class SceneBase implements DialogObserver {
             return;
         }
         if (LogUtil.DEBUG) {
-            LogUtil.logw("SceneBase", "onIntent : " + intent);
+            LogUtil.logw(TAG, "onIntent : " + intent);
         }
         if (Intent.ACTION_EXIT.equals(action)) {
             onExit();
             mStage = idle();
         } else if (!Intent.DEFAULT_SCENE.equals(scene()) && Intent.ACTION_UNKNOWN.equals(action)) {
-            if (LogUtil.DEBUG) LogUtil.logw("SceneBase", "Unknown Action, repeat current stage");
+            if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unknown Action, repeat current stage");
             if (mStage != null) {
                 mStage.prepareAction(scene(), action, mStage);
             }
         } else {
             SceneStage stage = mStage.next(action, intent.getExtra());
             if (stage != null) {
-                boolean enterAgain = mStage.getClass() == stage.getClass();
+                boolean enterAgain = mStage.getClass().equals(stage.getClass());
                 if (enterAgain) {
                     mStageCondCount += 1;
                     if (LogUtil.DEBUG)
@@ -84,20 +87,16 @@ public abstract class SceneBase implements DialogObserver {
                 } else {
                     mStageCondCount = 1;
                 }
-                
                 if (mStageCondCount > BACK_TO_MAIN_ERR_COUNT) {
-                    if (LogUtil.DEBUG)
-                        LogUtil.logw("SceneBase", "Enter Count = " + mStageCondCount + ", Go back to main page");
-                    mStage.exitScene();
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, String.format("Enter Count = %s, Go back to main page", mStageCondCount));
+                    }
+                    mStage = onOverCounts();
                     mStageCondCount = 1;
-
-                    // TODO
-                    // 1. reset context
-                    // 2. Add UI response
                 } else {
                     mStage = stage;
-                    stage.prepareAction(scene(), action, stage);
                 }
+                mStage.prepareAction(scene(), action, mStage);
             }
         }
     }

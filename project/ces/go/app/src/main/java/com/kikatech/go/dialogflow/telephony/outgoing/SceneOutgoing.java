@@ -2,17 +2,16 @@ package com.kikatech.go.dialogflow.telephony.outgoing;
 
 import android.content.Context;
 
+import com.kikatech.go.dialogflow.NonLoopSceneBase;
 import com.kikatech.go.dialogflow.telephony.outgoing.stage.StageOutgoing;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
-import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-import com.kikatech.voice.util.log.LogUtil;
 
 /**
  * Created by tianli on 17-11-11.
  */
 
-public class SceneOutgoing extends SceneBase {
+public class SceneOutgoing extends NonLoopSceneBase {
     private static final String TAG = "SceneOutgoing";
 
     public static final String SCENE = "Telephony - Outgoing";
