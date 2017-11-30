@@ -40,7 +40,7 @@ public class AppConstants {
     public static final String NAME_PLUS = "Plus";
     public static final String NAME_SMS = "SMS";
 
-    public static final int ICON_WECHAT = R.drawable.im_line;
+    public static final int ICON_WECHAT = R.drawable.icon_wechat;
     public static final int ICON_LINE = R.drawable.im_line;
     public static final int ICON_MESSENGER = R.drawable.im_messenger;
     public static final int ICON_WHATSAPP = R.drawable.im_whatsapp;
@@ -56,7 +56,7 @@ public class AppConstants {
     public static final int ICON_PLUS = R.drawable.im_plus_messenger;
     public static final int ICON_SMS = R.drawable.icon_sms;
 
-    public static final int SMALL_ICON_WECHAT = R.drawable.im_line_smal;
+    public static final int SMALL_ICON_WECHAT = R.drawable.im_wechat_smal;
     public static final int SMALL_ICON_LINE = R.drawable.im_line_smal;
     public static final int SMALL_ICON_MESSENGER = R.drawable.im_messenger_smal;
     public static final int SMALL_ICON_WHATSAPP = R.drawable.im_whatsapp_smal;

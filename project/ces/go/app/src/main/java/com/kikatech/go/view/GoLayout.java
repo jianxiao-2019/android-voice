@@ -458,6 +458,7 @@ public class GoLayout extends FrameLayout {
         Glide.with(context)
                 .load(usrAvatar)
                 .asBitmap()
+                .error(R.drawable.kika_userpic_default)
                 .transform(new FitCenter(context), new CropCircleTransformation(context))
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(mUsrInfoAvatar);
@@ -495,6 +496,7 @@ public class GoLayout extends FrameLayout {
         Glide.with(context)
                 .load(usrAvatar)
                 .asBitmap()
+                .error(R.drawable.kika_userpic_small_default)
                 .transform(new FitCenter(context), new CropCircleTransformation(context))
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(mUsrMsgAvatar);
