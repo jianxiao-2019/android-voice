@@ -1,5 +1,6 @@
 package com.kikatech.go.services;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -9,6 +10,7 @@ import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -75,8 +77,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
     );
+    private PowerManager.WakeLock mWakeLocker;
     private View mView;
     private ImageView mStatusView;
+
 
     private IDialogFlowService mDialogFlowService;
     private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
@@ -122,11 +126,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     protected void onStartForeground() {
         registerReceiver();
         initDialogFlowService();
+        acquireWakeLock();
     }
 
     @Override
     protected void onStopForeground() {
         Toast.makeText(DialogFlowForegroundService.this, "KikaGo is closed", Toast.LENGTH_SHORT).show();
+        releaseWakeLock();
         unregisterReceiver();
         removeView();
         for (BaseSceneManager bcm : mSceneManagers) {
@@ -144,6 +150,39 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         Intent showDialogIntent = new Intent(this, KikaStopServiceDialogActivity.class);
         showDialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentUtil.sendPendingIntent(DialogFlowForegroundService.this, showDialogIntent);
+    }
+
+
+    @SuppressLint("WakelockTimeout")
+    @SuppressWarnings("deprecation")
+    private void acquireWakeLock() {
+        if (mWakeLocker == null) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (pm == null) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "PowerManager is null, return");
+                }
+                return;
+            }
+            mWakeLocker = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, TAG);
+            mWakeLocker.setReferenceCounted(false);
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.logw(TAG, "acquireWakeLock");
+        }
+        mWakeLocker.acquire();
+    }
+
+    private void releaseWakeLock() {
+        if (mWakeLocker != null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "releaseWakeLock");
+            }
+            mWakeLocker.release();
+            if (!mWakeLocker.isHeld()) {
+                mWakeLocker = null;
+            }
+        }
     }
 
 
