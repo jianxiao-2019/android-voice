@@ -90,14 +90,14 @@ public class NavigationManager {
     public void startNavigation(Context context, String target, NavigationMode mode, NavigationAvoid... avoids) {
         if (mNavigationProvider != null) {
             mNavigationProvider.startNavigation(context, target, mode, avoids);
-            DialogFlowForegroundService.processNavigationStarted(context);
+            DialogFlowForegroundService.processNavigationStarted();
         }
     }
 
     public void startNavigation(Context context, double latitude, double longitude, NavigationMode mode, NavigationAvoid... avoids) {
         if (mNavigationProvider != null) {
             mNavigationProvider.startNavigation(context, latitude, longitude, mode, avoids);
-            DialogFlowForegroundService.processNavigationStarted(context);
+            DialogFlowForegroundService.processNavigationStarted();
         }
     }
 
@@ -111,7 +111,7 @@ public class NavigationManager {
                         LogUtil.log(TAG, "onGetLocation, latitude: " + latitude + ", longitude: " + longitude);
                     }
                     mNavigationProvider.stopNavigation(context, latitude, longitude);
-                    DialogFlowForegroundService.processNavigationStopped(context);
+                    DialogFlowForegroundService.processNavigationStopped();
                     if (callback != null) {
                         callback.onStop();
                     }
@@ -123,7 +123,7 @@ public class NavigationManager {
                         LogUtil.logw(TAG, "onFetchTimeOut");
                     }
                     mNavigationProvider.stopNavigation(context, 0, 0);
-                    DialogFlowForegroundService.processNavigationStopped(context);
+                    DialogFlowForegroundService.processNavigationStopped();
                     if (callback != null) {
                         callback.onStop();
                     }
@@ -135,7 +135,7 @@ public class NavigationManager {
                         LogUtil.logw(TAG, String.format("onLocationNotSupportError, isLocationNotEnabled: %s", isLocationNotEnabled));
                     }
                     mNavigationProvider.stopNavigation(context, 0, 0);
-                    DialogFlowForegroundService.processNavigationStopped(context);
+                    DialogFlowForegroundService.processNavigationStopped();
                     if (callback != null) {
                         callback.onStop();
                     }

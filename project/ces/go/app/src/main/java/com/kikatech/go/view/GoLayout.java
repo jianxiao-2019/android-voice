@@ -545,7 +545,7 @@ public class GoLayout extends FrameLayout {
                         .dontTransform()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(mStatusAnimationView);
-                DialogFlowForegroundService.processStatusChanged(context, status);
+                DialogFlowForegroundService.processStatusChanged(status);
                 break;
             case SLEEP:
                 break;

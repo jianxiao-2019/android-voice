@@ -3,16 +3,13 @@ package com.kikatech.go.services;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Gravity;
@@ -34,6 +31,7 @@ import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.eventbus.DFServiceEvent;
+import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
@@ -46,6 +44,8 @@ import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,17 +56,6 @@ import java.util.List;
 
 public class DialogFlowForegroundService extends BaseForegroundService {
     private static final String TAG = "DialogFlowForegroundService";
-
-    private final class ReceiveBroadcastInfos {
-        private static final String ACTION_ON_STATUS_CHANGED = "action_status_changed";
-        private static final String ACTION_ON_NAVIGATION_STARTED = "action_navigation_started";
-        private static final String ACTION_ON_NAVIGATION_STOPPED = "action_navigation_stopped";
-
-        private static final String ACTION_DIALOG_FLOW_TALK = "action_dialog_flow_talk";
-
-        private static final String PARAM_STATUS = "param_status";
-        private static final String PARAM_TEXT = "param_text";
-    }
 
     private static WindowManager mWindowManager;
     private static LayoutInflater mLayoutInflater;
@@ -85,41 +74,42 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private IDialogFlowService mDialogFlowService;
     private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            handleReceive(context, intent);
-        }
 
-        private void handleReceive(Context context, Intent intent) {
-            if (intent == null) {
-                return;
-            }
-            String action = intent.getAction();
-            if (TextUtils.isEmpty(action)) {
-                return;
-            }
-            switch (action) {
-                case ReceiveBroadcastInfos.ACTION_ON_STATUS_CHANGED:
-                    if (isViewAdded() && asrActive) {
-                        handleStatusChanged(intent);
-                    }
-                    break;
-                case ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED:
-                    pauseAsr();
-                    showGMap();
-                    break;
-                case ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED:
-                    removeView();
-                    break;
-                case ReceiveBroadcastInfos.ACTION_DIALOG_FLOW_TALK:
-                    String text = intent.getStringExtra(ReceiveBroadcastInfos.PARAM_TEXT);
-                    pauseAsr();
-                    mDialogFlowService.talk(text);
-                    break;
-            }
+    /**
+     * <p>Reflection subscriber method used by EventBus,
+     * <p>do not remove this except the subscriber is no longer needed.
+     *
+     * @param event event sent to {@link com.kikatech.go.services.DialogFlowForegroundService}
+     */
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onToServiceEvent(ToDFServiceEvent event){
+        if (event == null) {
+            return;
         }
-    };
+        String action = event.getAction();
+        if (TextUtils.isEmpty(action)) {
+            return;
+        }
+        switch (action) {
+            case ToDFServiceEvent.ACTION_ON_STATUS_CHANGED:
+                GoLayout.ViewStatus status = (GoLayout.ViewStatus) event.getExtras().getSerializable(ToDFServiceEvent.PARAM_STATUS);
+                handleStatusChanged(status);
+                break;
+            case ToDFServiceEvent.ACTION_ON_NAVIGATION_STARTED:
+                pauseAsr();
+                showGMap();
+                break;
+            case ToDFServiceEvent.ACTION_ON_NAVIGATION_STOPPED:
+                removeView();
+                break;
+            case ToDFServiceEvent.ACTION_DIALOG_FLOW_TALK:
+                String text = event.getExtras().getString(ToDFServiceEvent.PARAM_TEXT);
+                pauseAsr();
+                mDialogFlowService.talk(text);
+                break;
+        }
+    }
 
 
     @Override
@@ -382,15 +372,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private void registerReceiver() {
         unregisterReceiver();
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_STATUS_CHANGED));
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED));
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED));
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).registerReceiver(mReceiver, new IntentFilter(ReceiveBroadcastInfos.ACTION_DIALOG_FLOW_TALK));
+        try {
+            EventBus.getDefault().register(this);
+        } catch (Exception ignore) {
+        }
     }
 
     private void unregisterReceiver() {
         try {
-            LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).unregisterReceiver(mReceiver);
+            EventBus.getDefault().unregister(this);
         } catch (Exception ignore) {
         }
     }
@@ -414,8 +404,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         super.onDestroy();
     }
 
-    private void handleStatusChanged(Intent intent) {
-        GoLayout.ViewStatus status = (GoLayout.ViewStatus) intent.getSerializableExtra(ReceiveBroadcastInfos.PARAM_STATUS);
+    private void handleStatusChanged(GoLayout.ViewStatus status) {
+        if (!(isViewAdded() && asrActive) || status == null) {
+            return;
+        }
         Glide.with(DialogFlowForegroundService.this)
                 .load(status.getSmallRes())
                 .dontTransform()
@@ -424,26 +416,30 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
 
-    public synchronized static void processStatusChanged(Context context, GoLayout.ViewStatus status) {
-        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_ON_STATUS_CHANGED);
-        intent.putExtra(ReceiveBroadcastInfos.PARAM_STATUS, status);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    public synchronized static void processStatusChanged(GoLayout.ViewStatus status) {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_STATUS_CHANGED);
+        event.putExtra(ToDFServiceEvent.PARAM_STATUS, status);
+        sendToDFServiceEvent(event);
     }
 
-    public synchronized static void processNavigationStarted(Context context) {
-        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STARTED);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    public synchronized static void processNavigationStarted() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_NAVIGATION_STARTED);
+        sendToDFServiceEvent(event);
     }
 
-    public synchronized static void processNavigationStopped(Context context) {
-        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_ON_NAVIGATION_STOPPED);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    public synchronized static void processNavigationStopped() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_NAVIGATION_STOPPED);
+        sendToDFServiceEvent(event);
     }
 
-    public synchronized static void processDialogFlowTalk(Context context, String text) {
-        Intent intent = new Intent(ReceiveBroadcastInfos.ACTION_DIALOG_FLOW_TALK);
-        intent.putExtra(ReceiveBroadcastInfos.PARAM_TEXT, text);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    public synchronized static void processDialogFlowTalk(String text) {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DIALOG_FLOW_TALK);
+        event.putExtra(ToDFServiceEvent.PARAM_TEXT, text);
+        sendToDFServiceEvent(event);
+    }
+
+    private synchronized static void sendToDFServiceEvent(ToDFServiceEvent event) {
+        EventBus.getDefault().post(event);
     }
 
 

@@ -1,16 +1,13 @@
 package com.kikatech.go.eventbus;
 
-import android.os.Bundle;
-
-import java.io.Serializable;
-
 /**
  * Events that send by {@link com.kikatech.go.services.DialogFlowForegroundService}
  *
  * @author SkeeterWang Created on 2017/12/1.
  */
 
-public class DFServiceEvent {
+public class DFServiceEvent extends BaseDFServiceEvent{
+
     public static final String ACTION_EXIT_APP = "action_exit_app";
     public static final String ACTION_ON_DIALOG_FLOW_INIT = "action_on_dialog_flow_init";
     public static final String ACTION_ON_ASR_RESULT = "action_on_asr_result";
@@ -32,34 +29,7 @@ public class DFServiceEvent {
     public static final String PARAM_SCENE_STAGE = "param_scene_stage";
     public static final String PARAM_IS_INTERRUPTED = "param_is_interrupted";
 
-    private String action;
-    private Bundle extras = new Bundle();
-
     public DFServiceEvent(String action) {
-        this.action = action;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public Bundle getExtras() {
-        return extras;
-    }
-
-    public void putExtra(String key, String value) {
-        extras.putString(key, value);
-    }
-
-    public void putExtra(String key, boolean value) {
-        extras.putBoolean(key, value);
-    }
-
-    public void putExtra(String key, Bundle value) {
-        extras.putBundle(key, value);
-    }
-
-    public void putExtra(String key, Serializable value) {
-        extras.putSerializable(key, value);
+        super(action);
     }
 }

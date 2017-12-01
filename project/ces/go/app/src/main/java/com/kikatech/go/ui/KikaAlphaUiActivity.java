@@ -1,6 +1,5 @@
 package com.kikatech.go.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -122,12 +121,12 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 switch (requestType) {
                     case OptionList.REQUEST_TYPE_ORDINAL:
                         textToSend = String.valueOf(index + 1);
-                        DialogFlowForegroundService.processDialogFlowTalk(KikaAlphaUiActivity.this, textToSend);
+                        DialogFlowForegroundService.processDialogFlowTalk(textToSend);
                         mUiManager.dispatchSpeechTask(textToSend);
                         break;
                     case OptionList.REQUEST_TYPE_TEXT:
                         textToSend = option.getDisplayText();
-                        DialogFlowForegroundService.processDialogFlowTalk(KikaAlphaUiActivity.this, textToSend);
+                        DialogFlowForegroundService.processDialogFlowTalk(textToSend);
                         mUiManager.dispatchSpeechTask(textToSend);
                         break;
                 }
@@ -142,21 +141,13 @@ public class KikaAlphaUiActivity extends BaseActivity {
         bindView();
         // TODO fine tune init timing
         ContactManager.getIns().init(this);
-        EventBus.getDefault().register(this);
-        DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        ContactManager.getIns().init(this);
-        EventBus.getDefault().register(this);
+        registerReceivers();
         DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
     }
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
+        unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
         super.onDestroy();
     }
@@ -164,5 +155,19 @@ public class KikaAlphaUiActivity extends BaseActivity {
     private void bindView() {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
         mGoLayout.awake();
+    }
+
+    private void registerReceivers() {
+        try {
+            EventBus.getDefault().register(this);
+        } catch (Exception ignore) {
+        }
+    }
+
+    private void unregisterReceivers() {
+        try {
+            EventBus.getDefault().unregister(this);
+        } catch (Exception ignore) {
+        }
     }
 }
