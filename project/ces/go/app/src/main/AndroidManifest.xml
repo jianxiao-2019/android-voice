@@ -43,7 +43,13 @@
                   android:screenOrientation="portrait"/>
         <activity android:name="com.kikatech.go.ui.KikaGoActivity"
                   android:launchMode="singleInstance"
-                  android:screenOrientation="portrait"/>
+                  android:icon="@mipmap/ic_launcher_round"
+                  android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.KikaAccessibilityActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.TelephonyActivity"

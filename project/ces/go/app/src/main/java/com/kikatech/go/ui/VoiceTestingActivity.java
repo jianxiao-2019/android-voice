@@ -65,11 +65,11 @@ public class VoiceTestingActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_testing);
 
-//        UsbAudioService audioService = UsbAudioService.getInstance(this);
-//        audioService.setListener(this);
-//        audioService.scanDevices();
-
-         attachService(null);
+        UsbAudioService audioService = UsbAudioService.getInstance(this);
+        audioService.setListener(this);
+        audioService.scanDevices();
+//
+//         attachService(null);
 
         findViewById(R.id.button_permission).setOnClickListener(new View.OnClickListener() {
             @Override
