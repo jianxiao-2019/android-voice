@@ -15,6 +15,8 @@ import com.kikatech.go.util.LogUtil;
 public abstract class BaseForegroundService extends Service {
     private static final String TAG = "BaseForegroundService";
 
+    private boolean isStarted;
+
     protected abstract void onStartForeground();
 
     protected abstract void onStopForeground();
@@ -49,7 +51,7 @@ public abstract class BaseForegroundService extends Service {
                     break;
                 case Commands.STOP_FOREGROUND:
                     handleStop();
-                    break;
+                    return START_NOT_STICKY;
                 case Commands.STOP_FOREGROUND_WITH_CONFIRM:
                     handleStopWithConfirm();
                     break;
@@ -63,13 +65,18 @@ public abstract class BaseForegroundService extends Service {
 
 
     private void handleStart() {
+        isStarted = true;
         startForeground(getServiceId(), getForegroundNotification());
         onStartForeground();
     }
 
     private void handleStop() {
-        stopForeground(true);
-        onStopForeground();
+        if (isStarted) {
+            isStarted = false;
+            stopForeground(true);
+            onStopForeground();
+        }
+        stopSelf();
     }
 
     private void handleStopWithConfirm() {

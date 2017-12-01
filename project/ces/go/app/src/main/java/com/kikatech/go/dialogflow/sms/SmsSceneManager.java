@@ -57,10 +57,13 @@ public class SmsSceneManager extends BaseSceneManager {
     @Override
     public void close() {
         super.close();
-        mContext.unregisterReceiver(mSmsReceiver);
-        mSmsReceiver = null;
-        mReceivedSmsList.clear();
-        mReceivedSmsList = null;
+        try {
+            mContext.unregisterReceiver(mSmsReceiver);
+            mSmsReceiver = null;
+            mReceivedSmsList.clear();
+            mReceivedSmsList = null;
+        } catch (Exception ignore) {
+        }
     }
 
     @Override
@@ -70,7 +73,7 @@ public class SmsSceneManager extends BaseSceneManager {
             @Override
             public SmsObject getReceivedSms(long timestamp) {
                 SmsObject so = mReceivedSmsList.get(timestamp);
-                if(so != null) mReceivedSmsList.remove(timestamp);
+                if (so != null) mReceivedSmsList.remove(timestamp);
                 return so;
             }
         }));

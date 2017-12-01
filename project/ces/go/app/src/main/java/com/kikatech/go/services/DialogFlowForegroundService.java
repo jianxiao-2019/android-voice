@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -30,6 +31,7 @@ import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
@@ -45,8 +47,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.kikatech.go.eventbus.DFServiceEvent;
 
 /**
  * @author SkeeterWang Created on 2017/11/28.
@@ -126,6 +126,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     @Override
     protected void onStopForeground() {
+        Toast.makeText(DialogFlowForegroundService.this, "KikaGo is closed", Toast.LENGTH_SHORT).show();
         unregisterReceiver();
         removeView();
         for (BaseSceneManager bcm : mSceneManagers) {
@@ -134,7 +135,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         if (mDialogFlowService != null) {
             mDialogFlowService.quitService();
         }
-        android.os.Process.killProcess(android.os.Process.myPid());
+        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_EXIT_APP);
+        sendDFServiceEvent(event);
     }
 
     @Override
@@ -409,14 +411,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     @Override
     protected Notification getForegroundNotification() {
         Intent closeIntent = new Intent(DialogFlowForegroundService.this, DialogFlowForegroundService.class);
-        closeIntent.setAction(Commands.STOP_FOREGROUND_WITH_CONFIRM);
+        closeIntent.setAction(Commands.STOP_FOREGROUND);
         PendingIntent closePendingIntent = PendingIntent.getService(DialogFlowForegroundService.this, getServiceId(), closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(DialogFlowForegroundService.this)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.ic_launcher))
-                .setContentTitle("Kika Go 录音中")
-                .setContentText("点击此处结束Kika Go")
+                .setContentTitle("KikaGo is running in the background")
+                .setContentText("Tap to close KikaGo")
                 .setContentIntent(closePendingIntent)
                 .setAutoCancel(true)
                 // .setColor( appCtx.getResources().getColor( R.color.gela_green ) )

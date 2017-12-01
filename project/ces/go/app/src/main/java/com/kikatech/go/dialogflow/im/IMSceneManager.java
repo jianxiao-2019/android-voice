@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.LongSparseArray;
 
@@ -13,11 +12,8 @@ import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
 import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.message.im.IMManager;
-import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.service.IDialogFlowService;
-
-import java.util.Random;
 
 /**
  * Created by brad_chang on 2017/11/23.
@@ -46,7 +42,7 @@ public class IMSceneManager extends BaseSceneManager {
                     final BaseIMObject imObject = IMManager.getInstance().getReferenceIfExist(imObjectData);
 
                     if (LogUtil.DEBUG) {
-                        LogUtil.log("IMSceneManager",  imObject.getAppName() + ", " + imObject.getMsgContent());
+                        LogUtil.log("IMSceneManager", imObject.getAppName() + ", " + imObject.getMsgContent());
                     }
 
                     long t = System.currentTimeMillis();
@@ -76,9 +72,12 @@ public class IMSceneManager extends BaseSceneManager {
     @Override
     public void close() {
         super.close();
-        mContext.unregisterReceiver(mImReceiver);
-        mImReceiver = null;
-        mReceivedSmsList.clear();
-        mReceivedSmsList = null;
+        try {
+            mContext.unregisterReceiver(mImReceiver);
+            mImReceiver = null;
+            mReceivedSmsList.clear();
+            mReceivedSmsList = null;
+        } catch (Exception ignore) {
+        }
     }
 }

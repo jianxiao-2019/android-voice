@@ -1,5 +1,6 @@
 package com.kikatech.go.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -49,6 +50,9 @@ public class KikaAlphaUiActivity extends BaseActivity {
         SceneStage stage;
         boolean isFinished, isInterrupted;
         switch (action) {
+            case DFServiceEvent.ACTION_EXIT_APP:
+                finishAffinity();
+                break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
                 mGoLayout.postDelayed(new Runnable() {
                     @Override
@@ -137,6 +141,14 @@ public class KikaAlphaUiActivity extends BaseActivity {
         setContentView(R.layout.activity_kika_alpha_ui);
         bindView();
         // TODO fine tune init timing
+        ContactManager.getIns().init(this);
+        EventBus.getDefault().register(this);
+        DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         ContactManager.getIns().init(this);
         EventBus.getDefault().register(this);
         DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
