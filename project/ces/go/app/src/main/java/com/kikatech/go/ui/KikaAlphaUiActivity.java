@@ -28,6 +28,13 @@ public class KikaAlphaUiActivity extends BaseActivity {
     private GoLayout mGoLayout;
     private UiTaskManager mUiManager;
 
+    /**
+     * <p>Reflection subscriber method used by EventBus,
+     * <p>do not remove this except the subscriber is no longer needed.
+     *
+     * @param event event from {@link com.kikatech.go.services.DialogFlowForegroundService}
+     */
+    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onServiceEvent(DFServiceEvent event) {
         if (event == null) {
