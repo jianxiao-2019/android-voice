@@ -137,6 +137,21 @@ public class DialogFlowService implements
         }
     }
 
+    private void stopTts(){
+        if (mTtsSpeaker == null) {
+            return;
+        }
+        try {
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "stopTts");
+            }
+            mTtsListener.bindListener(null);
+            mTtsSpeaker.interrupt();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static synchronized IDialogFlowService queryService(
             @NonNull Context ctx, @NonNull VoiceConfiguration conf,
             @NonNull IServiceCallback callback, @NonNull IAgentQueryStatus queryStatus) {
@@ -366,6 +381,7 @@ public class DialogFlowService implements
         @Override
         public void onSceneExit(String scene, boolean proactive) {
             // if not proactive, Don't reset context since it would clear the context of the following scenario
+            stopTts();
             if (proactive) {
                 mDialogFlow.resetContexts();
             }

@@ -269,6 +269,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     @Override
                     public void onStart() {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
+                        pauseAsr();
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_START);
                         sendDFServiceEvent(event);
                     }
@@ -306,14 +307,18 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private boolean asrActive;
 
-    private void pauseAsr() {
-        asrActive = false;
-        mDialogFlowService.pauseAsr();
+    private synchronized void pauseAsr() {
+        if (asrActive) {
+            asrActive = false;
+            mDialogFlowService.pauseAsr();
+        }
     }
 
-    private void resumeAsr() {
-        mDialogFlowService.resumeAsr();
-        asrActive = true;
+    private synchronized void resumeAsr() {
+        if (!asrActive) {
+            mDialogFlowService.resumeAsr();
+            asrActive = true;
+        }
     }
 
     private void showGMap() {

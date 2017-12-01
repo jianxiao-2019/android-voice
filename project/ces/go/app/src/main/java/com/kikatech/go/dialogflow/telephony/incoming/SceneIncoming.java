@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import com.kikatech.go.dialogflow.NonLoopSceneBase;
 import com.kikatech.go.dialogflow.telephony.incoming.stage.StageIncoming;
+import com.kikatech.go.telephony.TelephonyServiceManager;
+import com.kikatech.go.util.AudioManagerUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
@@ -27,6 +29,8 @@ public class SceneIncoming extends NonLoopSceneBase {
 
     @Override
     protected void onExit() {
+        TelephonyServiceManager.getIns().turnOffSilentMode(getContext());
+        AudioManagerUtil.getIns().unmuteRing();
     }
 
     @Override
