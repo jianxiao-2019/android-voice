@@ -41,8 +41,12 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import com.kikatech.go.eventbus.DFServiceEvent;
 
 /**
  * @author SkeeterWang Created on 2017/11/28.
@@ -50,28 +54,6 @@ import java.util.List;
 
 public class DialogFlowForegroundService extends BaseForegroundService {
     private static final String TAG = "DialogFlowForegroundService";
-
-    public final class SendBroadcastInfos {
-        public static final String ACTION_ON_DIALOG_FLOW_INIT = "action_on_dialog_flow_init";
-        public static final String ACTION_ON_ASR_RESULT = "action_on_asr_result";
-        public static final String ACTION_ON_TEXT = "action_on_text";
-        public static final String ACTION_ON_TEXT_PAIRS = "action_on_text_pairs";
-        public static final String ACTION_ON_STAGE_PREPARED = "action_on_stage_prepared";
-        public static final String ACTION_ON_STAGE_ACTION_DONE = "action_on_stage_action_done";
-        public static final String ACTION_ON_STAGE_EVENT = "action_on_stage_event";
-        public static final String ACTION_ON_SCENE_EXIT = "action_on_scene_exit";
-        public static final String ACTION_ON_AGENT_QUERY_START = "action_on_agent_query_start";
-        public static final String ACTION_ON_AGENT_QUERY_STOP = "action_on_agent_query_stop";
-        public static final String ACTION_ON_AGENT_QUERY_ERROR = "action_on_agent_query_error";
-
-        public static final String PARAM_EXTRAS = "param_extras";
-        public static final String PARAM_TEXT = "param_text";
-        public static final String PARAM_IS_FINISHED = "param_is_finished";
-        public static final String PARAM_SCENE = "param_scene";
-        public static final String PARAM_SCENE_ACTION = "param_scene_action";
-        public static final String PARAM_SCENE_STAGE = "param_scene_stage";
-        public static final String PARAM_IS_INTERRUPTED = "param_is_interrupted";
-    }
 
     private final class ReceiveBroadcastInfos {
         private static final String ACTION_ON_STATUS_CHANGED = "action_status_changed";
@@ -169,7 +151,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 new IDialogFlowService.IServiceCallback() {
                     @Override
                     public void onInitComplete() {
-                        sendLocalBroadcast(new Intent(SendBroadcastInfos.ACTION_ON_DIALOG_FLOW_INIT));
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT);
+                        sendDFServiceEvent(event);
                         asrActive = true;
                     }
 
@@ -183,18 +166,19 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         } else if (isFinished) {
                             pauseAsr();
                         }
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_ASR_RESULT);
-                        intent.putExtra(SendBroadcastInfos.PARAM_TEXT, speechText);
-                        intent.putExtra(SendBroadcastInfos.PARAM_IS_FINISHED, isFinished);
-                        sendLocalBroadcast(intent);
+
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_RESULT);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, speechText);
+                        event.putExtra(DFServiceEvent.PARAM_IS_FINISHED, isFinished);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
                     public void onText(String text, Bundle extras) {
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_TEXT);
-                        intent.putExtra(SendBroadcastInfos.PARAM_TEXT, text);
-                        intent.putExtra(SendBroadcastInfos.PARAM_EXTRAS, extras);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_TEXT);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, text);
+                        event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
@@ -205,10 +189,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                                 builder.append(pair.first);
                             }
                         }
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_TEXT_PAIRS);
-                        intent.putExtra(SendBroadcastInfos.PARAM_TEXT, builder.toString());
-                        intent.putExtra(SendBroadcastInfos.PARAM_EXTRAS, extras);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_TEXT_PAIRS);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, builder.toString());
+                        event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
@@ -216,11 +200,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("scene: %1$s, action: %2$s, stage: %3$s", scene, action, stage.getClass().getSimpleName()));
                         }
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_STAGE_PREPARED);
-                        intent.putExtra(SendBroadcastInfos.PARAM_SCENE, scene);
-                        intent.putExtra(SendBroadcastInfos.PARAM_SCENE_ACTION, action);
-                        intent.putExtra(SendBroadcastInfos.PARAM_SCENE_STAGE, stage);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_PREPARED);
+                        event.putExtra(DFServiceEvent.PARAM_SCENE, scene);
+                        event.putExtra(DFServiceEvent.PARAM_SCENE_ACTION, action);
+                        event.putExtra(DFServiceEvent.PARAM_SCENE_STAGE, stage);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
@@ -229,16 +213,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             LogUtil.log(TAG, String.format("isInterrupted: %s", isInterrupted));
                         }
                         resumeAsr();
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_STAGE_ACTION_DONE);
-                        intent.putExtra(SendBroadcastInfos.PARAM_IS_INTERRUPTED, isInterrupted);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE);
+                        event.putExtra(DFServiceEvent.PARAM_IS_INTERRUPTED, isInterrupted);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
                     public void onStageEvent(Bundle extras) {
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_STAGE_EVENT);
-                        intent.putExtra(SendBroadcastInfos.PARAM_EXTRAS, extras);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_EVENT);
+                        event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
@@ -247,15 +231,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             LogUtil.log(TAG, "onSceneExit");
                         }
                         resumeAsr();
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_SCENE_EXIT);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SCENE_EXIT);
+                        sendDFServiceEvent(event);
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_AGENT_QUERY_START);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_START);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
@@ -263,15 +247,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
                         // dbgMsg[0] : scene - action
                         // dbgMsg[1] : parameters
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_AGENT_QUERY_STOP);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_STOP);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
                     public void onError(Exception e) {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
-                        Intent intent = new Intent(SendBroadcastInfos.ACTION_ON_AGENT_QUERY_ERROR);
-                        sendLocalBroadcast(intent);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR);
+                        sendDFServiceEvent(event);
                     }
                 });
 
@@ -284,8 +268,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mSceneManagers.add(new CommonSceneManager(this, mDialogFlowService));
     }
 
-    private void sendLocalBroadcast(Intent intent) {
-        LocalBroadcastManager.getInstance(DialogFlowForegroundService.this).sendBroadcast(intent);
+    private void sendDFServiceEvent(DFServiceEvent event) {
+        EventBus.getDefault().post(event);
     }
 
 
