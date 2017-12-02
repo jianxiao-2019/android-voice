@@ -1,5 +1,7 @@
 package com.kikatech.usb.driver.impl;
 
+import com.kikatech.voice.util.log.Logger;
+
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -27,23 +29,18 @@ public class AudioBuffer {
             if (sizeInBytes > mBufferSize) {
                 throw new IllegalArgumentException("sizeInBytes exceed buffer size");
             }
-            int writeOffset = (mOffset + mLength) % mBufferSize;
-            if (sizeInBytes <= mBufferSize - writeOffset) {
-                System.arraycopy(audioData, 0, mBuffer, writeOffset, sizeInBytes);
-                mLength += sizeInBytes;
+            if (sizeInBytes + mLength < mBufferSize) {
+                System.arraycopy(audioData, 0, mBuffer, mLength, sizeInBytes);
             } else {
-                int half = mBufferSize - writeOffset;
-                // 拷贝到buffer的后半部分
-                System.arraycopy(audioData, 0, mBuffer, writeOffset, half);
-                // 拷贝到buffer的前半部分
+                int half = mBufferSize - mLength;
+                System.arraycopy(audioData, 0, mBuffer, sizeInBytes, half);
                 System.arraycopy(audioData, half, mBuffer, 0, sizeInBytes - half);
-                mLength += sizeInBytes;
-                if (sizeInBytes - half > mOffset) {
-                    mLength -= sizeInBytes - half - mOffset;
-                    // 部分未读数据被新数据覆盖，mOffset需要后移
+                if (mOffset < (sizeInBytes - half)) {
+                    Logger.w("Some data was been overridden.");
                     mOffset = sizeInBytes - half;
                 }
             }
+            mLength = (mLength + sizeInBytes) % mBufferSize;
         } finally {
             mLock.unlock();
         }
@@ -52,16 +49,20 @@ public class AudioBuffer {
     public int read(byte[] audioData, int offsetInBytes, int sizeInBytes) {
         try {
             mLock.lock();
-            int size = Math.min(sizeInBytes, mLength);
+            int curLength = mLength;
+            if (mLength < mOffset) {
+                curLength += mBufferSize;
+            }
+            int size = Math.min(sizeInBytes, (curLength - mOffset));
             if (size > 0) {
                 if (size <= mBufferSize - mOffset) {
                     System.arraycopy(mBuffer, mOffset, audioData, offsetInBytes, size);
-                }else {
+                } else {
                     int half = mBufferSize - mOffset;
                     System.arraycopy(mBuffer, mOffset, audioData, offsetInBytes, half);
                     System.arraycopy(mBuffer, 0, audioData, offsetInBytes + half, size - half);
                 }
-                mLength -= size;
+                mOffset = (mOffset + size) % mBufferSize;
                 return size;
             }
             return 0;

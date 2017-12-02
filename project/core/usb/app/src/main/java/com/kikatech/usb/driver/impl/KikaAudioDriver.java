@@ -15,7 +15,7 @@ public class KikaAudioDriver extends UsbHostDriver {
 
     private UsbAudio mUsbAudio = new UsbAudio();
 
-    private AudioBuffer mAudioBuffer = new AudioBuffer(4096);
+    private AudioBuffer mAudioBuffer = new AudioBuffer(20000);
 
     public KikaAudioDriver(Context context, UsbDevice device) {
         super(context, device);

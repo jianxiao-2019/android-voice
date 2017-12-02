@@ -34,7 +34,7 @@ public class UsbAudioSource implements IVoiceSource {
 
     @Override
     public int getBufferSize() {
-        return 1960;
+        return 640;
     }
 
     public void close() {

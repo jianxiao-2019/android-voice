@@ -29,6 +29,7 @@ import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.util.PreferenceUtil;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
+import com.xiao.usbaudio.AudioPlayBack;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -147,6 +148,9 @@ public class VoiceTestingActivity extends BaseActivity
         Message.register("INTERMEDIATE", IntermediateMessage.class);
         Message.register("ALTER", EditTextMessage.class);
         Message.register("ASR", TextMessage.class);
+
+        // Debug
+        AudioPlayBack.sFilePath = getExternalCacheDir().getPath();
     }
 
     private void attachService(UsbAudioSource audioSource) {
