@@ -17,7 +17,16 @@ public class AudioPlayBack {
 
     public static void write(byte[] decodedAudio, int len) {
         Logger.d("AudioPlayBack write size = " + decodedAudio.length + " len = " + len);
-        sAudioBuffer.write(decodedAudio, len);
+        if (len == 0) {
+            return;
+        }
+        byte[] monoResult = new byte[len / 2];
+        for (int i = 0; i < monoResult.length; i += 2) {
+            monoResult[i] = decodedAudio[i * 2];
+            monoResult[i + 1] = decodedAudio[i * 2 + 1];
+        }
+        sAudioBuffer.write(monoResult, monoResult.length);
+//        sAudioBuffer.write(decodedAudio, len );
 
         try {
             for (int i = 0; i < len; i++) {
