@@ -19,10 +19,11 @@ public class Intent {
     public final static String AS_PREV_SCENE = "as_prev_scene";
     public final static String ACTION_USER_INPUT = "custom_intent_action_user_input";
     public final static String KEY_USER_INPUT = "custom_intent_key_user_input";
+    public final static String KEY_SWITCH_SCENE_INFO = "switch_scene_info";
 
     private String mScene;
     private String mAction;
-    private Bundle mExtra = new Bundle();
+    private final Bundle mExtra = new Bundle();
 
     public Intent(String scene, String action) {
         mScene = scene;
@@ -76,5 +77,9 @@ public class Intent {
 
     public static String parseUserInput(@NonNull Bundle extra) {
         return extra.getString(KEY_USER_INPUT, "");
+    }
+
+    public static String parseSwitchSceneInfo(@NonNull Bundle extra) {
+        return extra.getString(KEY_SWITCH_SCENE_INFO, "");
     }
 }

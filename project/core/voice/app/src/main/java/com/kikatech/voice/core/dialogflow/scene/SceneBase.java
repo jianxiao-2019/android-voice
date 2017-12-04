@@ -57,6 +57,10 @@ public abstract class SceneBase implements DialogObserver {
 
     protected abstract SceneStage onOverCounts();
 
+    protected String getTransformSceneInfo() {
+        return null;
+    }
+
     private int mStageCondCount = 1;
 
     @Override

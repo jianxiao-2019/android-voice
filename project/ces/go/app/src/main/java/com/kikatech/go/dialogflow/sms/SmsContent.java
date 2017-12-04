@@ -3,7 +3,6 @@ package com.kikatech.go.dialogflow.sms;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.kikatech.go.contact.Contact;
 import com.kikatech.go.dialogflow.ContactUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
@@ -27,15 +26,13 @@ public class SmsContent {
 
     public static class IntentContent {
         String smsBody = "";
-        String firstName = "";
-        String lastName = "";
+        String sendTarget = "";
         String chosenOption = "";
 
         @Override
         public String toString() {
             return "smsBody:" + getDisplayString(smsBody) +
-                    ", firstName:" + getDisplayString(firstName) +
-                    ", lastName:" + getDisplayString(lastName) +
+                    ", sendTarget:" + getDisplayString(sendTarget) +
                     ", chosenOption:" + getDisplayString(chosenOption);
         }
 
@@ -47,13 +44,12 @@ public class SmsContent {
             if (LogUtil.DEBUG)
                 LogUtil.log("SmsContent", "update target:" + ic);
             smsBody = checkNUpdate(smsBody, ic.smsBody);
-            firstName = checkNUpdate(firstName, ic.firstName);
-            lastName = checkNUpdate(lastName, ic.lastName);
+            sendTarget = checkNUpdate(sendTarget, ic.sendTarget);
             chosenOption = checkNUpdate(chosenOption, ic.chosenOption);
         }
 
         public boolean isNameEmpty() {
-            return TextUtils.isEmpty(firstName) && TextUtils.isEmpty(lastName);
+            return TextUtils.isEmpty(sendTarget);
         }
     }
 
@@ -67,7 +63,7 @@ public class SmsContent {
     }
 
     public void updateName(String name) {
-        mIntentContent.firstName = name;
+        mIntentContent.sendTarget = name;
     }
 
     public void update(IntentContent ic) {
@@ -83,7 +79,7 @@ public class SmsContent {
     }
 
     public String getContact() {
-        return (mIntentContent.firstName + " " + mIntentContent.lastName).trim();
+        return mIntentContent.sendTarget.trim();
     }
 
     public String getSmsBody() {
@@ -142,7 +138,7 @@ public class SmsContent {
     }
 
     public boolean tryParseContact(Context ctx, String smsBody) {
-        mIntentContent.firstName = smsBody;
+        mIntentContent.sendTarget = smsBody;
         return isContactMatched(ctx);
     }
 

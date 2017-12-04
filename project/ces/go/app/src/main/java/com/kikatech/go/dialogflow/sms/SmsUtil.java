@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.message.sms.SmsManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.PermissionUtil;
@@ -12,6 +13,7 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,6 @@ import java.util.List;
 public class SmsUtil {
 
     private static final String KEY_NAME = "given-name";
-    private static final String KEY_LAST_NAME = "last-name";
 
     private static final String KEY_ANY = "any";
 
@@ -66,17 +67,16 @@ public class SmsUtil {
         if (LogUtil.DEBUG)
             LogUtil.log("SmsUtil", "Bundle:" + parm + ", tagAnyStandFor:" + tagAnyStandFor);
         SmsContent.IntentContent ic = new SmsContent.IntentContent();
-        ic.lastName = parm.getString(KEY_LAST_NAME, "").replace("\"", "");
         String names = parm.getString(KEY_NAME, "");
         try {
             if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "names:" + names);
             JSONArray jsonNames = new JSONArray(names);
             for (int i = 0; i < jsonNames.length(); ++i) {
-                ic.firstName += jsonNames.getString(i) + " ";
+                ic.sendTarget += jsonNames.getString(i) + " ";
             }
-            ic.firstName = ic.firstName.trim();
+            ic.sendTarget = ic.sendTarget.trim();
         } catch (JSONException e) {
-            ic.firstName = names.replace("\"", "");
+            ic.sendTarget = names.replace("\"", "");
         }
 
 
@@ -92,7 +92,7 @@ public class SmsUtil {
                 String toSomebody = "to " + tagAny.get(1);
                 if (userInputs.contains(toSomebody)) {
                     if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Find pattern:" + toSomebody);
-                    ic.firstName = tagAny.get(1);
+                    ic.sendTarget = tagAny.get(1);
                 }
             } else if (valCount > 0) {
                 ic.smsBody = tagAny.get(0);
@@ -101,8 +101,21 @@ public class SmsUtil {
         } else if (tagAnyStandFor == TAG_ANY_STAND_FOR_NAME) {
             // No, it's xxx
             if (tagAny.size() > 0) {
-                ic.firstName = tagAny.get(0);
-                if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Set firstName : " + ic.firstName);
+                ic.sendTarget = tagAny.get(0);
+                if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Set sendTarget : " + ic.sendTarget);
+            }
+        }
+
+        if (TextUtils.isEmpty(ic.sendTarget)) {
+            String jsonString = Intent.parseSwitchSceneInfo(parm);
+            if (!TextUtils.isEmpty(jsonString)) {
+                if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Find switch scene info:" + jsonString);
+                try {
+                    JSONObject json = new JSONObject(jsonString);
+                    ic.sendTarget = json.getString(IMUtil.KEY_SWITCH_SCENE_NAME);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 

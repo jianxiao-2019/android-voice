@@ -39,8 +39,6 @@ public class ApiAiAgent extends Agent {
 
     private AIService mAIService;
 
-    private long mLatestContactUploadTime = 0;
-
     ApiAiAgent(Context context) {
         final AIConfiguration config = new AIConfiguration(CLIENT_ACCESS_TOKEN,
                 AIConfiguration.SupportedLanguages.English,
@@ -164,6 +162,13 @@ public class ApiAiAgent extends Agent {
 
         if (LogUtil.DEBUG) {
             LogUtil.logw(TAG, "scene:" + scene + ", action:" + action);
+
+            List<AIOutputContext> ctxs = result.getContexts();
+            StringBuilder ctx = new StringBuilder();
+            for (AIOutputContext aiCtx : ctxs) {
+                ctx.append("[").append(aiCtx.getName()).append(":").append(aiCtx.getLifespan()).append("]");
+            }
+            LogUtil.logw(TAG, "context:" + ctx);
         }
 
         Intent intent = new Intent(scene, action, result.getResolvedQuery());

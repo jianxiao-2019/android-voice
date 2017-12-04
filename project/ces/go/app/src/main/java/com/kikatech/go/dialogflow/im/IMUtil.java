@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.AppUtil;
 import com.kikatech.go.util.LogUtil;
@@ -12,6 +13,7 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by brad_chang on 2017/11/24.
@@ -27,6 +29,8 @@ public class IMUtil {
     private static final String KEY_ANY = "any";
     private static final String KEY_NAME = "given-name";
     private static final String KEY_IM_APP = "im-app";
+
+    public static final String KEY_SWITCH_SCENE_NAME = "user_name";
 
     // TODO should bind settings
     private static final String[] SUPPORTED_IM = {AppConstants.PACKAGE_WHATSAPP};//, AppConstants.PACKAGE_MESSENGER};
@@ -85,5 +89,19 @@ public class IMUtil {
     private static boolean checkPackageAvaibility(String pkgName) {
         // Check if app is installed and enabled
         return true;
+    }
+
+    public static String prepareSwitchSceneInfo(IMContent sc) {
+        if (sc == null || TextUtils.isEmpty(sc.getSendTarget())) {
+            return null;
+        }
+        JSONObject json = new JSONObject();
+        try {
+            json.put(KEY_SWITCH_SCENE_NAME, sc.getSendTarget());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (LogUtil.DEBUG) LogUtil.log("IMUtil", "prepareSwitchSceneInfo:" + json.toString());
+        return json.toString();
     }
 }

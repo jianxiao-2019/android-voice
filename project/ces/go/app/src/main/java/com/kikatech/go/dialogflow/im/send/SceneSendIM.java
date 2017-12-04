@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.kikatech.go.dialogflow.NonLoopSceneBase;
 import com.kikatech.go.dialogflow.im.IMContent;
+import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.dialogflow.im.send.stage.StageIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -47,5 +48,10 @@ public class SceneSendIM extends NonLoopSceneBase {
     @Override
     protected SceneStage idle() {
         return new StageIdle(this, mFeedback);
+    }
+
+    @Override
+    protected String getTransformSceneInfo() {
+        return IMUtil.prepareSwitchSceneInfo(mIMContent);
     }
 }
