@@ -1,0 +1,19 @@
+buildscript {
+
+    repositories {
+        maven { url 'http://192.168.100.71:8081/nexus/content/repositories/central' }
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:${project.BUILD_GRADLE_VERSION}"
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url 'http://192.168.100.71:8081/nexus/content/repositories/central' }
+        maven { url 'http://192.168.100.71:8081/nexus/content/groups/release' }
+        jcenter()
+    }
+}
