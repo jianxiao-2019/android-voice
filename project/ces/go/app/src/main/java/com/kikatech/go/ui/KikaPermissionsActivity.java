@@ -1,5 +1,6 @@
 package com.kikatech.go.ui;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -8,8 +9,12 @@ import com.kikatech.go.R;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.notification.NotificationListenerUtil;
 import com.kikatech.go.util.DeviceUtil;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.OverlayUtil;
 import com.kikatech.go.util.PermissionUtil;
+import com.kikatech.voice.util.contact.ContactManager;
+
+import static com.kikatech.go.util.PermissionUtil.PERMISSION_REQUEST;
 
 /**
  * @author SkeeterWang Created on 2017/11/24.
@@ -30,6 +35,10 @@ public class KikaPermissionsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_permissions);
         bindView();
+
+        if (PermissionUtil.hasPermissions(this, PermissionUtil.Permission.READ_CONTACTS)) {
+            ContactManager.getIns().init(this);
+        }
     }
 
     @Override
@@ -94,5 +103,20 @@ public class KikaPermissionsActivity extends BaseActivity {
         mBtnKikaAllPermission.setEnabled(!hasAllKikaPermissions);
         boolean canStart = hasPermissionAccessibility && hasPermissionNL && hasPermissionOverlay && hasAllKikaPermissions;
         mBtnStart.setEnabled(canStart);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        LogUtil.log(TAG, "onRequestPermissionsResult, requestCode:" + requestCode);
+
+        if (requestCode == PERMISSION_REQUEST) {
+            for (String permission : permissions) {
+                if (permission.equals(Manifest.permission.READ_CONTACTS)) {
+                    ContactManager.getIns().init(this);
+                }
+            }
+        }
     }
 }

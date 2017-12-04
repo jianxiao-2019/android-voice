@@ -34,6 +34,9 @@ public class ContactManager {
     }
 
     public void init(final Context ctx) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "init ...");
+        }
         int phoneBookCount;
         synchronized (mPhoneBook) {
             phoneBookCount = mPhoneBook.size();
@@ -47,23 +50,23 @@ public class ContactManager {
                 @Override
                 public void run() {
                     synchronized (mPhoneBook) {
+                        if (mPhoneBook.size() == 0) {
+                            final long t = System.currentTimeMillis();
+                            HashMap<String, PhoneBookContact> pb = getPhoneBook(ctx);
+                            mPhoneBook.clear();
+                            mPhoneBook.putAll(pb);
 
-                        final long t = System.currentTimeMillis();
-
-                        HashMap<String, PhoneBookContact> pb = getPhoneBook(ctx);
-                        mPhoneBook.clear();
-                        mPhoneBook.putAll(pb);
-
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
+                            if (LogUtil.DEBUG) {
+                                LogUtil.log(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
+                            }
+                        } else if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
                         }
                     }
                 }
             }).start();
-        } else {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "no need to init phone book info");
-            }
+        } else if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
         }
     }
 

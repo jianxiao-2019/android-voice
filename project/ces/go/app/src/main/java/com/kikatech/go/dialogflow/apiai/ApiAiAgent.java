@@ -83,7 +83,7 @@ public class ApiAiAgent extends Agent {
     public void resetContexts() {
         boolean ret = mAIService.resetContexts();
         if(LogUtil.DEBUG) {
-            LogUtil.logw(TAG, "api.ai resetContexts : " + ret);
+            LogUtil.logw(TAG, "api.ai resetContexts, result : " + ret);
         }
     }
 
