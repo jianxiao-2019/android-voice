@@ -71,7 +71,9 @@ public class VoiceService {
                 }
             }
         });
-        mVoiceRecorder = new VoiceRecorder(new VoiceSource(), new FileWriter(mConf.getDebugFilePath(), mVoiceDetector));
+
+        mNoiseSuppression = new NoiseSuppression(new FileWriter(mConf.getDebugFilePath() + "_NS", mVoiceDetector));
+        mVoiceRecorder = new VoiceRecorder(new VoiceSource(), new FileWriter(mConf.getDebugFilePath(), mNoiseSuppression));
 
         Message.register("CONFIG", ConfigMessage.class);
     }

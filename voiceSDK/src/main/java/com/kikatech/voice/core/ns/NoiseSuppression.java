@@ -42,9 +42,10 @@ public class NoiseSuppression implements IDataPath {
 //            for (int j = 0; j < outBufs.length; j++) {
 //                allOfOutBufs[i * 128 + j] = outBufs[j];
 //            }
-            //short[] postfix = Arrays.copyOfRange(outBufs, 128, 256);
+            short[] postfix = Arrays.copyOfRange(outBufs, 128, 256);
+            Logger.d("NoiseSuppression onData postfix.length = " + postfix.length);
             if (mDataPath != null) {
-                mDataPath.onData(ShortToByte(outBufs));
+                mDataPath.onData(ShortToByte(postfix));
             }
         }
 
