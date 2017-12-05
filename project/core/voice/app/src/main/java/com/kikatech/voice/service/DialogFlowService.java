@@ -395,7 +395,7 @@ public class DialogFlowService implements
             if (proactive) {
                 mDialogFlow.resetContexts();
             }
-            mCallback.onSceneExit();
+            mCallback.onSceneExit(proactive);
         }
     };
 

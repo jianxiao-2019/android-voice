@@ -66,10 +66,13 @@ public class UiTaskManager {
             @Override
             public void onLockReleased() {
                 if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "onLockRelease");
+                    LogUtil.log(TAG, "onLockRelease:");
                 }
                 Task task = pollFromQueue();
                 if (task == null) {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, "UI Task Queue is empty.");
+                    }
                     return;
                 }
                 Object obj = task.content;
@@ -148,7 +151,11 @@ public class UiTaskManager {
     }
 
     public synchronized void dispatchStageTask(SceneStage sceneStage) {
-        if (isLayoutPerformTask()) {
+        final boolean isLayoutPerformTask = isLayoutPerformTask();
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("isLayoutPerformTask: %s", isLayoutPerformTask));
+        }
+        if (isLayoutPerformTask) {
             addToQueue(new Task(TaskType.TYPE_SCENE_STAGE, sceneStage));
         } else {
             doStageAction(sceneStage);
@@ -196,10 +203,15 @@ public class UiTaskManager {
         unlock(!isInterrupted);
     }
 
-    public synchronized void onSceneExit() {
+    public synchronized void onSceneExit(boolean proactive) {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "onSceneExit");
+        }
         clearQueue();
-        displayOptions(mDefaultOptionList);
-        unlock(false);
+        if (proactive) {
+            displayOptions(mDefaultOptionList);
+            unlock(false);
+        }
     }
 
     public synchronized void release() {

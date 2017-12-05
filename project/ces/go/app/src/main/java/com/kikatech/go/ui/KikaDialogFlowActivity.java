@@ -116,7 +116,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onSceneExit() {
+                    public void onSceneExit(boolean proactive) {
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override

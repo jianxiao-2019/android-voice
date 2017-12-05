@@ -33,7 +33,7 @@ public interface IDialogFlowService {
 
         void onStageEvent(Bundle extras);
 
-        void onSceneExit();
+        void onSceneExit(boolean proactive);
     }
 
     interface IAgentQueryStatus {

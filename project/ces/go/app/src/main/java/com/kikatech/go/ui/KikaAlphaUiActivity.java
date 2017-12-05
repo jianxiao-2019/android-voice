@@ -96,7 +96,8 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 mUiManager.dispatchEventTask(extras);
                 break;
             case DFServiceEvent.ACTION_ON_SCENE_EXIT:
-                mUiManager.onSceneExit();
+                boolean proactive = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_PROACTIVE);
+                mUiManager.onSceneExit(proactive);
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_START:
                 mUiManager.dispatchAsrStart();

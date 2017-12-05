@@ -258,12 +258,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onSceneExit() {
+                    public void onSceneExit(boolean proactive) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSceneExit");
                         }
-                        resumeAsr();
+                        if (proactive) {
+                            resumeAsr();
+                        }
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SCENE_EXIT);
+                        event.putExtra(DFServiceEvent.PARAM_IS_PROACTIVE, proactive);
                         sendDFServiceEvent(event);
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {

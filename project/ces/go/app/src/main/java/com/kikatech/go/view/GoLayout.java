@@ -607,6 +607,9 @@ public class GoLayout extends FrameLayout {
                                 break;
                         }
                         break;
+                    default:
+                        nextStatus = status;
+                        break;
                 }
                 break;
         }
