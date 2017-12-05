@@ -39,6 +39,10 @@ public class StageUpdateEmoji extends BaseSendSmsStage {
     }
 
     @Override
+    public void doAction() {
+    }
+
+    @Override
     public void action() {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "Emoji, updated : " + getSmsContent().getEmojiUnicode() + " <" + getSmsContent().getEmojiDesc() + ">");

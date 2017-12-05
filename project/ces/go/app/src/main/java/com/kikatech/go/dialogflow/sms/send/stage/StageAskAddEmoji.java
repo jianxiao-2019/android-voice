@@ -1,8 +1,12 @@
 package com.kikatech.go.dialogflow.sms.send.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -38,11 +42,26 @@ public class StageAskAddEmoji extends BaseSendSmsStage {
     }
 
     @Override
+    public void doAction() {
+        action();
+    }
+
+    @Override
     public void action() {
-        String msg = "Find emoji " + getSmsContent().getEmojiDesc() + ", would you like to add it ?";
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, msg);
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getSmsContent().getEmojiDesc());
+        if (uiAndTtsText.length > 0) {
+            Bundle args = new Bundle();
+            String[] options = SceneUtil.getOptionsCommon(context);
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+            optionList.setTitle(uiText);
+            for (String option : options) {
+                optionList.add(new Option(option, null));
+            }
+            args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
+            speak(ttsText, args);
         }
-        speak(msg);
     }
 }

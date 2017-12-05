@@ -99,11 +99,11 @@ public class SceneUtil {
         return resource.getStringArray(R.array.options_confirm_msg);
     }
 
-    public static String[] getAskEmoji(Context context) {
+    public static String[] getAskEmoji(Context context, String emoji) {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_ask_emoji);
         String[] ttsArray = resource.getStringArray(R.array.tts_ask_emoji);
-        return new String[]{ui, getStringFromArray(ttsArray)};
+        return new String[]{tryFormat(ui, emoji), getStringFromArray(ttsArray)};
     }
 
     public static String[] getReadMsgDirectly(Context context, String userName, String msgContent) {
