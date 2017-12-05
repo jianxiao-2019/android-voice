@@ -1,7 +1,6 @@
 package com.kikatech.voice.core.ns;
 
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.util.log.Logger;
 
 import java.util.Arrays;
 
@@ -26,34 +25,31 @@ public class NoiseSuppression implements IDataPath {
     @Override
     public void onData(byte[] data) {
         short[] allOfInBufs = ByteToShort(data, data.length / 2);
-//        short[] allOfOutBufs = new short[allOfInBufs.length];
+        short[] allOfOutBufs = new short[allOfInBufs.length / 2];
 
         int loops = data.length / 512;
         int remainder = allOfInBufs.length % 256;
 
         short[] outBufs = new short[256];
-        Logger.d("NoiseSuppression onData data.length 2 = " + data.length);
-        Logger.d("NoiseSuppression onData allOfInBufs.length = " + allOfInBufs.length + " loops = " + loops + " remainder = " + remainder);
         for (int i = 0; i < loops; i++) {
             short[] inBufs = Arrays.copyOfRange(allOfInBufs, i * 256, (i + 1) * 256);
              NoiseCancellation.NoiseMask(inBufs, outBufs);
             // Logger.d("NoiseSuppression onData inBufs.length = " + inBufs.length + " outBufs.length = " + outBufs.length);
 
-//            for (int j = 0; j < outBufs.length; j++) {
-//                allOfOutBufs[i * 128 + j] = outBufs[j];
-//            }
+
             short[] postfix = Arrays.copyOfRange(outBufs, 128, 256);
-            Logger.d("NoiseSuppression onData postfix.length = " + postfix.length);
-            if (mDataPath != null) {
-                mDataPath.onData(ShortToByte(postfix));
+//            if (mDataPath != null) {
+//                mDataPath.onData(ShortToByte(postfix));
+//            }
+            for (int j = 0; j < postfix.length; j++) {
+                allOfOutBufs[i * 128 + j] = postfix[j];
             }
         }
 
-//        byte[] outData = ShortToByte(allOfOutBufs);
-//        Logger.d("NoiseSuppression onData outData.length = " + outData.length);
-//        if (mDataPath != null) {
-//            mDataPath.onData(outData);
-//        }
+        byte[] outData = ShortToByte(allOfOutBufs);
+        if (mDataPath != null) {
+            mDataPath.onData(outData);
+        }
     }
 
     public void close() {
