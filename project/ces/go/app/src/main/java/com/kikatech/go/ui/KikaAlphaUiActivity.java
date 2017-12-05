@@ -99,6 +99,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 mUiManager.onSceneExit();
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_START:
+                mUiManager.dispatchAsrStart();
                 mUiManager.writeDebugLog(DebugLogType.API_AI_START);
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_STOP:
@@ -147,6 +148,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        mUiManager.release();
         unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
         super.onDestroy();

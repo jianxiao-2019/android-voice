@@ -9,7 +9,6 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.model.UserMsg;
-import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.ui.MediaPlayerUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
@@ -25,6 +24,9 @@ public class UiTaskManager {
     private static final String TAG = "UiTaskManager";
 
     private static final OptionList mDefaultOptionList = OptionList.getDefaultOptionList();
+
+    private static final String PARAM_SPEECH_TEXT = "param_speech_text";
+    private static final String PARAM_IS_FINISHED = "param_is_finished";
 
     private final class TaskType {
         private static final byte TYPE_TTS = 0x01;
@@ -77,18 +79,24 @@ public class UiTaskManager {
                 byte type = task.type;
                 switch (type) {
                     case TaskType.TYPE_SCENE_STAGE:
-                        SceneStage stage = (SceneStage) obj;
-                        stage.doAction();
+                        final SceneStage stage = (SceneStage) obj;
+                        doStageAction(stage);
                         break;
                     case TaskType.TYPE_SPEECH:
-                        String speech = (String) obj;
-                        listen(speech, true);
+                        final Bundle extras = (Bundle) obj;
+                        String speech = extras.getString(PARAM_SPEECH_TEXT);
+                        boolean isFinished = extras.getBoolean(PARAM_IS_FINISHED);
+                        listen(speech, isFinished);
                         break;
                 }
             }
         });
     }
 
+
+    public synchronized void dispatchAsrStart() {
+        onStatusChanged(GoLayout.ViewStatus.ANALYZE);
+    }
 
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
         if (extras != null) {
@@ -143,8 +151,21 @@ public class UiTaskManager {
         if (isLayoutPerformTask()) {
             addToQueue(new Task(TaskType.TYPE_SCENE_STAGE, sceneStage));
         } else {
-            sceneStage.doAction();
+            doStageAction(sceneStage);
         }
+    }
+
+    private synchronized void doStageAction(final SceneStage stage) {
+        onStatusChanged(GoLayout.ViewStatus.ANALYZE_TO_TTS, new GoLayout.IGifStatusListener() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onStop(Exception e) {
+                stage.doAction();
+            }
+        });
     }
 
     public synchronized void dispatchSpeechTask(String speech) {
@@ -152,8 +173,13 @@ public class UiTaskManager {
     }
 
     public synchronized void dispatchSpeechTask(String speech, boolean isFinished) {
-        if (isLayoutPerformTask() && !GoLayout.ViewStatus.LISTEN.equals(mLayout.getCurrentStatus()) && isFinished) {
-            addToQueue(new Task(TaskType.TYPE_SPEECH, speech));
+        if (isLayoutPerformTask() &&
+                !(GoLayout.ViewStatus.LISTEN_1.equals(mLayout.getCurrentStatus())
+                        || GoLayout.ViewStatus.LISTEN_2.equals(mLayout.getCurrentStatus()))) {
+            Bundle extras = new Bundle();
+            extras.putString(PARAM_SPEECH_TEXT, speech);
+            extras.putBoolean(PARAM_IS_FINISHED, isFinished);
+            addToQueue(new Task(TaskType.TYPE_SPEECH, extras));
         } else {
             listen(speech, isFinished);
         }
@@ -178,6 +204,7 @@ public class UiTaskManager {
 
     public synchronized void release() {
         mTaskQueue.clear();
+        mLayout.clear();
         mLayout = null;
     }
 
@@ -299,6 +326,18 @@ public class UiTaskManager {
         });
     }
 
+    private void onStatusChanged(final GoLayout.ViewStatus status) {
+        onStatusChanged(status, null);
+    }
+
+    private void onStatusChanged(final GoLayout.ViewStatus status, GoLayout.IGifStatusListener listener) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.onStatusChanged(status, listener);
+    }
+
     private void unlock(final boolean withAlert) {
         final GoLayout layout = mLayout;
         if (layout == null) {
@@ -311,6 +350,7 @@ public class UiTaskManager {
                 if (withAlert) {
                     MediaPlayerUtil.playAlert(layout.getContext(), R.raw.alert_dot, null);
                 }
+                onStatusChanged(GoLayout.ViewStatus.LISTEN_1);
             }
         });
     }

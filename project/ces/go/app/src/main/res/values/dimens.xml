@@ -19,7 +19,7 @@
     <dimen name="go_layout_option_title_sleep_text_max_size">50dp</dimen>
     <dimen name="go_layout_option_item_sleep_text_max_size">73dp</dimen>
 
-    <dimen name="go_layout_status_bar_height">153dp</dimen>
+    <dimen name="go_layout_status_bar_height">156dp</dimen>
 
 
     <dimen name="dialog_margin_large">40dp</dimen>

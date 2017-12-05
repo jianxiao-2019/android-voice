@@ -1,6 +1,8 @@
 package com.kikatech.go.view;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -11,8 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.gifdecoder.GifDecoder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
@@ -37,7 +45,7 @@ public class GoLayout extends FrameLayout {
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
 
     public enum DisplayMode {
-        SLEEP(R.drawable.kika_awake_bg, ViewStatus.STAND_BY),
+        SLEEP(R.drawable.kika_awake_bg, ViewStatus.STAND_BY_SLEEP),
         AWAKE(R.drawable.kika_normal_bg, ViewStatus.STAND_BY_AWAKE);
 
         int bgRes;
@@ -58,11 +66,16 @@ public class GoLayout extends FrameLayout {
     }
 
     public enum ViewStatus {
-        SPEAK(R.drawable.kika_tts, R.drawable.kika_gmap_tts),
-        STAND_BY(R.drawable.kika_standby, R.drawable.kika_gmap_standby),
-        STAND_BY_AWAKE(R.drawable.kika_awake, R.drawable.kika_gmap_awake),
-        LISTEN(R.drawable.kika_listening, R.drawable.kika_gmap_listening),
-        LOADING(R.drawable.kika_listening, R.drawable.kika_gmap_listening);
+        STAND_BY_SLEEP(R.drawable.kika_vui_standby, R.drawable.kika_gmap_standby),
+        SLEEP_TO_AWAKE(R.drawable.kika_vui_trans_s_aw, R.drawable.kika_gmap_standby),
+        STAND_BY_AWAKE(R.drawable.kika_vui_awake, R.drawable.kika_gmap_awake),
+
+        TTS(R.drawable.kika_vui_t, R.drawable.kika_gmap_tts),
+        TTS_TO_LISTEN(R.drawable.kika_vui_trans_t_l, R.drawable.kika_gmap_tts),
+        LISTEN_1(R.drawable.kika_vui_l_l, R.drawable.kika_gmap_listening),
+        LISTEN_2(R.drawable.kika_vui_l_r, R.drawable.kika_gmap_listening),
+        ANALYZE(R.drawable.kika_vui_a, R.drawable.kika_listening),
+        ANALYZE_TO_TTS(R.drawable.kika_vui_trans_a_t, R.drawable.kika_gmap_listening);
 
         int normalRes, smallRes;
 
@@ -112,6 +125,8 @@ public class GoLayout extends FrameLayout {
 
     private View mStatusLayout;
     private ImageView mStatusAnimationView;
+    private GlideDrawableImageViewTarget mRepeatTarget;
+    private GlideDrawableImageViewTarget mNonRepeatTarget;
 
     private TextView mDebugVersionView;
     private TextView mDebugLogView;
@@ -170,6 +185,8 @@ public class GoLayout extends FrameLayout {
 
         mStatusLayout = findViewById(R.id.go_layout_status);
         mStatusAnimationView = (ImageView) findViewById(R.id.go_layout_status_img);
+        mRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, -1);
+        mNonRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, 1);
 
         if (DEBUG) {
             mDebugVersionView = (TextView) findViewById(R.id.go_layout_debug_version);
@@ -203,32 +220,23 @@ public class GoLayout extends FrameLayout {
     private CountingTimer mTimer = new CountingTimer(EACH_STATUS_MIN_STAY_MILLIS, 100, new CountingTimer.ICountingListener() {
         @Override
         public void onTimeTickStart() {
-            if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onTimeTickStart");
-            }
             performLock();
         }
 
         @Override
         public void onTimeTick(long millis) {
             if (LogUtil.DEBUG && millis % 1000 == 0) {
-                LogUtil.logv(TAG, "onTimeTick: " + millis);
+                LogUtil.logv(TAG, String.format("onTimeTick: %s", (float) millis / 1000));
             }
         }
 
         @Override
         public void onTimeTickEnd() {
-            if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onTimeTickEnd");
-            }
             performUnlock();
         }
 
         @Override
         public void onInterrupted(long stopMillis) {
-            if (LogUtil.DEBUG) {
-                LogUtil.logw(TAG, "onInterrupted, stopMillis: " + stopMillis);
-            }
             performUnlock();
         }
 
@@ -259,16 +267,16 @@ public class GoLayout extends FrameLayout {
 
     private synchronized void lock() {
         if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, "lock");
+            LogUtil.log(TAG, "lock");
         }
         mTimer.start();
     }
 
     public synchronized void unlock() {
         if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, "unlock");
+            LogUtil.log(TAG, "unlock");
         }
-        onStatusChanged(ViewStatus.LOADING);
+        // TODO: onStatusChanged(ViewStatus.LOADING);
         if (mTimer.isCounting()) {
             mTimer.stop();
         }
@@ -345,7 +353,7 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
 
-        onStatusChanged(ViewStatus.SPEAK);
+        onStatusChanged(ViewStatus.TTS);
     }
 
     /**
@@ -353,7 +361,7 @@ public class GoLayout extends FrameLayout {
      **/
     public synchronized void listen(final String text, final boolean isFinished) {
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "listen");
+            LogUtil.log(TAG, String.format("text: %1$s, isFinished: %2$s", text, isFinished));
         }
         lock();
 
@@ -373,7 +381,9 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
 
-        onStatusChanged(ViewStatus.LISTEN);
+        if (!isFinished) {
+            onStatusChanged(ViewStatus.LISTEN_1);
+        }
     }
 
     /**
@@ -441,7 +451,7 @@ public class GoLayout extends FrameLayout {
             }
         }
 
-        onStatusChanged(ViewStatus.SPEAK);
+        onStatusChanged(ViewStatus.TTS);
     }
 
     public synchronized void displayUsrInfo(String usrAvatar, String usrName, AppInfo appInfo) {
@@ -478,7 +488,7 @@ public class GoLayout extends FrameLayout {
 
         mUsrInfoName.setText(usrName);
 
-        onStatusChanged(ViewStatus.SPEAK);
+        onStatusChanged(ViewStatus.TTS);
     }
 
     public synchronized void displayUsrMsg(String usrAvatar, String usrName, String msgContent, AppInfo appInfo) {
@@ -515,7 +525,7 @@ public class GoLayout extends FrameLayout {
         mUsrMsgName.setText(usrName);
         mUsrMsgContent.setText(msgContent);
 
-        onStatusChanged(ViewStatus.SPEAK);
+        onStatusChanged(ViewStatus.TTS);
     }
 
     public synchronized void displayMsgSent() {
@@ -531,27 +541,243 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(VISIBLE);
 
-        onStatusChanged(ViewStatus.STAND_BY_AWAKE);
+        onStatusChanged(ViewStatus.TTS);
     }
 
-    private void onStatusChanged(ViewStatus status) {
-        // TODO: animations
-        mCurrentStatus = status;
-        Context context = getContext();
+
+    public void onStatusChanged(final ViewStatus status) {
+        onStatusChanged(status, null);
+    }
+
+    public void onStatusChanged(final ViewStatus status, IGifStatusListener listener) {
+        ViewStatus nextStatus = getNextStatus(status);
+        if (nextStatus == null) {
+            return;
+        }
+        onNewStatus(nextStatus, listener);
+    }
+
+    private ViewStatus getNextStatus(ViewStatus status) {
+        ViewStatus nextStatus = null;
         switch (mCurrentMode) {
-            case AWAKE:
-                Glide.with(context)
-                        .load(status.getNormalRes())
-                        .dontTransform()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .into(mStatusAnimationView);
-                DialogFlowForegroundService.processStatusChanged(status);
-                break;
             case SLEEP:
+                break;
+            case AWAKE:
+                if (mCurrentStatus == null) {
+                    nextStatus = status;
+                    break;
+                } else if (mCurrentStatus.equals(status)) {
+                    break;
+                }
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("current status: %1$s, target status: %2$s", mCurrentStatus.name(), status.name()));
+                }
+                switch (mCurrentStatus) {
+                    case TTS:
+                        switch (status) {
+                            case LISTEN_1:
+                                nextStatus = ViewStatus.TTS_TO_LISTEN;
+                                break;
+                            default:
+                                nextStatus = status;
+                                break;
+                        }
+                        break;
+                    case LISTEN_1:
+                    case LISTEN_2:
+                        switch (status) {
+                            case LISTEN_1:
+                            case LISTEN_2:
+                                break;
+                            case TTS:
+                                nextStatus = ViewStatus.ANALYZE_TO_TTS;
+                                break;
+                            default:
+                                nextStatus = status;
+                                break;
+                        }
+                        break;
+                    case ANALYZE:
+                        switch (status) {
+                            case TTS:
+                                nextStatus = ViewStatus.ANALYZE_TO_TTS;
+                                break;
+                            default:
+                                nextStatus = status;
+                                break;
+                        }
+                        break;
+                }
+                break;
+        }
+        return nextStatus;
+    }
+
+    private void onNewStatus(ViewStatus status, final IGifStatusListener listener) {
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("target status: %1$s", status.name()));
+        }
+        mCurrentStatus = status;
+        switch (status) {
+            case TTS:
+                loadStatusGif(status, listener);
+                break;
+            case TTS_TO_LISTEN:
+                loadStatusGif(status, new IGifStatusListener() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onStop(Exception e) {
+                        if (listener != null) {
+                            listener.onStop(e);
+                        }
+                        onNewStatus(ViewStatus.LISTEN_1, null);
+                    }
+                });
+                break;
+            case LISTEN_1:
+                loadStatusGif(status, new GoLayout.IGifStatusListener() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onStop(Exception e) {
+                        if (listener != null) {
+                            listener.onStop(e);
+                        }
+                        onNewStatus(ViewStatus.LISTEN_2, null);
+                    }
+                });
+                break;
+            case LISTEN_2:
+                loadStatusGif(status, new GoLayout.IGifStatusListener() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onStop(Exception e) {
+                        if (listener != null) {
+                            listener.onStop(e);
+                        }
+                        onNewStatus(ViewStatus.LISTEN_1, null);
+                    }
+                });
+                break;
+            case ANALYZE:
+                loadStatusGif(ViewStatus.ANALYZE, listener);
+                break;
+            case ANALYZE_TO_TTS:
+                loadStatusGif(ViewStatus.ANALYZE_TO_TTS, new GoLayout.IGifStatusListener() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onStop(Exception e) {
+                        if (listener != null) {
+                            listener.onStop(e);
+                        }
+                        onNewStatus(ViewStatus.TTS, null);
+                    }
+                });
                 break;
         }
     }
 
+    private Handler mUIHandler = new Handler(Looper.getMainLooper());
+
+    private synchronized void loadStatusGif(final ViewStatus status, final IGifStatusListener listener) {
+        DialogFlowForegroundService.processStatusChanged(status);
+        mUIHandler.removeCallbacksAndMessages(null);
+        mUIHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("status: %s", status.name()));
+                }
+                if (isTerminate) {
+                    return;
+                }
+                Context context = getContext();
+
+                if (listener != null) {
+                    listener.onStart();
+                }
+
+                Glide.with(context)
+                        .load(status.getNormalRes())
+                        .placeholder(R.drawable.kika_emptypic)
+                        .dontTransform()
+                        .dontAnimate()
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .listener(new RequestListener<Integer, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, Integer model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                if (listener != null) {
+                                    listener.onStop(e);
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, Integer model, Target<GlideDrawable> target,
+                                                           boolean isFromMemoryCache, boolean isFirstResource) {
+                                if (listener != null) {
+                                    if (resource instanceof GifDrawable) {
+                                        // 计算动画时长
+                                        int duration = getGifDuration((GifDrawable) resource);
+                                        if (LogUtil.DEBUG) {
+                                            LogUtil.logv(TAG, String.format("duration: %s", duration));
+                                        }
+                                        mUIHandler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                //发送延时消息，通知动画结束
+                                                // handler.sendEmptyMessageDelayed(MESSAGE_SUCCESS,duration);
+                                                listener.onStop(null);
+                                            }
+                                        }, duration);
+                                    } else {
+                                        if (LogUtil.DEBUG) {
+                                            LogUtil.logv(TAG, "non-gif drawable");
+                                        }
+                                    }
+                                }
+                                return false;
+                            }
+                        }) //仅仅加载一次gif动画
+                        .into(listener != null ? mNonRepeatTarget : mRepeatTarget);
+            }
+        });
+    }
+
+    private int getGifDuration(GifDrawable drawable) {
+        int duration = 0;
+        GifDecoder decoder = drawable.getDecoder();
+        for (int i = 0; i < drawable.getFrameCount(); i++) {
+            duration += decoder.getDelay(i);
+        }
+        return duration;
+    }
+
+    private boolean isTerminate;
+
+
+    public void clear() {
+        isTerminate = true;
+        mUIHandler.removeCallbacksAndMessages(null);
+        Glide.clear(mRepeatTarget);
+        Glide.clear(mNonRepeatTarget);
+    }
+
+
+    public DisplayMode getCurrentMode() {
+        return mCurrentMode;
+    }
 
     public ViewStatus getCurrentStatus() {
         return mCurrentStatus;
@@ -568,6 +794,11 @@ public class GoLayout extends FrameLayout {
         }
     }
 
+    public interface IGifStatusListener {
+        void onStart();
+
+        void onStop(Exception e);
+    }
 
     public interface IOnModeChangedListener {
         void onChanged(DisplayMode mode);
