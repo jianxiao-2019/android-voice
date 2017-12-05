@@ -234,7 +234,7 @@ public class DialogFlowService implements
                 LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
             }
 
-            query = textMessage.text;
+            query = textMessage.text[0];
             finished = true;
         } else if (message instanceof EditTextMessage) {
             String alter = ((EditTextMessage) message).altered;

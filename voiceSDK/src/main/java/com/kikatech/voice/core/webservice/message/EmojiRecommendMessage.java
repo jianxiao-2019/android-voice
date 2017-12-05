@@ -10,11 +10,13 @@ public class EmojiRecommendMessage extends Message {
 
     public String emoji;
     public String descriptionText;
+    public long cid;
 
     @Override
     protected void parseData(JSONObject dataObj) {
         emoji = dataObj.optString("key");
         descriptionText = dataObj.optString("value");
+        cid = dataObj.optLong("cid");
     }
 
     @Override
