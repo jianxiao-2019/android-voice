@@ -44,10 +44,14 @@ public class BaseSendSmsStage extends SceneStage {
     @Override
     public SceneStage next(String action, Bundle extra) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
-        int tagAnyTarget = getAnyTAgParseTarget(action);
-        ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseContactName(extra, tagAnyTarget));
-        if (action.equals(SceneActions.ACTION_SEND_SMS_CANCEL)) {
+        if (action.equals(Intent.ACTION_RCMD_EMOJI)) {
+            String emojiJson = Intent.parseEmojiJsonString(extra);
+            ((SceneSendSms) mSceneBase).updateEmoji(emojiJson);
+        } else if (action.equals(SceneActions.ACTION_SEND_SMS_CANCEL)) {
             return new StageCancel(mSceneBase, mFeedback);
+        } else {
+            int tagAnyTarget = getAnyTAgParseTarget(action);
+            ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseContactName(extra, tagAnyTarget));
         }
         return getNextStage(action, extra);
     }

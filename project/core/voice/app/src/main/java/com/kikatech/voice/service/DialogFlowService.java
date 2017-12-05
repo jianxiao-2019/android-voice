@@ -20,7 +20,11 @@ import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.util.AsyncThread;
+import com.kikatech.voice.util.EmojiUtil;
 import com.kikatech.voice.util.log.LogUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -39,7 +43,7 @@ public class DialogFlowService implements
     private final IAgentQueryStatus mQueryStatusCallback;
     private VoiceService mVoiceService;
     private DialogFlow mDialogFlow;
-    private boolean mQueryAnyContent = false;
+    private boolean mQueryAnyWords = false;
 
     private SceneManager mSceneManager;
 
@@ -55,11 +59,13 @@ public class DialogFlowService implements
         initDialogFlow(conf);
         initVoiceService(conf);
         initTts();
-        callback.onInitComplete();
 
-        Message.register("INTERMEDIATE", IntermediateMessage.class);
-        Message.register("ALTER", EditTextMessage.class);
-        Message.register("ASR", TextMessage.class);
+        Message.register(Message.MSG_TYPE_INTERMEDIATE, IntermediateMessage.class);
+        Message.register(Message.MSG_TYPE_ALTER, EditTextMessage.class);
+        Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
+        Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
+
+        callback.onInitComplete();
     }
 
     @Override
@@ -172,7 +178,7 @@ public class DialogFlowService implements
     public void talk(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
-            mDialogFlow.talk(words, mQueryAnyContent, mQueryStatusCallback);
+            mDialogFlow.talk(words, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
         }
     }
 
@@ -180,7 +186,7 @@ public class DialogFlowService implements
     public void text(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "text : " + words);
-            mDialogFlow.talk(words, mQueryAnyContent, mQueryStatusCallback);
+            mDialogFlow.talk(words, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
         }
     }
 
@@ -219,8 +225,9 @@ public class DialogFlowService implements
             LogUtil.logd(TAG, "onMessage message = " + message);
         }
 
-        boolean finished = false;
+        boolean queryDialogFlow = false;
         String query = "";
+        String emojiJson = "";
         if (message instanceof IntermediateMessage) {
             IntermediateMessage intermediateMessage = (IntermediateMessage) message;
 //            if (LogUtil.DEBUG) {
@@ -235,23 +242,26 @@ public class DialogFlowService implements
             }
 
             query = textMessage.text;
-            finished = true;
+            queryDialogFlow = true;
         } else if (message instanceof EditTextMessage) {
             String alter = ((EditTextMessage) message).altered;
             if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
 
             query = alter;
-            finished = true;
-        } else if(message instanceof EmojiRecommendMessage) {
+            queryDialogFlow = true;
+        } else if (message instanceof EmojiRecommendMessage) {
             EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
-            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EmojiRecommendMessage descriptionText = " + emoji.descriptionText + " : " + emoji.emoji);
+            emojiJson = EmojiUtil.composeJsonString(emoji.emoji, emoji.descriptionText);
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EmojiRecommendMessage = " + emojiJson);
         }
 
-        if(!TextUtils.isEmpty(query)) {
-            if (finished && mDialogFlow != null) {
-                mDialogFlow.talk(query, mQueryAnyContent, mQueryStatusCallback);
+        if (!TextUtils.isEmpty(query)) {
+            if (queryDialogFlow && mDialogFlow != null) {
+                mDialogFlow.talk(query, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
             }
-            mCallback.onASRResult(query, finished);
+            mCallback.onASRResult(query, emojiJson, queryDialogFlow);
+        } else if (!TextUtils.isEmpty(emojiJson)) {
+            mDialogFlow.talk(emojiJson, QUERY_TYPE_EMOJI, mQueryStatusCallback);
         }
     }
 
@@ -392,8 +402,8 @@ public class DialogFlowService implements
     private SceneManager.SceneQueryWordsStatus mSceneQueryWordsStatusCallback = new SceneManager.SceneQueryWordsStatus() {
         @Override
         public void onQueryAnyWordsStatusChange(boolean queryAnyWords) {
-            mQueryAnyContent = queryAnyWords;
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "QueryAnyContent:" + mQueryAnyContent);
+            mQueryAnyWords = queryAnyWords;
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "QueryAnyContent:" + mQueryAnyWords);
         }
     };
 }

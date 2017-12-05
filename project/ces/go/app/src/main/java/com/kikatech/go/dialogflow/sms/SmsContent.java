@@ -22,6 +22,10 @@ public class SmsContent {
     private List<ContactManager.NumberType> phoneNumbers;
     private String mChosenNumber;
 
+    private String emojiUnicode = "";
+    private String emojiDesc = "";
+    private boolean mSendWithEmoji = false;
+
     private boolean isContactMatched;
 
     public static class IntentContent {
@@ -74,6 +78,25 @@ public class SmsContent {
         }
     }
 
+    public void updateEmoji(String unicode, String desc) {
+        if (LogUtil.DEBUG)
+            LogUtil.log("SmsContent", "updateEmoji:" + unicode + " , " + desc);
+        emojiUnicode = unicode;
+        emojiDesc = desc;
+    }
+
+    public String getEmojiUnicode() {
+        return emojiUnicode;
+    }
+
+    public String getEmojiDesc() {
+        return emojiDesc;
+    }
+
+    public void setSendWithEmoji(boolean b) {
+        mSendWithEmoji = b;
+    }
+
     public void setIntentContent(IntentContent ic) {
         mIntentContent = ic;
     }
@@ -83,7 +106,15 @@ public class SmsContent {
     }
 
     public String getSmsBody() {
-        return mIntentContent.smsBody;
+        return getSmsBody(false);
+    }
+
+    public String getSmsBody(boolean checkEmoji) {
+        if(checkEmoji && mSendWithEmoji) {
+            return mIntentContent.smsBody + emojiUnicode;
+        } else {
+            return mIntentContent.smsBody;
+        }
     }
 
     public String getMatchedName() {
@@ -137,11 +168,6 @@ public class SmsContent {
         return -1;
     }
 
-    public boolean tryParseContact(Context ctx, String smsBody) {
-        mIntentContent.sendTarget = smsBody;
-        return isContactMatched(ctx);
-    }
-
     public boolean isContactMatched(Context ctx) {
         ContactUtil.MatchedContact mc = ContactUtil.matchContact(ctx, getContact());
         contactMatchedName = mc.contactMatchedName;
@@ -157,6 +183,7 @@ public class SmsContent {
                 "\nChosen Number:" + mChosenNumber +
                 ", phoneNumber count:" + getNumberCount() +
                 "\nisSimilarContact:" + isSimilarContact() +
-                ", matchContact:" + isContactMatched;
+                ", matchContact:" + isContactMatched +
+                "\n, emoji:" + emojiUnicode + ", snedEnoji:" + mSendWithEmoji;
     }
 }

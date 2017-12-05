@@ -47,7 +47,7 @@ public class ApiAiAgent extends Agent {
     }
 
     @Override
-    public Intent query(final String words, final Map<String, List<String>> entities, boolean anyContent) {
+    public Intent query(final String words, final Map<String, List<String>> entities, byte queryType) {
 
         if (LogUtil.DEBUG) LogUtil.logd(TAG, "query, words: " + words);
 

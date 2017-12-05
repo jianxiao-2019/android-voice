@@ -7,6 +7,10 @@ import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.stage.StageSendSmsIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.EmojiUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by brad_chang on 2017/11/15.
@@ -32,6 +36,19 @@ public class SceneSendSms extends NonLoopSceneBase {
         } else {
             smsContent.update(ic);
         }
+    }
+
+    public void updateEmoji(String emojiJson) {
+        String unicode = "";
+        String desc = "";
+        try {
+            JSONObject json = new JSONObject(emojiJson);
+            unicode = json.getString(EmojiUtil.KEY_EMOJI_CODE);
+            desc = json.getString(EmojiUtil.KEY_EMOJI_DESC);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        smsContent.updateEmoji(unicode, desc);
     }
 
     @Override

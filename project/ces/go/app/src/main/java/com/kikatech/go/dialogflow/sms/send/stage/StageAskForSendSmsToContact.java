@@ -10,6 +10,7 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -37,6 +38,8 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
                 return new StageAskForSmsBody(mSceneBase, mFeedback);
             case SceneActions.ACTION_SEND_SMS_MSGBODY:
                 return new StageAskForSendSmsToContact(mSceneBase, mFeedback);
+            case Intent.ACTION_RCMD_EMOJI:
+                return new StageUpdateEmoji(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
                 break;

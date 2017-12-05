@@ -13,11 +13,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public interface IDialogFlowService {
 
+    byte QUERY_TYPE_SERVER = 1;
+    byte QUERY_TYPE_LOCAL = 2;
+    byte QUERY_TYPE_EMOJI = 3;
+
     interface IServiceCallback {
 
         void onInitComplete();
 
-        void onASRResult(String speechText, boolean isFinished);
+        void onASRResult(String speechText, String emojiUnicode, boolean isFinished);
 
         void onText(String text, Bundle extras);
 

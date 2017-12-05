@@ -1,10 +1,5 @@
 package com.kikatech.voice.core.vad;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-
 import com.kikatech.androidspeex.Speex;
 import com.kikatech.voice.VadUtil;
 import com.kikatech.voice.core.framework.IDataPath;

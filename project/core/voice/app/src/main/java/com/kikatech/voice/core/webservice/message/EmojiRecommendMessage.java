@@ -13,7 +13,7 @@ public class EmojiRecommendMessage extends Message {
 
     @Override
     protected void parseData(JSONObject dataObj) {
-        emoji = dataObj.optString("type");
+        emoji = dataObj.optString("key");
         descriptionText = dataObj.optString("value");
     }
 

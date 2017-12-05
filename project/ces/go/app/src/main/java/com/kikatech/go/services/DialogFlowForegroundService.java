@@ -188,9 +188,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onASRResult(final String speechText, boolean isFinished) {
+                    public void onASRResult(final String speechText, String emojiUnicode, boolean isFinished) {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("speechText: %1$s, isFinished: %2$s", speechText, isFinished));
+                            LogUtil.log(TAG, String.format("speechText: %1$s, emoji: %2%s, isFinished: %3$s", speechText, emojiUnicode, isFinished));
                         }
                         if (!asrActive) {
                             return;
@@ -200,6 +200,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_RESULT);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, speechText);
+                        //event.putExtra(DFServiceEvent.PARAM_EMOJI, emojiUnicode);
                         event.putExtra(DFServiceEvent.PARAM_IS_FINISHED, isFinished);
                         sendDFServiceEvent(event);
                     }

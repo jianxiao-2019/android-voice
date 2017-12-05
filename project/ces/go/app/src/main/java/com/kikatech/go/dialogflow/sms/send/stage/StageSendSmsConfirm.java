@@ -35,13 +35,16 @@ public class StageSendSmsConfirm extends BaseSendSmsStage {
 
     @Override
     public void action() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "Send Message : \n" + getSmsContent().toString());
+        SmsContent sc = getSmsContent();
+
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "Send Message : \n" + sc.toString());
+
         Bundle args = new Bundle();
         args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_DISPLAY_MSG_SENT);
         args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_succeed);
         send(args);
-        SmsContent sc = getSmsContent();
-        SmsUtil.sendSms(mSceneBase.getContext(), sc.getChosenPhoneNumber(), sc.getSmsBody());
+
+        SmsUtil.sendSms(mSceneBase.getContext(), sc.getChosenPhoneNumber(), sc.getSmsBody(true));
         BackgroundThread.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
