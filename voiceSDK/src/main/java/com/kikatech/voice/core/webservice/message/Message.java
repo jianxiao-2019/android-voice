@@ -17,6 +17,11 @@ public abstract class Message {
 
     public static final HashMap<String, Class<? extends Message>> TYPE_CLASS = new HashMap<>();
 
+    public static final String MSG_TYPE_INTERMEDIATE = "INTERMEDIATE";
+    public static final String MSG_TYPE_ALTER = "ALTER";
+    public static final String MSG_TYPE_ASR = "ASR";
+    public static final String MSG_TYPE_EMOJI = "EMOJI";
+
     public Message() {
     }
 

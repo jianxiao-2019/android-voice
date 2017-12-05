@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
+import com.kikatech.voice.util.log.LogUtil;
+
 import java.io.Serializable;
 
 /**

@@ -34,11 +34,11 @@ public class DialogFlow {
         }
     }
 
-    public void talk(final String words, boolean anyContent, final IDialogFlowService.IAgentQueryStatus callback) {
-        talk(words, null, anyContent, callback);
+    public void talk(final String words, byte queryType, final IDialogFlowService.IAgentQueryStatus callback) {
+        talk(words, null, queryType, callback);
     }
 
-    public void talk(final String words, final Map<String, List<String>> entities, final boolean anyContent, final IDialogFlowService.IAgentQueryStatus callback) {
+    public void talk(final String words, final Map<String, List<String>> entities, final byte queryType, final IDialogFlowService.IAgentQueryStatus callback) {
         if (!TextUtils.isEmpty(words)) {
             mExecutor.execute(new Runnable() {
                 @Override
@@ -46,7 +46,7 @@ public class DialogFlow {
                     if (callback != null) callback.onStart();
                     Intent intent = null;
                     try {
-                        intent = mAgent.query(words, entities, anyContent);
+                        intent = mAgent.query(words, entities, queryType);
                     } catch (Exception e) {
                         if (callback != null) callback.onError(e);
                     }

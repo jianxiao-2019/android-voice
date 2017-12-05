@@ -54,6 +54,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
                 if (scene.equals(mScene)) {
                     notifyObservers(intent);
                 } else {
+                    prepareSwitchSceneInfo(scene, intent);
                     doExitScene(mScene, false);
                     mScene = scene;
                     if (mCallback != null) {
@@ -62,6 +63,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
                     notifyObservers(intent);
                 }
             } else {
+                prepareSwitchSceneInfo(scene, intent);
                 mScene = scene;
                 if (mCallback != null) {
                     mCallback.onSceneEnter(mScene);
@@ -69,6 +71,34 @@ public class SceneManager implements DialogObserver, ISceneManager {
                 notifyObservers(intent);
             }
         }
+    }
+
+    private void prepareSwitchSceneInfo(String targetScene, Intent intent) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log("Intent", "prepareSwitchSceneInfo, current:"+mScene+", target:" + targetScene+ ", intent:" + intent);
+        }
+        if (!TextUtils.isEmpty(mScene) && intent != null) {
+            SceneBase src = getScene(mScene);
+            if (src != null && intent.getExtra() != null) {
+                String json = src.getTransformSceneInfo();
+                if (json != null) {
+                    intent.getExtra().putString(Intent.KEY_SWITCH_SCENE_INFO, json);
+                }
+                if (LogUtil.DEBUG) {
+                    LogUtil.log("Intent", "prepareSwitchSceneInfo, json:" + json);
+                }
+            }
+        }
+    }
+
+    private SceneBase getScene(String scene) {
+        List<SceneBase> list = mSubscribe.list(scene);
+        for (SceneBase subscriber : list) {
+            if(subscriber.scene().equals(scene)) {
+                return subscriber;
+            }
+        }
+        return null;
     }
 
     private void notifyObservers(Intent intent) {
