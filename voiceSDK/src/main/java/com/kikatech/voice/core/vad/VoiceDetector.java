@@ -65,7 +65,6 @@ public class VoiceDetector implements IDataPath {
 
     @Override
     public void onData(byte[] data) {
-        Logger.d("VoiceDetector onData");
         if (mDetectorHandler == null) {
             Logger.e("Can't add data while VoiceDetector is stopped.");
             return;
@@ -111,7 +110,6 @@ public class VoiceDetector implements IDataPath {
 
         @Override
         public void handleMessage(Message msg) {
-            Logger.i("VoiceDetector handleMessage msg.what = " + msg.what);
             if (msg.what == MSG_ADD_DATA) {
                 if (mBuf == null) {
                     mBuf = new short[mFrameLength];
@@ -147,7 +145,6 @@ public class VoiceDetector implements IDataPath {
         }
 
         private void handleVoiceData(byte[] data) {
-            Logger.e("handleVoiceData mFrameLength = " + mFrameLength);
             short[] vadData = ByteToShort(data, data.length / 2);
             int vadSize = vadData.length;
             if (vadSize + mBufLen < mFrameLength) {

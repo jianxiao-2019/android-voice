@@ -30,14 +30,14 @@ public class FileWriter implements IDataPath {
     public void onData(byte[] data) {
         writeToFile(data);
         if (mDataOut != null) {
-            Logger.d("FileWriter pass data to next : " + mDataOut);
+//            Logger.d("FileWriter pass data to next : " + mDataOut);
             mDataOut.onData(data);
         }
     }
 
     private void writeToFile(byte[] data) {
         // TODO : should write the data to file in the other thread.
-        Logger.d("FileWriter writeToFile mFilePath = " + mFilePath + " data.length = " + data.length);
+//        Logger.d("FileWriter writeToFile mFilePath = " + mFilePath + " data.length = " + data.length);
         if (TextUtils.isEmpty(mFilePath)) {
             return;
         }
