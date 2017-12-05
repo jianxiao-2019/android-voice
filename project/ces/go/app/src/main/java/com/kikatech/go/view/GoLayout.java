@@ -626,6 +626,9 @@ public class GoLayout extends FrameLayout {
                 loadStatusGif(status, new IGifStatusListener() {
                     @Override
                     public void onStart() {
+                        if (listener != null) {
+                            listener.onStart();
+                        }
                     }
 
                     @Override
@@ -641,6 +644,9 @@ public class GoLayout extends FrameLayout {
                 loadStatusGif(status, new GoLayout.IGifStatusListener() {
                     @Override
                     public void onStart() {
+                        if (listener != null) {
+                            listener.onStart();
+                        }
                     }
 
                     @Override
@@ -656,6 +662,9 @@ public class GoLayout extends FrameLayout {
                 loadStatusGif(status, new GoLayout.IGifStatusListener() {
                     @Override
                     public void onStart() {
+                        if (listener != null) {
+                            listener.onStart();
+                        }
                     }
 
                     @Override
@@ -674,6 +683,9 @@ public class GoLayout extends FrameLayout {
                 loadStatusGif(ViewStatus.ANALYZE_TO_TTS, new GoLayout.IGifStatusListener() {
                     @Override
                     public void onStart() {
+                        if (listener != null) {
+                            listener.onStart();
+                        }
                     }
 
                     @Override
