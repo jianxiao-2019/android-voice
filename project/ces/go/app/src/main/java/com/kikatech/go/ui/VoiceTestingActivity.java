@@ -26,7 +26,6 @@ import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
-import com.kikatech.voice.util.PreferenceUtil;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.xiao.usbaudio.AudioPlayBack;
@@ -238,11 +237,12 @@ public class VoiceTestingActivity extends BaseActivity
     }
 
     public String getCurrentLocale() {
-        int current = PreferenceUtil.getInt(this, PreferenceUtil.KEY_LANGUAGE, 0);
-        if (current >= LOCALE_LIST.length) {
-            return LOCALE_LIST[0].toString();
-        }
-        return LOCALE_LIST[current].toString();
+//        int current = PreferenceUtil.getInt(this, PreferenceUtil.KEY_LANGUAGE, 0);
+//        if (current >= LOCALE_LIST.length) {
+//            return LOCALE_LIST[0].toString();
+//        }
+//        return LOCALE_LIST[current].toString();
+        return "en_US";
     }
 
     @Override
@@ -252,15 +252,20 @@ public class VoiceTestingActivity extends BaseActivity
                 @Override
                 public void run() {
                     if (message instanceof TextMessage) {
-                        mEditText.setText(((TextMessage) message).text);
+                        mEditText.setText(((TextMessage) message).text[0]);
                     } else if (message instanceof IntermediateMessage) {
                         mEditText.setText(((IntermediateMessage) message).text);
                     } else if (message instanceof EditTextMessage) {
-                        mEditText.setText(((EditTextMessage) message).text);
+                        mEditText.setText(((EditTextMessage) message).text[0]);
                     }
                 }
             });
         }
+    }
+
+    @Override
+    public void onCreated() {
+
     }
 
     @Override
@@ -272,7 +277,17 @@ public class VoiceTestingActivity extends BaseActivity
     }
 
     @Override
+    public void onDestroyed() {
+
+    }
+
+    @Override
     public void onSpeechProbabilityChanged(float prob) {
+    }
+
+    @Override
+    public void onError(int reason) {
+
     }
 
     @Override

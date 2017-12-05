@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.util.PreferenceUtil;
 import com.kikatech.voice.util.request.RequestManager;
 
 import java.io.File;
@@ -36,7 +35,6 @@ public class DialogFlowConfig {
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName(APP_NAME)
                 .setUrl(WEB_SOCKET_URL_DEV)
-                .setLocale(getCurrentLocale(ctx, LOCALE_LIST))
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
                 .setAlterEnabled(true)
@@ -82,13 +80,5 @@ public class DialogFlowConfig {
             e.printStackTrace();
         }
         return context.getCacheDir();
-    }
-
-    private static String getCurrentLocale(Context ctx, Locale[] LOCALE_LIST) {
-        int current = PreferenceUtil.getInt(ctx, PreferenceUtil.KEY_LANGUAGE, 0);
-        if (current >= LOCALE_LIST.length) {
-            return LOCALE_LIST[0].toString();
-        }
-        return LOCALE_LIST[current].toString();
     }
 }

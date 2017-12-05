@@ -6,15 +6,13 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.kikatech.voice.Config;
-
 import java.util.Locale;
 
 /**
  * Created by brad_chang on 2016/1/10.
  */
 public class LogUtil {
-	final static public boolean DEBUG = Config.DEBUG;
+	final static public boolean DEBUG = true;
 
 	private static int sProcessId = DEBUG ? 0 : android.os.Process.myPid();
 	private static final int PARENT_NODE = 3, SELF_NODE = 2;
