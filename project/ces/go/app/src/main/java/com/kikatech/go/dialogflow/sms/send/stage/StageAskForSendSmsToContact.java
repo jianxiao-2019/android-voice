@@ -30,9 +30,14 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        SmsContent sc = getSmsContent();
         switch (action) {
             case SceneActions.ACTION_SEND_SMS_YES:
-                return new StageSendSmsConfirm(mSceneBase, mFeedback);
+                if(sc.hasEmoji()) {
+                    return new StageAskAddEmoji(mSceneBase, mFeedback);
+                } else {
+                    return new StageSendSmsConfirm(mSceneBase, mFeedback);
+                }
             case SceneActions.ACTION_SEND_SMS_NO:
             case SceneActions.ACTION_SEND_SMS_CHANGE_SMS_BODY:
                 return new StageAskForSmsBody(mSceneBase, mFeedback);

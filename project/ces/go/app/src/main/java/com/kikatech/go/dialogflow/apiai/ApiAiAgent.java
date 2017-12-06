@@ -147,7 +147,7 @@ public class ApiAiAgent extends Agent {
         String name = metadata.getIntentName();
 
         if (TextUtils.isEmpty(name)) {
-            if (LogUtil.DEBUG) LogUtil.logd(TAG, "Err, name is empty");
+            if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Err, name is empty");
             return null;
         }
 

@@ -54,7 +54,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
 
         SmsContent sc = getSmsContent();
 
-        if (action.equals(SceneActions.ACTION_SEND_SMS_FALLBACK)) {
+        if (action.equals(SceneActions.ACTION_SEND_SMS_FALLBACK) || action.equals(Intent.ACTION_UNKNOWN)) {
             List<ContactManager.NumberType> numbers = sc.getPhoneNumbers();
             String userSays = Intent.parseUserInput(extra);
             if (!TextUtils.isEmpty(userSays)) {

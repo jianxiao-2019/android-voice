@@ -93,6 +93,10 @@ public class SmsContent {
         return emojiDesc;
     }
 
+    public boolean hasEmoji() {
+        return !TextUtils.isEmpty(emojiUnicode) && !TextUtils.isEmpty(emojiDesc);
+    }
+
     public void setSendWithEmoji(boolean b) {
         mSendWithEmoji = b;
     }
@@ -184,6 +188,6 @@ public class SmsContent {
                 ", phoneNumber count:" + getNumberCount() +
                 "\nisSimilarContact:" + isSimilarContact() +
                 ", matchContact:" + isContactMatched +
-                "\n, emoji:" + emojiUnicode + ", snedEnoji:" + mSendWithEmoji;
+                "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
     }
 }
