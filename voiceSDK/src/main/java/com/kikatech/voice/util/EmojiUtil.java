@@ -22,4 +22,21 @@ public class EmojiUtil {
         }
         return emjs.toString();
     }
+
+    public static class EmojiInfo {
+        public String unicode;
+        public String desc;
+    }
+
+    public static EmojiInfo parseEmojiJson(String emojiJson) {
+        EmojiInfo ei = new EmojiInfo();
+        try {
+            JSONObject json = new JSONObject(emojiJson);
+            ei.unicode = json.getString(EmojiUtil.KEY_EMOJI_CODE);
+            ei.desc = json.getString(EmojiUtil.KEY_EMOJI_DESC);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ei;
+    }
 }
