@@ -31,9 +31,6 @@ public class VoiceSource implements IVoiceSource {
     @Override
     public void start() {
         if (mAudioRecord != null) {
-            if (mAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
-                mAudioRecord.stop();
-            }
             mAudioRecord.release();
         }
         mAudioRecord = createAudioRecord();
