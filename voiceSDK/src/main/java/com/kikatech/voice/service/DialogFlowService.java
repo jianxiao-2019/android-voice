@@ -23,9 +23,6 @@ import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.EmojiUtil;
 import com.kikatech.voice.util.log.LogUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 /**
  * Created by bradchang on 2017/11/7.
@@ -143,7 +140,7 @@ public class DialogFlowService implements
         }
     }
 
-    private void stopTts(){
+    private void stopTts() {
         if (mTtsSpeaker == null) {
             return;
         }
@@ -178,7 +175,7 @@ public class DialogFlowService implements
     public void talk(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
-            mDialogFlow.talk(words, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
+            mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
         }
     }
 
@@ -186,7 +183,7 @@ public class DialogFlowService implements
     public void text(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "text : " + words);
-            mDialogFlow.talk(words, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
+            mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
         }
     }
 
@@ -228,6 +225,7 @@ public class DialogFlowService implements
 
         boolean queryDialogFlow = false;
         String query = "";
+        String[] nBestQuery = null;
         String emojiJson = "";
         if (message instanceof IntermediateMessage) {
             IntermediateMessage intermediateMessage = (IntermediateMessage) message;
@@ -243,6 +241,7 @@ public class DialogFlowService implements
             }
 
             query = textMessage.text[0];
+            nBestQuery = textMessage.text;
             queryDialogFlow = true;
         } else if (message instanceof EditTextMessage) {
             String alter = ((EditTextMessage) message).altered;
@@ -258,11 +257,11 @@ public class DialogFlowService implements
 
         if (!TextUtils.isEmpty(query)) {
             if (queryDialogFlow && mDialogFlow != null) {
-                mDialogFlow.talk(query, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
+                mDialogFlow.talk(query, nBestQuery, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
             }
             mCallback.onASRResult(query, emojiJson, queryDialogFlow);
         } else if (!TextUtils.isEmpty(emojiJson)) {
-            mDialogFlow.talk(emojiJson, QUERY_TYPE_EMOJI, mQueryStatusCallback);
+            mDialogFlow.talk(emojiJson, nBestQuery, QUERY_TYPE_EMOJI, mQueryStatusCallback);
         }
     }
 
@@ -285,7 +284,6 @@ public class DialogFlowService implements
 
     @Override
     public void onDestroyed() {
-
     }
 
     @Override

@@ -21,6 +21,7 @@ public class Intent {
     public final static String AS_PREV_SCENE = "as_prev_scene";
     public final static String ACTION_USER_INPUT = "custom_intent_action_user_input";
     public final static String KEY_USER_INPUT = "custom_intent_key_user_input";
+    public final static String KEY_USER_INPUT_N_BEST = "custom_intent_key_user_input_n_best";
 
     // Process Emoji
     public final static String ACTION_RCMD_EMOJI = "custom_intent_action_rcmd_emoji";
@@ -37,10 +38,11 @@ public class Intent {
         mAction = action;
     }
 
-    public Intent(String scene, String action, String resolvedQuery) {
+    public Intent(String scene, String action, String resolvedQuery, String[] nBestWords) {
         mScene = scene;
         mAction = action;
         mExtra.putString(KEY_USER_INPUT, resolvedQuery);
+        mExtra.putStringArray(KEY_USER_INPUT_N_BEST, nBestWords);
     }
 
     @Override
@@ -82,6 +84,10 @@ public class Intent {
             if (LogUtil.DEBUG)
                 LogUtil.log("Intent", "Find Default::input.unknown, let the current scene " + mScene + " to handle it");
         }
+    }
+
+    public static String[] parseUserInputNBest(@NonNull Bundle extra) {
+        return extra.getStringArray(KEY_USER_INPUT_N_BEST);
     }
 
     public static String parseUserInput(@NonNull Bundle extra) {
