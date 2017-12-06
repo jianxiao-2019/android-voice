@@ -61,6 +61,10 @@ public abstract class SceneBase implements DialogObserver {
         return null;
     }
 
+    protected boolean supportEmoji() {
+        return false;
+    }
+
     private int mStageCondCount = 1;
 
     @Override

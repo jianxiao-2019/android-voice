@@ -103,9 +103,14 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     private void notifyObservers(Intent intent) {
         String scene = intent.getScene();
+        boolean isEmojiIntent = intent.isEmoji();
         List<SceneBase> list = mSubscribe.list(scene);
         for (SceneBase subscriber : list) {
-            subscriber.onIntent(intent);
+            if (!isEmojiIntent) {
+                subscriber.onIntent(intent);
+            } else if (subscriber.supportEmoji()) {
+                subscriber.onIntent(intent);
+            }
         }
     }
 

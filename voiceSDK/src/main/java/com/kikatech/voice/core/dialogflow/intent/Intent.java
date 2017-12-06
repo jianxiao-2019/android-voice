@@ -23,7 +23,6 @@ public class Intent {
     public final static String KEY_USER_INPUT = "custom_intent_key_user_input";
 
     // Process Emoji
-    public final static String EMOJI_SCENE = "emoji_scene";
     public final static String ACTION_RCMD_EMOJI = "custom_intent_action_rcmd_emoji";
     public final static String KEY_RCMD_EMOJI = "custom_intent_key_rcmd_emoji";
 
@@ -72,13 +71,13 @@ public class Intent {
     public void correctScene(String scene) {
         if (LogUtil.DEBUG)
             LogUtil.log("Intent", "scene:" + mScene + ", mAction:" + mAction);
-        if (!TextUtils.isEmpty(scene) && (mScene.equals(AS_PREV_SCENE) || mScene.equals(EMOJI_SCENE))) {
+        if (!TextUtils.isEmpty(scene) && (mScene.equals(AS_PREV_SCENE))) {
             if (LogUtil.DEBUG)
                 LogUtil.log("Intent", "Find " + mScene + ", correct scene to " + scene);
             mScene = scene;
         } else if (
                 mScene.equals(Intent.DEFAULT_SCENE) && !TextUtils.isEmpty(scene) &&
-                !mScene.equals(scene) && !TextUtils.isEmpty(mAction) && mAction.equals(ACTION_UNKNOWN)) {
+                        !mScene.equals(scene) && !TextUtils.isEmpty(mAction) && mAction.equals(ACTION_UNKNOWN)) {
             mScene = scene;
             if (LogUtil.DEBUG)
                 LogUtil.log("Intent", "Find Default::input.unknown, let the current scene " + mScene + " to handle it");
@@ -95,5 +94,9 @@ public class Intent {
 
     public static String parseEmojiJsonString(@NonNull Bundle extra) {
         return extra.getString(KEY_RCMD_EMOJI, "");
+    }
+
+    public boolean isEmoji() {
+        return mAction.equals(ACTION_RCMD_EMOJI);
     }
 }
