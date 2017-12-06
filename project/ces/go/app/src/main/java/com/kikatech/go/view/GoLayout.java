@@ -74,7 +74,7 @@ public class GoLayout extends FrameLayout {
         TTS_TO_LISTEN(R.drawable.kika_vui_trans_t_l, R.drawable.kika_gmap_tts),
         LISTEN_1(R.drawable.kika_vui_l_l, R.drawable.kika_gmap_listening),
         LISTEN_2(R.drawable.kika_vui_l_r, R.drawable.kika_gmap_listening),
-        ANALYZE(R.drawable.kika_vui_a, R.drawable.kika_listening),
+        ANALYZE(R.drawable.kika_vui_a, R.drawable.kika_gmap_listening),
         ANALYZE_TO_TTS(R.drawable.kika_vui_trans_a_t, R.drawable.kika_gmap_listening);
 
         int normalRes, smallRes;
