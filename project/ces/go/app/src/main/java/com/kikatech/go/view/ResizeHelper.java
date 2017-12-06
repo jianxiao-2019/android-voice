@@ -119,9 +119,6 @@ public class ResizeHelper {
         StaticLayout staticLayout = getStaticLayout(text, mPaint, targetWidth, targetTextSize);
 
         Context context = mTextView.getContext();
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "line: " + staticLayout.getLineCount());
-        }
         while (staticLayout.getLineCount() > 1 && targetTextSize > mMinTextSize) {
             targetTextSize = Math.max(targetTextSize - ResolutionUtil.dp2px(context, 1), mMinTextSize);
             staticLayout = getStaticLayout(text, mPaint, targetWidth, targetTextSize);

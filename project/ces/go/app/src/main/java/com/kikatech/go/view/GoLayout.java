@@ -360,15 +360,15 @@ public class GoLayout extends FrameLayout {
      * display content spoken by user (voice input)
      **/
     public synchronized void listen(final String text, final boolean isFinished) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, String.format("text: %1$s, isFinished: %2$s", text, isFinished));
-        }
         lock();
 
         if (!isFinished) {
             mListenView.disableResize(mListenView.getMinTextSize());
             mListenView.setAlpha(0.5f);
         } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, String.format("text: %1$s", text));
+            }
             mListenView.enableResize();
             mListenView.setAlpha(1.0f);
         }
@@ -569,9 +569,6 @@ public class GoLayout extends FrameLayout {
                 } else if (mCurrentStatus.equals(status)) {
                     break;
                 }
-                if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, String.format("current status: %1$s, target status: %2$s", mCurrentStatus.name(), status.name()));
-                }
                 switch (mCurrentStatus) {
                     case TTS:
                         switch (status) {
@@ -617,9 +614,6 @@ public class GoLayout extends FrameLayout {
     }
 
     private void onNewStatus(ViewStatus status, final IGifStatusListener listener) {
-        if (LogUtil.DEBUG) {
-            LogUtil.logd(TAG, String.format("target status: %1$s", status.name()));
-        }
         mCurrentStatus = status;
         switch (status) {
             case TTS:
@@ -711,19 +705,13 @@ public class GoLayout extends FrameLayout {
         mUIHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, String.format("status: %s", status.name()));
-                }
-                if (isTerminate) {
-                    return;
-                }
                 Context context = getContext();
 
                 if (listener != null) {
                     listener.onStart();
                 }
 
-                Glide.with(context)
+                Glide.with(context.getApplicationContext())
                         .load(status.getNormalRes())
                         .placeholder(R.drawable.kika_emptypic)
                         .dontTransform()
@@ -745,9 +733,6 @@ public class GoLayout extends FrameLayout {
                                     if (resource instanceof GifDrawable) {
                                         // 计算动画时长
                                         int duration = getGifDuration((GifDrawable) resource);
-                                        if (LogUtil.DEBUG) {
-                                            LogUtil.logv(TAG, String.format("duration: %s", duration));
-                                        }
                                         mUIHandler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
@@ -756,10 +741,6 @@ public class GoLayout extends FrameLayout {
                                                 listener.onStop(null);
                                             }
                                         }, duration);
-                                    } else {
-                                        if (LogUtil.DEBUG) {
-                                            LogUtil.logv(TAG, "non-gif drawable");
-                                        }
                                     }
                                 }
                                 return false;
@@ -779,11 +760,7 @@ public class GoLayout extends FrameLayout {
         return duration;
     }
 
-    private boolean isTerminate;
-
-
     public void clear() {
-        isTerminate = true;
         mUIHandler.removeCallbacksAndMessages(null);
         Glide.clear(mRepeatTarget);
         Glide.clear(mNonRepeatTarget);
