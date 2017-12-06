@@ -47,7 +47,7 @@ public class ApiAiAgent extends Agent {
     }
 
     @Override
-    public Intent query(final String words, final Map<String, List<String>> entities, byte queryType) {
+    public Intent query(final String words, final String[] nBestWords, final Map<String, List<String>> entities, byte queryType) {
 
         if (LogUtil.DEBUG) LogUtil.logd(TAG, "query, words: " + words);
 
@@ -76,13 +76,13 @@ public class ApiAiAgent extends Agent {
             if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
         }
 
-        return fromResponse(aiResponse);
+        return fromResponse(aiResponse, nBestWords);
     }
 
     @Override
     public void resetContexts() {
         boolean ret = mAIService.resetContexts();
-        if(LogUtil.DEBUG) {
+        if (LogUtil.DEBUG) {
             LogUtil.logw(TAG, "api.ai resetContexts, result : " + ret);
         }
     }
@@ -120,9 +120,9 @@ public class ApiAiAgent extends Agent {
         return entityList;
     }
 
-    private Intent fromResponse(AIResponse response) {
+    private Intent fromResponse(AIResponse response, final String[] nBestWords) {
 
-        if( LogUtil.DEBUG ) LogUtil.log( TAG, "fromResponse" );
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "fromResponse");
 
         if (DEBUG_ORIGINAL_DATA) {
             printOriginalData(response);
@@ -159,7 +159,7 @@ public class ApiAiAgent extends Agent {
         }
 
         String action = result.getAction();
-        if(TextUtils.isEmpty(action)) {
+        if (TextUtils.isEmpty(action)) {
             action = Intent.ACTION_UNKNOWN;
         }
 
@@ -174,11 +174,11 @@ public class ApiAiAgent extends Agent {
             LogUtil.logw(TAG, "context:" + ctx);
         }
 
-        Intent intent = new Intent(scene, action, result.getResolvedQuery());
+        Intent intent = new Intent(scene, action, result.getResolvedQuery(), nBestWords);
 
         final Map<String, JsonElement> params = result.getParameters();
 
-        if (params == null || params.isEmpty()){
+        if (params == null || params.isEmpty()) {
             return intent;
         }
 
@@ -215,7 +215,7 @@ public class ApiAiAgent extends Agent {
                     LogUtil.log(TAG, "Score: " + result.getScore());
 
                     final Metadata metadata = result.getMetadata();
-                    if( metadata != null ) {
+                    if (metadata != null) {
                         LogUtil.log(TAG, "IntentId: " + metadata.getIntentId());
                         LogUtil.log(TAG, "IntentName: " + metadata.getIntentName());
                     }

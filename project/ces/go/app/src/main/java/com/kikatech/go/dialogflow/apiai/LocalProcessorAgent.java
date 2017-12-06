@@ -12,10 +12,8 @@ import java.util.Map;
 
 public class LocalProcessorAgent extends Agent {
     @Override
-    public Intent query(String words, Map<String, List<String>> entities, byte queryType) {
-        Intent intent = new Intent(Intent.AS_PREV_SCENE, Intent.ACTION_USER_INPUT, words);
-        intent.putExtra(Intent.KEY_USER_INPUT, words);
-        return intent;
+    public Intent query(String words, String[] nBestWords, Map<String, List<String>> entities, byte queryType) {
+        return new Intent(Intent.AS_PREV_SCENE, Intent.ACTION_USER_INPUT, words, nBestWords);
     }
 
     @Override

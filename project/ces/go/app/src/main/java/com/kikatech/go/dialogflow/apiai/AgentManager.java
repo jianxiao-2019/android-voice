@@ -27,16 +27,16 @@ public class AgentManager extends Agent {
     }
 
     @Override
-    public Intent query(String words, Map<String, List<String>> entities, byte queryType) {
+    public Intent query(String words, String[] nBestWords, Map<String, List<String>> entities, byte queryType) {
         switch (queryType) {
             case IDialogFlowService.QUERY_TYPE_SERVER:
-                return mApiAiAgent.query(words, entities, queryType);
+                return mApiAiAgent.query(words, nBestWords, entities, queryType);
             case IDialogFlowService.QUERY_TYPE_LOCAL:
                 if (LogUtil.DEBUG) LogUtil.logd("ApiAiAgent", "query anyContent, words: " + words);
-                return mApiAiAssistAgent.query(words, entities, queryType);
+                return mApiAiAssistAgent.query(words, nBestWords, entities, queryType);
             case IDialogFlowService.QUERY_TYPE_EMOJI:
                 if (LogUtil.DEBUG) LogUtil.logd("ApiAiAgent", "query emoji : " + words);
-                return mEmojiProcessorAgent.query(words, entities, queryType);
+                return mEmojiProcessorAgent.query(words, nBestWords, entities, queryType);
             default:
                 return null;
         }
