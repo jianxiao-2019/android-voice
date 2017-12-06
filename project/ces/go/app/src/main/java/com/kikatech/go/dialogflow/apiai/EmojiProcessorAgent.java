@@ -18,7 +18,7 @@ import java.util.Map;
 public class EmojiProcessorAgent extends Agent {
     @Override
     public Intent query(String words, Map<String, List<String>> entities, byte queryType) {
-        Intent intent = new Intent(Intent.EMOJI_SCENE, Intent.ACTION_RCMD_EMOJI, words);
+        Intent intent = new Intent(Intent.AS_PREV_SCENE, Intent.ACTION_RCMD_EMOJI, words);
         intent.putExtra(Intent.KEY_RCMD_EMOJI, words);
         return intent;
     }

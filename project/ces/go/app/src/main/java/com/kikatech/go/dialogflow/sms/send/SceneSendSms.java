@@ -57,4 +57,9 @@ public class SceneSendSms extends NonLoopSceneBase {
     protected SceneStage idle() {
         return new StageSendSmsIdle(this, mFeedback);
     }
+
+    @Override
+    protected boolean supportEmoji() {
+        return true;
+    }
 }
