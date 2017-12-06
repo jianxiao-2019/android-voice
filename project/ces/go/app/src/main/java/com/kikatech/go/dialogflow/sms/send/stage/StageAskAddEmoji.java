@@ -29,16 +29,13 @@ public class StageAskAddEmoji extends BaseSendSmsStage {
                 getSmsContent().setSendWithEmoji(true);
                 return new StageSendSmsConfirm(mSceneBase, mFeedback);
             case SceneActions.ACTION_SEND_SMS_NO:
-                //case SceneActions.ACTION_SEND_SMS_CHANGE_SMS_BODY:
                 getSmsContent().setSendWithEmoji(false);
                 return new StageSendSmsConfirm(mSceneBase, mFeedback);
-//            case SceneActions.ACTION_SEND_SMS_MSGBODY:
-//                return new StageAskForSendSmsToContact(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-                break;
+                getSmsContent().setSendWithEmoji(false);
+                return new StageSendSmsConfirm(mSceneBase, mFeedback);
         }
-        return this;
     }
 
     @Override

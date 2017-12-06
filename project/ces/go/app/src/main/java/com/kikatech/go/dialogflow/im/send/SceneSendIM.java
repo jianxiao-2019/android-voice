@@ -8,6 +8,10 @@ import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.dialogflow.im.send.stage.StageIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.EmojiUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by brad_chang on 2017/11/23.
@@ -33,6 +37,11 @@ public class SceneSendIM extends NonLoopSceneBase {
         } else {
             mIMContent.update(ic);
         }
+    }
+
+    public void updateEmoji(String emojiJson) {
+        EmojiUtil.EmojiInfo ei = EmojiUtil.parseEmojiJson(emojiJson);
+        mIMContent.updateEmoji(ei.unicode, ei.desc);
     }
 
     @Override

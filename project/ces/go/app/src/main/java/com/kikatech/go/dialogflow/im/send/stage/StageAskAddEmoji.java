@@ -1,8 +1,14 @@
 package com.kikatech.go.dialogflow.im.send.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.dialogflow.im.send.SceneActions;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -19,7 +25,18 @@ public class StageAskAddEmoji extends BaseSendIMStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
-        return new StageSendIMConfirm(mSceneBase, mFeedback);
+        switch (action) {
+            case SceneActions.ACTION_SEND_IM_YES:
+                getIMContent().setSendWithEmoji(true);
+                return new StageSendIMConfirm(mSceneBase, mFeedback);
+            case SceneActions.ACTION_SEND_IM_NO:
+                getIMContent().setSendWithEmoji(false);
+                return new StageSendIMConfirm(mSceneBase, mFeedback);
+            default:
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
+                getIMContent().setSendWithEmoji(false);
+                return new StageSendIMConfirm(mSceneBase, mFeedback);
+        }
     }
 
     @Override
@@ -29,6 +46,20 @@ public class StageAskAddEmoji extends BaseSendIMStage {
 
     @Override
     public void action() {
-        speak("Who do you want to send ?");
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getIMContent().getEmojiDesc());
+        if (uiAndTtsText.length > 0) {
+            Bundle args = new Bundle();
+            String[] options = SceneUtil.getOptionsCommon(context);
+            String uiText = uiAndTtsText[0];
+            String ttsText = uiAndTtsText[1];
+            OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
+            optionList.setTitle(uiText);
+            for (String option : options) {
+                optionList.add(new Option(option, null));
+            }
+            args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
+            speak(ttsText, args);
+        }
     }
 }

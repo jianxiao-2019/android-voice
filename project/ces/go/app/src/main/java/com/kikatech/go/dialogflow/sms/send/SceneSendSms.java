@@ -39,16 +39,8 @@ public class SceneSendSms extends NonLoopSceneBase {
     }
 
     public void updateEmoji(String emojiJson) {
-        String unicode = "";
-        String desc = "";
-        try {
-            JSONObject json = new JSONObject(emojiJson);
-            unicode = json.getString(EmojiUtil.KEY_EMOJI_CODE);
-            desc = json.getString(EmojiUtil.KEY_EMOJI_DESC);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        smsContent.updateEmoji(unicode, desc);
+        EmojiUtil.EmojiInfo ei = EmojiUtil.parseEmojiJson(emojiJson);
+        smsContent.updateEmoji(ei.unicode, ei.desc);
     }
 
     @Override

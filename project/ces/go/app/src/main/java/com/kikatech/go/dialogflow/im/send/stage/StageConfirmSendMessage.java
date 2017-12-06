@@ -10,6 +10,7 @@ import com.kikatech.go.dialogflow.im.send.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -27,12 +28,18 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_SEND_IM_YES:
-                return new StageSendIMConfirm(mSceneBase, mFeedback);
+                if(getIMContent().hasEmoji()) {
+                    return new StageAskAddEmoji(mSceneBase, mFeedback);
+                } else {
+                    return new StageSendIMConfirm(mSceneBase, mFeedback);
+                }
             case SceneActions.ACTION_SEND_IM_NO:
             case SceneActions.ACTION_SEND_IM_CHANGE_IM_BODY:
                 return new StageAskMsgBody(mSceneBase, mFeedback);
             case SceneActions.ACTION_SEND_IM_MSGBODY:
                 return new StageConfirmSendMessage(mSceneBase, mFeedback);
+            case Intent.ACTION_RCMD_EMOJI:
+                return new StageUpdateEmoji(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
                 break;

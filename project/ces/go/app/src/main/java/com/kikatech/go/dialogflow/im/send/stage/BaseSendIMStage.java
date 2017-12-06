@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.kikatech.go.dialogflow.im.IMContent;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
+import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -35,8 +36,13 @@ public class BaseSendIMStage extends SceneStage {
     public SceneStage next(String action, Bundle extra) {
         // Parse IM content
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action : " + action);
-        IMContent imc = IMUtil.parse(extra);
-        ((SceneSendIM) mSceneBase).updateIMContent(imc);
+        if (action.equals(Intent.ACTION_RCMD_EMOJI)) {
+            String emojiJson = Intent.parseEmojiJsonString(extra);
+            ((SceneSendIM) mSceneBase).updateEmoji(emojiJson);
+        } else {
+            IMContent imc = IMUtil.parse(extra);
+            ((SceneSendIM) mSceneBase).updateIMContent(imc);
+        }
         return getNextStage(action, extra);
     }
 

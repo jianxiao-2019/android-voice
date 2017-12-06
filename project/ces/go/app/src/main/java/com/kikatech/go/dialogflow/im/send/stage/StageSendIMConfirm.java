@@ -69,7 +69,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                     AccessibilityManager.getInstance().registerDispatcher(messageEventDispatcher);
 
                     IMProcessor processor = IMProcessor.createIMProcessor(
-                            ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody()).registerCallback(new IMProcessor.IIMProcessorFlow() {
+                            ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody(true)).registerCallback(new IMProcessor.IIMProcessorFlow() {
                         @Override
                         public void onStart() {
                             if (LogUtil.DEBUG) LogUtil.log(TAG, "Start ...");

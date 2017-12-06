@@ -19,15 +19,16 @@ public class IMContent {
     private String msgBody = "";
     private String imAppPkgName = "";
 
-//    private String contactMatchedName = "";
-//    private boolean isContactMatched = false;
+    private String emojiUnicode = "";
+    private String emojiDesc = "";
+    private boolean mSendWithEmoji = false;
 
     @Override
     public String toString() {
         return "parsedIMApp:" + parsedIMApp + ", imAppPkgName:" + imAppPkgName +
                 ", targetName:" + targetName +
                 ", explicitTarget:" + explicitTarget +
-                ", msgBody:" + msgBody;
+                ", msgBody:" + msgBody + "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
     }
 
     IMContent(String parsedIMApp, String targetName, String msgBody) {
@@ -67,7 +68,7 @@ public class IMContent {
     }
 
     public boolean isExplicitTarget(Context ctx) {
-        if(imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
+        if (imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
             ContactUtil.MatchedContact mc = ContactUtil.matchContact(ctx, targetName);
             explicitTarget = mc.isContactMatched;
 
@@ -78,7 +79,15 @@ public class IMContent {
     }
 
     public String getMessageBody() {
-        return msgBody;
+        return getMessageBody(false);
+    }
+
+    public String getMessageBody(boolean checkEmoji) {
+        if (checkEmoji && mSendWithEmoji) {
+            return msgBody + emojiUnicode;
+        } else {
+            return msgBody;
+        }
     }
 
     public void userConfirmSendTarget() {
@@ -90,6 +99,29 @@ public class IMContent {
         imAppPkgName = checkNUpdate(imAppPkgName, ic.imAppPkgName);
         targetName = checkNUpdate(targetName, ic.targetName);
         msgBody = checkNUpdate(msgBody, ic.msgBody);
+    }
+
+    public void updateEmoji(String unicode, String desc) {
+        if (LogUtil.DEBUG)
+            LogUtil.log("SmsContent", "updateEmoji:" + unicode + " , " + desc);
+        emojiUnicode = unicode;
+        emojiDesc = desc;
+    }
+
+    public String getEmojiUnicode() {
+        return emojiUnicode;
+    }
+
+    public String getEmojiDesc() {
+        return emojiDesc;
+    }
+
+    public boolean hasEmoji() {
+        return !TextUtils.isEmpty(emojiUnicode) && !TextUtils.isEmpty(emojiDesc);
+    }
+
+    public void setSendWithEmoji(boolean b) {
+        mSendWithEmoji = b;
     }
 
     private String checkNUpdate(String ov, String nv) {
