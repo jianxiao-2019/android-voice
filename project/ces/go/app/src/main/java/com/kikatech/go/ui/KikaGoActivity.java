@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.kikatech.go.R;
 import com.kikatech.go.util.PermissionUtil;
+import com.kikatech.voice.util.contact.ContactManager;
 
 /**
  * Created by tianli on 17-10-23.
@@ -18,6 +19,8 @@ public class KikaGoActivity extends Activity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ContactManager.getIns().init(this);
 
         setContentView(R.layout.activity_kika_go);
 

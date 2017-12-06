@@ -62,15 +62,12 @@ public class BaseSendSmsStage extends SceneStage {
 
     @Override
     public void prepare() {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "prepare : do nothing");
-        }
     }
 
     @Override
     public void action() {
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "action : do nothing");
+            LogUtil.logw(TAG, "action : do nothing");
         }
     }
 
@@ -87,19 +84,6 @@ public class BaseSendSmsStage extends SceneStage {
             return new StageAskForSmsBody(mSceneBase, mFeedback);
         }
     }
-
-    /**
-     * SendSMS 2.6.1 檢查用戶號碼選擇
-     */
-//    static SceneStage getStageCheckNumberChoice(String TAG, SmsContent sc, SceneBase mSceneBase, ISceneFeedback mFeedback) {
-//        if (LogUtil.DEBUG) LogUtil.log(TAG, "Number count : " + sc.getNumberCount());
-//        boolean isChoosed = true;
-//        if(isChoosed) {
-//            return getStageCheckSmsBody(TAG, sc, mSceneBase, mFeedback);
-//        } else {
-//            return null;
-//        }
-//    }
 
     /**
      * SendSMS 2.5 檢查是否有兩組電話以上

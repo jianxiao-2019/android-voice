@@ -147,18 +147,21 @@ public class ApiAiAgent extends Agent {
         String name = metadata.getIntentName();
 
         if (TextUtils.isEmpty(name)) {
-            if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Err, name is empty");
-            return null;
+            name = SceneType.DEFAULT.name();
+            if (LogUtil.DEBUG) LogUtil.logd(TAG, "Err, name is empty, use " + name);
         }
 
         String scene = SceneType.getScene(name);
 
         if (TextUtils.isEmpty(scene)) {
-            if (LogUtil.DEBUG) LogUtil.logd(TAG, "Err, scene is empty");
+            if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Err, scene is empty");
             return null;
         }
 
         String action = result.getAction();
+        if(TextUtils.isEmpty(action)) {
+            action = Intent.ACTION_UNKNOWN;
+        }
 
         if (LogUtil.DEBUG) {
             LogUtil.logw(TAG, "scene:" + scene + ", action:" + action);

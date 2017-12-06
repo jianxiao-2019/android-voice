@@ -36,9 +36,10 @@ public enum SceneType {
     }
 
     public static String getScene(String intentName) {
+        intentName = intentName.toLowerCase();
         try {
             for (SceneType scene : values()) {
-                if (intentName.startsWith(scene.scene)) {
+                if (intentName.startsWith(scene.scene.toLowerCase())) {
                     return scene.scene;
                 }
             }
