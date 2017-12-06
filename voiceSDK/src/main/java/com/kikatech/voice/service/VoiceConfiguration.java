@@ -18,14 +18,13 @@ public class VoiceConfiguration {
     private static final String DEFAULT_LOCALE = "en_US";
 
     private IVoiceSource mVoiceSource;
-
     private AgentCreator mAgentCreator;
 
-    private String mDebugFilePath;
-
     private ConnectionConfiguration mConnConf;
-
     private ServerConfiguration mServerConf;
+
+    private String mDebugFilePath;
+    private boolean mSupportWakeUpMode;
 
     public VoiceConfiguration(){
     }
@@ -54,6 +53,14 @@ public class VoiceConfiguration {
 
     public String getDebugFilePath() {
         return mDebugFilePath;
+    }
+
+    public void setSupportWakeUpMode(boolean supportWakeUpMode) {
+        mSupportWakeUpMode = supportWakeUpMode;
+    }
+
+    public boolean isSupportWakeUpMode() {
+        return mSupportWakeUpMode;
     }
 
     public void setConnectionConfiguration(ConnectionConfiguration connConf) {

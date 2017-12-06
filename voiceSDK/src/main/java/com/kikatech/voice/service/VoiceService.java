@@ -5,7 +5,9 @@ import android.os.Handler;
 
 import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.ns.NoiseSuppression;
+import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
@@ -20,7 +22,7 @@ import com.kikatech.voice.util.log.Logger;
  * Created by tianli on 17-10-28.
  */
 
-public class VoiceService {
+public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public static final int REASON_NOT_CREATED = 1;
 
@@ -30,13 +32,22 @@ public class VoiceService {
     private VoiceRecorder mVoiceRecorder;
     private VoiceDetector mVoiceDetector;
     private NoiseSuppression mNoiseSuppression;
+    private WakeUpDetector mWakeUpDetector;
 
     private VoiceRecognitionListener mVoiceRecognitionListener;
     private VoiceStateChangedListener mVoiceStateChangedListener;
+    private VoiceActiveStateListener mVoiceActiveStateListener;
 
     private Handler mMainThreadHander;
 
     private boolean mIsAsrPaused = false;
+
+    @Override
+    public void onDetected() {
+        if (mVoiceActiveStateListener != null) {
+            mVoiceActiveStateListener.onWakeUp();
+        }
+    }
 
     public interface VoiceRecognitionListener {
         void onRecognitionResult(Message message);
@@ -44,15 +55,32 @@ public class VoiceService {
 
     public interface VoiceStateChangedListener {
         void onCreated();
+
         void onStartListening();
+
         void onStopListening();
+
         void onDestroyed();
+
         void onSpeechProbabilityChanged(float prob);
+
         void onError(int reason);
+    }
+
+    public interface VoiceActiveStateListener {
+        void onWakeUp();
+
+        void onSleep();
     }
 
     private VoiceService(VoiceConfiguration conf) {
         mConf = conf;
+
+        IVoiceSource voiceSource = mConf.getVoiceSource();
+        if (voiceSource == null) {
+            voiceSource = new VoiceSource();
+        }
+
 
         // TODO : base on the VoiceConfiguration.
         mVoiceDetector = new VoiceDetector(
@@ -73,7 +101,14 @@ public class VoiceService {
         });
 
         mNoiseSuppression = new NoiseSuppression(new FileWriter(mConf.getDebugFilePath() + "_NS", mVoiceDetector));
-        mVoiceRecorder = new VoiceRecorder(new VoiceSource(), new FileWriter(mConf.getDebugFilePath(), mNoiseSuppression));
+
+        Logger.d("mConf.isSupportWakeUpMode() = " + mConf.isSupportWakeUpMode());
+        if (mConf.isSupportWakeUpMode()) {
+            mWakeUpDetector = WakeUpDetector.getDetector(this, mNoiseSuppression);
+            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mWakeUpDetector));
+        } else {
+            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mNoiseSuppression));
+        }
 
         Message.register("CONFIG", ConfigMessage.class);
     }
@@ -124,6 +159,15 @@ public class VoiceService {
 
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStopListening();
+        }
+    }
+
+    public void sleep() {
+        if (mWakeUpDetector != null) {
+            mWakeUpDetector.goSleep();
+        }
+        if (mVoiceActiveStateListener != null) {
+            mVoiceActiveStateListener.onSleep();
         }
     }
 
@@ -196,6 +240,10 @@ public class VoiceService {
 
     public void setVoiceStateChangedListener(VoiceStateChangedListener listener) {
         mVoiceStateChangedListener = listener;
+    }
+
+    public void setVoiceActiveStateListener(VoiceActiveStateListener listener) {
+        mVoiceActiveStateListener = listener;
     }
 
     private class VoiceDataSender implements IDataPath {

@@ -13,30 +13,30 @@ import ai.kitt.snowboy.AppResCopy;
  */
 
 public class HotWordDetectService {
-    private static final String TAG = "HotWordDetectService";
-
-    private VoiceConfiguration mConf;
-
-    private VoiceRecorder mVoiceRecorder;
-    private SnowBoyDetector mSnowBoyDetector;
-
-    private HotWordDetectService(VoiceConfiguration conf, SnowBoyDetector.OnHotWordDetectListener listener) {
-        mConf = conf;
-        mSnowBoyDetector = new SnowBoyDetector(listener);
-        mVoiceRecorder = new VoiceRecorder(new HotWordVoiceSource(), mSnowBoyDetector);
-    }
-
-    public static HotWordDetectService getService(Context context, VoiceConfiguration conf, SnowBoyDetector.OnHotWordDetectListener listener) {
-        AppResCopy.copyResFromAssetsToSD(context);
-        return new HotWordDetectService(conf, listener);
-    }
-
-    public void start() {
-        mSnowBoyDetector.reset();
-        mVoiceRecorder.start();
-    }
-
-    public void stop() {
-        mVoiceRecorder.stop();
-    }
+//    private static final String TAG = "HotWordDetectService";
+//
+//    private VoiceConfiguration mConf;
+//
+//    private VoiceRecorder mVoiceRecorder;
+//    private SnowBoyDetector mSnowBoyDetector;
+//
+//    private HotWordDetectService(VoiceConfiguration conf, SnowBoyDetector.OnHotWordDetectListener listener) {
+//        mConf = conf;
+//        mSnowBoyDetector = new SnowBoyDetector(listener);
+//        mVoiceRecorder = new VoiceRecorder(new HotWordVoiceSource(), mSnowBoyDetector);
+//    }
+//
+//    public static HotWordDetectService getService(Context context, VoiceConfiguration conf, SnowBoyDetector.OnHotWordDetectListener listener) {
+//        AppResCopy.copyResFromAssetsToSD(context);
+//        return new HotWordDetectService(conf, listener);
+//    }
+//
+//    public void start() {
+//        mSnowBoyDetector.reset();
+//        mVoiceRecorder.start();
+//    }
+//
+//    public void stop() {
+//        mVoiceRecorder.stop();
+//    }
 }
