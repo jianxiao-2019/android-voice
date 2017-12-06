@@ -46,7 +46,7 @@ public class GoLayout extends FrameLayout {
 
     public enum DisplayMode {
         SLEEP(R.drawable.kika_awake_bg, ViewStatus.STAND_BY_SLEEP),
-        AWAKE(R.drawable.kika_normal_bg, ViewStatus.STAND_BY_AWAKE);
+        AWAKE(R.color.awake_bg_color, ViewStatus.STAND_BY_AWAKE);
 
         int bgRes;
         ViewStatus defaultStatus;
