@@ -44,6 +44,7 @@
         <activity android:name=".ui.KikaPermissionsActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name="com.kikatech.go.ui.KikaGoActivity"
+                  android:label="KikaGoDebug"
                   android:launchMode="singleInstance"
                   android:icon="@mipmap/ic_launcher_round"
                   android:screenOrientation="portrait">

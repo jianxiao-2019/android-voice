@@ -19,18 +19,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class AskToReadMsgAskStage extends BaseReplySmsStage {
 
-    private final SmsObject mSmsObject;
-
-    AskToReadMsgAskStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
+    AskToReadMsgAskStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mSmsObject = sms;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_SMS_YES:
-                return new AskToReplySmsReadStage(mSceneBase, mFeedback, mSmsObject);
+                return new AskToReplySmsReadStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_SMS_NO:
             case SceneActions.ACTION_REPLY_SMS_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
@@ -47,6 +44,7 @@ public class AskToReadMsgAskStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
+        SmsObject mSmsObject = getReplyMessage().getSmsObject();
         String ttsText = SceneUtil.getNewMsgUsrInfo(mSceneBase.getContext(), mSmsObject.getUserName());
         UserInfo userInfo = new UserInfo(mSmsObject.getPhotoUri(), mSmsObject.getUserName(), AppInfo.SMS);
         Bundle args = new Bundle();
@@ -56,6 +54,6 @@ public class AskToReadMsgAskStage extends BaseReplySmsStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        mSceneBase.nextStage(new AskToReadMsgOptionStage(mSceneBase, mFeedback, mSmsObject));
+        mSceneBase.nextStage(new AskToReadMsgOptionStage(mSceneBase, mFeedback));
     }
 }

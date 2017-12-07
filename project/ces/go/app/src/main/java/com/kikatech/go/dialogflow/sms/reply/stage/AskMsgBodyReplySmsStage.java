@@ -18,11 +18,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
 
-    private final SmsObject mSmsObject;
-
-    AskMsgBodyReplySmsStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
+    AskMsgBodyReplySmsStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mSmsObject = sms;
     }
 
     @Override
@@ -30,7 +27,8 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
         setQueryAnyWords(false);
         if(action.equals(SceneActions.ACTION_REPLY_SMS_MSG_BODY)) {
             String messageBody = SmsUtil.parseTagAny(extra);
-            return new ConfirmMsgBodyReplySmsStage(mSceneBase, mFeedback, mSmsObject, messageBody);
+            getReplyMessage().updateMsgBody(messageBody);
+            return new ConfirmMsgBodyReplySmsStage(mSceneBase, mFeedback);
         }
         return this;
     }

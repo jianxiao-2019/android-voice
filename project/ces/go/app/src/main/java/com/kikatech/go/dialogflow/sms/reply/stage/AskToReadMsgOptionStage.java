@@ -20,18 +20,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class AskToReadMsgOptionStage extends BaseReplySmsStage {
 
-    private final SmsObject mSmsObject;
-
-    AskToReadMsgOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
+    AskToReadMsgOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mSmsObject = sms;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_SMS_YES:
-                return new AskToReplySmsReadStage(mSceneBase, mFeedback, mSmsObject);
+                return new AskToReplySmsReadStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_SMS_NO:
             case SceneActions.ACTION_REPLY_SMS_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");

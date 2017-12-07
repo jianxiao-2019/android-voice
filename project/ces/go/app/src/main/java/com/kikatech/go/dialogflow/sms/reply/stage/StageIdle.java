@@ -40,16 +40,18 @@ public class StageIdle extends BaseReplySmsStage {
                 return null;
             }
 
+            updateSmsContent(sms);
+
             // TODO Check setting
             byte rms = UserSettings.getReplyMessageSetting();
             if (rms == UserSettings.SETTING_REPLY_SMS_ASK_USER) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_READ");
                 // 3.1
-                return new AskToReadMsgAskStage(mSceneBase, mFeedback, sms);
+                return new AskToReadMsgAskStage(mSceneBase, mFeedback);
             } else if (rms == UserSettings.SETTING_REPLY_SMS_READ) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_ASK_USER");
                 // 3.2
-                return new AskToReplySmsReadStage(mSceneBase, mFeedback, sms);
+                return new AskToReplySmsReadStage(mSceneBase, mFeedback);
             } else {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Err, Unsupported setting:" + rms);
             }

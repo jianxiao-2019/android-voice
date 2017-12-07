@@ -8,34 +8,34 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
-import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
- * Created by brad_chang on 2017/11/20.
+ * Created by brad_chang on 2017/12/7.
  */
 
-public class AskToReplySmsOptionStage extends BaseReplySmsStage {
-
-    AskToReplySmsOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+public class StageAskAddEmoji extends BaseReplySmsStage {
+    StageAskAddEmoji(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
     @Override
-    public SceneStage getNextStage(String action, Bundle extra) {
+    protected SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_SMS_YES:
-                return new AskMsgBodyReplySmsStage(mSceneBase, mFeedback);
+                getReplyMessage().setSendWithEmoji(true);
+                return new SendMessageReplySmsStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_SMS_NO:
-            case SceneActions.ACTION_REPLY_SMS_CANCEL:
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
-                exitScene();
-                break;
+                getReplyMessage().setSendWithEmoji(false);
+                return new SendMessageReplySmsStage(mSceneBase, mFeedback);
+            default:
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
+                getReplyMessage().setSendWithEmoji(false);
+                return new SendMessageReplySmsStage(mSceneBase, mFeedback);
         }
-        return null;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AskToReplySmsOptionStage extends BaseReplySmsStage {
     @Override
     public void action() {
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getAskReplyMsg(context);
+        String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getReplyMessage().getEmojiDesc());
         if (uiAndTtsText.length > 0) {
             Bundle args = new Bundle();
             String[] options = SceneUtil.getOptionsCommon(context);

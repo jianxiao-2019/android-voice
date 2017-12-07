@@ -22,18 +22,15 @@ import com.kikatech.voice.core.tts.TtsSpeaker;
 
 public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
-    private final SmsObject mSmsObject;
-
-    AskToReplySmsReadStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull SmsObject sms) {
+    AskToReplySmsReadStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mSmsObject = sms;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_SMS_YES:
-                return new AskMsgBodyReplySmsStage(mSceneBase, mFeedback, mSmsObject);
+                return new AskMsgBodyReplySmsStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_SMS_NO:
             case SceneActions.ACTION_REPLY_SMS_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
@@ -50,14 +47,15 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
     @Override
     public void action() {
+        SmsObject smsObject = getReplyMessage().getSmsObject();
         String[] uiAndTtsText;
         switch (UserSettings.getReplyMessageSetting()) {
             case UserSettings.SETTING_REPLY_SMS_READ:
-                uiAndTtsText = SceneUtil.getReadMsgDirectly(mSceneBase.getContext(), mSmsObject.getUserName(), mSmsObject.getMsgContent());
+                uiAndTtsText = SceneUtil.getReadMsgDirectly(mSceneBase.getContext(), smsObject.getUserName(), smsObject.getMsgContent());
                 break;
             default:
             case UserSettings.SETTING_REPLY_SMS_ASK_USER:
-                uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), mSmsObject.getUserName(), mSmsObject.getMsgContent());
+                uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), smsObject.getUserName(), smsObject.getMsgContent());
                 break;
         }
         if (uiAndTtsText.length > 0) {
@@ -67,7 +65,7 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
             Bundle args = new Bundle();
 
-            UserMsg userMsg = new UserMsg(mSmsObject.getPhotoUri(), mSmsObject.getUserName(), AppInfo.SMS, mSmsObject.getMsgContent());
+            UserMsg userMsg = new UserMsg(smsObject.getPhotoUri(), smsObject.getUserName(), AppInfo.SMS, smsObject.getMsgContent());
             args.putParcelable(SceneUtil.EXTRA_USR_MSG, userMsg);
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
 
@@ -80,6 +78,6 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        mSceneBase.nextStage(new AskToReplySmsOptionStage(mSceneBase, mFeedback, mSmsObject));
+        mSceneBase.nextStage(new AskToReplySmsOptionStage(mSceneBase, mFeedback));
     }
 }
