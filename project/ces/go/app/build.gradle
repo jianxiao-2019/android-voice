@@ -79,6 +79,6 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.1.1'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
-    compile 'com.kikatech.voice:voice:1.0.0.1'
+    compile 'com.kikatech.voice:voice:1.0.0.2'
     // compile project(':voice')
 }
