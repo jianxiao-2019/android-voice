@@ -13,7 +13,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneManager;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.core.tts.TtsService;
-import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
@@ -45,7 +45,7 @@ public class DialogFlowService implements
 
     private SceneManager mSceneManager;
 
-    private TtsSpeaker mTtsSpeaker;
+    private TtsSource mTtsSource;
 
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf,
                               @NonNull IServiceCallback callback,
@@ -93,15 +93,15 @@ public class DialogFlowService implements
     }
 
     private void initTts() {
-        if (mTtsSpeaker == null) {
-            mTtsSpeaker = TtsService.getInstance().getSpeaker();
-            mTtsSpeaker.init(mContext, null);
-            mTtsSpeaker.setTtsStateChangedListener(mTtsListener);
+        if (mTtsSource == null) {
+            mTtsSource = TtsService.getInstance().getSpeaker(TtsService.TtsSourceType.KIKA_WEB);
+            mTtsSource.init(mContext, null);
+            mTtsSource.setTtsStateChangedListener(mTtsListener);
         }
     }
 
     private void tts(Pair<String, Integer>[] pairs, ISceneStageFeedback listener) {
-        if (mTtsSpeaker == null) {
+        if (mTtsSource == null) {
             return;
         }
         try {
@@ -110,12 +110,12 @@ public class DialogFlowService implements
                     LogUtil.logv(TAG, "tts, words: " + pair.first);
                 }
             }
-            if (mTtsSpeaker.isTtsSpeaking()) {
-                mTtsSpeaker.interrupt();
+            if (mTtsSource.isTtsSpeaking()) {
+                mTtsSource.interrupt();
                 tts(pairs, listener);
             } else {
                 mTtsListener.bindListener(listener);
-                mTtsSpeaker.speak(pairs);
+                mTtsSource.speak(pairs);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,19 +123,19 @@ public class DialogFlowService implements
     }
 
     private void tts(String words, ISceneStageFeedback listener) {
-        if (mTtsSpeaker == null) {
+        if (mTtsSource == null) {
             return;
         }
         try {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "tts, words: " + words);
             }
-            if (mTtsSpeaker.isTtsSpeaking()) {
-                mTtsSpeaker.interrupt();
+            if (mTtsSource.isTtsSpeaking()) {
+                mTtsSource.interrupt();
                 tts(words, listener);
             } else {
                 mTtsListener.bindListener(listener);
-                mTtsSpeaker.speak(words);
+                mTtsSource.speak(words);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,7 +143,7 @@ public class DialogFlowService implements
     }
 
     private void stopTts() {
-        if (mTtsSpeaker == null) {
+        if (mTtsSource == null) {
             return;
         }
         try {
@@ -151,7 +151,7 @@ public class DialogFlowService implements
                 LogUtil.logv(TAG, "stopTts");
             }
             mTtsListener.bindListener(null);
-            mTtsSpeaker.interrupt();
+            mTtsSource.interrupt();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -225,9 +225,9 @@ public class DialogFlowService implements
             mVoiceService.stop();
             mVoiceService.destroy();
         }
-        if (mTtsSpeaker != null) {
-            mTtsSpeaker.close();
-            mTtsSpeaker = null;
+        if (mTtsSource != null) {
+            mTtsSource.close();
+            mTtsSource = null;
         }
 
         Message.unregisterAll();
@@ -363,7 +363,7 @@ public class DialogFlowService implements
 
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
 
-    private final class TtsStateDispatchListener implements TtsSpeaker.TtsStateChangedListener {
+    private final class TtsStateDispatchListener implements TtsSource.TtsStateChangedListener {
         private ISceneStageFeedback listener;
 
         private long DELAY = 500;

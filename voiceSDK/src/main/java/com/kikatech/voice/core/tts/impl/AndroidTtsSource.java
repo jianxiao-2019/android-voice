@@ -7,7 +7,7 @@ import android.speech.tts.Voice;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
-import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.util.log.Logger;
 
 import java.util.Collections;
@@ -18,7 +18,7 @@ import java.util.Locale;
  * Created by ryanlin on 07/11/2017.
  */
 
-public class AndroidTtsSpeaker implements TtsSpeaker {
+public class AndroidTtsSource implements TtsSource {
 
     private TextToSpeech mTts;
     private TtsStateChangedListener mStateChangedListener;
@@ -28,6 +28,8 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     private Voice[] mVoices = new Voice[SUPPORTED_VOICE_COUNT];
     private final LinkedList<Pair<String, Integer>> mPlayList = new LinkedList<>();
     private int mPlayListSize;
+
+    private boolean mIsTtsInterrupted;
 
     @Override
     public void init(Context context, @Nullable final OnTtsInitListener listener) {
@@ -88,12 +90,13 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
 
             @Override
             public void onDone(String utteranceId) {
-                Logger.d("AndroidTtsSpeaker onDone mPlayList.size() = " + mPlayList.size());
+                Logger.d("AndroidTtsSource onDone mPlayList.size() = " + mPlayList.size());
                 if (mPlayList.size() > 0) {
                     playSingleList();
-                } else if (mStateChangedListener != null) {
+                } else if (mStateChangedListener != null && !mIsTtsInterrupted) {
                     mStateChangedListener.onTtsComplete();
                 }
+                mIsTtsInterrupted = false;
             }
 
             @Override
@@ -118,7 +121,8 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
     public void speak(final String text) {
         mPlayList.clear();
         mPlayListSize = 0;
-        Logger.d("Android TtsSpeaker speak text = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
+        mIsTtsInterrupted = false;
+        Logger.d("Android TtsSource speak text = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
         if (mTts == null) {
             return;
         }
@@ -140,6 +144,7 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
         }
         mPlayList.clear();
         mPlayListSize = sentences.length;
+        mIsTtsInterrupted = false;
         Collections.addAll(mPlayList, sentences);
         if (mPlayList.size() > 0) {
             playSingleList();
@@ -151,8 +156,13 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
         if (pair != null) {
             String text = pair.first;
             int voiceId = pair.second;
-            mTts.setVoice(getVoice(voiceId));
-            mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+            Voice voice = getVoice(voiceId);
+            if (voice != null) {
+                mTts.setVoice(getVoice(voiceId));
+                mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "");
+            } else {
+                new Exception("playSingleList failed").printStackTrace();
+            }
         }
     }
 
@@ -166,7 +176,10 @@ public class AndroidTtsSpeaker implements TtsSpeaker {
 
     @Override
     public void interrupt() {
+        mPlayList.clear();
+        mPlayListSize = 0;
         if (mTts != null && mTts.isSpeaking()) {
+            mIsTtsInterrupted = true;
             mTts.stop();
             if (mStateChangedListener != null) {
                 mStateChangedListener.onTtsInterrupted();

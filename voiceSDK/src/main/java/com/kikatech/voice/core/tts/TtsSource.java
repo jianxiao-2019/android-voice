@@ -7,11 +7,11 @@ import android.util.Pair;
  * Created by tianli on 17-10-31.
  */
 
-public interface TtsSpeaker {
+public interface TtsSource {
 
     int SUPPORTED_VOICE_COUNT = 2;
-    int TTS_VOICE_1 = 0;
-    int TTS_VOICE_2 = 1;
+    int TTS_SPEAKER_1 = 0;
+    int TTS_SPEAKER_2 = 1;
 
     int INIT_SUCCESS = 0;
     int INIT_FAIL = 1;
