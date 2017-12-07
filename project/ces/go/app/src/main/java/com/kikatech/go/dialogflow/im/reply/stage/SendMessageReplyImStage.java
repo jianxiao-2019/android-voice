@@ -35,7 +35,7 @@ public class SendMessageReplyImStage extends BaseStage {
         args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_succeed);
         send(args);
         ReplyIMMessage rimm = getReplyMessage();
-        boolean sent = IMManager.getInstance().sendMessage(mSceneBase.getContext(), rimm.getIMObject(), rimm.getMessageBody());
+        boolean sent = IMManager.getInstance().sendMessage(mSceneBase.getContext(), rimm.getIMObject(), rimm.getMessageBody(true));
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "Send Message : \n" + rimm.getMessageBody() + ", target:" + rimm.getIMObject() + ", sent:" + sent);
         }
