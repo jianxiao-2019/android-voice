@@ -54,7 +54,9 @@ public class ContactManager {
                             final long t = System.currentTimeMillis();
                             HashMap<String, PhoneBookContact> pb = getPhoneBook(ctx);
                             mPhoneBook.clear();
-                            mPhoneBook.putAll(pb);
+                            if(pb != null && pb.size() > 0) {
+                                mPhoneBook.putAll(pb);
+                            }
 
                             if (LogUtil.DEBUG) {
                                 LogUtil.log(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
