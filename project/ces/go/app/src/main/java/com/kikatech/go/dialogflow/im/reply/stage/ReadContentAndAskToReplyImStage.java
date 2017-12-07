@@ -80,9 +80,6 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        if (!isInterrupted) {
-            mSceneBase.nextStage(new AskToReplyImOptionStage(mSceneBase, mFeedback));
-        }
-        super.onStageActionDone(true);
+        mSceneBase.nextStage(new AskToReplyImOptionStage(mSceneBase, mFeedback));
     }
 }

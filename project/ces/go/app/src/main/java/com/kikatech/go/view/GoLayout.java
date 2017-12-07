@@ -93,7 +93,7 @@ public class GoLayout extends FrameLayout {
         }
     }
 
-    private DisplayMode mCurrentMode = DisplayMode.SLEEP;
+    private DisplayMode mCurrentMode;
     private ViewStatus mCurrentStatus;
 
     private LayoutInflater mLayoutInflater;
@@ -152,6 +152,7 @@ public class GoLayout extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         bindView();
+        sleep();
     }
 
     private void bindView() {
@@ -297,12 +298,6 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
-        mStatusAnimationView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                awake();
-            }
-        });
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }
@@ -342,6 +337,11 @@ public class GoLayout extends FrameLayout {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "speak");
         }
+
+        if (DisplayMode.SLEEP.equals(mCurrentMode)) {
+            return;
+        }
+
         lock();
 
         mSpeakView.setText(text);
@@ -360,6 +360,10 @@ public class GoLayout extends FrameLayout {
      * display content spoken by user (voice input)
      **/
     public synchronized void listen(final String text, final boolean isFinished) {
+        if (DisplayMode.SLEEP.equals(mCurrentMode)) {
+            return;
+        }
+
         lock();
 
         if (!isFinished) {
@@ -393,6 +397,11 @@ public class GoLayout extends FrameLayout {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayOptions");
         }
+
+        if (DisplayMode.SLEEP.equals(mCurrentMode)) {
+            return;
+        }
+
         lock();
 
         mSpeakLayout.setVisibility(GONE);
@@ -458,6 +467,11 @@ public class GoLayout extends FrameLayout {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayUsrInfo");
         }
+
+        if (DisplayMode.SLEEP.equals(mCurrentMode)) {
+            return;
+        }
+
         lock();
 
         mSpeakLayout.setVisibility(GONE);
@@ -495,6 +509,11 @@ public class GoLayout extends FrameLayout {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayUsrMsg");
         }
+
+        if (DisplayMode.SLEEP.equals(mCurrentMode)) {
+            return;
+        }
+
         lock();
 
         mSpeakLayout.setVisibility(GONE);
@@ -532,6 +551,11 @@ public class GoLayout extends FrameLayout {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayMsgSent");
         }
+
+        if (DisplayMode.SLEEP.equals(mCurrentMode)) {
+            return;
+        }
+
         lock();
 
         mSpeakLayout.setVisibility(GONE);
@@ -545,11 +569,11 @@ public class GoLayout extends FrameLayout {
     }
 
 
-    public void onStatusChanged(final ViewStatus status) {
+    public synchronized void onStatusChanged(final ViewStatus status) {
         onStatusChanged(status, null);
     }
 
-    public void onStatusChanged(final ViewStatus status, IGifStatusListener listener) {
+    public synchronized void onStatusChanged(final ViewStatus status, IGifStatusListener listener) {
         ViewStatus nextStatus = getNextStatus(status);
         if (nextStatus == null) {
             return;
@@ -557,7 +581,10 @@ public class GoLayout extends FrameLayout {
         onNewStatus(nextStatus, listener);
     }
 
-    private ViewStatus getNextStatus(ViewStatus status) {
+    private synchronized ViewStatus getNextStatus(ViewStatus status) {
+        if (mCurrentMode == null) {
+            return null;
+        }
         ViewStatus nextStatus = null;
         switch (mCurrentMode) {
             case SLEEP:
@@ -613,7 +640,7 @@ public class GoLayout extends FrameLayout {
         return nextStatus;
     }
 
-    private void onNewStatus(ViewStatus status, final IGifStatusListener listener) {
+    private synchronized void onNewStatus(ViewStatus status, final IGifStatusListener listener) {
         mCurrentStatus = status;
         switch (status) {
             case TTS:

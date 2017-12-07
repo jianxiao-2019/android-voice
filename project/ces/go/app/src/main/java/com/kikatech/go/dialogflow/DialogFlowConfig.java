@@ -41,7 +41,7 @@ public class DialogFlowConfig {
                 .setEmojiEnabled(true)
                 .setPunctuationEnabled(false)
                 .build());
-
+        conf.setSupportWakeUpMode(true);
         return conf;
     }
 

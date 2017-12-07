@@ -83,7 +83,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
      */
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onToServiceEvent(ToDFServiceEvent event){
+    public void onToServiceEvent(ToDFServiceEvent event) {
         if (event == null) {
             return;
         }
@@ -184,7 +184,19 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     public void onInitComplete() {
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT);
                         sendDFServiceEvent(event);
-                        asrActive = true;
+                    }
+
+                    @Override
+                    public void onWakeUp() {
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_WAKE_UP);
+                        sendDFServiceEvent(event);
+                        resumeAsr();
+                    }
+
+                    @Override
+                    public void onSleep() {
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SLEEP);
+                        sendDFServiceEvent(event);
                     }
 
                     @Override
@@ -333,18 +345,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mView = mLayoutInflater.inflate(R.layout.go_layout_gmap, null);
 
         mStatusView = (ImageView) mView.findViewById(R.id.gmap_status);
-
-        mStatusView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resumeAsr();
-                Glide.with(DialogFlowForegroundService.this)
-                        .load(R.drawable.kika_gmap_awake)
-                        .dontTransform()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .into(mStatusView);
-            }
-        });
 
         addView();
     }

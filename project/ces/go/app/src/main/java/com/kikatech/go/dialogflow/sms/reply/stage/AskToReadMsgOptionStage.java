@@ -42,6 +42,11 @@ public class AskToReadMsgOptionStage extends BaseReplySmsStage {
     }
 
     @Override
+    public void prepare() {
+        super.prepare();
+    }
+
+    @Override
     public void doAction() {
         action();
     }

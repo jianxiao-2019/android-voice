@@ -55,6 +55,19 @@ public class UiTaskManager {
     public UiTaskManager(GoLayout layout, IUiManagerFeedback feedback) {
         mLayout = layout;
         mFeedback = feedback;
+        mLayout.setOnModeChangedListener(new GoLayout.IOnModeChangedListener() {
+            @Override
+            public void onChanged(GoLayout.DisplayMode mode) {
+                switch (mode) {
+                    case AWAKE:
+                        displayOptions(mDefaultOptionList);
+                        unlock(true);
+                        break;
+                    case SLEEP:
+                        break;
+                }
+            }
+        });
         mLayout.setOnLockStateChangeListener(new GoLayout.IOnLockStateChangeListener() {
             @Override
             public void onLocked() {
@@ -96,6 +109,14 @@ public class UiTaskManager {
         });
     }
 
+
+    public synchronized void dispatchAwake() {
+        awake();
+    }
+
+    public synchronized void dispatchSleep() {
+        sleep();
+    }
 
     public synchronized void dispatchAsrStart() {
         onStatusChanged(GoLayout.ViewStatus.ANALYZE);
@@ -239,6 +260,19 @@ public class UiTaskManager {
         mTaskQueue.offer(task);
     }
 
+
+    private void awake() {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.awake();
+            }
+        });
+    }
 
     private void sleep() {
         final GoLayout layout = mLayout;

@@ -53,14 +53,14 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 finishAffinity();
                 break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
-                mGoLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        initUiTaskManager();
-                        mUiManager.dispatchDefaultOptionsTask();
-                        mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
-                    }
-                }, 800);
+                initUiTaskManager();
+                break;
+            case DFServiceEvent.ACTION_ON_WAKE_UP:
+                mUiManager.dispatchAwake();
+                mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
+                break;
+            case DFServiceEvent.ACTION_ON_SLEEP:
+                mUiManager.dispatchSleep();
                 break;
             case DFServiceEvent.ACTION_ON_ASR_RESULT:
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
@@ -157,7 +157,6 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
     private void bindView() {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
-        mGoLayout.awake();
     }
 
     private void registerReceivers() {

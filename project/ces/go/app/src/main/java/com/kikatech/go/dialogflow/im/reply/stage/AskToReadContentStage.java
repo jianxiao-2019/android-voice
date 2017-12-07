@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
-import com.kikatech.go.dialogflow.im.reply.ReplyIMMessage;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.message.im.BaseIMObject;
@@ -58,9 +57,6 @@ public class AskToReadContentStage extends BaseStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        if (!isInterrupted) {
-            mSceneBase.nextStage(new AskToReadContentOptionStage(mSceneBase, mFeedback));
-        }
-        super.onStageActionDone(true);
+        mSceneBase.nextStage(new AskToReadContentOptionStage(mSceneBase, mFeedback));
     }
 }

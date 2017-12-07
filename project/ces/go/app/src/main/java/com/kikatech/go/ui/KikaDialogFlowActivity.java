@@ -83,6 +83,14 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
+                    public void onWakeUp() {
+                    }
+
+                    @Override
+                    public void onSleep() {
+                    }
+
+                    @Override
                     public void onASRResult(final String speechText, String emojiUnicode, boolean isFinished) {
                         if (isFinished) {
                             runOnUiThread(new Runnable() {

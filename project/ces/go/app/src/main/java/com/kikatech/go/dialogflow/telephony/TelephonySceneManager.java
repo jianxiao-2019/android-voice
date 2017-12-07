@@ -41,6 +41,7 @@ public class TelephonySceneManager extends BaseSceneManager {
     private PhoneStateDispatcher.ICallStateChangeListener mPhoneListener = new PhoneStateDispatcher.ICallStateChangeListener() {
         @Override
         public void onInComingCallRinging(String phoneNumber) {
+            mService.wakeUp();
             mService.resetContexts();
             String incoming = String.format(SceneActions.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
             mService.talk(incoming);
@@ -48,6 +49,7 @@ public class TelephonySceneManager extends BaseSceneManager {
 
         @Override
         public void onInComingCallEnded() {
+            mService.sleep();
             mService.resetContexts();
         }
     };

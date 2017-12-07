@@ -80,9 +80,6 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        if (!isInterrupted) {
-            mSceneBase.nextStage(new AskToReplySmsOptionStage(mSceneBase, mFeedback, mSmsObject));
-        }
-        super.onStageActionDone(true);
+        mSceneBase.nextStage(new AskToReplySmsOptionStage(mSceneBase, mFeedback, mSmsObject));
     }
 }
