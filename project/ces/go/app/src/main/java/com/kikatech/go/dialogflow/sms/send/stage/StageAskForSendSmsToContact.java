@@ -53,6 +53,11 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     }
 
     @Override
+    protected boolean supportEmoji() {
+        return true;
+    }
+
+    @Override
     public void doAction() {
         action();
     }

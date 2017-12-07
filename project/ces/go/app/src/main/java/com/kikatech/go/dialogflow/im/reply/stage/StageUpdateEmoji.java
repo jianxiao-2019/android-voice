@@ -32,7 +32,7 @@ public class StageUpdateEmoji extends BaseStage {
                 return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
-                return this;
+                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
         }
     }
 

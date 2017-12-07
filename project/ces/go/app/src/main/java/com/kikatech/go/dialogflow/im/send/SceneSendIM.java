@@ -59,9 +59,4 @@ public class SceneSendIM extends NonLoopSceneBase {
     protected String getTransformSceneInfo() {
         return IMUtil.prepareSwitchSceneInfo(mIMContent);
     }
-
-    @Override
-    protected boolean supportEmoji() {
-        return true;
-    }
 }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.im.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -22,16 +23,17 @@ public class StageUpdateEmoji extends BaseSendIMStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_SEND_IM_YES:
-                return new StageAskAddEmoji(mSceneBase, mFeedback);
+                if(getIMContent().hasEmoji()) {
+                    return new StageAskAddEmoji(mSceneBase, mFeedback);
+                } else {
+                    return new StageSendIMConfirm(mSceneBase, mFeedback);
+                }
             case SceneActions.ACTION_SEND_IM_NO:
                 return new StageAskMsgBody(mSceneBase, mFeedback);
-            case SceneActions.ACTION_SEND_IM_MSGBODY:
-                return new StageAskSendTarget(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-                break;
+                return new StageAskMsgBody(mSceneBase, mFeedback);
         }
-        return this;
     }
 
     @Override

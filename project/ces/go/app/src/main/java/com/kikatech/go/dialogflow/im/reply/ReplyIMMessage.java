@@ -11,7 +11,7 @@ public class ReplyIMMessage extends EmojiMessage {
 
     private BaseIMObject imo = null;
 
-    public void updateIMObject(BaseIMObject imo) {
+    void updateIMObject(BaseIMObject imo) {
         this.imo = imo;
     }
 

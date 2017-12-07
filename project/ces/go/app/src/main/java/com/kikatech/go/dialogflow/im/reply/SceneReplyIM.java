@@ -62,9 +62,4 @@ public class SceneReplyIM extends NonLoopSceneBase {
     protected SceneStage idle() {
         return new StageIdle(this, mFeedback);
     }
-
-    @Override
-    protected boolean supportEmoji() {
-        return true;
-    }
 }

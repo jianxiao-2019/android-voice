@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
@@ -23,19 +24,20 @@ public class StageUpdateEmoji extends BaseSendSmsStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        SmsContent sc = getSmsContent();
         switch (action) {
             case SceneActions.ACTION_SEND_SMS_YES:
-                return new StageAskAddEmoji(mSceneBase, mFeedback);
+                if(sc.hasEmoji()) {
+                    return new StageAskAddEmoji(mSceneBase, mFeedback);
+                } else {
+                    return new StageSendSmsConfirm(mSceneBase, mFeedback);
+                }
             case SceneActions.ACTION_SEND_SMS_NO:
-            case SceneActions.ACTION_SEND_SMS_CHANGE_SMS_BODY:
                 return new StageAskForSmsBody(mSceneBase, mFeedback);
-            case SceneActions.ACTION_SEND_SMS_MSGBODY:
-                return new StageAskForSendSmsToContact(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
-                break;
+                return new StageAskForSmsBody(mSceneBase, mFeedback);
         }
-        return this;
     }
 
     @Override

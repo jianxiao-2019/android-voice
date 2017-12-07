@@ -45,6 +45,11 @@ public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
     }
 
     @Override
+    protected boolean supportEmoji() {
+        return true;
+    }
+
+    @Override
     public void doAction() {
         action();
     }
