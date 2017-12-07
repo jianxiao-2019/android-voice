@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.im.reply.ReplyIMMessage;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.message.im.BaseIMObject;
@@ -18,18 +19,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class AskToReadContentStage extends BaseStage {
 
-    private final BaseIMObject mIMObject;
-
-    AskToReadContentStage(@NonNull SceneBase scene, ISceneFeedback feedback, BaseIMObject imo) {
+    AskToReadContentStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mIMObject = imo;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new ReadContentAndAskToReplyImStage(mSceneBase, mFeedback, mIMObject);
+                return new ReadContentAndAskToReplyImStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_IM_NO:
             case SceneActions.ACTION_REPLY_IM_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
@@ -46,12 +44,13 @@ public class AskToReadContentStage extends BaseStage {
 
     @Override
     protected void action() {
+        BaseIMObject iMObject = getReplyMessage().getIMObject();
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "Receive message form " + mIMObject.getUserName() + ", do you want to play the message ?");
+            LogUtil.log(TAG, "Receive message form " + iMObject.getUserName() + ", do you want to play the message ?");
         }
-        String name = mIMObject.isGroup() ? mIMObject.getGroupName() : mIMObject.getUserName();
-        String ttsText = SceneUtil.getNewMsgUsrInfo(mSceneBase.getContext(), mIMObject.getUserName());
-        UserInfo userInfo = new UserInfo(mIMObject.getAvatarFilePath(), name, mIMObject.getAppInfo());
+        String name = iMObject.isGroup() ? iMObject.getGroupName() : iMObject.getUserName();
+        String ttsText = SceneUtil.getNewMsgUsrInfo(mSceneBase.getContext(), iMObject.getUserName());
+        UserInfo userInfo = new UserInfo(iMObject.getAvatarFilePath(), name, iMObject.getAppInfo());
         Bundle args = new Bundle();
         args.putParcelable(SceneUtil.EXTRA_USR_INFO, userInfo);
         speak(ttsText, args);
@@ -60,7 +59,7 @@ public class AskToReadContentStage extends BaseStage {
     @Override
     public void onStageActionDone(boolean isInterrupted) {
         if (!isInterrupted) {
-            mSceneBase.nextStage(new AskToReadContentOptionStage(mSceneBase, mFeedback, mIMObject));
+            mSceneBase.nextStage(new AskToReadContentOptionStage(mSceneBase, mFeedback));
         }
         super.onStageActionDone(true);
     }

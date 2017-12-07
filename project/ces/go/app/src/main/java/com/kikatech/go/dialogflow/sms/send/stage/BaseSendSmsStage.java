@@ -75,7 +75,7 @@ public class BaseSendSmsStage extends SceneStage {
      * SendSMS 2.7 檢查是否有 SMS 內容
      */
     static SceneStage getStageCheckSmsBody(String TAG, SmsContent sc, SceneBase mSceneBase, ISceneFeedback mFeedback) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "Sms Body : " + sc.getSmsBody());
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "Sms Body : " + sc.getMessageBody());
         if (sc.isSmsBodyAvailable()) {
             // SendSMS 2.9 確認訊息內容
             return new StageAskForSendSmsToContact(mSceneBase, mFeedback);

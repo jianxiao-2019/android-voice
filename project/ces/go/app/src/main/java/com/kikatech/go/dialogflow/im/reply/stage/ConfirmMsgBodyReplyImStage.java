@@ -8,8 +8,8 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
-import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -19,24 +19,25 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class ConfirmMsgBodyReplyImStage extends BaseStage {
-    
-    private final String mMsgBody;
-    private final BaseIMObject mIMObject;
-    
-    ConfirmMsgBodyReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback, BaseIMObject imo, String messageBody) {
+
+    ConfirmMsgBodyReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mIMObject = imo;
-        mMsgBody = messageBody;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new SendMessageReplyImStage(mSceneBase, mFeedback, mIMObject, mMsgBody);
+                if(getReplyMessage().hasEmoji()) {
+                    return new StageAskAddEmoji(mSceneBase, mFeedback);
+                } else {
+                    return new SendMessageReplyImStage(mSceneBase, mFeedback);
+                }
             case SceneActions.ACTION_REPLY_IM_CHANGE:
             case SceneActions.ACTION_REPLY_IM_NO:
-                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback, mIMObject);
+                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
+            case Intent.ACTION_RCMD_EMOJI:
+                return new StageUpdateEmoji(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
                 return this;
@@ -51,7 +52,7 @@ public class ConfirmMsgBodyReplyImStage extends BaseStage {
     @Override
     public void action() {
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, mMsgBody);
+        String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, getReplyMessage().getMessageBody());
         if (uiAndTtsText.length > 0) {
             Bundle args = new Bundle();
             String[] options = SceneUtil.getConfirmMsgOptions(context);

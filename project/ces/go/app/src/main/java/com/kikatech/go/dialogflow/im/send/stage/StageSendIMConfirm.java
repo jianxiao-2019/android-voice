@@ -1,6 +1,5 @@
 package com.kikatech.go.dialogflow.im.send.stage;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,7 @@ import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.MessageEventDispatcher;
 import com.kikatech.go.dialogflow.SceneUtil;
-import com.kikatech.go.dialogflow.im.IMContent;
+import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.message.processor.IMProcessor;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.util.IntentUtil;

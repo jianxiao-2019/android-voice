@@ -61,7 +61,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     public void action() {
         SmsContent sc = getSmsContent();
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, sc.getSmsBody());
+        String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, sc.getMessageBody());
         if (uiAndTtsText.length > 0) {
             Bundle args = new Bundle();
             String[] options = SceneUtil.getConfirmMsgOptions(context);

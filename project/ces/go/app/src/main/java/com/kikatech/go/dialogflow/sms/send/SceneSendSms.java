@@ -39,8 +39,7 @@ public class SceneSendSms extends NonLoopSceneBase {
     }
 
     public void updateEmoji(String emojiJson) {
-        EmojiUtil.EmojiInfo ei = EmojiUtil.parseEmojiJson(emojiJson);
-        smsContent.updateEmoji(ei.unicode, ei.desc);
+        smsContent.updateEmoji(emojiJson);
     }
 
     @Override

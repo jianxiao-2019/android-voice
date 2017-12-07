@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.ContactUtil;
+import com.kikatech.go.dialogflow.EmojiMessage;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
 
@@ -14,17 +15,13 @@ import java.util.List;
  * Created by brad_chang on 2017/11/15.
  */
 
-public class SmsContent {
+public class SmsContent extends EmojiMessage {
 
     private IntentContent mIntentContent;
 
     private String contactMatchedName;
     private List<ContactManager.NumberType> phoneNumbers;
     private String mChosenNumber;
-
-    private String emojiUnicode = "";
-    private String emojiDesc = "";
-    private boolean mSendWithEmoji = false;
 
     private boolean isContactMatched;
 
@@ -78,29 +75,6 @@ public class SmsContent {
         }
     }
 
-    public void updateEmoji(String unicode, String desc) {
-        if (LogUtil.DEBUG)
-            LogUtil.log("SmsContent", "updateEmoji:" + unicode + " , " + desc);
-        emojiUnicode = unicode;
-        emojiDesc = desc;
-    }
-
-    public String getEmojiUnicode() {
-        return emojiUnicode;
-    }
-
-    public String getEmojiDesc() {
-        return emojiDesc;
-    }
-
-    public boolean hasEmoji() {
-        return !TextUtils.isEmpty(emojiUnicode) && !TextUtils.isEmpty(emojiDesc);
-    }
-
-    public void setSendWithEmoji(boolean b) {
-        mSendWithEmoji = b;
-    }
-
     public void setIntentContent(IntentContent ic) {
         mIntentContent = ic;
     }
@@ -109,12 +83,14 @@ public class SmsContent {
         return mIntentContent.sendTarget.trim();
     }
 
-    public String getSmsBody() {
-        return getSmsBody(false);
+    @Override
+    public String getMessageBody() {
+        return getMessageBody(false);
     }
 
-    public String getSmsBody(boolean checkEmoji) {
-        if(checkEmoji && mSendWithEmoji) {
+    @Override
+    public String getMessageBody(boolean checkEmoji) {
+        if (checkEmoji && mSendWithEmoji) {
             return mIntentContent.smsBody + emojiUnicode;
         } else {
             return mIntentContent.smsBody;

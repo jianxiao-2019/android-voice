@@ -17,11 +17,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class AskMsgBodyReplyImStage extends BaseStage {
 
-    private final BaseIMObject mIMObject;
-
-    AskMsgBodyReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull BaseIMObject imo) {
+    AskMsgBodyReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mIMObject = imo;
     }
 
     @Override
@@ -29,7 +26,8 @@ public class AskMsgBodyReplyImStage extends BaseStage {
         setQueryAnyWords(false);
         if(action.equals(SceneActions.ACTION_REPLY_IM_MSG_BODY)) {
             String messageBody = SmsUtil.parseTagAny(extra);
-            return new ConfirmMsgBodyReplyImStage(mSceneBase, mFeedback, mIMObject, messageBody);
+            getReplyMessage().updateMsgBody(messageBody);
+            return new ConfirmMsgBodyReplyImStage(mSceneBase, mFeedback);
         }
         return this;
     }

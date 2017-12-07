@@ -21,18 +21,15 @@ import com.kikatech.voice.core.tts.TtsSpeaker;
 
 public class ReadContentAndAskToReplyImStage extends BaseStage {
 
-    private final BaseIMObject mIMObject;
-
-    ReadContentAndAskToReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback, BaseIMObject imo) {
+    ReadContentAndAskToReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mIMObject = imo;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback, mIMObject);
+                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_IM_NO:
             case SceneActions.ACTION_REPLY_IM_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
@@ -49,17 +46,18 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
 
     @Override
     public void action() {
+        BaseIMObject imObject = getReplyMessage().getIMObject();
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, mIMObject.getUserName() + " said: " + mIMObject.getMsgContent() + ", do you want to reply ?");
+            LogUtil.log(TAG, imObject.getUserName() + " said: " + imObject.getMsgContent() + ", do you want to reply ?");
         }
         String[] uiAndTtsText;
         switch (UserSettings.getReplyMessageSetting()) {
             case UserSettings.SETTING_REPLY_SMS_READ:
-                uiAndTtsText = SceneUtil.getReadMsgDirectly(mSceneBase.getContext(), mIMObject.getUserName(), mIMObject.getMsgContent());
+                uiAndTtsText = SceneUtil.getReadMsgDirectly(mSceneBase.getContext(), imObject.getUserName(), imObject.getMsgContent());
                 break;
             default:
             case UserSettings.SETTING_REPLY_SMS_ASK_USER:
-                uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), mIMObject.getUserName(), mIMObject.getMsgContent());
+                uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), imObject.getUserName(), imObject.getMsgContent());
                 break;
         }
         if (uiAndTtsText.length > 0) {
@@ -69,7 +67,7 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
 
             Bundle args = new Bundle();
 
-            UserMsg userMsg = new UserMsg(mIMObject.getAvatarFilePath(), mIMObject.getUserName(), mIMObject.getAppInfo(), mIMObject.getMsgContent());
+            UserMsg userMsg = new UserMsg(imObject.getAvatarFilePath(), imObject.getUserName(), imObject.getAppInfo(), imObject.getMsgContent());
             args.putParcelable(SceneUtil.EXTRA_USR_MSG, userMsg);
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
 
@@ -83,7 +81,7 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
     @Override
     public void onStageActionDone(boolean isInterrupted) {
         if (!isInterrupted) {
-            mSceneBase.nextStage(new AskToReplyImOptionStage(mSceneBase, mFeedback, mIMObject));
+            mSceneBase.nextStage(new AskToReplyImOptionStage(mSceneBase, mFeedback));
         }
         super.onStageActionDone(true);
     }

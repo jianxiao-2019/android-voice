@@ -5,11 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kikatech.go.dialogflow.sms.SmsContent;
+import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.AppUtil;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.voice.core.dialogflow.intent.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,10 +20,10 @@ import org.json.JSONObject;
 
 public class IMUtil {
 
-    static final String DF_ENTIY_IM_APP_LINE = "line";
-    static final String DF_ENTIY_IM_APP_WHATS_APP = "what's app";
-    static final String DF_ENTIY_IM_APP_FB_MESSENGER = "facebook messenger";
-    static final String DF_ENTIY_IM_APP_WECHAT = "wechat";
+    public static final String DF_ENTIY_IM_APP_LINE = "line";
+    public static final String DF_ENTIY_IM_APP_WHATS_APP = "what's app";
+    public static final String DF_ENTIY_IM_APP_FB_MESSENGER = "facebook messenger";
+    public static final String DF_ENTIY_IM_APP_WECHAT = "wechat";
 
     private static final String KEY_ANY = "any";
     private static final String KEY_NAME = "given-name";
@@ -80,13 +79,13 @@ public class IMUtil {
         // Check if package is supported
         for (String s : SUPPORTED_IM) {
             if (s.equals(pkgName)) {
-                return checkPackageAvaibility(pkgName);
+                return checkPackageAvailability(pkgName);
             }
         }
         return false;
     }
 
-    private static boolean checkPackageAvaibility(String pkgName) {
+    private static boolean checkPackageAvailability(String pkgName) {
         // Check if app is installed and enabled
         return true;
     }

@@ -4,10 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kikatech.go.dialogflow.im.IMContent;
+import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
-import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;

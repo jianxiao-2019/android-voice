@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
-import com.kikatech.go.dialogflow.im.IMContent;
+import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.im.send.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;

@@ -8,34 +8,34 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
-import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 /**
- * Created by brad_chang on 2017/11/28.
+ * Created by brad_chang on 2017/12/7.
  */
 
-public class AskToReadContentOptionStage extends BaseStage {
-
-    AskToReadContentOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+public class StageAskAddEmoji extends BaseStage {
+    StageAskAddEmoji(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
     @Override
-    public SceneStage getNextStage(String action, Bundle extra) {
+    protected SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new ReadContentAndAskToReplyImStage(mSceneBase, mFeedback);
+                getReplyMessage().setSendWithEmoji(true);
+                return new SendMessageReplyImStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_IM_NO:
-            case SceneActions.ACTION_REPLY_IM_CANCEL:
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
-                exitScene();
-                return null;
+                getReplyMessage().setSendWithEmoji(false);
+                return new SendMessageReplyImStage(mSceneBase, mFeedback);
+            default:
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
+                getReplyMessage().setSendWithEmoji(false);
+                return new SendMessageReplyImStage(mSceneBase, mFeedback);
         }
-        return this;
     }
 
     @Override
@@ -44,10 +44,11 @@ public class AskToReadContentOptionStage extends BaseStage {
     }
 
     @Override
-    protected void action() {
+    public void action() {
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getAskReadMsg(context);
+        String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getReplyMessage().getEmojiDesc());
         if (uiAndTtsText.length > 0) {
+            Bundle args = new Bundle();
             String[] options = SceneUtil.getOptionsCommon(context);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
@@ -56,7 +57,6 @@ public class AskToReadContentOptionStage extends BaseStage {
             for (String option : options) {
                 optionList.add(new Option(option, null));
             }
-            Bundle args = new Bundle();
             args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }

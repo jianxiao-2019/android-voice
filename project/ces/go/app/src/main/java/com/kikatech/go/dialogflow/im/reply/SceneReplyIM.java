@@ -5,9 +5,12 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.NonLoopSceneBase;
 import com.kikatech.go.dialogflow.im.reply.stage.StageIdle;
+import com.kikatech.go.dialogflow.im.send.SceneSendIM;
 import com.kikatech.go.message.im.BaseIMObject;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.EmojiUtil;
 
 /**
  * Created by brad_chang on 2017/11/23.
@@ -16,6 +19,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 public class SceneReplyIM extends NonLoopSceneBase {
 
     public static final String SCENE = "Reply IM";
+    private final ReplyIMMessage mReplyIMMessage = new ReplyIMMessage();
 
     public interface IImFunc {
         BaseIMObject getReceivedIM(long t);
@@ -30,6 +34,18 @@ public class SceneReplyIM extends NonLoopSceneBase {
 
     public BaseIMObject getReceivedIM(long t) {
         return mIImFunc.getReceivedIM(t);
+    }
+
+    public ReplyIMMessage getReplyMessage() {
+        return mReplyIMMessage;
+    }
+
+    public void updateIMContent(BaseIMObject imo) {
+        mReplyIMMessage.updateIMObject(imo);
+    }
+
+    public void updateEmoji(String emojiJson) {
+        mReplyIMMessage.updateEmoji(emojiJson);
     }
 
     @Override

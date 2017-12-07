@@ -1,9 +1,11 @@
-package com.kikatech.go.dialogflow.im;
+package com.kikatech.go.dialogflow.im.send;
 
 import android.content.Context;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.ContactUtil;
+import com.kikatech.go.dialogflow.EmojiMessage;
+import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.LogUtil;
 
@@ -11,31 +13,26 @@ import com.kikatech.go.util.LogUtil;
  * Created by brad_chang on 2017/11/24.
  */
 
-public class IMContent {
+public class IMContent extends EmojiMessage {
 
     private String parsedIMApp = "";
     private String targetName = "";
     private boolean explicitTarget = false;
-    private String msgBody = "";
     private String imAppPkgName = "";
-
-    private String emojiUnicode = "";
-    private String emojiDesc = "";
-    private boolean mSendWithEmoji = false;
 
     @Override
     public String toString() {
         return "parsedIMApp:" + parsedIMApp + ", imAppPkgName:" + imAppPkgName +
                 ", targetName:" + targetName +
                 ", explicitTarget:" + explicitTarget +
-                ", msgBody:" + msgBody + "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
+                ", msgBody:" + messageBody + "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
     }
 
-    IMContent(String parsedIMApp, String targetName, String msgBody) {
+    public IMContent(String parsedIMApp, String targetName, String msgBody) {
         this.parsedIMApp = parsedIMApp;
         this.imAppPkgName = analyzeIMApp(parsedIMApp);
         this.targetName = targetName;
-        this.msgBody = msgBody;
+        this.messageBody = msgBody;
     }
 
     private String analyzeIMApp(String parsedIMAppName) {
@@ -78,18 +75,6 @@ public class IMContent {
         return explicitTarget;
     }
 
-    public String getMessageBody() {
-        return getMessageBody(false);
-    }
-
-    public String getMessageBody(boolean checkEmoji) {
-        if (checkEmoji && mSendWithEmoji) {
-            return msgBody + emojiUnicode;
-        } else {
-            return msgBody;
-        }
-    }
-
     public void userConfirmSendTarget() {
         explicitTarget = true;
     }
@@ -98,7 +83,7 @@ public class IMContent {
         parsedIMApp = checkNUpdate(parsedIMApp, ic.parsedIMApp);
         imAppPkgName = checkNUpdate(imAppPkgName, ic.imAppPkgName);
         targetName = checkNUpdate(targetName, ic.targetName);
-        msgBody = checkNUpdate(msgBody, ic.msgBody);
+        messageBody = checkNUpdate(messageBody, ic.messageBody);
     }
 
     public void updateEmoji(String unicode, String desc) {
@@ -130,10 +115,6 @@ public class IMContent {
 
     public void updateSendTarget(String target) {
         targetName = target;
-    }
-
-    public void updateMsgBody(String msgBody) {
-        this.msgBody = msgBody;
     }
 
     public void setSendTarget(String sendTarget) {

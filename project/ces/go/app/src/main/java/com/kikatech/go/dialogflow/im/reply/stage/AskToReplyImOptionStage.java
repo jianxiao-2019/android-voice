@@ -20,18 +20,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class AskToReplyImOptionStage extends BaseStage {
 
-    private final BaseIMObject mSmsObject;
-
-    AskToReplyImOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback, @NonNull BaseIMObject sms) {
+    AskToReplyImOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        mSmsObject = sms;
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback, mSmsObject);
+                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_IM_NO:
             case SceneActions.ACTION_REPLY_IM_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
