@@ -1,7 +1,6 @@
 package com.kikatech.voice.core.hotword;
 
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.util.log.LogUtil;
 import com.kikatech.voice.util.log.Logger;
 
 import java.nio.ByteBuffer;
@@ -52,7 +51,6 @@ public class SnowBoyDetector extends WakeUpDetector {
         int result = mSnowboyDetect.RunDetection(audioData, audioData.length);
 
         Logger.d("checkWakeUpCommand result = " + result);
-        LogUtil.logw("KikaLaunchActivity", String.format("result: %s", result));
 
         switch (result) {
             case -2:
@@ -93,13 +91,24 @@ public class SnowBoyDetector extends WakeUpDetector {
     }
 
     @Override
-    protected boolean isAwake() {
+    public boolean isAwake() {
         return isAwake;
     }
 
     @Override
+    public void reset() {
+        if (mSnowboyDetect != null) {
+            mSnowboyDetect.Reset();
+        }
+    }
+
+    @Override
     public void goSleep() {
-        mSnowboyDetect.Reset();
         isAwake = false;
+    }
+
+    @Override
+    public void wakeUp() {
+        isAwake = true;
     }
 }

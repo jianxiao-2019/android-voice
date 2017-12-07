@@ -115,6 +115,17 @@ public class SceneManager implements DialogObserver, ISceneManager {
     }
 
     @Override
+    public void exitSceneAndSleep(SceneBase scene) {
+        if (!TextUtils.isEmpty(mScene) && mScene.equals(scene.scene())) {
+            notifyObservers(new Intent(scene.scene(), Intent.ACTION_EXIT));
+            mScene = null;
+            if (mCallback != null) {
+                mCallback.doSleep(scene.scene());
+            }
+        }
+    }
+
+    @Override
     public void exitScene(SceneBase scene) {
         if (!TextUtils.isEmpty(mScene) && mScene.equals(scene.scene())) {
             doExitScene(mScene, true);
@@ -145,6 +156,8 @@ public class SceneManager implements DialogObserver, ISceneManager {
     }
 
     public interface SceneLifecycleObserver {
+        void doSleep(String scene);
+
         void onSceneEnter(String scene);
 
         void onSceneExit(String scene, boolean proactive);

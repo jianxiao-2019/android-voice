@@ -36,6 +36,8 @@ public abstract class WakeUpDetector implements IDataPath {
     }
 
     protected abstract void checkWakeUpCommand(byte[] data);
-    protected abstract boolean isAwake();
+    public abstract boolean isAwake();
+    public abstract void reset();
     public abstract void goSleep();
+    public abstract void wakeUp();
 }

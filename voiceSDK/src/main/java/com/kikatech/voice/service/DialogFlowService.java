@@ -30,6 +30,7 @@ import com.kikatech.voice.util.log.LogUtil;
 
 public class DialogFlowService implements
         IDialogFlowService,
+        VoiceService.VoiceActiveStateListener,
         VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener {
 
     private static final String TAG = "DialogFlowService";
@@ -84,6 +85,7 @@ public class DialogFlowService implements
 
     private void initVoiceService(@NonNull VoiceConfiguration conf) {
         mVoiceService = VoiceService.getService(mContext, conf);
+        mVoiceService.setVoiceActiveStateListener(this);
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
@@ -172,6 +174,20 @@ public class DialogFlowService implements
     }
 
     @Override
+    public void wakeUp() {
+        if (mVoiceService != null) {
+            mVoiceService.wakeUp();
+        }
+    }
+
+    @Override
+    public void sleep() {
+        if (mVoiceService != null) {
+            mVoiceService.sleep();
+        }
+    }
+
+    @Override
     public void talk(String words) {
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
@@ -216,6 +232,23 @@ public class DialogFlowService implements
     }
 
 //    mVoiceService.sendCommand(SERVER_COMMAND_CONTENT, mEditText.getText().toString());
+
+    @Override
+    public void onWakeUp() {
+        if (mCallback != null) {
+            mCallback.onWakeUp();
+        }
+    }
+
+    @Override
+    public void onSleep() {
+        if (mCallback != null) {
+            mCallback.onSleep();
+        }
+        if (mSceneManager != null) {
+            mSceneManager.exitCurrentScene();
+        }
+    }
 
     @Override
     public void onRecognitionResult(Message message) {
@@ -401,6 +434,12 @@ public class DialogFlowService implements
 
     private SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
         @Override
+        public void doSleep(String scene) {
+            stopTts();
+            sleep();
+        }
+
+        @Override
         public void onSceneEnter(String scene) {
         }
 
@@ -410,6 +449,7 @@ public class DialogFlowService implements
             stopTts();
             if (proactive) {
                 mDialogFlow.resetContexts();
+                sleep();
             }
             mCallback.onSceneExit(proactive);
         }

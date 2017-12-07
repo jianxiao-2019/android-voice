@@ -45,6 +45,12 @@ public abstract class SceneBase implements DialogObserver {
         }
     }
 
+    void sleep() {
+        if (mSceneManager != null) {
+            mSceneManager.exitSceneAndSleep(this);
+        }
+    }
+
     final public Context getContext() {
         return mContext;
     }

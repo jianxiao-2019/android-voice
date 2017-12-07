@@ -13,9 +13,7 @@ import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.ConfigMessage;
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.util.log.Logger;
 
 /**
@@ -136,6 +134,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
 
         Logger.d("VoiceService start 2");
+        mWakeUpDetector.reset();
         mVoiceDetector.startDetecting();
         mVoiceRecorder.start();
 
@@ -163,11 +162,20 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public void sleep() {
-        if (mWakeUpDetector != null) {
+        if (mWakeUpDetector != null && mWakeUpDetector.isAwake()) {
             mWakeUpDetector.goSleep();
+            if (mVoiceActiveStateListener != null) {
+                mVoiceActiveStateListener.onSleep();
+            }
         }
-        if (mVoiceActiveStateListener != null) {
-            mVoiceActiveStateListener.onSleep();
+    }
+
+    public void wakeUp() {
+        if (mWakeUpDetector != null && !mWakeUpDetector.isAwake()) {
+            mWakeUpDetector.wakeUp();
+            if (mVoiceActiveStateListener != null) {
+                mVoiceActiveStateListener.onWakeUp();
+            }
         }
     }
 

@@ -21,6 +21,10 @@ public interface IDialogFlowService {
 
         void onInitComplete();
 
+        void onWakeUp();
+
+        void onSleep();
+
         void onASRResult(String speechText, String emojiUnicode, boolean isFinished);
 
         void onText(String text, Bundle extras);
@@ -49,6 +53,10 @@ public interface IDialogFlowService {
     void unregisterScene(SceneBase scene);
 
     ISceneFeedback getTtsFeedback();
+
+    void wakeUp();
+
+    void sleep();
 
     void resetContexts();
 
