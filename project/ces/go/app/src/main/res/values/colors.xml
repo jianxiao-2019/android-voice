@@ -28,5 +28,6 @@
 
     <color name="underline_color">#a3a3a3</color>
 
+    <color name="standby_bg_color">#16181e</color>
     <color name="awake_bg_color">#20232C</color>
 </resources>

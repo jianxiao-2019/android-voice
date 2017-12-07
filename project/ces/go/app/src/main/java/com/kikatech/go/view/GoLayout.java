@@ -45,7 +45,7 @@ public class GoLayout extends FrameLayout {
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
 
     public enum DisplayMode {
-        SLEEP(R.drawable.kika_awake_bg, ViewStatus.STAND_BY_SLEEP),
+        SLEEP(R.color.standby_bg_color, ViewStatus.STAND_BY_SLEEP),
         AWAKE(R.color.awake_bg_color, ViewStatus.STAND_BY_AWAKE);
 
         int bgRes;
