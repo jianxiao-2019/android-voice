@@ -10,6 +10,9 @@ android {
         versionCode 10103
         versionName "1.1.03_20171013"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a","arm64-v8a"
+        }
     }
     buildTypes {
         release {
