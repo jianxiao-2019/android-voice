@@ -1,6 +1,7 @@
 package com.kikatech.go.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -25,6 +26,8 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.ui.KikaApiAiActivity;
+import com.kikatech.go.ui.KikaDebugLogActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.CountingTimer;
@@ -202,6 +205,15 @@ public class GoLayout extends FrameLayout {
                     .configViews(mDebugLogView)
                     .configDisplayLogCount(5)
                     .configFilterClass("com.kikatech.go.dialogflow.");
+
+            mDebugLogView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mDebugLogView.getContext(), KikaDebugLogActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    mDebugLogView.getContext().startActivity(intent);
+                }
+            });
         }
     }
 

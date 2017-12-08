@@ -8,6 +8,10 @@ import android.util.Log;
 
 import com.kikatech.voice.util.log.FileLoggerUtil;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -18,8 +22,8 @@ public class LogUtil {
 	public final static boolean DEBUG = true;
 	private final static boolean ENABLE_FILE_LOG = DEBUG;
 
-	final static String LOG_FOLDER = "kika_go/log";
-	private final static String LOG_FILE = "%s_kika_go.log";
+	public final static String LOG_FOLDER = "kika_go/log";
+	public final static String LOG_FILE = "%s_kika_go.txt";
 	private static int mFileLoggerId = -1;
 
 	private static int sProcessId = DEBUG ? 0 : android.os.Process.myPid();
@@ -114,7 +118,6 @@ public class LogUtil {
 			FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, logTag + " " + log);
 		}
 	}
-
 
 	public static void log(@NonNull String logTag, @NonNull String log) {
 		if (DEBUG) log(LogLabel.INFO, logTag, getStackMsg(log, 0));

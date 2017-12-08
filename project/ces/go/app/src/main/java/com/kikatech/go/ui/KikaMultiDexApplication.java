@@ -2,6 +2,7 @@ package com.kikatech.go.ui;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.StrictMode;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
@@ -23,6 +24,9 @@ public class KikaMultiDexApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         sContext = this;
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
     }
 
     public static Application getAppContext() {

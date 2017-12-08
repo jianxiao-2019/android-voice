@@ -60,6 +60,8 @@
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaIMReplyActivity"
                   android:screenOrientation="portrait" />
+        <activity android:name=".ui.KikaDebugLogActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".ui.KikaSMSActivity"
                   android:screenOrientation="portrait" />
         <activity android:name=".ui.HotWordActivity"

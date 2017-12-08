@@ -114,5 +114,13 @@ public class KikaGoActivity extends Activity{
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.button_debug_log).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaDebugLogActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
