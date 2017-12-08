@@ -92,6 +92,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             return;
         }
         switch (action) {
+            case ToDFServiceEvent.ACTION_ON_APP_FOREGROUND:
+                if (isViewAdded()) {
+                    mView.setVisibility(View.GONE);
+                }
+                break;
+            case ToDFServiceEvent.ACTION_ON_APP_BACKGROUND:
+                if (isViewAdded()) {
+                    mView.setVisibility(View.VISIBLE);
+                }
+                break;
             case ToDFServiceEvent.ACTION_ON_STATUS_CHANGED:
                 GoLayout.ViewStatus status = (GoLayout.ViewStatus) event.getExtras().getSerializable(ToDFServiceEvent.PARAM_STATUS);
                 handleStatusChanged(status);
@@ -416,6 +426,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         super.onDestroy();
     }
 
+
     private void handleStatusChanged(GoLayout.ViewStatus status) {
         if (!(isViewAdded() && asrActive) || status == null) {
             return;
@@ -427,6 +438,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 .into(mStatusView);
     }
 
+
+    public synchronized static void processOnAppForeground() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_FOREGROUND);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processOnAppBackground() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_BACKGROUND);
+        sendToDFServiceEvent(event);
+    }
 
     public synchronized static void processStatusChanged(GoLayout.ViewStatus status) {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_STATUS_CHANGED);
@@ -450,7 +471,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         sendToDFServiceEvent(event);
     }
 
-    public synchronized static void processDialogFlowWakeUp(){
+    public synchronized static void processDialogFlowWakeUp() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP);
         sendToDFServiceEvent(event);
     }

@@ -8,6 +8,7 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
@@ -145,6 +146,18 @@ public class KikaAlphaUiActivity extends BaseActivity {
         ContactManager.getIns().init(this);
         registerReceivers();
         DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DialogFlowForegroundService.processOnAppForeground();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DialogFlowForegroundService.processOnAppBackground();
     }
 
     @Override
