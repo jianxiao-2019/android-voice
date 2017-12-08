@@ -7,6 +7,8 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
+import com.kikatech.go.navigation.NavigationManager;
+import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
@@ -183,6 +185,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
         bindView();
         // TODO fine tune init timing
         ContactManager.getIns().init(this);
+        LocationMgr.init(this);
         registerReceivers();
         DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
     }

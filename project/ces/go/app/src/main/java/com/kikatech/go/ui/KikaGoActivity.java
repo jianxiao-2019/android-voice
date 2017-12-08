@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.kikatech.go.R;
+import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.util.PermissionUtil;
 import com.kikatech.voice.util.contact.ContactManager;
 
@@ -21,6 +22,7 @@ public class KikaGoActivity extends Activity{
         super.onCreate(savedInstanceState);
 
         ContactManager.getIns().init(this);
+        LocationMgr.init(this);
 
         setContentView(R.layout.activity_kika_go);
 

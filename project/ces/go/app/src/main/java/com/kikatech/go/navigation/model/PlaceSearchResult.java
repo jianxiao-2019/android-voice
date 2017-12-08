@@ -10,48 +10,42 @@ import java.util.List;
 /**
  * @author SkeeterWang Created on 2017/11/1.
  */
-public class PlaceSearchResult
-{
-	private static final String TAG = "PlaceSearchResult";
+public class PlaceSearchResult {
+    private static final String TAG = "PlaceSearchResult";
 
-	@Expose
-	@SerializedName( "results" )
-	private List< Place > results = new ArrayList<>();
+    @Expose
+    @SerializedName("results")
+    private List<Place> results = new ArrayList<>();
 
-	public Place get( int index )
-	{
-		if( results != null && index < results.size() ) {
-			return results.get( index );
-		}
-		return null;
-	}
+    public Place get(int index) {
+        if (results != null && index < results.size()) {
+            return results.get(index);
+        }
+        return null;
+    }
 
-	public void print()
-	{
-		if( LogUtil.DEBUG ) {
-			if( results != null && !results.isEmpty() ) {
-				for( Place place : results ) {
-					place.print();
-					LogUtil.logd( TAG, "--------------------------------------------------" );
-				}
-			}
-			else {
-				LogUtil.logv( TAG, "Empty result" );
-			}
-		}
-	}
+    public void print() {
+        if (LogUtil.DEBUG) {
+            if (results != null && !results.isEmpty()) {
+                for (Place place : results) {
+                    place.print();
+                    LogUtil.logd(TAG, "--------------------------------------------------");
+                }
+            } else {
+                LogUtil.logv(TAG, "Empty result");
+            }
+        }
+    }
 
-	public String getResultText()
-	{
-		String result = "";
-		if( results != null && !results.isEmpty() ) {
-			for( Place place : results ) {
-				result = result + place.getResultText() + "\n--------------------------------------------------\n";
-			}
-		}
-		else {
-			result = "Empty result";
-		}
-		return result;
-	}
+    public String getResultText() {
+        String result = "";
+        if (results != null && !results.isEmpty()) {
+            for (Place place : results) {
+                result = result + place.getResultText() + "\n--------------------------------------------------\n";
+            }
+        } else {
+            result = "Empty result";
+        }
+        return result;
+    }
 }

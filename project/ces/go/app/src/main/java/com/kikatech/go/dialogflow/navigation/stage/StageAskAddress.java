@@ -6,7 +6,10 @@ import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
+import com.kikatech.go.navigation.google.webservice.GooglePlaceApi;
+import com.kikatech.go.navigation.model.PlaceSearchResult;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -27,19 +30,15 @@ public class StageAskAddress extends BaseNaviStage {
 
     @Override
     public SceneStage next(String action, Bundle extra) {
+        setQueryAnyWords(false);
+
         SceneStage superStage = super.next(action, extra);
         if (superStage != null) {
             return superStage;
         }
 
-        String naviAddress = NaviSceneUtil.parseAddress(extra);
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
-
-        if (TextUtils.isEmpty(naviAddress)) {
-            return new StageAskAddress(mSceneBase, mFeedback, true);
-        } else {
-            return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
-        }
+        String userSays = Intent.parseUserInput(extra);
+        return new StageQueryAddress(mSceneBase, mFeedback, userSays);
     }
 
     @Override
@@ -49,6 +48,7 @@ public class StageAskAddress extends BaseNaviStage {
 
     @Override
     public void action() {
+        setQueryAnyWords(true);
         String[] uiAndTtsText;
         if (mAgain) {
             uiAndTtsText = SceneUtil.getAskAddressAgain(mSceneBase.getContext());

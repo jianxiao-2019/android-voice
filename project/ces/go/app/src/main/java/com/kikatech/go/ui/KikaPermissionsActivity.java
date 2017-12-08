@@ -2,11 +2,13 @@ package com.kikatech.go.ui;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.kikatech.go.R;
 import com.kikatech.go.accessibility.AccessibilityUtils;
+import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.notification.NotificationListenerUtil;
 import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.LogUtil;
@@ -38,6 +40,9 @@ public class KikaPermissionsActivity extends BaseActivity {
 
         if (PermissionUtil.hasPermissions(this, PermissionUtil.Permission.READ_CONTACTS)) {
             ContactManager.getIns().init(this);
+        }
+        if (PermissionUtil.hasPermissionLocation(this)) {
+            LocationMgr.init(this);
         }
     }
 
@@ -106,7 +111,7 @@ public class KikaPermissionsActivity extends BaseActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         LogUtil.log(TAG, "onRequestPermissionsResult, requestCode:" + requestCode);
@@ -115,6 +120,10 @@ public class KikaPermissionsActivity extends BaseActivity {
             for (String permission : permissions) {
                 if (permission.equals(Manifest.permission.READ_CONTACTS)) {
                     ContactManager.getIns().init(this);
+                }
+                if (permission.equals(Manifest.permission.ACCESS_COARSE_LOCATION)
+                        || permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    LocationMgr.init(this);
                 }
             }
         }

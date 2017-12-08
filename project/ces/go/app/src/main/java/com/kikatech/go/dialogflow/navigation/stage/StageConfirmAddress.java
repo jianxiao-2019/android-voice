@@ -9,6 +9,7 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -41,9 +42,8 @@ public class StageConfirmAddress extends BaseNaviStage {
             case NaviSceneActions.ACTION_NAV_NO:
                 return new StageAskAddress(mSceneBase, mFeedback, false);
             case NaviSceneActions.ACTION_NAV_CHANGE:
-                String naviAddress = NaviSceneUtil.parseAddress(extra);
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
-                return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
+                String userSays = Intent.parseUserInput(extra);
+                return new StageQueryAddress(mSceneBase, mFeedback, userSays);
         }
         return this;
     }
