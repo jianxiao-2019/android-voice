@@ -55,7 +55,7 @@ public class DialogFlow {
                         if (callback != null) {
                             if(LogUtil.DEBUG) {
                                 dbgMsg[0] = intent.getScene() + "-" + intent.getAction();
-                                dbgMsg[1] = intent.getExtra().toString();
+                                dbgMsg[1] = intent.getBundleDetail();
                             }
                             callback.onComplete(dbgMsg);
                         }

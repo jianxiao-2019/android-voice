@@ -105,4 +105,33 @@ public class Intent {
     public boolean isEmoji() {
         return mAction.equals(ACTION_RCMD_EMOJI);
     }
+
+    public String getBundleDetail() {
+        StringBuilder detail = new StringBuilder();
+        for (String key : mExtra.keySet()) {
+            if (key.equals(KEY_USER_INPUT_N_BEST)) {
+                String[] arr = parseUserInputNBest(mExtra);
+                if (arr != null) {
+                    StringBuilder array = new StringBuilder("N-Best(");
+                    array.append(arr.length).append("):[");
+                    int i;
+                    for (i = 0; i < arr.length - 1; i++) {
+                        array.append(arr[i]).append(", ");
+                    }
+                    if (i == arr.length - 1) {
+                        array.append(arr[i]);
+                    }
+                    array.append("]\n");
+                    detail.append("。").append(array);
+                }
+            } else {
+                detail.append("。").append(key).append(":").append(mExtra.get(key)).append("\n");
+            }
+        }
+        String ret = detail.toString();
+        if (ret.endsWith("\n")) {
+            ret = ret.substring(0, ret.length() - 2);
+        }
+        return ret;
+    }
 }

@@ -260,12 +260,9 @@ public class DialogFlowService implements
         String query = "";
         String[] nBestQuery = null;
         String emojiJson = "";
+
         if (message instanceof IntermediateMessage) {
             IntermediateMessage intermediateMessage = (IntermediateMessage) message;
-//            if (LogUtil.DEBUG) {
-//                LogUtil.log(TAG, "Speech spoken" + " : " + intermediateMessage.text);
-//            }
-
             query = intermediateMessage.text;
         } else if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
@@ -289,10 +286,10 @@ public class DialogFlowService implements
         }
 
         if (!TextUtils.isEmpty(query)) {
+            mCallback.onASRResult(query, emojiJson, queryDialogFlow);
             if (queryDialogFlow && mDialogFlow != null) {
                 mDialogFlow.talk(query, nBestQuery, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
             }
-            mCallback.onASRResult(query, emojiJson, queryDialogFlow);
         } else if (!TextUtils.isEmpty(emojiJson)) {
             mDialogFlow.talk(emojiJson, nBestQuery, QUERY_TYPE_EMOJI, mQueryStatusCallback);
         }

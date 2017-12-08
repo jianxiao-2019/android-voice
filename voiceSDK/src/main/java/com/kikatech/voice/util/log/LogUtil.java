@@ -13,10 +13,15 @@ import java.util.Locale;
 public class LogUtil
 {
     final static public boolean DEBUG = Logger.DEBUG;
+	final static public boolean ENABLE_FILE_LOG = DEBUG;
     private static int sProcessId = DEBUG ? 0 : android.os.Process.myPid();
 	private static final int PARENT_NODE = 3, SELF_NODE = 2;
 	private static final String PARENT_LOG_FORMAT = "[%s:%s:ln%d] ";
 	private static final String LOG_FORMAT = "[%s:%s:ln%d] %s (pid: %d)";
+
+	final static String LOG_FOLDER = "kika_go/log";
+	private final static String LOG_FILE = "%s_voice_sdk.log";
+	private static int mFileLoggerId = -1;
 
 	private enum LogLabel
 	{
@@ -107,6 +112,13 @@ public class LogUtil
 				Log.e( logTag, log, throwable );
 				break;
         }
+
+		if (ENABLE_FILE_LOG) {
+			if (mFileLoggerId == -1) {
+				mFileLoggerId = FileLoggerUtil.getIns().configFileLogger(LOG_FOLDER, LOG_FILE);
+			}
+			FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, logTag + " " + log);
+		}
     }
 
 
