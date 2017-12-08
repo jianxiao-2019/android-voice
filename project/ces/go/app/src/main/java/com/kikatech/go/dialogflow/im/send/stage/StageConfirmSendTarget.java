@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.im.send.SceneActions;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -31,7 +32,10 @@ public class StageConfirmSendTarget extends BaseSendIMStage {
                 imc.setSendTarget(null);
                 return getCheckSendTargetStage(TAG, imc, mSceneBase, mFeedback);
             default:
-                // TODO
+                String[] userSay = Intent.parseUserInputNBest(extra);
+                if (userSay != null && userSay.length != 0) {
+                    imc.updateSendTarget(userSay);
+                }
                 return getCheckSendTargetStage(TAG, imc, mSceneBase, mFeedback);
         }
     }

@@ -14,6 +14,7 @@ import com.kikatech.voice.util.contact.ContactManager;
  */
 
 public class IMContent extends EmojiMessage {
+    private static final String TAG = "IMContent";
 
     private String parsedIMApp = "";
     private String targetName[];
@@ -23,9 +24,22 @@ public class IMContent extends EmojiMessage {
     @Override
     public String toString() {
         return "parsedIMApp:" + parsedIMApp + ", imAppPkgName:" + imAppPkgName +
-                ", targetName:" + targetName +
+                ", targetName:" + targetNamesToString() +
                 ", explicitTarget:" + explicitTarget +
                 ", msgBody:" + messageBody + "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
+    }
+
+    private String targetNamesToString() {
+        StringBuilder display = null;
+        if (targetName != null && targetName.length != 0) {
+            display = new StringBuilder("[");
+            for (String name : targetName) {
+                display.append(name).append(",");
+            }
+            display.deleteCharAt(display.length() - 1);
+            display.append("]");
+        }
+        return display != null ? display.toString() : "<empty>";
     }
 
     public IMContent(String parsedIMApp, String[] targetName, String msgBody) {
@@ -44,12 +58,14 @@ public class IMContent extends EmojiMessage {
                     return AppConstants.PACKAGE_MESSENGER;
                 case IMUtil.DF_ENTIY_IM_APP_LINE:
                 case IMUtil.DF_ENTIY_IM_APP_WECHAT:
-                    if (LogUtil.DEBUG)
-                        LogUtil.log("IMContent", "Unsupported IM app : " + parsedIMAppName);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, String.format("Unsupported IM app: %s", parsedIMAppName));
+                    }
                     break;
                 default:
-                    if (LogUtil.DEBUG)
-                        LogUtil.log("IMContent", "Cannot recognize IM app : " + parsedIMAppName);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, String.format("Cannot recognize IM app: %s", parsedIMAppName));
+                    }
                     break;
             }
         }
@@ -67,11 +83,21 @@ public class IMContent extends EmojiMessage {
     public boolean isExplicitTarget(Context ctx) {
         if (imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
             ContactManager.MatchedContact mc = ContactManager.getIns().findContact(ctx, targetName);
-            explicitTarget = mc != null;
-
-            if (LogUtil.DEBUG) {
-                if (mc != null) {
-                    LogUtil.log("IMContent", "Find WhatsApp, Match Contact:" + mc.displayName);
+            if (mc != null) {
+                switch (mc.matchedType) {
+                    case ContactManager.MatchedContact.MatchedType.FULL_MATCHED:
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("Find WhatsApp, fully matched contact: %s", mc.displayName));
+                        }
+                        explicitTarget = true;
+                        targetName = new String[]{mc.displayName};
+                        break;
+                    case ContactManager.MatchedContact.MatchedType.FUZZY_MATCHED:
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, String.format("Find WhatsApp, fuzzy matched contact: %s", mc.displayName));
+                        }
+                        targetName = new String[]{mc.displayName};
+                        break;
                 }
             }
         }
@@ -90,8 +116,9 @@ public class IMContent extends EmojiMessage {
     }
 
     public void updateEmoji(String unicode, String desc) {
-        if (LogUtil.DEBUG)
-            LogUtil.log("SmsContent", "updateEmoji:" + unicode + " , " + desc);
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("updateEmoji: %1$s, %2$s", unicode, desc));
+        }
         emojiUnicode = unicode;
         emojiDesc = desc;
     }
@@ -119,6 +146,7 @@ public class IMContent extends EmojiMessage {
     private String[] checkNUpdate(String[] ov, String[] nv) {
         return nv == null || nv.length == 0 ? ov : nv;
     }
+
     public void updateSendTarget(String[] target) {
         targetName = target;
     }
