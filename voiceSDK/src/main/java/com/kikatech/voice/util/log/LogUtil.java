@@ -19,8 +19,8 @@ public class LogUtil
 	private static final String PARENT_LOG_FORMAT = "[%s:%s:ln%d] ";
 	private static final String LOG_FORMAT = "[%s:%s:ln%d] %s (pid: %d)";
 
-	final static String LOG_FOLDER = "kika_go/log";
-	private final static String LOG_FILE = "%s_voice_sdk.log";
+	public final static String LOG_FOLDER = "kika_go/log";
+	public final static String LOG_FILE = "%s_voice_sdk.txt";
 	private static int mFileLoggerId = -1;
 
 	private enum LogLabel

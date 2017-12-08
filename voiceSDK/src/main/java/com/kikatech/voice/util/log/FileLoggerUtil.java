@@ -6,8 +6,10 @@ import android.util.Log;
 
 import com.kikatech.voice.BuildConfig;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,20 +51,23 @@ public class FileLoggerUtil {
         return idx;
     }
 
+    public File getLogFullPath(String logFolderPath, String logFilePath) {
+        String fullFolderPath = createSDCardFolder(logFolderPath);
+        String filename = String.format(logFilePath, DateFormat.format("yyyyMMdd_HHmmss", mInitedTime).toString());
+        return new File(fullFolderPath + "/" + filename);
+    }
+
+    public String getDisplayInitTime() {
+        return DateFormat.format("yyyy/MM/dd HH:mm:ss", mInitedTime).toString();
+    }
+
     private void writeBasicInfo(int idx) {
-//        writeLogToFile(idx, "=====================================================");
-        writeLogToFile(idx, DateFormat.format("yyyy/MM/dd HH:mm:ss", mInitedTime).toString() + ", timestamp : " + System.currentTimeMillis());
-//        writeLogToFile(idx,
-//                DeviceUtil.getBrand() + " / " + DeviceUtil.getManufacturer() + " / " +
-//                        DeviceUtil.getModel() + " / " + DeviceUtil.getAndroidID(KikaMultiDexApplication.getAppContext()));
+        writeLogToFile(idx, getDisplayInitTime() + ", timestamp : " + System.currentTimeMillis());
         writeLogToFile(idx, "Voice SDK Version : " + BuildConfig.VERSION_NAME + " / " + BuildConfig.VERSION_CODE);
-//        writeLogToFile(idx, "=====================================================");
     }
 
     private BufferedWriter initLogger(String logFolderPath, String logFilePath) {
-        String fullFolderPath = createSDCardFolder(logFolderPath);
-        String filename = String.format(logFilePath, DateFormat.format("yyyyMMdd_HHmmss", mInitedTime).toString());
-        File logFile = new File(fullFolderPath + "/" + filename);
+        File logFile = getLogFullPath(logFolderPath, logFilePath);
         if (!logFile.exists()) {
             try {
                 boolean ret = logFile.createNewFile();
@@ -116,6 +121,27 @@ public class FileLoggerUtil {
         if(mExecutor != null) {
             mExecutor.shutdown();
         }
+    }
+
+    public String loadLogFile(String logFolderPath, String logFilePath) {
+        File fullPath = getLogFullPath(logFolderPath, logFilePath);
+
+        //Read text from file
+        StringBuilder text = new StringBuilder();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(fullPath));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
+            }
+            br.close();
+        } catch (IOException e) {
+            //You'll need to add proper error handling here
+        }
+        return text.toString();
     }
 
     private static String createSDCardFolder(String folder) {
