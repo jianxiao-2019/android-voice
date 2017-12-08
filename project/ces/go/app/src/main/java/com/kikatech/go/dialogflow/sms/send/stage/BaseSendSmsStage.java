@@ -12,6 +12,7 @@ import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.contact.ContactManager;
 
 /**
  * Created by brad_chang on 2017/11/16.
@@ -103,7 +104,8 @@ public class BaseSendSmsStage extends SceneStage {
      * SendSMS 2.2 檢查是否找到匹配的聯絡人
      */
     static SceneStage getStageCheckContactMatched(String TAG, SmsContent sc, SceneBase mSceneBase, ISceneFeedback mFeedback) {
-        if (sc.isContactMatched(mSceneBase.getContext())) {
+        ContactManager.MatchedContact matchedContact = sc.isContactMatched(mSceneBase.getContext());
+        if (matchedContact != null) {
             if (LogUtil.DEBUG)
                 LogUtil.log(TAG, "Contact Matched !! Matched name : " + sc.getMatchedName());
             if (sc.isSimilarContact()) {

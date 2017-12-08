@@ -23,6 +23,7 @@ import java.util.List;
  */
 
 public class SmsUtil {
+    private static final String TAG = "SmsUtil";
 
     private static final String KEY_NAME = "given-name";
 
@@ -41,7 +42,7 @@ public class SmsUtil {
     private static List<String> parseAny(@NonNull Bundle parm) {
         List<String> ta = new ArrayList<>();
         String valTagAny = parm.getString(KEY_ANY, "");
-        if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "parseAny, valTagAny : " + valTagAny);
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "parseAny, valTagAny : " + valTagAny);
         // Check if it is jason format
         String sendTarget = "";
         try {
@@ -51,13 +52,13 @@ public class SmsUtil {
                 ta.add(content.getString(i));
             }
             if (LogUtil.DEBUG)
-                LogUtil.log("SmsUtil", "tagAnySize:" + content.length() + ", valTagAny:" + valTagAny + ", sendTarget:" + sendTarget);
+                LogUtil.log(TAG, "tagAnySize:" + content.length() + ", valTagAny:" + valTagAny + ", sendTarget:" + sendTarget);
         } catch (JSONException ignored) {
             // Not a jason format
             if (!TextUtils.isEmpty(valTagAny)) {
                 ta.add(valTagAny);
                 if (LogUtil.DEBUG)
-                    LogUtil.log("SmsUtil", "valTagAny:" + valTagAny);
+                    LogUtil.log(TAG, "valTagAny:" + valTagAny);
             }
         }
         return ta;
@@ -65,18 +66,21 @@ public class SmsUtil {
 
     public static SmsContent.IntentContent parseContactName(@NonNull Bundle parm, int tagAnyStandFor) {
         if (LogUtil.DEBUG)
-            LogUtil.log("SmsUtil", "Bundle:" + parm + ", tagAnyStandFor:" + tagAnyStandFor);
+            LogUtil.log(TAG, "Bundle:" + parm + ", tagAnyStandFor:" + tagAnyStandFor);
         SmsContent.IntentContent ic = new SmsContent.IntentContent();
         String names = parm.getString(KEY_NAME, "");
         try {
-            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "names:" + names);
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "names:" + names);
             JSONArray jsonNames = new JSONArray(names);
+            String sendTarget = "";
             for (int i = 0; i < jsonNames.length(); ++i) {
-                ic.sendTarget += jsonNames.getString(i) + " ";
+                sendTarget += jsonNames.getString(i) + " ";
             }
-            ic.sendTarget = ic.sendTarget.trim();
+            sendTarget = sendTarget.trim();
+            ic.sendTarget = !TextUtils.isEmpty(sendTarget) ? new String[]{sendTarget} : null;
         } catch (JSONException e) {
-            ic.sendTarget = names.replace("\"", "");
+            String sendTarget = names.replace("\"", "");
+            ic.sendTarget = !TextUtils.isEmpty(sendTarget) ? new String[]{sendTarget} : null;
         }
 
 
@@ -87,32 +91,37 @@ public class SmsUtil {
             int valCount = tagAny.size();
             if (valCount > 1) {
                 ic.smsBody = tagAny.get(0);
-                if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Set sms body : " + ic.smsBody);
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Set sms body : " + ic.smsBody);
 
                 String toSomebody = "to " + tagAny.get(1);
                 if (userInputs.contains(toSomebody)) {
-                    if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Find pattern:" + toSomebody);
-                    ic.sendTarget = tagAny.get(1);
+                    if (LogUtil.DEBUG) LogUtil.log(TAG, "Find pattern:" + toSomebody);
+                    String target = tagAny.get(1);
+                    ic.sendTarget = !TextUtils.isEmpty(target) ? new String[]{target} : null;
                 }
             } else if (valCount > 0) {
                 ic.smsBody = tagAny.get(0);
-                if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Set sms body : " + ic.smsBody);
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Set sms body : " + ic.smsBody);
             }
         } else if (tagAnyStandFor == TAG_ANY_STAND_FOR_NAME) {
             // No, it's xxx
             if (tagAny.size() > 0) {
-                ic.sendTarget = tagAny.get(0);
-                if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Set sendTarget : " + ic.sendTarget);
+                String target = tagAny.get(0);
+                ic.sendTarget = !TextUtils.isEmpty(target) ? new String[]{target} : null;
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, String.format("Set sendTarget: %s", (ic.sendTarget != null && ic.sendTarget.length != 0) ? ic.sendTarget[0] : null));
+                }
             }
         }
 
-        if (TextUtils.isEmpty(ic.sendTarget)) {
+        if (ic.sendTarget == null || ic.sendTarget.length == 0) {
             String jsonString = Intent.parseSwitchSceneInfo(parm);
             if (!TextUtils.isEmpty(jsonString)) {
-                if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Find switch scene info:" + jsonString);
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Find switch scene info:" + jsonString);
                 try {
                     JSONObject json = new JSONObject(jsonString);
-                    ic.sendTarget = json.getString(IMUtil.KEY_SWITCH_SCENE_NAME);
+                    String target = json.getString(IMUtil.KEY_SWITCH_SCENE_NAME);
+                    ic.sendTarget = !TextUtils.isEmpty(target) ? new String[]{target} : null;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -122,12 +131,12 @@ public class SmsUtil {
         if (TextUtils.isEmpty(ic.smsBody) && tagAnyStandFor == TAG_ANY_STAND_FOR_USER_INPUT) {
             ic.smsBody = Intent.parseUserInput(parm);
             if (LogUtil.DEBUG)
-                LogUtil.log("SmsUtil", "[TAG_ANY_STAND_FOR_USER_INPUT]Set smsBody : " + ic.smsBody);
+                LogUtil.log(TAG, "[TAG_ANY_STAND_FOR_USER_INPUT]Set smsBody : " + ic.smsBody);
         }
 
         String chosenNum = parm.getString(KEY_NUMBER, "");
         try {
-            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "chosenNum:" + chosenNum);
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "chosenNum:" + chosenNum);
             JSONArray jsonNums = new JSONArray(chosenNum);
             if (jsonNums.length() > 0) {
                 ic.chosenOption += jsonNums.getString(0);
@@ -139,10 +148,10 @@ public class SmsUtil {
 
         if (LogUtil.DEBUG) {
             for (String k : parm.keySet()) {
-                LogUtil.log("SmsUtil", "" + k + ":" + parm.getString(k));
+                LogUtil.log(TAG, "" + k + ":" + parm.getString(k));
                 //return parm.getString(k);
             }
-            LogUtil.log("SmsUtil", "" + ic.toString());
+            LogUtil.log(TAG, "" + ic.toString());
         }
 
         return ic;
@@ -151,18 +160,18 @@ public class SmsUtil {
 
     public static void sendSms(@NonNull Context ctx, String phoneNum, String msgContent) {
         if (!PermissionUtil.hasPermissionsSMS(ctx)) {
-            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Get SMS permission first!");
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "Get SMS permission first!");
             return;
         }
 
         if (TextUtils.isEmpty(phoneNum) || TextUtils.isEmpty(msgContent)) {
-            if (LogUtil.DEBUG) LogUtil.log("SmsUtil", "Empty target or message!");
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "Empty target or message!");
             return;
         }
 
         boolean sent = SmsManager.getInstance().sendMessage(ctx, phoneNum, "", msgContent);
         if (LogUtil.DEBUG)
-            LogUtil.log("SmsUtil", "phoneNum:" + phoneNum + ", msgContent:" + msgContent + ", send status:" + sent);
+            LogUtil.log(TAG, "phoneNum:" + phoneNum + ", msgContent:" + msgContent + ", send status:" + sent);
     }
 
     public static String parseTagAny(@NonNull Bundle parm) {

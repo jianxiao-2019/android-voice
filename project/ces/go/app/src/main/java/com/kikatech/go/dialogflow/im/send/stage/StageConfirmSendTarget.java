@@ -28,7 +28,7 @@ public class StageConfirmSendTarget extends BaseSendIMStage {
                 imc.userConfirmSendTarget();
                 return getCheckIMBodyStage(TAG, imc, mSceneBase, mFeedback);
             case SceneActions.ACTION_SEND_IM_NO:
-                imc.setSendTarget("");
+                imc.setSendTarget(null);
                 return getCheckSendTargetStage(TAG, imc, mSceneBase, mFeedback);
             default:
                 // TODO

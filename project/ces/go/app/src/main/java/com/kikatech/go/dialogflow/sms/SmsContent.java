@@ -3,7 +3,6 @@ package com.kikatech.go.dialogflow.sms;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.kikatech.go.dialogflow.ContactUtil;
 import com.kikatech.go.dialogflow.EmojiMessage;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
@@ -19,15 +18,13 @@ public class SmsContent extends EmojiMessage {
 
     private IntentContent mIntentContent;
 
-    private String contactMatchedName;
-    private List<ContactManager.NumberType> phoneNumbers;
     private String mChosenNumber;
 
-    private boolean isContactMatched;
+    private ContactManager.MatchedContact mMatchedContact;
 
     public static class IntentContent {
         String smsBody = "";
-        String sendTarget = "";
+        String sendTarget[];
         String chosenOption = "";
 
         @Override
@@ -41,6 +38,10 @@ public class SmsContent extends EmojiMessage {
             return TextUtils.isEmpty(nv) ? ov : nv;
         }
 
+        private String[] checkNUpdate(String[] ov, String[] nv) {
+            return nv == null || nv.length == 0 ? ov : nv;
+        }
+
         void update(IntentContent ic) {
             if (LogUtil.DEBUG)
                 LogUtil.log("SmsContent", "update target:" + ic);
@@ -50,21 +51,12 @@ public class SmsContent extends EmojiMessage {
         }
 
         public boolean isNameEmpty() {
-            return TextUtils.isEmpty(sendTarget);
+            return sendTarget == null || sendTarget.length == 0;
         }
     }
 
     public SmsContent(IntentContent ic) {
-        phoneNumbers = new ArrayList<>();
         update(ic);
-    }
-
-    private static String getDisplayString(String filed) {
-        return TextUtils.isEmpty(filed) ? "<empty>" : filed;
-    }
-
-    public void updateName(String name) {
-        mIntentContent.sendTarget = name;
     }
 
     public void update(IntentContent ic) {
@@ -75,12 +67,39 @@ public class SmsContent extends EmojiMessage {
         }
     }
 
+    public void updateNames(String[] names) {
+        mIntentContent.sendTarget = names;
+    }
+
     public void setIntentContent(IntentContent ic) {
         mIntentContent = ic;
     }
 
-    public String getContact() {
-        return mIntentContent.sendTarget.trim();
+    public String[] getContact() {
+        return mIntentContent.sendTarget;
+    }
+
+    public boolean isContactAvailable() {
+        return !mIntentContent.isNameEmpty();
+    }
+
+    /**
+     * 檢查是否有 SMS 內容
+     *
+     * @return 是否有 SMS 內容
+     */
+    public boolean isSmsBodyAvailable() {
+        return !TextUtils.isEmpty(mIntentContent.smsBody);
+    }
+
+    public int getChosenOption() {
+        try {
+            return Integer.parseInt(mIntentContent.chosenOption);
+        } catch (Exception e) {
+            if (LogUtil.DEBUG)
+                LogUtil.log("SmsContent", "Err, cannot parse chosenOption :" + mIntentContent.chosenOption);
+        }
+        return -1;
     }
 
     @Override
@@ -98,24 +117,11 @@ public class SmsContent extends EmojiMessage {
     }
 
     public String getMatchedName() {
-        return contactMatchedName;
-    }
-
-    public boolean isContactAvailable() {
-        return !mIntentContent.isNameEmpty();
-    }
-
-    /**
-     * 檢查是否有 SMS 內容
-     *
-     * @return 是否有 SMS 內容
-     */
-    public boolean isSmsBodyAvailable() {
-        return !TextUtils.isEmpty(mIntentContent.smsBody);
+        return mMatchedContact != null ? mMatchedContact.displayName : null;
     }
 
     public boolean isSimilarContact() {
-        return !TextUtils.isEmpty(contactMatchedName) && !contactMatchedName.equals(getContact());
+        return mMatchedContact != null && mMatchedContact.matchedType != ContactManager.MatchedContact.MatchedType.FULL_MATCHED;
     }
 
     public int getNumberCount() {
@@ -123,10 +129,7 @@ public class SmsContent extends EmojiMessage {
     }
 
     public List<ContactManager.NumberType> getPhoneNumbers() {
-        if (phoneNumbers == null) {
-            return new ArrayList<>();
-        }
-        return phoneNumbers;
+        return mMatchedContact != null && mMatchedContact.phoneNumbers != null ? mMatchedContact.phoneNumbers : new ArrayList<ContactManager.NumberType>();
     }
 
     public String getChosenPhoneNumber() {
@@ -138,22 +141,29 @@ public class SmsContent extends EmojiMessage {
         mChosenNumber = number;
     }
 
-    public int getChosenOption() {
-        try {
-            return Integer.parseInt(mIntentContent.chosenOption);
-        } catch (Exception e) {
-            if (LogUtil.DEBUG)
-                LogUtil.log("SmsContent", "Err, cannot parse chosenOption :" + mIntentContent.chosenOption);
-        }
-        return -1;
+    public ContactManager.MatchedContact isContactMatched(Context ctx) {
+        mMatchedContact = ContactManager.getIns().findContact(ctx, getContact());
+        return mMatchedContact;
     }
 
-    public boolean isContactMatched(Context ctx) {
-        ContactUtil.MatchedContact mc = ContactUtil.matchContact(ctx, getContact());
-        contactMatchedName = mc.contactMatchedName;
-        phoneNumbers = mc.phoneNumbers;
-        isContactMatched = mc.isContactMatched;
-        return isContactMatched;
+
+    // Debug Infos
+
+    private static String getDisplayString(String field) {
+        return TextUtils.isEmpty(field) ? "<empty>" : field;
+    }
+
+    private static String getDisplayString(String[] fields) {
+        StringBuilder stringBuilder = null;
+        if (fields != null && fields.length != 0) {
+            stringBuilder = new StringBuilder("[");
+            for (String field : fields) {
+                stringBuilder.append(field).append(",");
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            stringBuilder.append("]");
+        }
+        return stringBuilder == null ? "<empty>" : stringBuilder.toString();
     }
 
     @Override
@@ -163,7 +173,6 @@ public class SmsContent extends EmojiMessage {
                 "\nChosen Number:" + mChosenNumber +
                 ", phoneNumber count:" + getNumberCount() +
                 "\nisSimilarContact:" + isSimilarContact() +
-                ", matchContact:" + isContactMatched +
                 "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
     }
 }

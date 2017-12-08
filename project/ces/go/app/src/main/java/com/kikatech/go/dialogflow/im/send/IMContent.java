@@ -3,11 +3,11 @@ package com.kikatech.go.dialogflow.im.send;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.kikatech.go.dialogflow.ContactUtil;
 import com.kikatech.go.dialogflow.EmojiMessage;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.util.contact.ContactManager;
 
 /**
  * Created by brad_chang on 2017/11/24.
@@ -16,7 +16,7 @@ import com.kikatech.go.util.LogUtil;
 public class IMContent extends EmojiMessage {
 
     private String parsedIMApp = "";
-    private String targetName = "";
+    private String targetName[];
     private boolean explicitTarget = false;
     private String imAppPkgName = "";
 
@@ -28,7 +28,7 @@ public class IMContent extends EmojiMessage {
                 ", msgBody:" + messageBody + "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
     }
 
-    public IMContent(String parsedIMApp, String targetName, String msgBody) {
+    public IMContent(String parsedIMApp, String[] targetName, String msgBody) {
         this.parsedIMApp = parsedIMApp;
         this.imAppPkgName = analyzeIMApp(parsedIMApp);
         this.targetName = targetName;
@@ -61,16 +61,19 @@ public class IMContent extends EmojiMessage {
     }
 
     public String getSendTarget() {
-        return targetName;
+        return targetName != null && targetName.length != 0 ? targetName[0] : null;
     }
 
     public boolean isExplicitTarget(Context ctx) {
         if (imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
-            ContactUtil.MatchedContact mc = ContactUtil.matchContact(ctx, targetName);
-            explicitTarget = mc.isContactMatched;
+            ContactManager.MatchedContact mc = ContactManager.getIns().findContact(ctx, targetName);
+            explicitTarget = mc != null;
 
-            if (LogUtil.DEBUG)
-                LogUtil.log("IMContent", "Find WhatsApp, Match Contact:" + mc.contactMatchedName + ", matched:" + mc.isContactMatched);
+            if (LogUtil.DEBUG) {
+                if (mc != null) {
+                    LogUtil.log("IMContent", "Find WhatsApp, Match Contact:" + mc.displayName);
+                }
+            }
         }
         return explicitTarget;
     }
@@ -113,11 +116,14 @@ public class IMContent extends EmojiMessage {
         return TextUtils.isEmpty(nv) ? ov : nv;
     }
 
-    public void updateSendTarget(String target) {
+    private String[] checkNUpdate(String[] ov, String[] nv) {
+        return nv == null || nv.length == 0 ? ov : nv;
+    }
+    public void updateSendTarget(String[] target) {
         targetName = target;
     }
 
-    public void setSendTarget(String sendTarget) {
+    public void setSendTarget(String[] sendTarget) {
         targetName = sendTarget;
     }
 }

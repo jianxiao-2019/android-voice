@@ -82,7 +82,7 @@ public class StageOutgoing extends SceneStage {
                 mTargetName = mTargetName.substring(1, mTargetName.length() - 1);
             } catch (Exception ignore) {
             }
-            mContact = ContactManager.getIns().findName(mSceneBase.getContext(), mTargetName);
+            mContact = ContactManager.getIns().findContact(mSceneBase.getContext(), mTargetName);
             if (mContact != null) {
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, "name: " + mTargetName + ", displayName: " + mContact.displayName);

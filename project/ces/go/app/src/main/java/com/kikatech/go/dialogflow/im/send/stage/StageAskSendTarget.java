@@ -2,7 +2,6 @@ package com.kikatech.go.dialogflow.im.send.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.send.IMContent;
@@ -24,8 +23,8 @@ public class StageAskSendTarget extends BaseSendIMStage {
     protected SceneStage getNextStage(String action, Bundle extra) {
         setQueryAnyWords(false);
         IMContent imc = getIMContent();
-        String userSay = Intent.parseUserInput(extra);
-        if (!TextUtils.isEmpty(userSay)) {
+        String[] userSay = Intent.parseUserInputNBest(extra);
+        if (userSay != null && userSay.length != 0) {
             imc.updateSendTarget(userSay);
         }
         return getCheckSendTargetStage(TAG, getIMContent(), mSceneBase, mFeedback);

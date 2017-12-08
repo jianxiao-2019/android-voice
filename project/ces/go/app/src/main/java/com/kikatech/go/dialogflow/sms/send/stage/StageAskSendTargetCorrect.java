@@ -10,6 +10,7 @@ import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.contact.ContactManager;
 
 /**
  * Created by brad_chang on 2017/11/15.
@@ -38,8 +39,8 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
                     return new StageAskForSendTarget(mSceneBase, mFeedback);
                 }
 
-                boolean isContactMatched = sc.isContactMatched(mSceneBase.getContext());
-                if (isContactMatched) {
+                ContactManager.MatchedContact matchedContact = sc.isContactMatched(mSceneBase.getContext());
+                if (matchedContact != null) {
                     if (mCurrentName.equals(sc.getMatchedName())) {
                         return getStageCheckNumberCount(TAG, sc, mSceneBase, mFeedback);
                     } else {
