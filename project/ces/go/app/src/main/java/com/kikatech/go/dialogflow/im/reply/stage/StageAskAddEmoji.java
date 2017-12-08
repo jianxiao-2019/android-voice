@@ -46,7 +46,7 @@ public class StageAskAddEmoji extends BaseStage {
     @Override
     public void action() {
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getReplyMessage().getEmojiDesc());
+        String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getReplyMessage().getEmojiUnicode());
         if (uiAndTtsText.length > 0) {
             Bundle args = new Bundle();
             String[] options = SceneUtil.getOptionsCommon(context);
