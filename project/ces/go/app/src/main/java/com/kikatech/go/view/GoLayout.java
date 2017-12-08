@@ -3,7 +3,6 @@ package com.kikatech.go.view;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +28,7 @@ import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.CountingTimer;
+import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
 
@@ -40,7 +40,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 public class GoLayout extends FrameLayout {
     private static final String TAG = "GoLayout";
 
-    private static final boolean DEBUG = BuildConfig.DEBUG;
+    public static final boolean ENABLE_LOG_VIEW = BuildConfig.DEBUG;
 
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
 
@@ -130,6 +130,7 @@ public class GoLayout extends FrameLayout {
 
     private TextView mDebugVersionView;
     private TextView mDebugLogView;
+    private LogOnViewUtil mLogOnViewUtil;
 
 
     public GoLayout(Context context) {
@@ -157,7 +158,7 @@ public class GoLayout extends FrameLayout {
 
     private void bindView() {
         mLayoutInflater = LayoutInflater.from(getContext());
-        mLayoutInflater.inflate(DEBUG ? R.layout.go_layout_debug : R.layout.go_layout, this);
+        mLayoutInflater.inflate(ENABLE_LOG_VIEW ? R.layout.go_layout_debug : R.layout.go_layout, this);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
         mSpeakView = (GoTextView) findViewById(R.id.go_layout_speak_text);
@@ -189,10 +190,15 @@ public class GoLayout extends FrameLayout {
         mRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, -1);
         mNonRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, 1);
 
-        if (DEBUG) {
+        if (ENABLE_LOG_VIEW) {
             mDebugVersionView = (TextView) findViewById(R.id.go_layout_debug_version);
             mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
             mDebugVersionView.setText(BuildConfig.VERSION_NAME);
+
+            mLogOnViewUtil = LogOnViewUtil.getIns()
+                    .configViews(mDebugLogView)
+                    .configDisplayLogCount(5)
+                    .configFilterClass("com.kikatech.go.dialogflow.");
         }
     }
 
@@ -808,14 +814,15 @@ public class GoLayout extends FrameLayout {
         return mCurrentStatus;
     }
 
-    public void writeDebugInfo(String info) {
-        if (DEBUG && mDebugLogView != null) {
-            if (!TextUtils.isEmpty(info)) {
-                mDebugLogView.setText(info);
-                mDebugLogView.setVisibility(VISIBLE);
-            } else {
-                mDebugLogView.setVisibility(GONE);
-            }
+    public void writeDebugInfo(String logType, String detail) {
+        if (ENABLE_LOG_VIEW && mLogOnViewUtil != null) {
+            mLogOnViewUtil.addLog(logType, detail);
+        }
+    }
+
+    public void writeDebugSeparator() {
+        if (ENABLE_LOG_VIEW && mLogOnViewUtil != null) {
+            mLogOnViewUtil.addSeparator();
         }
     }
 

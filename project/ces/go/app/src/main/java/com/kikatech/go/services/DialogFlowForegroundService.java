@@ -308,7 +308,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
                         // dbgMsg[0] : scene - action
                         // dbgMsg[1] : parameters
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_STOP);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_COMPLETE);
+                        event.putExtra(DFServiceEvent.PARAM_DBG_INTENT_ACTION, dbgMsg[0]);
+                        event.putExtra(DFServiceEvent.PARAM_DBG_INTENT_PARMS, dbgMsg[1]);
                         sendDFServiceEvent(event);
                     }
 

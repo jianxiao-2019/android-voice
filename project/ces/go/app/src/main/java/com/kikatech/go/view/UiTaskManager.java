@@ -11,6 +11,7 @@ import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.model.UserMsg;
 import com.kikatech.go.ui.MediaPlayerUtil;
 import com.kikatech.go.util.AppInfo;
+import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
@@ -426,23 +427,26 @@ public class UiTaskManager {
         API_AI_STOP("Api.ai stop query"),
         API_AI_ERROR("Api.ai query error");
 
-        private String log;
+        private String logType;
 
         DebugLogType(String log) {
-            this.log = log;
+            this.logType = log;
+        }
+    }
+
+    public synchronized void writeDebugLog(final String logType, final String detail) {
+        if (mLayout != null) {
+            mLayout.writeDebugInfo(logType, detail);
+        }
+    }
+
+    public synchronized void writeDebugLogSeparator() {
+        if (mLayout != null) {
+            mLayout.writeDebugSeparator();
         }
     }
 
     public synchronized void writeDebugLog(final DebugLogType logType) {
-        if (mLayout == null) {
-            return;
-        }
-        final GoLayout layout = mLayout;
-        layout.post(new Runnable() {
-            @Override
-            public void run() {
-                layout.writeDebugInfo(logType.log);
-            }
-        });
+        writeDebugLog(logType.logType, "");
     }
 }

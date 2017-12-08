@@ -6,13 +6,21 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.kikatech.voice.util.log.FileLoggerUtil;
+
 import java.util.Locale;
 
 /**
  * Created by brad_chang on 2016/1/10.
  */
 public class LogUtil {
-	final static public boolean DEBUG = true;
+
+	public final static boolean DEBUG = true;
+	private final static boolean ENABLE_FILE_LOG = DEBUG;
+
+	final static String LOG_FOLDER = "kika_go/log";
+	private final static String LOG_FILE = "%s_kika_go.log";
+	private static int mFileLoggerId = -1;
 
 	private static int sProcessId = DEBUG ? 0 : android.os.Process.myPid();
 	private static final int PARENT_NODE = 3, SELF_NODE = 2;
@@ -97,6 +105,13 @@ public class LogUtil {
 			case EXCEPTION:
 				Log.e(logTag, log, throwable);
 				break;
+		}
+
+		if (ENABLE_FILE_LOG) {
+			if (mFileLoggerId == -1) {
+				mFileLoggerId = FileLoggerUtil.getIns().configFileLogger(LOG_FOLDER, LOG_FILE);
+			}
+			FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, logTag + " " + log);
 		}
 	}
 

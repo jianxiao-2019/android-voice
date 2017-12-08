@@ -19,7 +19,7 @@ public class DFServiceEvent extends BaseDFServiceEvent{
     public static final String ACTION_ON_STAGE_EVENT = "action_on_stage_event";
     public static final String ACTION_ON_SCENE_EXIT = "action_on_scene_exit";
     public static final String ACTION_ON_AGENT_QUERY_START = "action_on_agent_query_start";
-    public static final String ACTION_ON_AGENT_QUERY_STOP = "action_on_agent_query_stop";
+    public static final String ACTION_ON_AGENT_QUERY_COMPLETE = "action_on_agent_query_done";
     public static final String ACTION_ON_AGENT_QUERY_ERROR = "action_on_agent_query_error";
 
     public static final String PARAM_EXTRAS = "param_extras";
@@ -30,6 +30,9 @@ public class DFServiceEvent extends BaseDFServiceEvent{
     public static final String PARAM_SCENE_STAGE = "param_scene_stage";
     public static final String PARAM_IS_INTERRUPTED = "param_is_interrupted";
     public static final String PARAM_IS_PROACTIVE = "param_is_proactive";
+
+    public static final String PARAM_DBG_INTENT_ACTION = "param_dbg_intent_action";
+    public static final String PARAM_DBG_INTENT_PARMS = "param_dbg_intent_parms";
 
     public DFServiceEvent(String action) {
         super(action);
