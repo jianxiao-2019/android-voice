@@ -72,51 +72,89 @@ public class ContactManager {
         }
     }
 
-    private PhoneBookContact findName(String name, HashMap<String, PhoneBookContact> phoneBook) {
+    private MatchedContact findFullMatchedName(String[] targetNames, HashMap<String, PhoneBookContact> phoneBook) {
         String[] contactNames = phoneBook.size() > 0 ? phoneBook.keySet().toArray(new String[phoneBook.size()]) : null;
-        String number = findNumber(name);
-
         if (contactNames == null || contactNames.length == 0) {
-            return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
-        }
-
-        FuzzySearchManager.FuzzyResult fuzzySearchResult = FuzzySearchManager.getIns().search(name, contactNames);
-
-        int confidence = -1;
-        String foundName = "";
-
-        if (fuzzySearchResult != null) {
-            foundName = fuzzySearchResult.getText();
-            confidence = fuzzySearchResult.getConfidence();
-        }
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "foundName: " + foundName + ", confidence: " + confidence);
-        }
-
-        if (TextUtils.isEmpty(foundName)) {
-            return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
-        } else {
-            if (confidence < FuzzySearchManager.getIns().getLowConfidenceCriteria()) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logd(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
-                }
-                return TextUtils.isEmpty(number) ? null : new PhoneBookContact(number, "");
-            } else {
-                return phoneBook.get(foundName);
-            }
-        }
-    }
-
-    public PhoneBookContact findName(final Context ctx, final String name) {
-
-        if (TextUtils.isEmpty(name)) {
             return null;
         }
+        for (String targetName : targetNames) {
+            for (String contactName : contactNames) {
+                if (targetName.equals(contactName)) {
+                    return new MatchedContact(MatchedContact.MatchedType.FULL_MATCHED, phoneBook.get(contactName));
+                }
+            }
+        }
+        return null;
+    }
 
+    private MatchedContact findFuzzyName(String[] targetNames, HashMap<String, PhoneBookContact> phoneBook) {
+        String[] contactNames = phoneBook.size() > 0 ? phoneBook.keySet().toArray(new String[phoneBook.size()]) : null;
+        if (contactNames == null || contactNames.length == 0) {
+            return null;
+        }
+        int confidence;
+        String foundName;
+        FuzzySearchManager.FuzzyResult fuzzySearchResult;
+        for (String targetName : targetNames) {
+            fuzzySearchResult = FuzzySearchManager.getIns().search(targetName, contactNames);
+            if (fuzzySearchResult != null) {
+                foundName = fuzzySearchResult.getText();
+                confidence = fuzzySearchResult.getConfidence();
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, String.format("foundName: %1$s, confidence: %2$s", foundName, confidence));
+                }
+                if (!TextUtils.isEmpty(foundName)) {
+                    if (confidence > FuzzySearchManager.getIns().getLowConfidenceCriteria()) {
+                        return new MatchedContact(MatchedContact.MatchedType.FUZZY_MATCHED, phoneBook.get(foundName));
+                    } else {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logd(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private MatchedContact findNumberName(String[] targetNames) {
+        String number;
+        for (String targetName : targetNames) {
+            number = findNumber(targetName);
+            if (!TextUtils.isEmpty(number)) {
+                return new MatchedContact(MatchedContact.MatchedType.NUMBER_MATCHED, new PhoneBookContact(number, ""));
+            }
+        }
+        return null;
+    }
+
+    public MatchedContact findContact(final Context ctx, final String targetName) {
+        return findContact(ctx, new String[]{targetName});
+    }
+
+    public MatchedContact findContact(final Context ctx, final String[] targetNames) {
+        if (LogUtil.DEBUG) {
+            if (targetNames != null) {
+                for (int i = 0; i < targetNames.length; i++) {
+                    LogUtil.logd(TAG, String.format("target: %1$s. %2$s", i + 1, targetNames[i]));
+                }
+            }
+        }
+        if (targetNames == null || targetNames.length == 0) {
+            return null;
+        }
         init(ctx);
-
         synchronized (mPhoneBook) {
-            return findName(name, mPhoneBook);
+            MatchedContact result = findFullMatchedName(targetNames, mPhoneBook);
+            if (result != null) {
+                return result;
+            }
+            result = findFuzzyName(targetNames, mPhoneBook);
+            if (result != null) {
+                return result;
+            }
+            result = findNumberName(targetNames);
+            return result;
         }
     }
 
@@ -234,11 +272,28 @@ public class ContactManager {
         }
     }
 
+    public static class MatchedContact extends PhoneBookContact {
+        public final class MatchedType {
+            public static final byte NUMBER_MATCHED = 0x01;
+            public static final byte FUZZY_MATCHED = 0x02;
+            public static final byte FULL_MATCHED = 0x03;
+        }
+
+        public byte matchedType;
+
+        MatchedContact(byte matchType, PhoneBookContact contact) {
+            this.matchedType = matchType;
+            this.id = contact.id;
+            this.displayName = contact.displayName;
+            this.phoneNumbers = contact.phoneNumbers;
+        }
+    }
+
     public static class PhoneBookContact {
 
         public long id;
         public String displayName;
-        public final List<NumberType> phoneNumbers = new ArrayList<>();
+        public List<NumberType> phoneNumbers = new ArrayList<>();
 
         PhoneBookContact(String phoneNumber, String type) {
             this(-1, null, phoneNumber, type);
@@ -251,6 +306,9 @@ public class ContactManager {
                 this.phoneNumbers.add(new NumberType(phoneNumber, type));
                 //phoneNumbers.put(phoneNumber, type);
             }
+        }
+
+        PhoneBookContact() {
         }
 
         public PhoneBookContact clone(int idxNumber) {
