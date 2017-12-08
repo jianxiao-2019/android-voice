@@ -43,7 +43,7 @@ public class GoLayout extends FrameLayout {
 
     public static final boolean ENABLE_LOG_VIEW = BuildConfig.DEBUG;
 
-    private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
+    private static final long EACH_STATUS_MIN_STAY_MILLIS = 1000;
 
     private static final int OPTIONS_EMOJI_ONLY_TEXT_DP = 80;
 
