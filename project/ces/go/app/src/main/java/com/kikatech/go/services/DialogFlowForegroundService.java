@@ -108,6 +108,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 pauseAsr();
                 mDialogFlowService.talk(text);
                 break;
+            case ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP:
+                mDialogFlowService.wakeUp();
+                break;
         }
     }
 
@@ -444,6 +447,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     public synchronized static void processDialogFlowTalk(String text) {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DIALOG_FLOW_TALK);
         event.putExtra(ToDFServiceEvent.PARAM_TEXT, text);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processDialogFlowWakeUp(){
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP);
         sendToDFServiceEvent(event);
     }
 

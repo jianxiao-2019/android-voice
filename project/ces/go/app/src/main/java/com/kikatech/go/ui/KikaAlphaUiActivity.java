@@ -56,7 +56,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 initUiTaskManager();
                 break;
             case DFServiceEvent.ACTION_ON_WAKE_UP:
-                mUiManager.dispatchAwake();
+                mUiManager.dispatchWakeUp();
                 mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
                 break;
             case DFServiceEvent.ACTION_ON_SLEEP:

@@ -110,8 +110,8 @@ public class UiTaskManager {
     }
 
 
-    public synchronized void dispatchAwake() {
-        awake();
+    public synchronized void dispatchWakeUp() {
+        wakeUp();
     }
 
     public synchronized void dispatchSleep() {
@@ -261,7 +261,7 @@ public class UiTaskManager {
     }
 
 
-    private void awake() {
+    private void wakeUp() {
         final GoLayout layout = mLayout;
         if (layout == null) {
             return;
@@ -269,7 +269,7 @@ public class UiTaskManager {
         layout.post(new Runnable() {
             @Override
             public void run() {
-                layout.awake();
+                layout.wakeUp();
             }
         });
     }

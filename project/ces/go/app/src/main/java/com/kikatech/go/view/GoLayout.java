@@ -298,12 +298,18 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
+        mSleepLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFlowForegroundService.processDialogFlowWakeUp();
+            }
+        });
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }
     }
 
-    public void awake() {
+    public void wakeUp() {
         DisplayMode targetMode = DisplayMode.AWAKE;
         onModeChanged(targetMode);
         mSleepLayout.setVisibility(GONE);
