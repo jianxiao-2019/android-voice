@@ -31,6 +31,7 @@ import com.kikatech.go.util.CountingTimer;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
+import com.vdurmont.emoji.EmojiManager;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
@@ -43,6 +44,8 @@ public class GoLayout extends FrameLayout {
     public static final boolean ENABLE_LOG_VIEW = BuildConfig.DEBUG;
 
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1500;
+
+    private static final int OPTIONS_EMOJI_ONLY_TEXT_DP = 80;
 
     public enum DisplayMode {
         SLEEP(R.color.standby_bg_color, ViewStatus.STAND_BY_SLEEP),
@@ -427,9 +430,20 @@ public class GoLayout extends FrameLayout {
 
         try {
             if (optionList != null && !optionList.isEmpty()) {
-                mOptionsTitle.setText(optionList.getTitle());
-
                 Context context = getContext();
+
+                String title = optionList.getTitle();
+                boolean isOnlyEmoji = EmojiManager.isOnlyEmojis(title);
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, String.format("title: %1$s, isOnlyEmoji: %2$s", title, isOnlyEmoji));
+                }
+                if (isOnlyEmoji) {
+                    mOptionsTitle.disableResize(ResolutionUtil.dp2px(context, OPTIONS_EMOJI_ONLY_TEXT_DP));
+                } else {
+                    mOptionsTitle.enableResize();
+                }
+                mOptionsTitle.setText(title);
+
 
                 int itemRes = R.layout.go_layout_options_item_2;
                 int ITEM_MARGIN = 0;

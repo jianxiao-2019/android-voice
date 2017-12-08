@@ -77,6 +77,8 @@ dependencies {
     compile 'jp.wasabeef:glide-transformations:2.0.1'
     // EventBus
     compile 'org.greenrobot:eventbus:3.1.1'
+    // Emoji
+    compile 'com.vdurmont:emoji-java:4.0.0'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
     compile 'com.kikatech.voice:voice:1.0.0.1'
