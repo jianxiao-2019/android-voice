@@ -298,7 +298,7 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
-        mSleepLayout.setOnClickListener(new OnClickListener() {
+        setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogFlowForegroundService.processDialogFlowWakeUp();
@@ -319,7 +319,7 @@ public class GoLayout extends FrameLayout {
         mUsrInfoLayout.setVisibility(GONE);
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
-        mStatusAnimationView.setOnClickListener(null);
+        setOnClickListener(null);
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }
