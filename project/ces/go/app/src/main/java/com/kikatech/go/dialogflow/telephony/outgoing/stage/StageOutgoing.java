@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -16,15 +17,6 @@ import com.kikatech.voice.util.contact.ContactManager;
 
 public class StageOutgoing extends SceneStage {
     private static final String TAG = "StageOutgoing";
-
-    private static final byte NAME_STATE_NULL = 0x01;
-    private static final byte NAME_STATE_FULL_MACH = 0x02;
-    private static final byte NAME_STATE_FUZZY_MATCH = 0x03;
-    private static final byte NAME_STATE_NUMBER_MATCH = 0x04;
-    private static final byte NAME_STATE_NOT_FOUND = 0x05;
-
-    private String mTargetName;
-    private ContactManager.PhoneBookContact mContact;
 
     public StageOutgoing(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
@@ -38,27 +30,7 @@ public class StageOutgoing extends SceneStage {
                 case SceneActions.ACTION_OUTGOING_START:
                 case SceneActions.ACTION_OUTGOING_CHANGE:
                 case SceneActions.ACTION_OUTGOING_YES:
-                    if (extra != null && extra.containsKey(SceneActions.PARAM_OUTGOING_NAME)) {
-                        mTargetName = extra.getString(SceneActions.PARAM_OUTGOING_NAME);
-                    }
-                    int contactState = queryContact();
-                    switch (contactState) {
-                        case NAME_STATE_FULL_MACH:
-                            if (mContact.phoneNumbers.size() > 1) {
-                                return new StageConfirmNumber(mSceneBase, mFeedback, mContact);
-                            } else {
-                                return new StageMakeCall(mSceneBase, mFeedback, mContact);
-                            }
-                        case NAME_STATE_NUMBER_MATCH:
-                            return new StageMakeCall(mSceneBase, mFeedback, mContact);
-                        case NAME_STATE_NOT_FOUND:
-                            return new StageNoContact(mSceneBase, mFeedback);
-                        case NAME_STATE_FUZZY_MATCH:
-                            return new StageConfirmName(mSceneBase, mFeedback, mContact);
-                        default:
-                        case NAME_STATE_NULL:
-                            return new StageAskName(mSceneBase, mFeedback);
-                    }
+                    return getCheckContactStage(extra);
                 case SceneActions.ACTION_OUTGOING_NO:
                 case SceneActions.ACTION_OUTGOING_CANCEL:
                     return new StageCancel(mSceneBase, mFeedback);
@@ -75,32 +47,54 @@ public class StageOutgoing extends SceneStage {
     public void action() {
     }
 
-    private int queryContact() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "target name: " + mTargetName);
-        if (!TextUtils.isEmpty(mTargetName)) {
-            try {
-                mTargetName = mTargetName.substring(1, mTargetName.length() - 1);
-            } catch (Exception ignore) {
-            }
-            mContact = ContactManager.getIns().findContact(mSceneBase.getContext(), mTargetName);
-            if (mContact != null) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "name: " + mTargetName + ", displayName: " + mContact.displayName);
-                }
+    private SceneStage getCheckContactStage(Bundle extra) {
+        boolean hasQueried = false;
+        ContactManager.MatchedContact mMatchedContact = null;
 
-                if (!TextUtils.isEmpty(mContact.displayName)) {
-                    if (mTargetName.equals(mContact.displayName)) {
-                        return NAME_STATE_FULL_MACH;
-                    } else {
-                        return NAME_STATE_FUZZY_MATCH;
-                    }
-                } else if (!mContact.phoneNumbers.isEmpty()) {
-                    return NAME_STATE_NUMBER_MATCH;
+        // try parsing from api.ai result
+        String targetName = extra != null ? extra.getString(SceneActions.PARAM_OUTGOING_NAME) : null;
+        try {
+            targetName = targetName.substring(1, targetName.length() - 1);
+        } catch (Exception ignore) {
+        }
+        if (!TextUtils.isEmpty(targetName)) {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "try parsing from api.ai result");
+            }
+            mMatchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), targetName);
+            hasQueried = true;
+        }
+
+        // try parsing from asr n-best
+        if (mMatchedContact == null) {
+            String[] nBestInput = extra != null ? Intent.parseUserInputNBest(extra) : null;
+            if (nBestInput != null && nBestInput.length != 0) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "try parsing from asr n-best");
                 }
-            } else {
-                return NAME_STATE_NOT_FOUND;
+                mMatchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), nBestInput);
+                hasQueried = true;
             }
         }
-        return NAME_STATE_NULL;
+
+        // check query result
+        if (mMatchedContact != null) {
+            switch (mMatchedContact.matchedType) {
+                case ContactManager.MatchedContact.MatchedType.FULL_MATCHED:
+                    if (mMatchedContact.phoneNumbers.size() > 1) {
+                        return new StageConfirmNumber(mSceneBase, mFeedback, mMatchedContact);
+                    } else {
+                        return new StageMakeCall(mSceneBase, mFeedback, mMatchedContact);
+                    }
+                case ContactManager.MatchedContact.MatchedType.NUMBER_MATCHED:
+                    return new StageMakeCall(mSceneBase, mFeedback, mMatchedContact);
+                case ContactManager.MatchedContact.MatchedType.FUZZY_MATCHED:
+                    return new StageConfirmName(mSceneBase, mFeedback, mMatchedContact);
+                default:
+                    return new StageNoContact(mSceneBase, mFeedback);
+            }
+        } else {
+            return hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
+        }
     }
 }
