@@ -213,6 +213,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
+                    public void onASRPause() {
+                        sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_PAUSE));
+                    }
+
+                    @Override
+                    public void onASRResume() {
+                        sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_RESUME));
+                    }
+
+                    @Override
                     public void onASRResult(final String speechText, String emojiUnicode, boolean isFinished) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("speechText: %1$s, emoji: %2%s, isFinished: %3$s", speechText, emojiUnicode, isFinished));

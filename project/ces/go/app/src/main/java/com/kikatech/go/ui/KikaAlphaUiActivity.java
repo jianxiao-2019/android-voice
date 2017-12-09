@@ -7,7 +7,6 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
-import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.StringUtil;
@@ -31,8 +30,11 @@ public class KikaAlphaUiActivity extends BaseActivity {
     private UiTaskManager mUiManager;
 
     private boolean mDbgLogFirstAsrResult = false;
+    private boolean mIsAsrFinished = false;
     private long mDbgLogAPIQueryUITime = 0;
     private long mDbgLogASRRecogStartTime = 0;
+    private long mDbgLogResumeStartTime = 0;
+    private long mDbgLogASRRecogFullTime = 0;
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -73,19 +75,34 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "Hi Kika Sleep");
                 mUiManager.dispatchSleep();
                 break;
+            case DFServiceEvent.ACTION_ON_ASR_PAUSE:
+                if(GoLayout.ENABLE_LOG_VIEW) {
+                    long spend = System.currentTimeMillis() - mDbgLogResumeStartTime;
+                    int per = (int) (100 * ((float)mDbgLogASRRecogFullTime / spend));
+                    mUiManager.writeDebugLog(dbgAction, "asr section over (" + spend + " ms, " + per + "%)");
+                }
+                break;
+            case DFServiceEvent.ACTION_ON_ASR_RESUME:
+                if(GoLayout.ENABLE_LOG_VIEW) {
+                    mUiManager.writeDebugLogSeparator();
+                    mDbgLogResumeStartTime = System.currentTimeMillis();
+                    mUiManager.writeDebugLog(dbgAction, "asr section start");
+                }
+                break;
             case DFServiceEvent.ACTION_ON_ASR_RESULT:
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                 isFinished = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_FINISHED, false);
                 String concat = StringUtil.upperCaseFirstWord(text);
 
                 if(GoLayout.ENABLE_LOG_VIEW) {
+                    mIsAsrFinished = isFinished;
                     if (!mDbgLogFirstAsrResult) {
                         mDbgLogFirstAsrResult = true;
-                        mUiManager.writeDebugLogSeparator();
                         mDbgLogASRRecogStartTime = System.currentTimeMillis();
                     }
                     String finishMsg = isFinished ? "[OK]" : "";
-                    String spendTime = " (" + (System.currentTimeMillis() - mDbgLogASRRecogStartTime) + " ms)";
+                    mDbgLogASRRecogFullTime = System.currentTimeMillis() - mDbgLogASRRecogStartTime;
+                    String spendTime = " (" + mDbgLogASRRecogFullTime + " ms)";
                     mUiManager.writeDebugLog(dbgAction + finishMsg, concat + spendTime);
                 }
 
@@ -149,7 +166,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 break;
         }
 
-        if (GoLayout.ENABLE_LOG_VIEW && !action.equals(DFServiceEvent.ACTION_ON_ASR_RESULT)) {
+        if (GoLayout.ENABLE_LOG_VIEW && mIsAsrFinished) {
             mDbgLogFirstAsrResult = false;
         }
     }

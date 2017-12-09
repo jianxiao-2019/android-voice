@@ -11,6 +11,8 @@ public class DFServiceEvent extends BaseDFServiceEvent{
     public static final String ACTION_ON_WAKE_UP = "action_on_wake_up";
     public static final String ACTION_ON_SLEEP = "action_on_sleep";
     public static final String ACTION_ON_DIALOG_FLOW_INIT = "action_on_dialog_flow_init";
+    public static final String ACTION_ON_ASR_PAUSE = "action_on_asr_pause";
+    public static final String ACTION_ON_ASR_RESUME = "action_on_asr_resume";
     public static final String ACTION_ON_ASR_RESULT = "action_on_asr_result";
     public static final String ACTION_ON_TEXT = "action_on_text";
     public static final String ACTION_ON_TEXT_PAIRS = "action_on_text_pairs";

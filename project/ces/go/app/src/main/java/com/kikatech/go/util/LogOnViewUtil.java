@@ -17,7 +17,7 @@ import java.util.LinkedList;
 public class LogOnViewUtil {
 
     private final static int DISPLAY_LOG_COUNT = 5;
-    private final static String SEPARATOR = "----------------------------------------";
+    private final static String SEPARATOR = "-------------------------------------------------";
     private final static String CLASS_SEPARATOR = "@";
     public final static String LOG_FILE = "%s_display.txt";
 
