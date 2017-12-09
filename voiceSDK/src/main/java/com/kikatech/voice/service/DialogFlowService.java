@@ -207,6 +207,7 @@ public class DialogFlowService implements
     public void pauseAsr() {
         if (mVoiceService != null) {
             mVoiceService.pauseAsr();
+            if(mCallback != null) mCallback.onASRPause();
         }
     }
 
@@ -214,6 +215,7 @@ public class DialogFlowService implements
     public void resumeAsr() {
         if (mVoiceService != null) {
             mVoiceService.resumeAsr();
+            if(mCallback != null) mCallback.onASRResume();
         }
     }
 

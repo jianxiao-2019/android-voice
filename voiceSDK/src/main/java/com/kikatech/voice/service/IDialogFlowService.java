@@ -25,6 +25,10 @@ public interface IDialogFlowService {
 
         void onSleep();
 
+        void onASRPause();
+
+        void onASRResume();
+
         void onASRResult(String speechText, String emojiUnicode, boolean isFinished);
 
         void onText(String text, Bundle extras);
