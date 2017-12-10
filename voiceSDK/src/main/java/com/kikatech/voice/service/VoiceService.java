@@ -16,6 +16,8 @@ import com.kikatech.voice.core.webservice.message.ConfigMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.util.log.Logger;
 
+import ai.kitt.snowboy.AppResCopy;
+
 /**
  * Created by tianli on 17-10-28.
  */
@@ -71,7 +73,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         void onSleep();
     }
 
-    private VoiceService(VoiceConfiguration conf) {
+    private VoiceService(Context context, VoiceConfiguration conf) {
         mConf = conf;
 
         IVoiceSource voiceSource = mConf.getVoiceSource();
@@ -102,6 +104,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         Logger.d("mConf.isSupportWakeUpMode() = " + mConf.isSupportWakeUpMode());
         if (mConf.isSupportWakeUpMode()) {
+            AppResCopy.copyResFromAssetsToSD(context);
             mWakeUpDetector = WakeUpDetector.getDetector(this, mNoiseSuppression);
             mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mWakeUpDetector));
         } else {
@@ -112,7 +115,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
-        return new VoiceService(conf);
+        return new VoiceService(context, conf);
     }
 
     public void create() {
