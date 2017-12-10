@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="go_layout_content_padding_top_bottom">30dp</dimen>
-    <dimen name="go_layout_content_padding_left_right">33dp</dimen>
+    <dimen name="go_layout_content_padding_left_right">40dp</dimen>
 
-    <dimen name="go_layout_speak_text_max_size">73dp</dimen>
-    <dimen name="go_layout_speak_text_min_size">43dp</dimen>
+    <dimen name="go_layout_sleep_title_text_size">27dp</dimen>
+    <dimen name="go_layout_sleep_item_text_size">45dp</dimen>
 
-    <dimen name="go_layout_listen_text_max_size">73dp</dimen>
-    <dimen name="go_layout_listen_text_min_size">43dp</dimen>
+    <dimen name="go_layout_speak_text_max_size">33dp</dimen>
+    <dimen name="go_layout_speak_text_min_size">30dp</dimen>
 
-    <dimen name="go_layout_option_title_text_max_size">43dp</dimen>
-    <dimen name="go_layout_option_title_text_min_size">33dp</dimen>
+    <dimen name="go_layout_listen_text_max_size">33dp</dimen>
+    <dimen name="go_layout_listen_text_min_size">30dp</dimen>
 
-    <dimen name="go_layout_option_item_text_max_size_2">73dp</dimen>
-    <dimen name="go_layout_option_item_text_max_size_3">53dp</dimen>
-    <dimen name="go_layout_option_item_text_min_size">43dp</dimen>
+    <dimen name="go_layout_option_title_text_max_size">33dp</dimen>
+    <dimen name="go_layout_option_title_text_min_size">27dp</dimen>
+
+    <dimen name="go_layout_option_item_text_max_size_2">45dp</dimen>
+    <dimen name="go_layout_option_item_text_max_size_3">45dp</dimen>
+    <dimen name="go_layout_option_item_text_min_size">33dp</dimen>
 
     <dimen name="go_layout_option_title_sleep_text_max_size">50dp</dimen>
     <dimen name="go_layout_option_item_sleep_text_max_size">73dp</dimen>

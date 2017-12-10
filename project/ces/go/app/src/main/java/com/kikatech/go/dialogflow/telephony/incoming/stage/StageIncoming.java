@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 import android.os.Bundle;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneActions;
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.AudioManagerUtil;
@@ -51,8 +52,9 @@ public class StageIncoming extends SceneStage {
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
+            TtsText tText = new TtsText(SceneUtil.ICON_TELEPHONY, uiText);
             Bundle args = new Bundle();
-            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
             speak(ttsText, args);
         }
     }

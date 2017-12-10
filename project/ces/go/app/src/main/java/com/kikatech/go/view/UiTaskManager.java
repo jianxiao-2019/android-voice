@@ -7,11 +7,11 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.model.UserMsg;
 import com.kikatech.go.ui.MediaPlayerUtil;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
@@ -121,6 +121,7 @@ public class UiTaskManager {
 
     public synchronized void dispatchAsrStart() {
         onStatusChanged(GoLayout.ViewStatus.ANALYZE);
+        playAlert(R.raw.alert_stop);
     }
 
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
@@ -130,28 +131,23 @@ public class UiTaskManager {
                 OptionList optionList = extras.getParcelable(SceneUtil.EXTRA_OPTIONS_LIST);
                 if (optionList != null && !optionList.isEmpty()) {
                     displayOptions(optionList);
-                } else {
-                    speak(uiText);
                 }
             } else if (extras.containsKey(SceneUtil.EXTRA_USR_INFO)) {
                 UserInfo userInfo = extras.getParcelable(SceneUtil.EXTRA_USR_INFO);
                 if (userInfo != null) {
                     displayUsrInfo(userInfo.getAvatar(), userInfo.getName(), userInfo.getAppInfo());
-                } else {
-                    speak(uiText);
                 }
             } else if (extras.containsKey(SceneUtil.EXTRA_USR_MSG)) {
                 UserMsg userMsg = extras.getParcelable(SceneUtil.EXTRA_USR_MSG);
                 if (userMsg != null) {
                     displayUsrMsg(userMsg.getAvatar(), userMsg.getName(), userMsg.getMsg(), userMsg.getAppInfo());
-                } else {
-                    speak(uiText);
                 }
-            } else {
-                speak(uiText);
+            } else if (extras.containsKey(SceneUtil.EXTRA_TTS_TEXT)) {
+                TtsText ttsText = extras.getParcelable(SceneUtil.EXTRA_TTS_TEXT);
+                speak(ttsText);
             }
         } else {
-            speak(text);
+            speak(new TtsText(text));
         }
     }
 
@@ -288,7 +284,7 @@ public class UiTaskManager {
         });
     }
 
-    private void speak(final String text) {
+    private void speak(final TtsText ttsText) {
         final GoLayout layout = mLayout;
         if (layout == null) {
             return;
@@ -296,7 +292,7 @@ public class UiTaskManager {
         layout.post(new Runnable() {
             @Override
             public void run() {
-                layout.speak(text);
+                layout.speak(ttsText);
             }
         });
     }

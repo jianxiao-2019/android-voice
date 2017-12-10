@@ -54,6 +54,7 @@ public class StageAskAddEmoji extends BaseStage {
             String ttsText = uiAndTtsText[1];
             OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
             optionList.setTitle(uiText);
+            optionList.setIconRes(SceneUtil.ICON_MSG);
             for (String option : options) {
                 optionList.add(new Option(option, null));
             }

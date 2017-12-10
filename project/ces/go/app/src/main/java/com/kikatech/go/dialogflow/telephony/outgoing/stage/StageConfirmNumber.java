@@ -91,6 +91,7 @@ public class StageConfirmNumber extends StageOutgoing {
                     String ttsText = uiAndTtsText[1];
                     OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
                     optionList.setTitle(uiText);
+                    optionList.setIconRes(SceneUtil.ICON_TELEPHONY);
                     int iteratorSize = mContact.phoneNumbers.size() > 2 ? 2 : mContact.phoneNumbers.size();
                     for (int i = 0; i < iteratorSize; i++) {
                         ContactManager.NumberType nt = mContact.phoneNumbers.get(i);

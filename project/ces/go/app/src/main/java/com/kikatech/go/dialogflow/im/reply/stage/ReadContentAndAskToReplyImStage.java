@@ -7,6 +7,7 @@ import android.util.Pair;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
+import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.model.UserMsg;
 import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.util.LogUtil;
@@ -68,6 +69,7 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
             Bundle args = new Bundle();
 
             UserMsg userMsg = new UserMsg(imObject.getAvatarFilePath(), imObject.getUserName(), imObject.getAppInfo(), imObject.getMsgContent());
+            userMsg.setIconRes(SceneUtil.ICON_MSG);
             args.putParcelable(SceneUtil.EXTRA_USR_MSG, userMsg);
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
 

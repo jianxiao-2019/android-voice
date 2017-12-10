@@ -25,8 +25,8 @@ import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.ui.KikaApiAiActivity;
 import com.kikatech.go.ui.KikaDebugLogActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
@@ -47,8 +47,6 @@ public class GoLayout extends FrameLayout {
     public static final boolean ENABLE_LOG_VIEW = BuildConfig.DEBUG;
 
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1000;
-
-    private static final int OPTIONS_EMOJI_ONLY_TEXT_DP = 80;
 
     public enum DisplayMode {
         SLEEP(R.color.standby_bg_color, ViewStatus.STAND_BY_SLEEP),
@@ -105,18 +103,22 @@ public class GoLayout extends FrameLayout {
     private LayoutInflater mLayoutInflater;
 
     private View mSpeakLayout;
-    private GoTextView mSpeakView;
+    private ImageView mSpeakViewIcon;
+    private GoTextView mSpeakViewText;
 
     private View mListenLayout;
     private GoTextView mListenView;
 
     private View mOptionsLayout;
     private LinearLayout mOptionsItemLayout;
-    private GoTextView mOptionsTitle;
+    private ImageView mOptionsTitleIcon;
+    private GoTextView mOptionsTitleText;
+    private TextView mOptionsTitleEmojiView;
 
     private View mUsrInfoLayout;
     private ImageView mUsrInfoAvatar;
     private GoTextView mUsrInfoName;
+    private TextView mUsrInfoImName;
     private ImageView mUsrInfoImIcon;
 
     private View mUsrMsgLayout;
@@ -167,18 +169,22 @@ public class GoLayout extends FrameLayout {
         mLayoutInflater.inflate(ENABLE_LOG_VIEW ? R.layout.go_layout_debug : R.layout.go_layout, this);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
-        mSpeakView = (GoTextView) findViewById(R.id.go_layout_speak_text);
+        mSpeakViewIcon = (ImageView) findViewById(R.id.go_layout_speak_icon);
+        mSpeakViewText = (GoTextView) findViewById(R.id.go_layout_speak_text);
 
         mListenLayout = findViewById(R.id.go_layout_listen);
         mListenView = (GoTextView) findViewById(R.id.go_layout_listen_text);
 
         mOptionsLayout = findViewById(R.id.go_layout_options);
-        mOptionsTitle = (GoTextView) findViewById(R.id.go_layout_options_title);
+        mOptionsTitleIcon = (ImageView) findViewById(R.id.go_layout_options_title_icon);
+        mOptionsTitleText = (GoTextView) findViewById(R.id.go_layout_options_title_text);
         mOptionsItemLayout = (LinearLayout) findViewById(R.id.go_layout_options_item);
+        mOptionsTitleEmojiView = (TextView) findViewById(R.id.go_layout_options_title_emoji_view);
 
         mUsrInfoLayout = findViewById(R.id.go_layout_usr_info);
         mUsrInfoAvatar = (ImageView) findViewById(R.id.go_layout_usr_info_avatar);
         mUsrInfoImIcon = (ImageView) findViewById(R.id.go_layout_usr_info_im_icon);
+        mUsrInfoImName = (TextView) findViewById(R.id.go_layout_usr_info_im_name);
         mUsrInfoName = (GoTextView) findViewById(R.id.go_layout_usr_info_name);
 
         mUsrMsgLayout = findViewById(R.id.go_layout_usr_msg);
@@ -360,7 +366,7 @@ public class GoLayout extends FrameLayout {
     /**
      * display content spoken by tts service
      **/
-    public synchronized void speak(final String text) {
+    public synchronized void speak(final TtsText ttsText) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "speak");
         }
@@ -371,7 +377,13 @@ public class GoLayout extends FrameLayout {
 
         lock();
 
-        mSpeakView.setText(text);
+        Glide.with(getContext().getApplicationContext())
+                .load(ttsText.getIconRes())
+                .dontTransform()
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .into(mSpeakViewIcon);
+
+        mSpeakViewText.setText(ttsText.getUiText());
 
         mSpeakLayout.setVisibility(VISIBLE);
         mListenLayout.setVisibility(GONE);
@@ -444,32 +456,29 @@ public class GoLayout extends FrameLayout {
             if (optionList != null && !optionList.isEmpty()) {
                 Context context = getContext();
 
+                Glide.with(getContext().getApplicationContext())
+                        .load(optionList.getIconRes())
+                        .dontTransform()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(mOptionsTitleIcon);
+
                 String title = optionList.getTitle();
                 boolean isOnlyEmoji = EmojiManager.isOnlyEmojis(title);
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, String.format("title: %1$s, isOnlyEmoji: %2$s", title, isOnlyEmoji));
                 }
                 if (isOnlyEmoji) {
-                    mOptionsTitle.disableResize(ResolutionUtil.dp2px(context, OPTIONS_EMOJI_ONLY_TEXT_DP));
+                    mOptionsTitleText.setText("Add emoji?");
+                    mOptionsTitleEmojiView.setText(title);
+                    mOptionsTitleEmojiView.setVisibility(VISIBLE);
                 } else {
-                    mOptionsTitle.enableResize();
-                }
-                mOptionsTitle.setText(title);
-
-
-                int itemRes = R.layout.go_layout_options_item_2;
-                int ITEM_MARGIN = 0;
-
-                if (optionList.size() == 2) {
-                    ITEM_MARGIN = ResolutionUtil.dp2px(context, 7);
-
-                } else if (optionList.size() == 3) {
-                    itemRes = R.layout.go_layout_options_item_3;
-                    ITEM_MARGIN = ResolutionUtil.dp2px(context, 9);
+                    mOptionsTitleText.setText(title);
+                    mOptionsTitleEmojiView.setVisibility(GONE);
                 }
 
+                int ITEM_MARGIN = ResolutionUtil.dp2px(context, 7);
                 for (final Option option : optionList.getList()) {
-                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(itemRes, null);
+                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_options_item, null);
                     mOptionsItemLayout.addView(optionView);
                     optionView.setText(option.getDisplayText());
                     optionView.setOnClickListener(new OnClickListener() {
@@ -520,7 +529,7 @@ public class GoLayout extends FrameLayout {
         mMsgSentLayout.setVisibility(GONE);
 
         Context context = getContext();
-        Glide.with(context)
+        Glide.with(context.getApplicationContext())
                 .load(usrAvatar)
                 .asBitmap()
                 .error(R.drawable.kika_userpic_default)
@@ -529,13 +538,15 @@ public class GoLayout extends FrameLayout {
                 .into(mUsrInfoAvatar);
 
         if (appInfo != null) {
-            Glide.with(context)
-                    .load(appInfo.getAppIcon())
+            Glide.with(context.getApplicationContext())
+                    .load(appInfo.getAppIconSmall())
                     .dontTransform()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(mUsrInfoImIcon);
+            mUsrInfoImName.setText(appInfo.getAppName());
         } else {
             Glide.clear(mUsrInfoImIcon);
+            mUsrInfoImName.setText("");
         }
 
         mUsrInfoName.setText(usrName);
@@ -561,7 +572,7 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(VISIBLE);
 
         Context context = getContext();
-        Glide.with(context)
+        Glide.with(context.getApplicationContext())
                 .load(usrAvatar)
                 .asBitmap()
                 .error(R.drawable.kika_userpic_small_default)
@@ -570,7 +581,7 @@ public class GoLayout extends FrameLayout {
                 .into(mUsrMsgAvatar);
 
         if (appInfo != null) {
-            Glide.with(context)
+            Glide.with(context.getApplicationContext())
                     .load(appInfo.getAppIconSmall())
                     .dontTransform()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)

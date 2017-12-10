@@ -13,16 +13,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="@dimen/go_layout_content_padding_top_bottom"
-            android:paddingLeft="@dimen/go_layout_content_padding_left_right"
-            android:paddingRight="@dimen/go_layout_content_padding_left_right"
             android:paddingTop="@dimen/go_layout_content_padding_top_bottom">
-
 
             <include
                 android:id="@+id/go_layout_speak"
                 layout="@layout/go_layout_speak"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+                android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
                 android:visibility="gone"/>
 
             <include
@@ -30,6 +29,8 @@
                 layout="@layout/go_layout_listen"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+                android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
                 android:visibility="gone"/>
 
             <include
@@ -37,6 +38,8 @@
                 layout="@layout/go_layout_options"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+                android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
                 android:visibility="gone"/>
 
             <include
@@ -44,6 +47,8 @@
                 layout="@layout/go_layout_usr_info"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+                android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
                 android:visibility="gone"/>
 
             <include
@@ -51,6 +56,8 @@
                 layout="@layout/go_layout_usr_msg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+                android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
                 android:visibility="gone"/>
 
             <include
@@ -58,13 +65,16 @@
                 layout="@layout/go_layout_msg_sent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
                 android:visibility="gone"/>
 
             <include
                 android:id="@+id/go_layout_sleep"
                 layout="@layout/go_layout_sleep"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+                android:layout_marginRight="@dimen/go_layout_content_padding_left_right"/>
         </FrameLayout>
 
         <TextView

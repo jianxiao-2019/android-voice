@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    tools:ignore="SpUsage">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/kika_ic_trigger"/>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="Say"
         android:textColor="@color/go_layout_option_title_sleep_text_color"
-        android:textSize="50dp"/>
+        android:textSize="@dimen/go_layout_sleep_title_text_size"/>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="1dp"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:text="Hi Kika"
         android:textColor="@color/go_layout_option_item_sleep_text_color"
-        android:textSize="73dp"/>
+        android:textSize="@dimen/go_layout_sleep_item_text_size"/>
 </LinearLayout>

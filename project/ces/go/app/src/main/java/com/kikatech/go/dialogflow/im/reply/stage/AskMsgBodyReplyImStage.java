@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
+import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -44,8 +45,9 @@ public class AskMsgBodyReplyImStage extends BaseStage {
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
+            TtsText tText = new TtsText(SceneUtil.ICON_MSG, uiText);
             Bundle args = new Bundle();
-            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
             speak(ttsText, args);
         }
     }

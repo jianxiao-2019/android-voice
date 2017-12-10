@@ -2,15 +2,16 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="SpUsage">
 
     <RelativeLayout
-        android:layout_width="165dp"
-        android:layout_height="165dp"
-        android:layout_marginTop="65dp">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -22,14 +23,15 @@
             android:id="@+id/usr_msg_avatar_mask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="13.5dp"
             android:contentDescription="@string/default_img_content_description"
             android:src="@drawable/kika_userpic_small_mask"/>
 
         <ImageView
             android:id="@+id/go_layout_usr_msg_avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/usr_msg_avatar_mask"
             android:layout_alignLeft="@+id/usr_msg_avatar_mask"
             android:layout_alignRight="@+id/usr_msg_avatar_mask"
@@ -40,8 +42,8 @@
             android:id="@+id/go_layout_usr_msg_im_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="116dp"
-            android:layout_marginTop="115dp"
+            android:layout_marginLeft="90dp"
+            android:layout_marginTop="89dp"
             android:contentDescription="@string/default_img_content_description"/>
     </RelativeLayout>
 
@@ -51,19 +53,41 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:fontFamily="sans-serif-light"
-        android:gravity="center"
+        android:gravity="left"
+        android:singleLine="true"
         android:textColor="#b3bdd9"
-        android:textSize="28sp"/>
+        android:textSize="27dp"/>
 
-    <com.kikatech.go.view.widget.GoTextView
-        android:id="@+id/go_layout_usr_msg_content"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="180dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="4"
-        android:textColor="#b3bdd9"
-        app:max_text_size="53dp"
-        app:min_text_size="33dp"/>
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/kika_ic_quotation_upper"/>
+
+        <com.kikatech.go.view.widget.GoTextView
+            android:id="@+id/go_layout_usr_msg_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:gravity="left"
+            android:maxLines="3"
+            android:textColor="#b3bdd9"
+            app:max_text_size="33dp"
+            app:min_text_size="27dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:src="@drawable/kika_ic_quotation_lower"/>
+
+    </LinearLayout>
 
 </LinearLayout>

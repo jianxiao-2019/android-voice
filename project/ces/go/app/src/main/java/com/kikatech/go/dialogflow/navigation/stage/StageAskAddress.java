@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.navigation.google.webservice.GooglePlaceApi;
 import com.kikatech.go.navigation.model.PlaceSearchResult;
@@ -58,8 +59,9 @@ public class StageAskAddress extends BaseNaviStage {
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
+            TtsText tText = new TtsText(SceneUtil.ICON_NAVIGATION, uiText);
             Bundle args = new Bundle();
-            args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+            args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
             speak(ttsText, args);
         }
     }

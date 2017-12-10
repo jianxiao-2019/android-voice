@@ -8,7 +8,6 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
-import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -58,6 +57,7 @@ public class AskToReadMsgOptionStage extends BaseReplySmsStage {
             String ttsText = uiAndTtsText[1];
             OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
             optionList.setTitle(uiText);
+            optionList.setIconRes(SceneUtil.ICON_MSG);
             for (String option : options) {
                 optionList.add(new Option(option, null));
             }

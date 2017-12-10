@@ -7,7 +7,6 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
-import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -63,6 +62,7 @@ public class StageConfirmAddress extends BaseNaviStage {
             String ttsText = uiAndTtsText[1];
             OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
             optionList.setTitle(uiText);
+            optionList.setIconRes(SceneUtil.ICON_NAVIGATION);
             for (String option : options) {
                 optionList.add(new Option(option, null));
             }

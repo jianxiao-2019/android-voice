@@ -14,12 +14,12 @@
     <color name="permission_btn_start_pressed">#acd373</color>
     <color name="permission_btn_start_disable">#a7a7a7</color>
 
-    <color name="go_layout_speak_text_color">#b3bdd9</color>
-    <color name="go_layout_listen_text_color">#24D3E0</color>
-    <color name="go_layout_option_title_text_color">#7781a0</color>
-    <color name="go_layout_option_item_text_color">#b3bdd9</color>
-    <color name="go_layout_option_title_sleep_text_color">#42485a</color>
-    <color name="go_layout_option_item_sleep_text_color">#656c7f</color>
+    <color name="go_layout_speak_text_color">#8e94a9</color>
+    <color name="go_layout_listen_text_color">#8e94a9</color>
+    <color name="go_layout_option_title_text_color">#44485b</color>
+    <color name="go_layout_option_item_text_color">#8e94a9</color>
+    <color name="go_layout_option_title_sleep_text_color">#44485b</color>
+    <color name="go_layout_option_item_sleep_text_color">#8e94a9</color>
 
     <color name="dialog_text_title_color">#313131</color>
     <color name="dialog_text_content_color">#313131</color>

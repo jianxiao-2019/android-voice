@@ -1,8 +1,9 @@
 package com.kikatech.go.dialogflow.model;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
+
+import com.kikatech.go.dialogflow.SceneUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +87,7 @@ public class OptionList extends UiModel {
     public static OptionList getDefaultOptionList() {
         OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
         optionList.setTitle("You can say");
+        optionList.setIconRes(SceneUtil.ICON_TRIGGER);
         optionList.add(new Option("Navigate", null));
         optionList.add(new Option("Message", null));
         optionList.add(new Option("Make a call", null));
@@ -113,6 +115,7 @@ public class OptionList extends UiModel {
     }
 
     private OptionList(Parcel in) {
+        super(in);
         requestType = in.readByte();
         title = in.readString();
         in.readList(options, Option.class.getClassLoader());

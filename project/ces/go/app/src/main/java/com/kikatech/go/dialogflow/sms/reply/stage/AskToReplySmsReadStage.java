@@ -66,6 +66,7 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
             Bundle args = new Bundle();
 
             UserMsg userMsg = new UserMsg(smsObject.getPhotoUri(), smsObject.getUserName(), AppInfo.SMS, smsObject.getMsgContent());
+            userMsg.setIconRes(SceneUtil.ICON_MSG);
             args.putParcelable(SceneUtil.EXTRA_USR_MSG, userMsg);
             args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
 

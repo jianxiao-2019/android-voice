@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -55,8 +56,9 @@ public class StageMakeCall extends StageOutgoing {
                 if (uiAndTtsText.length > 0) {
                     String uiText = uiAndTtsText[0];
                     String ttsText = uiAndTtsText[1];
+                    TtsText tText = new TtsText(SceneUtil.ICON_TELEPHONY, uiText);
                     Bundle args = new Bundle();
-                    args.putString(SceneUtil.EXTRA_UI_TEXT, uiText);
+                    args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
                     speech = ttsText;
                 }
             }

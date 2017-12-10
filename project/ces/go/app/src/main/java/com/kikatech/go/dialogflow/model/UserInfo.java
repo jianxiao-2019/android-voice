@@ -60,7 +60,8 @@ public class UserInfo extends UiModel {
         dest.writeSerializable(appInfo);
     }
 
-    protected UserInfo(Parcel in) {
+    UserInfo(Parcel in) {
+        super(in);
         avatar = in.readString();
         name = in.readString();
         appInfo = (AppInfo) in.readSerializable();

@@ -46,7 +46,7 @@ public class UserMsg extends UserInfo {
         dest.writeString(msg);
     }
 
-    protected UserMsg(Parcel in) {
+    UserMsg(Parcel in) {
         super(in);
         msg = in.readString();
     }
