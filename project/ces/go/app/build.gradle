@@ -7,8 +7,8 @@ android {
         applicationId "com.kikatech.go"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20171207
-        versionName "1.1.03_20171207"
+        versionCode 20171210
+        versionName "1.1.03_20171210"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -81,6 +81,6 @@ dependencies {
     compile 'com.vdurmont:emoji-java:4.0.0'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
-    compile 'com.kikatech.voice:voice:1.0.0.1'
+    compile 'com.kikatech.voice:voice:1.0.0.4'
 //    compile project(':voice')
 }
