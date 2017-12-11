@@ -328,6 +328,11 @@ public class DialogFlowService implements
 
     }
 
+    @Override
+    public void onVadBos() {
+
+    }
+
     public ISceneFeedback getTtsFeedback() {
         return mSceneFeedback;
     }

@@ -39,6 +39,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private VoiceActiveStateListener mVoiceActiveStateListener;
 
     private Handler mMainThreadHander;
+    private TimerHandler mTimerHandler;
 
     private boolean mIsAsrPaused = false;
 
@@ -65,6 +66,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         void onSpeechProbabilityChanged(float prob);
 
         void onError(int reason);
+
+        void onVadBos();
     }
 
     public interface VoiceActiveStateListener {
@@ -124,6 +127,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
 
         mMainThreadHander = new Handler();
+        mTimerHandler = new TimerHandler();
 
         mWebService = WebSocket.openConnection(mWebSocketListener);
         mWebService.connect(mConf.getConnectionConfiguration());
@@ -137,12 +141,18 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
 
         Logger.d("VoiceService start 2");
-        mWakeUpDetector.reset();
+        if (mWakeUpDetector != null) {
+            mWakeUpDetector.reset();
+        }
         mVoiceDetector.startDetecting();
         mVoiceRecorder.start();
 
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStartListening();
+        }
+
+        if (mTimerHandler != null) {
+            mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, VAD_BOS_TIMEOUT);
         }
     }
 
@@ -224,6 +234,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mVoiceDetector.updatePacketInterval(((ConfigMessage) message).packetInterval);
                 return;
             }
+            if (mTimerHandler != null) {
+                mTimerHandler.removeMessages(MSG_VAD_BOS);
+            }
             if (mMainThreadHander != null) {
                 mMainThreadHander.post(new Runnable() {
                     @Override
@@ -269,6 +282,20 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             if (mWebService != null) {
                 mWebService.sendData(data);
             }
+        }
+    }
+
+    private static final int VAD_BOS_TIMEOUT = 3000;
+    private static final int MSG_VAD_BOS = 1;
+    private class TimerHandler extends Handler {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            if (msg.what == MSG_VAD_BOS) {
+                if (mVoiceStateChangedListener != null) {
+                    mVoiceStateChangedListener.onVadBos();
+                }
+            }
+            super.handleMessage(msg);
         }
     }
 }
