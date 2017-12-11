@@ -226,10 +226,10 @@ public class WebSocket {
         public void onOpen(ServerHandshake handshakeData) {
             Logger.i("VoiceWebSocketClient onOpen mListener = " + mListener);
             mOpened = true;
-            mReconnectTimes = 0;
-            if (mListener != null) {
+            if (mListener != null && mReconnectTimes == 0) {
                 mListener.onOpen();
             }
+            mReconnectTimes = 0;
         }
 
         @Override

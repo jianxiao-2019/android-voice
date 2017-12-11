@@ -26,6 +26,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public static final int REASON_NOT_CREATED = 1;
 
+    private static final int VAD_BOS_TIMEOUT = 4000;
+    private static final int MSG_VAD_BOS = 1;
+
     private VoiceConfiguration mConf;
     private WebSocket mWebService;
 
@@ -48,6 +51,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (mVoiceActiveStateListener != null) {
             mVoiceActiveStateListener.onWakeUp();
         }
+        startVadBosTimer();
     }
 
     public interface VoiceRecognitionListener {
@@ -83,7 +87,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (voiceSource == null) {
             voiceSource = new VoiceSource();
         }
-
 
         // TODO : base on the VoiceConfiguration.
         mVoiceDetector = new VoiceDetector(
@@ -152,17 +155,30 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mVoiceStateChangedListener.onStartListening();
         }
 
+        startVadBosTimer();
+    }
+
+    private void cleanVadBosTimer() {
         if (mTimerHandler != null) {
+            mTimerHandler.removeMessages(MSG_VAD_BOS);
+        }
+    }
+
+    private void startVadBosTimer() {
+        if (mTimerHandler != null) {
+            mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, VAD_BOS_TIMEOUT);
         }
     }
 
     public void resumeAsr() {
         mIsAsrPaused = false;
+        startVadBosTimer();
     }
 
     public void pauseAsr() {
         mIsAsrPaused = true;
+        cleanVadBosTimer();
     }
 
     public void stop() {
@@ -173,6 +189,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStopListening();
         }
+        cleanVadBosTimer();
     }
 
     public void sleep() {
@@ -182,6 +199,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mVoiceActiveStateListener.onSleep();
             }
         }
+        cleanVadBosTimer();
     }
 
     public void wakeUp() {
@@ -191,6 +209,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mVoiceActiveStateListener.onWakeUp();
             }
         }
+        startVadBosTimer();
     }
 
     public void destroy() {
@@ -235,9 +254,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mVoiceDetector.updatePacketInterval(((ConfigMessage) message).packetInterval);
                 return;
             }
-            if (mTimerHandler != null) {
-                mTimerHandler.removeMessages(MSG_VAD_BOS);
-            }
+            cleanVadBosTimer();
             if (mMainThreadHander != null) {
                 mMainThreadHander.post(new Runnable() {
                     @Override
@@ -286,8 +303,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
-    private static final int VAD_BOS_TIMEOUT = 3000;
-    private static final int MSG_VAD_BOS = 1;
     private class TimerHandler extends Handler {
         @Override
         public void handleMessage(android.os.Message msg) {
