@@ -44,8 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
-            android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
-            android:visibility="gone"/>
+            android:layout_marginRight="@dimen/go_layout_content_padding_left_right"/>
 
         <include
             android:id="@+id/go_layout_usr_msg"
@@ -70,7 +69,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
-            android:layout_marginRight="@dimen/go_layout_content_padding_left_right"/>
+            android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
+            android:visibility="gone"/>
 
     </FrameLayout>
 

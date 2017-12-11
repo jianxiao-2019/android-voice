@@ -6,23 +6,34 @@
     <dimen name="go_layout_sleep_title_text_size">27dp</dimen>
     <dimen name="go_layout_sleep_item_text_size">45dp</dimen>
 
-    <dimen name="go_layout_speak_text_max_size">33dp</dimen>
-    <dimen name="go_layout_speak_text_min_size">30dp</dimen>
+    <dimen name="go_layout_speak_text_max_size">45dp</dimen>
+    <dimen name="go_layout_speak_text_min_size">33dp</dimen>
 
     <dimen name="go_layout_listen_text_max_size">33dp</dimen>
     <dimen name="go_layout_listen_text_min_size">30dp</dimen>
 
     <dimen name="go_layout_option_title_text_max_size">33dp</dimen>
     <dimen name="go_layout_option_title_text_min_size">27dp</dimen>
+    <dimen name="go_layout_option_emoji_text_margin_top">112dp</dimen>
+    <dimen name="go_layout_option_emoji_text_size">78dp</dimen>
 
-    <dimen name="go_layout_option_item_text_max_size_2">45dp</dimen>
-    <dimen name="go_layout_option_item_text_max_size_3">45dp</dimen>
+    <dimen name="go_layout_option_item_text_max_size">45dp</dimen>
     <dimen name="go_layout_option_item_text_min_size">33dp</dimen>
 
-    <dimen name="go_layout_option_title_sleep_text_max_size">50dp</dimen>
-    <dimen name="go_layout_option_item_sleep_text_max_size">73dp</dimen>
+    <dimen name="go_layout_usr_info_name_im_name_text_size">27dp</dimen>
+    <dimen name="go_layout_usr_info_name_text_max_size">45dp</dimen>
+    <dimen name="go_layout_usr_info_name_text_min_size">33dp</dimen>
+
+    <dimen name="go_layout_usr_msg_name_text_size">27dp</dimen>
+    <dimen name="go_layout_usr_msg_content_text_max_size">33dp</dimen>
+    <dimen name="go_layout_usr_msg_content_text_min_size">27dp</dimen>
+
+    <dimen name="go_layout_msg_sent_text_size">45dp</dimen>
 
     <dimen name="go_layout_status_bar_height">156dp</dimen>
+
+    <dimen name="go_layout_usr_msg_avatar_margin_top">13.5dp</dimen>
+    <dimen name="go_layout_usr_msg_avatar_margin_left">15dp</dimen>
 
 
     <dimen name="dialog_margin_large">40dp</dimen>

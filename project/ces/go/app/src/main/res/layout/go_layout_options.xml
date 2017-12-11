@@ -25,7 +25,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:ellipsize="end"
             android:gravity="left"
+            android:maxLines="3"
             android:textColor="@color/go_layout_option_title_text_color"
             app:max_text_size="@dimen/go_layout_option_title_text_max_size"
             app:min_text_size="@dimen/go_layout_option_title_text_min_size"/>
@@ -35,9 +37,9 @@
         android:id="@+id/go_layout_options_title_emoji_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="@dimen/go_layout_option_emoji_text_margin_top"
         android:textColor="@color/go_layout_option_title_text_color"
-        android:textSize="78dp"/>
+        android:textSize="@dimen/go_layout_option_emoji_text_size"/>
 
     <LinearLayout
         android:id="@+id/go_layout_options_item"

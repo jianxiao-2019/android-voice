@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="SpUsage">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -36,6 +38,6 @@
         android:gravity="center"
         android:text="Sent!"
         android:textColor="#8e94a9"
-        android:textSize="45dp"/>
+        android:textSize="@dimen/go_layout_msg_sent_text_size"/>
 
 </RelativeLayout>
