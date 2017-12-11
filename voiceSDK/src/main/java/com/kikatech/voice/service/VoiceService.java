@@ -114,7 +114,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mNoiseSuppression));
         }
 
-        Message.register("CONFIG", ConfigMessage.class);
+        // Do not listen this message temporary.
+        // Message.register("CONFIG", ConfigMessage.class);
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
