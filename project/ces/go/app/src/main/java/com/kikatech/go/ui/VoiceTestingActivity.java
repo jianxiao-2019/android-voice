@@ -65,11 +65,11 @@ public class VoiceTestingActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_testing);
 
-        UsbAudioService audioService = UsbAudioService.getInstance(this);
-        audioService.setListener(this);
-        audioService.scanDevices();
-//
-//         attachService(null);
+//        UsbAudioService audioService = UsbAudioService.getInstance(this);
+//        audioService.setListener(this);
+//        audioService.scanDevices();
+
+        attachService(null);
 
         findViewById(R.id.button_permission).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +169,8 @@ public class VoiceTestingActivity extends BaseActivity
                 .build());
         mVoiceService = VoiceService.getService(this, conf);
         mVoiceService.setVoiceRecognitionListener(this);
+        mVoiceService.setVoiceStateChangedListener(this);
+        mVoiceService.create();
     }
 
     @Override
@@ -176,6 +178,7 @@ public class VoiceTestingActivity extends BaseActivity
         super.onDestroy();
         if (mVoiceService != null) {
             mVoiceService.stop();
+            mVoiceService.destroy();
         }
         if (mTtsSource != null) {
             mTtsSource.close();
@@ -265,29 +268,38 @@ public class VoiceTestingActivity extends BaseActivity
 
     @Override
     public void onCreated() {
-
+        Logger.d("VoiceTestingActivity onCreated");
     }
 
     @Override
     public void onStartListening() {
+        Logger.d("VoiceTestingActivity onStartListening");
     }
 
     @Override
     public void onStopListening() {
+        Logger.d("VoiceTestingActivity onStopListening");
     }
 
     @Override
     public void onDestroyed() {
-
+        Logger.d("VoiceTestingActivity onDestroyed");
     }
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
+        Logger.d("VoiceTestingActivity onStartListening prob = " + prob);
     }
 
     @Override
     public void onError(int reason) {
+        Logger.d("VoiceTestingActivity onError reason = " + reason);
 
+    }
+
+    @Override
+    public void onVadBos() {
+        Logger.d("VoiceTestingActivity onVadBos");
     }
 
     @Override
