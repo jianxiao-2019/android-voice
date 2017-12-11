@@ -163,6 +163,9 @@ public class UiTaskManager {
                         }
                         displayMsgSent();
                         break;
+                    case SceneUtil.EVENT_OUTGOING_CALL:
+                        onStatusChanged(GoLayout.ViewStatus.ANALYZE);
+                        break;
                 }
             }
         }

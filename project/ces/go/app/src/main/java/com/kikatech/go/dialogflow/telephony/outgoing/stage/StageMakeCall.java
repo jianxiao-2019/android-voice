@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.telephony.TelephonyServiceManager;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -72,9 +73,17 @@ public class StageMakeCall extends StageOutgoing {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
+        Bundle args = new Bundle();
+        args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_OUTGOING_CALL);
+        send(args);
         if (!TextUtils.isEmpty(mNumberToCall)) {
             TelephonyServiceManager.getIns().makePhoneCall(mSceneBase.getContext(), mNumberToCall);
         }
-        exitScene();
+        BackgroundThread.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                exitScene();
+            }
+        }, SceneUtil.OUTGOING_CALL_PAGE_DELAY);
     }
 }

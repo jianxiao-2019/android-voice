@@ -13,7 +13,9 @@ public class SceneUtil {
     private static final String TAG = "SceneUtil";
 
     public static final String EVENT_DISPLAY_MSG_SENT = "event_display_msg_sent";
+    public static final String EVENT_OUTGOING_CALL = "event_outgoing_call";
 
+    public static final long OUTGOING_CALL_PAGE_DELAY = 2500;
     public static final long MSG_SENT_PAGE_DELAY = 2500;
 
     public static final int ICON_TRIGGER = R.drawable.kika_ic_trigger;
