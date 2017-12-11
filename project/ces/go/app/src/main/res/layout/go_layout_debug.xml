@@ -83,8 +83,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
             android:textColor="@android:color/holo_red_dark"
-            android:textSize="16sp"
-            android:visibility="gone"/>
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/go_layout_debug_log"
@@ -93,8 +92,7 @@
             android:layout_below="@+id/go_layout_debug_version"
             android:paddingLeft="5dp"
             android:textColor="@android:color/holo_red_dark"
-            android:textSize="16sp"
-            android:visibility="gone"/>
+            android:textSize="16sp"/>
 
     </RelativeLayout>
 
