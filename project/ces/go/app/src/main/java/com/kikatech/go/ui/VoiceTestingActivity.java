@@ -19,7 +19,7 @@ import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.core.tts.TtsService;
-import com.kikatech.voice.core.tts.TtsSpeaker;
+import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -41,7 +41,7 @@ import java.util.Locale;
 
 public class VoiceTestingActivity extends BaseActivity
         implements VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener,
-        TtsSpeaker.TtsStateChangedListener, IUsbAudioListener {
+        TtsSource.TtsStateChangedListener, IUsbAudioListener {
 
     private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
     private static final String SERVER_COMMAND_CONTENT = "CONTENT";
@@ -58,7 +58,7 @@ public class VoiceTestingActivity extends BaseActivity
     private String[] mPermissions = {Manifest.permission.RECORD_AUDIO};
 
     private VoiceService mVoiceService;
-    private TtsSpeaker mTtsSpeaker;
+    private TtsSource mTtsSource;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,28 +120,28 @@ public class VoiceTestingActivity extends BaseActivity
                 if (mEditText == null || TextUtils.isEmpty(mEditText.getText())) {
                     return;
                 }
-                // mTtsSpeaker.speak(mEditText.getText().toString());
+//                 mTtsSource.speak(mEditText.getText().toString());
                 Pair<String, Integer>[] playList = new Pair[3];
-                playList[0] = new Pair<>("Your speak is :", TtsSpeaker.TTS_VOICE_2);
-                playList[1] = new Pair<>(mEditText.getText().toString(), TtsSpeaker.TTS_VOICE_1);
-                playList[2] = new Pair<>("Is that correct?", TtsSpeaker.TTS_VOICE_2);
-                mTtsSpeaker.speak(playList);
+                playList[0] = new Pair<>("Your speak is :", TtsSource.TTS_SPEAKER_2);
+                playList[1] = new Pair<>(mEditText.getText().toString(), TtsSource.TTS_SPEAKER_1);
+                playList[2] = new Pair<>("Is that correct?", TtsSource.TTS_SPEAKER_2);
+                mTtsSource.speak(playList);
             }
         });
 
         findViewById(R.id.button_interrupt_tts).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTtsSpeaker.interrupt();
+                mTtsSource.interrupt();
             }
         });
 
         mEditText = (EditText) findViewById(R.id.edit_text);
 
-        if (mTtsSpeaker == null) {
-            mTtsSpeaker = TtsService.getInstance().getSpeaker();
-            mTtsSpeaker.init(this, null);
-            mTtsSpeaker.setTtsStateChangedListener(VoiceTestingActivity.this);
+        if (mTtsSource == null) {
+            mTtsSource = TtsService.getInstance().getSpeaker(TtsService.TtsSourceType.KIKA_WEB);
+            mTtsSource.init(this, null);
+            mTtsSource.setTtsStateChangedListener(VoiceTestingActivity.this);
         }
 
         Message.register("INTERMEDIATE", IntermediateMessage.class);
@@ -177,9 +177,9 @@ public class VoiceTestingActivity extends BaseActivity
         if (mVoiceService != null) {
             mVoiceService.stop();
         }
-        if (mTtsSpeaker != null) {
-            mTtsSpeaker.close();
-            mTtsSpeaker = null;
+        if (mTtsSource != null) {
+            mTtsSource.close();
+            mTtsSource = null;
         }
 
         Message.unregisterAll();
