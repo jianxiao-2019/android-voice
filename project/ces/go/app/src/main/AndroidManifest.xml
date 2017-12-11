@@ -126,6 +126,9 @@
                     android:priority="999"/>
             </intent-filter>
         </receiver>
-    </application>
 
+
+        <meta-data android:name="io.fabric.ApiKey"
+                   android:value="4678fe8687ebf9670e96837e03d38911c64e3551"/>
+    </application>
 </manifest>
