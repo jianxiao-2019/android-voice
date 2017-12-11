@@ -1,14 +1,28 @@
 package com.kikatech.go.navigation.location;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.TimeUtil;
 
@@ -26,8 +40,71 @@ public class LocationMgr {
     private static boolean sGetGpsLocation = false;
     private static boolean sGetNetworkLocation = false;
 
-    public static void init(final Context context) {
-        fetchLocation(context, null);
+    public static void init(final Activity activity) {
+        if (!isGpsProviderEnabled(activity)) {
+            enableGps(activity);
+        } else {
+            fetchLocation(activity, null);
+        }
+    }
+
+    public static void enableGps(final Activity activity) {
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(activity)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                    }
+                }).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(30 * 1000);
+        locationRequest.setFastestInterval(5 * 1000);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+                .setAlwaysShow(true); //this is the key ingredient
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates state = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied.
+                        // The client can initialize location requests here.
+                        fetchLocation(activity, null);
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied.
+                        // But could be fixed by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(activity, 1000);
+                        } catch (IntentSender.SendIntentException ignore) {
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However
+                        // , we have no way to fix the settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -210,12 +287,19 @@ public class LocationMgr {
 
     private static boolean isLocationServiceEnabled(Context context) {
         final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        for (String provider : PROVIDER_TARGET) {
-            if (locationManager.isProviderEnabled(provider)) {
-                return true;
+        if (locationManager != null) {
+            for (String provider : PROVIDER_TARGET) {
+                if (locationManager.isProviderEnabled(provider)) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    private static boolean isGpsProviderEnabled(Context context) {
+        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     public interface ILocationCallback {

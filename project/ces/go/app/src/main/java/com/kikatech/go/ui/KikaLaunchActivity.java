@@ -9,7 +9,6 @@ import com.kikatech.go.notification.NotificationListenerUtil;
 import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.OverlayUtil;
 import com.kikatech.go.util.PermissionUtil;
-import com.kikatech.voice.util.contact.ContactManager;
 
 /**
  * @author SkeeterWang Created on 2017/11/24.
