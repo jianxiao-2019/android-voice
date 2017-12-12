@@ -30,7 +30,7 @@ public class StageOutgoing extends SceneStage {
                 case SceneActions.ACTION_OUTGOING_START:
                 case SceneActions.ACTION_OUTGOING_CHANGE:
                 case SceneActions.ACTION_OUTGOING_YES:
-                    return getCheckContactStage(extra);
+                    return getCheckContactStage(action, extra);
                 case SceneActions.ACTION_OUTGOING_NO:
                 case SceneActions.ACTION_OUTGOING_CANCEL:
                     return new StageCancel(mSceneBase, mFeedback);
@@ -47,7 +47,8 @@ public class StageOutgoing extends SceneStage {
     public void action() {
     }
 
-    private SceneStage getCheckContactStage(Bundle extra) {
+    private SceneStage getCheckContactStage(String action, Bundle extra) {
+        boolean isStartStage = SceneActions.ACTION_OUTGOING_START.equals(action);
         boolean hasQueried = false;
         ContactManager.MatchedContact mMatchedContact = null;
 
@@ -94,7 +95,7 @@ public class StageOutgoing extends SceneStage {
                     return new StageNoContact(mSceneBase, mFeedback);
             }
         } else {
-            return hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
+            return !isStartStage && hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
         }
     }
 }
