@@ -15,10 +15,10 @@ public class AsrConfiguration {
         CONVERSATION
     }
 
-    private SpeechMode speechMode = SpeechMode.ONE_SHOT;
-    private boolean alterEnabled = false;
-    private boolean emojiEnabled = true;
-    private boolean punctuationEnabled = true;
+    private SpeechMode speechMode;
+    private boolean alterEnabled;
+    private boolean emojiEnabled;
+    private boolean punctuationEnabled;
 
     private AsrConfiguration(SpeechMode speechMode, boolean alterEnabled,
                              boolean emojiEnable, boolean punctuationEnabled) {
