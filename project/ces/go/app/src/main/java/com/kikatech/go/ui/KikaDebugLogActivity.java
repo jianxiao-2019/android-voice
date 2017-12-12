@@ -140,7 +140,7 @@ public class KikaDebugLogActivity extends Activity {
                         logTitle = "Voice SDK Log";
                         break;
                     case R.id.log_voice_mvp:
-                        log = FileLoggerUtil.getIns().loadLogFile(com.kikatech.voice.util.log.LogUtil.LOG_FOLDER, com.kikatech.voice.util.log.Logger.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(com.kikatech.voice.util.log.LogUtil.LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE);
                         logTitle = "Voice MVP Log";
                         break;
                     default:
