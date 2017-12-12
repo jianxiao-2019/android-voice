@@ -173,7 +173,15 @@ public class ContactManager {
     }
 
     private synchronized HashMap<String, PhoneBookContact> getPhoneBook(Context ctx) {
-        Cursor phones = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        Cursor phones;
+        try {
+            phones = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        } catch (SecurityException se) {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "SecurityException:" + se);
+            }
+            return null;
+        }
 
         if (phones == null || phones.getCount() == 0) {
             return null;
