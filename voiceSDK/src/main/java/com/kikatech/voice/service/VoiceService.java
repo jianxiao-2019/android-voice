@@ -113,13 +113,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         mNoiseSuppression = new NoiseSuppression(new FileWriter(mConf.getDebugFilePath() + "_NS", mVoiceDetector));
 
-        Logger.d("mConf.isSupportWakeUpMode() = " + mConf.isSupportWakeUpMode());
+        Logger.d("mConf.isSupportWakeUpMode() = " + mConf.isSupportWakeUpMode() + " [No NoiseSuppression]");
         if (mConf.isSupportWakeUpMode()) {
             AppResCopy.copyResFromAssetsToSD(context);
-            mWakeUpDetector = WakeUpDetector.getDetector(this, mNoiseSuppression);
+            mWakeUpDetector = WakeUpDetector.getDetector(this, mVoiceDetector);
             mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mWakeUpDetector));
         } else {
-            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mNoiseSuppression));
+            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mVoiceDetector));
         }
 
         // Do not listen this message temporary.

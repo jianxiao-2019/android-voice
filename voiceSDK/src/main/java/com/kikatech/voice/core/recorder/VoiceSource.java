@@ -78,7 +78,7 @@ public class VoiceSource implements IVoiceSource {
             return null;
         }
         try {
-            return new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_STEREO,
+            return new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT, mBufferSizeInBytes);
         } catch (Exception e) {
             return null;

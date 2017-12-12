@@ -81,13 +81,14 @@ public class SnowBoyDetector extends WakeUpDetector {
     }
 
     private byte[] stereoToMono(byte[] stereoData) {
-        byte[] monoResult = new byte[stereoData.length / 2];
-        for (int i = 0; i < monoResult.length; i += 2) {
-            monoResult[i] = stereoData[i * 2];
-            monoResult[i + 1] = stereoData[i * 2 + 1];
-        }
-
-        return monoResult;
+//        byte[] monoResult = new byte[stereoData.length / 2];
+//        for (int i = 0; i < monoResult.length; i += 2) {
+//            monoResult[i] = stereoData[i * 2];
+//            monoResult[i + 1] = stereoData[i * 2 + 1];
+//        }
+//
+//        return monoResult;
+        return stereoData;
     }
 
     @Override
