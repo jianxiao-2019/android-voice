@@ -19,7 +19,7 @@ public class NoiseSuppression implements IDataPath {
         mDataPath = dataPath;
 
         NoiseCancellation.Init();
-        NoiseCancellation.SetVAD(4000);
+//        NoiseCancellation.SetVAD(4000);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class NoiseSuppression implements IDataPath {
             // Logger.d("NoiseSuppression onData inBufs.length = " + inBufs.length + " outBufs.length = " + outBufs.length);
 
 
-            short[] postfix = Arrays.copyOfRange(outBufs, 128, 256);
+            short[] postfix = Arrays.copyOfRange(outBufs, 0, 128);
 //            if (mDataPath != null) {
 //                mDataPath.onData(ShortToByte(postfix));
 //            }
