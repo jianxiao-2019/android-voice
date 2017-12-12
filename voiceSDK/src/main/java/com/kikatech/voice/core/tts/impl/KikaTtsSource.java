@@ -62,7 +62,7 @@ public class KikaTtsSource implements TtsSource {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("language", "en_us");
-            jsonObject.put("contents", new JSONArray().put(genJsonData(text, 1)));
+            jsonObject.put("contents", new JSONArray().put(genJsonData(text, 0)));
             new SendPostTask().execute(jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -167,14 +167,11 @@ public class KikaTtsSource implements TtsSource {
             try {
                 JSONArray array = new JSONArray(ttsUrl);
                 url = array.getString(0);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if (TextUtils.isEmpty(url)) {
-                return;
-            }
-            mMediaPlayer.reset();
-            try {
+
+                if (TextUtils.isEmpty(url)) {
+                    return;
+                }
+                mMediaPlayer.reset();
                 mMediaPlayer.setDataSource(url);
                 mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
@@ -196,7 +193,7 @@ public class KikaTtsSource implements TtsSource {
                         mIsTtsInterrupted = false;
                     }
                 });
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 if (mListener != null) {
                     mListener.onTtsError();
