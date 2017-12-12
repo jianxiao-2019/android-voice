@@ -184,7 +184,11 @@ public class LocationMgr {
 
             if (locationListener != null) {
                 locationListeners[i] = locationListener;
-                locationManager.requestLocationUpdates(provider, 5000, LOCATION_PRECISION_DISTANCE, locationListener);
+                try {
+                    locationManager.requestLocationUpdates(provider, 5000, LOCATION_PRECISION_DISTANCE, locationListener);
+                } catch (SecurityException se) {
+                    return;
+                }
             }
         }
 
