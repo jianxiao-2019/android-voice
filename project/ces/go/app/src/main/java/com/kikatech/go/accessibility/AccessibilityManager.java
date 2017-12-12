@@ -64,7 +64,7 @@ public class AccessibilityManager {
         }
     }
 
-    public void register(Class<?> clazz, Object object) {
+    public synchronized void register(Class<?> clazz, Object object) {
         if (clazz != null && object != null) {
             if (mSubscribers.get(clazz.getName()) == null) {
                 List<Object> objectList = new ArrayList<>();
@@ -78,7 +78,7 @@ public class AccessibilityManager {
         }
     }
 
-    public void unregister(Class<?> clazz, Object object) {
+    public synchronized void unregister(Class<?> clazz, Object object) {
         if (clazz != null) {
             List<Object> list = mSubscribers.get(clazz.getName());
             if (list != null) {
@@ -90,7 +90,7 @@ public class AccessibilityManager {
         }
     }
 
-    public void onScene(Scene scene) {
+    public synchronized void onScene(Scene scene) {
         if (scene != null) {
             String name = scene.getClass().getName();
             List<Object> subscribers = mSubscribers.get(name);
