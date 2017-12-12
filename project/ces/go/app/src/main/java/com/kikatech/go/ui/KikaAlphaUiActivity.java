@@ -221,7 +221,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        mUiManager.release();
+        if (mUiManager != null) mUiManager.release();
         unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
         super.onDestroy();
