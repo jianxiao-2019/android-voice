@@ -14,6 +14,7 @@ import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.ConfigMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 
 import ai.kitt.snowboy.AppResCopy;
@@ -25,9 +26,13 @@ import ai.kitt.snowboy.AppResCopy;
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public static final int REASON_NOT_CREATED = 1;
+    private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
 
     private static final int VAD_BOS_TIMEOUT = 4000;
+    private static final int HEARTBEAT_DURATION = 10 * 1000;
+
     private static final int MSG_VAD_BOS = 1;
+    private static final int MSG_SEND_HEARTBEAT = 2;
 
     private VoiceConfiguration mConf;
     private WebSocket mWebService;
@@ -41,7 +46,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private VoiceStateChangedListener mVoiceStateChangedListener;
     private VoiceActiveStateListener mVoiceActiveStateListener;
 
-    private Handler mMainThreadHander;
+    private Handler mMainThreadHandler;
     private TimerHandler mTimerHandler;
 
     private boolean mIsAsrPaused = false;
@@ -93,8 +98,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 new FileWriter(mConf.getDebugFilePath() + "_speex", new VoiceDataSender()), new VoiceDetector.OnVadProbabilityChangeListener() {
             @Override
             public void onSpeechProbabilityChanged(final float speechProbability) {
-                if (mMainThreadHander != null) {
-                    mMainThreadHander.post(new Runnable() {
+                if (mMainThreadHandler != null) {
+                    mMainThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (mVoiceStateChangedListener != null) {
@@ -130,8 +135,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mWebService.release();
         }
 
-        mMainThreadHander = new Handler();
+        mMainThreadHandler = new Handler();
         mTimerHandler = new TimerHandler();
+        mTimerHandler.sendEmptyMessageDelayed(MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
 
         mWebService = WebSocket.openConnection(mWebSocketListener);
         mWebService.connect(mConf.getConnectionConfiguration());
@@ -220,6 +226,15 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mWebService.release();
         mWebService = null;
 
+        if (mMainThreadHandler != null) {
+            mMainThreadHandler.removeCallbacksAndMessages(null);
+            mMainThreadHandler = null;
+        }
+        if (mTimerHandler != null) {
+            mTimerHandler.removeCallbacksAndMessages(null);
+            mTimerHandler = null;
+        }
+
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onDestroyed();
         }
@@ -231,12 +246,20 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
+    public void updateAsrSettings(AsrConfiguration conf) {
+        if (mWebService != null) {
+            Logger.d("updateAsrSettings conf = " + conf.toJsonString());
+            mWebService.sendCommand(SERVER_COMMAND_SETTINGS, conf.toJsonString());
+            mConf.updateAsrConfiguration(conf);
+        }
+    }
+
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
         @Override
         public void onOpen() {
-            Logger.d("mWebSocketListener onOpen mMainThreadHander = " + mMainThreadHander);
-            if (mMainThreadHander != null) {
-                mMainThreadHander.post(new Runnable() {
+            Logger.d("mWebSocketListener onOpen mMainThreadHandler = " + mMainThreadHandler);
+            if (mMainThreadHandler != null) {
+                mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (mVoiceStateChangedListener != null) {
@@ -255,8 +278,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 return;
             }
             cleanVadBosTimer();
-            if (mMainThreadHander != null) {
-                mMainThreadHander.post(new Runnable() {
+            if (mMainThreadHandler != null) {
+                mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (mVoiceRecognitionListener != null) {
@@ -310,6 +333,15 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 if (mVoiceStateChangedListener != null) {
                     mVoiceStateChangedListener.onVadBos();
                 }
+                return;
+            } else if (msg.what == MSG_SEND_HEARTBEAT) {
+                if (mWebService != null) {
+                    mWebService.sendCommand("HEART-BEAT", "");
+                }
+                if (mTimerHandler != null) {
+                    mTimerHandler.sendEmptyMessageDelayed(MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
+                }
+                return;
             }
             super.handleMessage(msg);
         }

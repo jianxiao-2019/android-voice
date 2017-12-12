@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.service.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 
 import org.java_websocket.client.WebSocketClient;
@@ -81,10 +82,16 @@ public class WebSocket {
                 httpHeaders.put("app-name", conf.appName);
                 Logger.d("appName = " + conf.appName);
 
-                httpHeaders.put("alter-enabled", String.valueOf(conf.isAlterEnabled));
-                httpHeaders.put("emoji-enabled", String.valueOf(conf.isEmojiEnabled));
-                httpHeaders.put("punctuation-enabled", String.valueOf(conf.isPunctuationEnabled));
+                AsrConfiguration asrConf = conf.getAsrConfiguration();
+                httpHeaders.put("alterEnabled", String.valueOf(asrConf.getAlterEnabled()));
+                httpHeaders.put("emojiEnabled", String.valueOf(asrConf.getEmojiEnabled()));
+                httpHeaders.put("punctuationEnabled", String.valueOf(asrConf.getPunctuationEnabled()));
+                httpHeaders.put("speechMode", String.valueOf(asrConf.getSpeechMode()));
                 Logger.d("sign = " + conf.sign + " agent = " + conf.userAgent + " engine = " + conf.engine);
+                Logger.d("334567 alterEnabled = " + asrConf.getAlterEnabled() +
+                        " emojiEnabled = " + asrConf.getEmojiEnabled() +
+                        " punctuationEnabled = " + asrConf.getPunctuationEnabled() +
+                        " speechMode = " + String.valueOf(asrConf.getSpeechMode()));
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));
                 }

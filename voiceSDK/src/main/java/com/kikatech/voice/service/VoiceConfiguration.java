@@ -1,12 +1,12 @@
 package com.kikatech.voice.service;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.AgentCreator;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.webservice.message.ConfigMessage;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
  * Created by tianli on 17-10-28.
@@ -71,6 +71,13 @@ public class VoiceConfiguration {
         return mConnConf;
     }
 
+    public void updateAsrConfiguration(AsrConfiguration conf) {
+        if (conf == null || mConnConf == null) {
+            return;
+        }
+        mConnConf.mAsrConfiguration = conf;
+    }
+
     public void updateServerConfig(ConfigMessage configMessage) {
         mServerConf = new ServerConfiguration(configMessage.packetInterval);
     }
@@ -95,14 +102,12 @@ public class VoiceConfiguration {
         public final String engine;
         public final String appName;
 
-        public final boolean isAlterEnabled;
-        public final boolean isEmojiEnabled;
-        public final boolean isPunctuationEnabled;
+        private AsrConfiguration mAsrConfiguration;
 
         public final Bundle bundle = new Bundle();
 
         private ConnectionConfiguration(String appName, String url, String locale, String sign, String userAgent,
-                                       String engine, boolean isAlterEnabled, boolean isEmojiEnabled, boolean isPunctuationEnabled, Bundle bundle) {
+                                       String engine, AsrConfiguration asrConfiguration, Bundle bundle) {
 
             this.appName = appName;
             this.url = url;
@@ -111,11 +116,13 @@ public class VoiceConfiguration {
             this.userAgent = userAgent;
             this.engine = engine;
 
-            this.isAlterEnabled = isAlterEnabled;
-            this.isEmojiEnabled = isEmojiEnabled;
-            this.isPunctuationEnabled = isPunctuationEnabled;
+            this.mAsrConfiguration = asrConfiguration;
 
             this.bundle.putAll(bundle);
+        }
+
+        public AsrConfiguration getAsrConfiguration() {
+            return mAsrConfiguration;
         }
 
         public static class Builder {
@@ -125,10 +132,7 @@ public class VoiceConfiguration {
             String sign;
             String userAgent;
             String engine;
-
-            boolean isAlterEnabled = false;
-            boolean isEmojiEnabled = false;
-            boolean isPunctuationEnabled = false;
+            AsrConfiguration asrConfiguration = new AsrConfiguration.Builder().build();
 
             Bundle bundle = new Bundle();
 
@@ -162,18 +166,10 @@ public class VoiceConfiguration {
                 return this;
             }
 
-            public Builder setAlterEnabled(boolean isAlterEnabled) {
-                this.isAlterEnabled = isAlterEnabled;
-                return this;
-            }
-
-            public Builder setEmojiEnabled(boolean isEmojiEnabled) {
-                this.isEmojiEnabled = isEmojiEnabled;
-                return this;
-            }
-
-            public Builder setPunctuationEnabled(boolean isPunctuationEnabled) {
-                this.isPunctuationEnabled = isPunctuationEnabled;
+            public Builder setAsrConfiguration(AsrConfiguration asrConfiguration) {
+                if (asrConfiguration != null) {
+                    this.asrConfiguration = asrConfiguration;
+                }
                 return this;
             }
 
@@ -188,7 +184,7 @@ public class VoiceConfiguration {
                 if (TextUtils.isEmpty(locale)) {
                     locale = DEFAULT_LOCALE;
                 }
-                return new ConnectionConfiguration(appName, url, locale, sign, userAgent, engine, isAlterEnabled, isEmojiEnabled, isPunctuationEnabled, bundle);
+                return new ConnectionConfiguration(appName, url, locale, sign, userAgent, engine, asrConfiguration, bundle);
             }
         }
     }
