@@ -33,8 +33,8 @@ public class Constants {
                 + PARAMETER_AND
                 + PARAMETER_LOCATION_IS + latitude + "," + longitude
                 + PARAMETER_AND
-                + PARAMETER_LANGUAGE_IS + getLanguageCode()
-                + PARAMETER_AND
+//                + PARAMETER_LANGUAGE_IS + getLanguageCode()
+//                + PARAMETER_AND
                 + PARAMETER_KEY_IS + DEVELOPER_API_KEY;
     }
 
@@ -43,8 +43,8 @@ public class Constants {
                 + PARAMETER_IS
                 + PARAMETER_QUERY_IS + Uri.encode(keyword)
                 + PARAMETER_AND
-                + PARAMETER_LANGUAGE_IS + getLanguageCode()
-                + PARAMETER_AND
+//                + PARAMETER_LANGUAGE_IS + getLanguageCode()
+//                + PARAMETER_AND
                 + PARAMETER_KEY_IS + DEVELOPER_API_KEY;
     }
 
