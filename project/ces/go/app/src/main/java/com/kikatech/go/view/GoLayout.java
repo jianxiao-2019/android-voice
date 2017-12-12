@@ -209,7 +209,6 @@ public class GoLayout extends FrameLayout {
 
             mLogOnViewUtil = LogOnViewUtil.getIns()
                     .configViews(mDebugLogView)
-                    .configDisplayLogCount(5)
                     .configFilterClass("com.kikatech.go.dialogflow.");
 
             mDebugLogView.setOnClickListener(new View.OnClickListener() {

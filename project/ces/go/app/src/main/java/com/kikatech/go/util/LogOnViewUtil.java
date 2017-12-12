@@ -16,7 +16,7 @@ import java.util.LinkedList;
 
 public class LogOnViewUtil {
 
-    private final static int DISPLAY_LOG_COUNT = 5;
+    private final static int DISPLAY_LOG_COUNT = 2;
     private final static String SEPARATOR = "-------------------------------------------------";
     private final static String CLASS_SEPARATOR = "@";
     public final static String LOG_FILE = "%s_display.txt";
@@ -43,7 +43,6 @@ public class LogOnViewUtil {
 
 
     private TextView mDebugLogView;
-    private int mDisplayLogCount = DISPLAY_LOG_COUNT;
     private String mFilterClass = "";
 
     private final LinkedList<LogInfo> mLogLinkedList;
@@ -76,18 +75,13 @@ public class LogOnViewUtil {
         return sLogOnViewUtil;
     }
 
-    public LogOnViewUtil configDisplayLogCount(int logCount) {
-        mDisplayLogCount = logCount;
-        return sLogOnViewUtil;
-    }
-
     public LogOnViewUtil configFilterClass(String className) {
         mFilterClass = className;
         return sLogOnViewUtil;
     }
 
     public synchronized void addSeparator() {
-        addLog(-1, SEPARATOR);
+        addLog(-1, SEPARATOR, false);
         updateLogView();
     }
 
@@ -103,17 +97,19 @@ public class LogOnViewUtil {
             info = "<empty>";
         }
 
-        while (mLogLinkedList.size() > mDisplayLogCount) {
+        addLog(mLogCount++, info, true);
+        while (mLogLinkedList.size() > DISPLAY_LOG_COUNT) {
             mLogLinkedList.removeFirst();
         }
-        addLog(mLogCount++, info);
 
         updateLogView();
     }
 
-    private void addLog(int logCount, String log) {
+    private void addLog(int logCount, String log, boolean displayOnView) {
         LogInfo li = new LogInfo(logCount, log);
-        mLogLinkedList.add(li);
+        if (displayOnView) {
+            mLogLinkedList.add(li);
+        }
         FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, li.toString());
     }
 
