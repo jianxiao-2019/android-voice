@@ -26,6 +26,7 @@ import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.xiao.usbaudio.AudioPlayBack;
@@ -163,9 +164,11 @@ public class VoiceTestingActivity extends BaseActivity
                 .setSign(RequestManager.getSign(this))
                 .setUserAgent(RequestManager.generateUserAgent(this))
                 .setEngine("google")
-                .setAlterEnabled(true)
-                .setEmojiEnabled(true)
-                .setPunctuationEnabled(true)
+                .setAsrConfiguration(new AsrConfiguration.Builder()
+                        .setAlterEnabled(true)
+                        .setEmojiEnabled(true)
+                        .setPunctuationEnabled(false)
+                        .build())
                 .build());
         mVoiceService = VoiceService.getService(this, conf);
         mVoiceService.setVoiceRecognitionListener(this);

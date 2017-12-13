@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.request.RequestManager;
 
 import java.io.File;
@@ -37,9 +38,11 @@ public class DialogFlowConfig {
                 .setUrl(WEB_SOCKET_URL_DEV)
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
-                .setAlterEnabled(true)
-                .setEmojiEnabled(true)
-                .setPunctuationEnabled(false)
+                .setAsrConfiguration(new AsrConfiguration.Builder()
+                        .setAlterEnabled(true)
+                        .setEmojiEnabled(true)
+                        .setPunctuationEnabled(false)
+                        .build())
                 .build());
         conf.setSupportWakeUpMode(true);
         return conf;
