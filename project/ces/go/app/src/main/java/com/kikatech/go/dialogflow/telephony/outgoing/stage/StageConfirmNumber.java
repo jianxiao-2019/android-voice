@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -30,6 +31,11 @@ public class StageConfirmNumber extends StageOutgoing {
         super(scene, feedback);
         mContact = contact;
         mOptions = new ArrayList<>();
+    }
+
+    @Override
+    protected int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_CONVERSATION_CMD_ALTER;
     }
 
     @Override

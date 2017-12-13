@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -13,7 +14,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * @author SkeeterWang Created on 2017/11/13.
  */
 
-public class StageCancel extends SceneStage {
+public class StageCancel extends BaseSceneStage {
     private static final String TAG = "StageCancel";
 
     public StageCancel(@NonNull SceneBase scene, ISceneFeedback feedback) {

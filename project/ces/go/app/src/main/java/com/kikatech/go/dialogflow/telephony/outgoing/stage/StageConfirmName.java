@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
@@ -24,6 +25,11 @@ public class StageConfirmName extends StageOutgoing {
     public StageConfirmName(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
         super(scene, feedback);
         mContact = contact;
+    }
+
+    @Override
+    protected int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_CONVERSATION_CMD_ALTER;
     }
 
     @Override
