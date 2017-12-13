@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.reply.ReplyIMMessage;
-import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.message.im.IMManager;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogUtil;
@@ -17,9 +16,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
  * Created by brad_chang on 2017/11/28.
  */
 
-public class SendMessageReplyImStage extends BaseStage {
+public class SendMessageReplyImReplyIMStage extends BaseReplyIMStage {
 
-    SendMessageReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    SendMessageReplyImReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 

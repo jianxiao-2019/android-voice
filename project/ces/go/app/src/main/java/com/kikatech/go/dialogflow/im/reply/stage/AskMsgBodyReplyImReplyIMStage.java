@@ -3,11 +3,11 @@ package com.kikatech.go.dialogflow.im.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
-import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -16,10 +16,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/28.
  */
 
-public class AskMsgBodyReplyImStage extends BaseStage {
+public class AskMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
 
-    AskMsgBodyReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    AskMsgBodyReplyImReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.SUGGEST_ASR_MODE_CONVERSATION_PLUS;
     }
 
     @Override
@@ -28,7 +33,7 @@ public class AskMsgBodyReplyImStage extends BaseStage {
         if(action.equals(SceneActions.ACTION_REPLY_IM_MSG_BODY)) {
             String messageBody = SmsUtil.parseTagAny(extra);
             getReplyMessage().updateMsgBody(messageBody);
-            return new ConfirmMsgBodyReplyImStage(mSceneBase, mFeedback);
+            return new ConfirmMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
         }
         return this;
     }

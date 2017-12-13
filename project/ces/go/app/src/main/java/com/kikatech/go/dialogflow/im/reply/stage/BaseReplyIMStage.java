@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.im.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.ReplyIMMessage;
@@ -18,11 +19,10 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/28.
  */
 
-public class BaseStage extends BaseSceneStage {
+public class BaseReplyIMStage extends BaseSceneStage {
 
-    BaseStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    BaseReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "init");
     }
 
     ReplyIMMessage getReplyMessage() {
@@ -32,7 +32,7 @@ public class BaseStage extends BaseSceneStage {
         return ((SceneReplyIM) mSceneBase).getReplyMessage();
     }
 
-    public void updateIMContent(BaseIMObject imo) {
+    void updateIMContent(BaseIMObject imo) {
         ((SceneReplyIM) mSceneBase).updateIMContent(imo);
     }
 

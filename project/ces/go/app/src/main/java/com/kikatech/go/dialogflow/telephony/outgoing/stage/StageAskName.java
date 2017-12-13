@@ -16,7 +16,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 public class StageAskName extends StageOutgoing {
     private static final String TAG = "StageAskName";
 
-    public StageAskName(SceneBase scene, ISceneFeedback feedback) {
+    StageAskName(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 

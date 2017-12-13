@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.request.RequestManager;
 
 import java.io.File;
@@ -25,7 +24,7 @@ public class DialogFlowConfig {
     public static VoiceConfiguration queryDemoConfig(Context ctx) {
         String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
 
-        Locale[] LOCALE_LIST = new Locale[] {
+        Locale[] LOCALE_LIST = new Locale[]{
                 new Locale("en", "US"),
                 new Locale("zh", "CN"),
         };
@@ -38,11 +37,7 @@ public class DialogFlowConfig {
                 .setUrl(WEB_SOCKET_URL_DEV)
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
-                .setAsrConfiguration(new AsrConfiguration.Builder()
-                        .setAlterEnabled(true)
-                        .setEmojiEnabled(true)
-                        .setPunctuationEnabled(false)
-                        .build())
+                .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.SUGGEST_ASR_MODE_DEFAULT))
                 .build());
         conf.setSupportWakeUpMode(true);
         return conf;
@@ -59,14 +54,12 @@ public class DialogFlowConfig {
         return getCacheDir(context).toString() + "/kika_voice_" + timeStr;
     }
 
-    private static boolean createFolderIfNecessary(File folder) {
+    private static void createFolderIfNecessary(File folder) {
         if (folder != null) {
             if (!folder.exists() || !folder.isDirectory()) {
-                return folder.mkdirs();
+                folder.mkdirs();
             }
-            return true;
         }
-        return false;
     }
 
     private static File getCacheDir(@NonNull Context context) {

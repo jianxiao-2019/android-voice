@@ -16,9 +16,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/28.
  */
 
-public class AskToReadContentStage extends BaseStage {
+public class AskToReadContentReplyIMStage extends BaseReplyIMStage {
 
-    AskToReadContentStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    AskToReadContentReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
@@ -26,7 +26,7 @@ public class AskToReadContentStage extends BaseStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new ReadContentAndAskToReplyImStage(mSceneBase, mFeedback);
+                return new ReadContentAndAskToReplyImReplyIMStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_IM_NO:
             case SceneActions.ACTION_REPLY_IM_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
@@ -57,6 +57,6 @@ public class AskToReadContentStage extends BaseStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        mSceneBase.nextStage(new AskToReadContentOptionStage(mSceneBase, mFeedback));
+        mSceneBase.nextStage(new AskToReadContentOptionReplyIMStage(mSceneBase, mFeedback));
     }
 }

@@ -22,7 +22,6 @@ public class BaseSendIMStage extends BaseSceneStage {
 
     BaseSendIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "init");
     }
 
     IMContent getIMContent() {

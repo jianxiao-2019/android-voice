@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
@@ -22,6 +23,11 @@ public class StageAskForSmsBody extends BaseSendSmsStage {
      */
     StageAskForSmsBody(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.SUGGEST_ASR_MODE_CONVERSATION_PLUS;
     }
 
     @Override

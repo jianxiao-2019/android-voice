@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.stop.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.dialogflow.stop.SceneActions;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
@@ -15,7 +16,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by bradchang on 2017/11/15.
  */
 
-public class StageProcessStopIdle extends SceneStage {
+public class StageProcessStopIdle extends BaseSceneStage {
 
     private final static String ACTION_KEY = "stop";
     private final static String STOP_TARGET_NAVIGATE = "\"navigate\"";

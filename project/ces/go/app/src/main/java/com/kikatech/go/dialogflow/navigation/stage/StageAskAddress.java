@@ -2,14 +2,9 @@ package com.kikatech.go.dialogflow.navigation.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
-import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
-import com.kikatech.go.navigation.google.webservice.GooglePlaceApi;
-import com.kikatech.go.navigation.model.PlaceSearchResult;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -26,7 +21,6 @@ public class StageAskAddress extends BaseNaviStage {
     StageAskAddress(@NonNull SceneBase scene, ISceneFeedback feedback, boolean again) {
         super(scene, feedback);
         mAgain = again;
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "StageAskAddress init");
     }
 
     @Override

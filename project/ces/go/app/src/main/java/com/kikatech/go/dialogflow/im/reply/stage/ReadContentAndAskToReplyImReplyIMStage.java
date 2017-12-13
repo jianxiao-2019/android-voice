@@ -19,9 +19,9 @@ import com.kikatech.voice.core.tts.TtsSource;
  * Created by brad_chang on 2017/11/28.
  */
 
-public class ReadContentAndAskToReplyImStage extends BaseStage {
+public class ReadContentAndAskToReplyImReplyIMStage extends BaseReplyIMStage {
 
-    ReadContentAndAskToReplyImStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    ReadContentAndAskToReplyImReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
@@ -29,7 +29,7 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
+                return new AskMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_IM_NO:
             case SceneActions.ACTION_REPLY_IM_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
@@ -81,6 +81,6 @@ public class ReadContentAndAskToReplyImStage extends BaseStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        mSceneBase.nextStage(new AskToReplyImOptionStage(mSceneBase, mFeedback));
+        mSceneBase.nextStage(new AskToReplyImOptionReplyIMStage(mSceneBase, mFeedback));
     }
 }

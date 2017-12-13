@@ -23,7 +23,6 @@ public class BaseSendSmsStage extends BaseSceneStage {
 
     BaseSendSmsStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "init");
     }
 
     SmsContent getSmsContent() {

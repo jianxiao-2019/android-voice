@@ -9,6 +9,7 @@ import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -17,9 +18,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/28.
  */
 
-public class AskToReplyImOptionStage extends BaseStage {
+public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
 
-    AskToReplyImOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    ConfirmMsgBodyReplyImReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
@@ -27,14 +28,25 @@ public class AskToReplyImOptionStage extends BaseStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
+                if(getReplyMessage().hasEmoji()) {
+                    return new ReplyIMStageAskAddEmoji(mSceneBase, mFeedback);
+                } else {
+                    return new SendMessageReplyImReplyIMStage(mSceneBase, mFeedback);
+                }
+            case SceneActions.ACTION_REPLY_IM_CHANGE:
             case SceneActions.ACTION_REPLY_IM_NO:
-            case SceneActions.ACTION_REPLY_IM_CANCEL:
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
-                exitScene();
-                break;
+                return new AskMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
+            case Intent.ACTION_RCMD_EMOJI:
+                return new ReplyIMStageUpdateEmoji(mSceneBase, mFeedback);
+            default:
+                if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
+                return this;
         }
-        return null;
+    }
+
+    @Override
+    protected boolean supportEmoji() {
+        return true;
     }
 
     @Override
@@ -45,10 +57,10 @@ public class AskToReplyImOptionStage extends BaseStage {
     @Override
     public void action() {
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getAskReplyMsg(context);
+        String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, getReplyMessage().getMessageBody());
         if (uiAndTtsText.length > 0) {
             Bundle args = new Bundle();
-            String[] options = SceneUtil.getOptionsCommon(context);
+            String[] options = SceneUtil.getConfirmMsgOptions(context);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);

@@ -16,8 +16,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/23.
  */
 
-public class StageIdle extends BaseStage {
-    public StageIdle(@NonNull SceneBase scene, ISceneFeedback feedback) {
+public class ReplyIMStageIdle extends BaseReplyIMStage {
+    public ReplyIMStageIdle(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
@@ -46,11 +46,11 @@ public class StageIdle extends BaseStage {
             if (rms == UserSettings.SETTING_REPLY_SMS_ASK_USER) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_READ");
                 // 7.1
-                return new AskToReadContentStage(mSceneBase, mFeedback);
+                return new AskToReadContentReplyIMStage(mSceneBase, mFeedback);
             } else if (rms == UserSettings.SETTING_REPLY_SMS_READ) {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_ASK_USER");
                 // 7.2
-                return new ReadContentAndAskToReplyImStage(mSceneBase, mFeedback);
+                return new ReadContentAndAskToReplyImReplyIMStage(mSceneBase, mFeedback);
             } else {
                 if (LogUtil.DEBUG) LogUtil.logw(TAG, "Err, Unsupported setting:" + rms);
             }

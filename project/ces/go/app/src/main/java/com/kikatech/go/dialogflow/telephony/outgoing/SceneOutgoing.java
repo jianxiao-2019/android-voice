@@ -12,8 +12,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class SceneOutgoing extends NonLoopSceneBase {
-    private static final String TAG = "SceneOutgoing";
-
     public static final String SCENE = "Telephony - Outgoing";
 
     public SceneOutgoing(Context context, ISceneFeedback feedback) {

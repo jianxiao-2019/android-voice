@@ -17,9 +17,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/28.
  */
 
-public class AskToReadContentOptionStage extends BaseStage {
+public class AskToReplyImOptionReplyIMStage extends BaseReplyIMStage {
 
-    AskToReadContentOptionStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    AskToReplyImOptionReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
@@ -27,14 +27,14 @@ public class AskToReadContentOptionStage extends BaseStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                return new ReadContentAndAskToReplyImStage(mSceneBase, mFeedback);
+                return new AskMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
             case SceneActions.ACTION_REPLY_IM_NO:
             case SceneActions.ACTION_REPLY_IM_CANCEL:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Stop !!");
                 exitScene();
-                return null;
+                break;
         }
-        return this;
+        return null;
     }
 
     @Override
@@ -43,10 +43,11 @@ public class AskToReadContentOptionStage extends BaseStage {
     }
 
     @Override
-    protected void action() {
+    public void action() {
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getAskReadMsg(context);
+        String[] uiAndTtsText = SceneUtil.getAskReplyMsg(context);
         if (uiAndTtsText.length > 0) {
+            Bundle args = new Bundle();
             String[] options = SceneUtil.getOptionsCommon(context);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
@@ -56,7 +57,6 @@ public class AskToReadContentOptionStage extends BaseStage {
             for (String option : options) {
                 optionList.add(new Option(option, null));
             }
-            Bundle args = new Bundle();
             args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }

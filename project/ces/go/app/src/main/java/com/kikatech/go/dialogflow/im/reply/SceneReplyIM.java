@@ -4,13 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.NonLoopSceneBase;
-import com.kikatech.go.dialogflow.im.reply.stage.StageIdle;
-import com.kikatech.go.dialogflow.im.send.SceneSendIM;
+import com.kikatech.go.dialogflow.im.reply.stage.ReplyIMStageIdle;
 import com.kikatech.go.message.im.BaseIMObject;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-import com.kikatech.voice.util.EmojiUtil;
 
 /**
  * Created by brad_chang on 2017/11/23.
@@ -60,6 +57,6 @@ public class SceneReplyIM extends NonLoopSceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new StageIdle(this, mFeedback);
+        return new ReplyIMStageIdle(this, mFeedback);
     }
 }

@@ -13,8 +13,8 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/12/7.
  */
 
-public class StageUpdateEmoji extends BaseStage {
-    StageUpdateEmoji(@NonNull SceneBase scene, ISceneFeedback feedback) {
+public class ReplyIMStageUpdateEmoji extends BaseReplyIMStage {
+    ReplyIMStageUpdateEmoji(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
@@ -23,16 +23,16 @@ public class StageUpdateEmoji extends BaseStage {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
                 if(getReplyMessage().hasEmoji()) {
-                    return new StageAskAddEmoji(mSceneBase, mFeedback);
+                    return new ReplyIMStageAskAddEmoji(mSceneBase, mFeedback);
                 } else {
-                    return new SendMessageReplyImStage(mSceneBase, mFeedback);
+                    return new SendMessageReplyImReplyIMStage(mSceneBase, mFeedback);
                 }
             case SceneActions.ACTION_REPLY_IM_CHANGE:
             case SceneActions.ACTION_REPLY_IM_NO:
-                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
+                return new AskMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
             default:
                 if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
-                return new AskMsgBodyReplyImStage(mSceneBase, mFeedback);
+                return new AskMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
         }
     }
 
