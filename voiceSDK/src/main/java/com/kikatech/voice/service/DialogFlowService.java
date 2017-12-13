@@ -196,10 +196,9 @@ public class DialogFlowService implements
     }
 
     @Override
-    public void text(String words) {
-        if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "text : " + words);
-            mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
+    public void talkUncaught() {
+        if (mSceneManager != null) {
+            mSceneManager.notifyUncaught();
         }
     }
 
@@ -207,7 +206,9 @@ public class DialogFlowService implements
     public void pauseAsr() {
         if (mVoiceService != null) {
             mVoiceService.pauseAsr();
-            if(mCallback != null) mCallback.onASRPause();
+            if (mCallback != null) {
+                mCallback.onASRPause();
+            }
         }
     }
 
@@ -215,7 +216,9 @@ public class DialogFlowService implements
     public void resumeAsr() {
         if (mVoiceService != null) {
             mVoiceService.resumeAsr();
-            if(mCallback != null) mCallback.onASRResume();
+            if (mCallback != null) {
+                mCallback.onASRResume();
+            }
         }
     }
 
@@ -325,12 +328,13 @@ public class DialogFlowService implements
 
     @Override
     public void onError(int reason) {
-
     }
 
     @Override
     public void onVadBos() {
-
+        if (mCallback != null) {
+            mCallback.onVadBos();
+        }
     }
 
     public ISceneFeedback getTtsFeedback() {

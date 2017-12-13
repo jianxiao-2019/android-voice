@@ -88,37 +88,48 @@ public abstract class SceneBase implements DialogObserver {
         } else {
             boolean isDefaultScene = Intent.DEFAULT_SCENE.equals(scene());
             boolean isUnknownIntent = Intent.ACTION_UNKNOWN.equals(action);
+            boolean isUncaughtIntent = Intent.ACTION_UNCAUGHT.equals(action);
             boolean isUserInput = Intent.ACTION_USER_INPUT.equals(action);
-            SceneStage stage = mStage.next(action, intent.getExtra());
-            if (stage != null) {
-                if (isUserInput || isUnknownIntent) {
-                    boolean enterAgain = mStage.getClass().equals(stage.getClass());
-                    if (enterAgain) {
-                        mStageCondCount += 1;
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("<%1$s> EnterCount: %2$s", mStage.getClass(), mStageCondCount));
-                        }
-                    } else {
-                        mStageCondCount = 1;
-                    }
-                    if (mStageCondCount > BACK_TO_MAIN_ERR_COUNT) {
-                        if (LogUtil.DEBUG) {
-                            LogUtil.logw(TAG, String.format("Enter Count = %s, Go back to main page", mStageCondCount));
-                        }
-                        mStage = onOverCounts();
-                        mStageCondCount = 1;
-                    } else if ((isDefaultScene && isUnknownIntent) || !isUnknownIntent) {
-                        mStage = stage;
-                    }
-                    mStage.prepareAction(scene(), action, mStage);
-                } else {
-                    mStage = stage;
-                    mStage.prepareAction(scene(), action, mStage);
-                }
-            } else if (!isDefaultScene && isUnknownIntent) {
-                mStage.prepareAction(scene(), action, mStage);
+
+            boolean isDefaultUnknown = isDefaultScene && isUnknownIntent;
+            boolean isDefaultUncaught = isDefaultScene && isUncaughtIntent;
+
+            boolean toStayCurrentStage = !isDefaultUnknown && !isDefaultUncaught && (isUnknownIntent || isUncaughtIntent);
+            boolean toCheckStayCount = isUserInput || isUnknownIntent || isUncaughtIntent;
+
+            SceneStage nextStage;
+            if (toStayCurrentStage) {
+                nextStage = mStage;
+            } else {
+                nextStage = mStage.next(action, intent.getExtra());
             }
+
+            if (nextStage == null) {
+                return;
+            }
+
+            if (toCheckStayCount) {
+                if (isOverCounts(nextStage)) {
+                    nextStage = onOverCounts();
+                    mStageCondCount = 1;
+                }
+            } else {
+                mStageCondCount = 1;
+            }
+
+            mStage = nextStage;
+            mStage.isUncaughtLoop = isUncaughtIntent;
+            mStage.prepareAction(scene(), action, mStage);
         }
+    }
+
+    private boolean isOverCounts(SceneStage nextStage) {
+        boolean enterAgain = mStage.getClass().equals(nextStage.getClass());
+        mStageCondCount = enterAgain ? mStageCondCount + 1 : 1;
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("mStage: %1$s, nextStage: %2$s, EnterCount: %3$s", mStage.getClass().getSimpleName(), nextStage.getClass().getSimpleName(), mStageCondCount));
+        }
+        return mStageCondCount > BACK_TO_MAIN_ERR_COUNT;
     }
 
     /**

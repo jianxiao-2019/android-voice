@@ -28,7 +28,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public static final int REASON_NOT_CREATED = 1;
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
 
-    private static final int VAD_BOS_TIMEOUT = 4000;
+    private static final int VAD_BOS_TIMEOUT = 6000;
     private static final int HEARTBEAT_DURATION = 10 * 1000;
 
     private static final int MSG_VAD_BOS = 1;

@@ -16,6 +16,7 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
     protected final ISceneFeedback mFeedback;
 
     protected final SceneBase mSceneBase;
+    protected boolean isUncaughtLoop;
 
     public SceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         mFeedback = feedback;

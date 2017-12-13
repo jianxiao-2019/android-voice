@@ -139,6 +139,14 @@ public class SceneManager implements DialogObserver, ISceneManager {
     }
 
     @Override
+    public void notifyUncaught() {
+        if (mScene == null) {
+            mScene = Intent.DEFAULT_SCENE;
+        }
+        notifyObservers(new Intent(mScene, Intent.ACTION_UNCAUGHT));
+    }
+
+    @Override
     public void setQueryWords(boolean queryAnyWords) {
         if (mQueryAnyWords != queryAnyWords) {
             mQueryAnyWords = queryAnyWords;

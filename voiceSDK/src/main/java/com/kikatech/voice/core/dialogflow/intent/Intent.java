@@ -14,6 +14,7 @@ public class Intent {
 
     public final static String ACTION_EXIT = "__Exit__";
     public final static String ACTION_UNKNOWN = "input.unknown";
+    public final static String ACTION_UNCAUGHT = "input.uncaught";
 
     public final static String DEFAULT_SCENE = "Default";
 

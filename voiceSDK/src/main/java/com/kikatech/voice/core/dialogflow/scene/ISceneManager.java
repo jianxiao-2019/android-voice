@@ -11,5 +11,7 @@ public interface ISceneManager {
 
     void exitCurrentScene();
 
+    void notifyUncaught();
+
     void setQueryWords(boolean queryAnyWords);
 }

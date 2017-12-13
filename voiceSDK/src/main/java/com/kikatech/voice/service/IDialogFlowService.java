@@ -25,6 +25,8 @@ public interface IDialogFlowService {
 
         void onSleep();
 
+        void onVadBos();
+
         void onASRPause();
 
         void onASRResume();
@@ -66,7 +68,7 @@ public interface IDialogFlowService {
 
     void talk(final String words);
 
-    void text(final String words);
+    void talkUncaught();
 
     void pauseAsr();
 
