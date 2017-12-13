@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -26,6 +27,11 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
      */
     StageAskForSendSmsToContact(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_CONVERSATION_ALTER;
     }
 
     @Override

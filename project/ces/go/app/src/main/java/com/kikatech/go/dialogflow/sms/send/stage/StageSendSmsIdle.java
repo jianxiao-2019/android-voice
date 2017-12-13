@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.send.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -17,6 +18,11 @@ public class StageSendSmsIdle extends BaseSendSmsStage {
 
     public StageSendSmsIdle(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_CONVERSATION_COMMAND;
     }
 
     @Override
