@@ -19,10 +19,12 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class StageConfirmAddress extends BaseNaviStage {
 
+    private final String mUserInput;
     private final String mNaviAddress;
 
-    StageConfirmAddress(SceneBase scene, ISceneFeedback feedback, String naviAddress) {
+    StageConfirmAddress(SceneBase scene, ISceneFeedback feedback, String userInput, String naviAddress) {
         super(scene, feedback);
+        mUserInput = userInput;
         mNaviAddress = naviAddress;
         if (LogUtil.DEBUG)
             LogUtil.log(TAG, "StageConfirmAddress init, mNaviAddress:" + mNaviAddress);
@@ -55,7 +57,7 @@ public class StageConfirmAddress extends BaseNaviStage {
     @Override
     public void action() {
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getConfirmAddress(context, mNaviAddress);
+        String[] uiAndTtsText = SceneUtil.getConfirmAddress(context, mUserInput);
         if (uiAndTtsText.length > 0) {
             String[] options = SceneUtil.getOptionsCommon(context);
             String uiText = uiAndTtsText[0];

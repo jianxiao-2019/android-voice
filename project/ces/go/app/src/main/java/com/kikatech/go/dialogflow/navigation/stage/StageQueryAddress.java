@@ -67,7 +67,7 @@ public class StageQueryAddress extends BaseNaviStage {
             }
             Place place = mPlaceSearchResult.get(0);
             if (place != null) {
-                nextStage = new StageConfirmAddress(mSceneBase, mFeedback, place.getFormattedAddress());
+                nextStage = new StageConfirmAddress(mSceneBase, mFeedback, mUserInput, place.getFormattedAddress());
             }
         }
         mSceneBase.nextStage(nextStage);

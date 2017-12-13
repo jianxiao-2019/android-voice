@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
-import com.kikatech.go.dialogflow.stop.SceneStopIntent;
 import com.kikatech.go.dialogflow.stop.stage.StageStopNavigation;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -26,16 +25,16 @@ public class StageNavigationIdle extends BaseNaviStage {
     public SceneStage next(String action, Bundle extra) {
         super.next(action, extra);
 
-        if(action.equals(NaviSceneActions.ACTION_NAV_START)) {
+        if (action.equals(NaviSceneActions.ACTION_NAV_START)) {
             String naviAddress = NaviSceneUtil.parseAddress(extra);
-            if(LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "naviAddress:" + naviAddress);
 
             if (TextUtils.isEmpty(naviAddress)) {
                 return new StageAskAddress(mSceneBase, mFeedback, false);
             } else {
-                return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress);
+                return new StageQueryAddress(mSceneBase, mFeedback, naviAddress);
             }
-        } else if(action.equals(NaviSceneActions.ACTION_NAV_CANCEL)) {
+        } else if (action.equals(NaviSceneActions.ACTION_NAV_CANCEL)) {
             return new StageStopNavigation(mSceneBase, mFeedback);
         }
 
@@ -44,6 +43,6 @@ public class StageNavigationIdle extends BaseNaviStage {
 
     @Override
     public void action() {
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "action");
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "action");
     }
 }
