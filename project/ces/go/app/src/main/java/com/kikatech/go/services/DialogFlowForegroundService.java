@@ -506,8 +506,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         PendingIntent closePendingIntent = PendingIntent.getService(DialogFlowForegroundService.this, getServiceId(), closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(DialogFlowForegroundService.this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.mipmap.app_icon)
+                .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.app_icon))
                 .setContentTitle("KikaGo is running in the background")
                 .setContentText("Tap to close KikaGo")
                 .setContentIntent(closePendingIntent)
