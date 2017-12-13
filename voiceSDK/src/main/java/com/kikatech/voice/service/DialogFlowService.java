@@ -111,7 +111,7 @@ public class DialogFlowService implements
                 }
             }
             if (mTtsSource.isTtsSpeaking()) {
-                mTtsSource.interrupt();
+                stopTts();
                 tts(pairs, listener);
             } else {
                 mTtsListener.bindListener(listener);
@@ -131,7 +131,7 @@ public class DialogFlowService implements
                 LogUtil.logv(TAG, "tts, words: " + words);
             }
             if (mTtsSource.isTtsSpeaking()) {
-                mTtsSource.interrupt();
+                stopTts();
                 tts(words, listener);
             } else {
                 mTtsListener.bindListener(listener);
@@ -143,6 +143,10 @@ public class DialogFlowService implements
     }
 
     private void stopTts() {
+        stopTts(false);
+    }
+
+    private void stopTts(boolean removeCallback) {
         if (mTtsSource == null) {
             return;
         }
@@ -150,7 +154,9 @@ public class DialogFlowService implements
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "stopTts");
             }
-            mTtsListener.bindListener(null);
+            if (removeCallback) {
+                mTtsListener.bindListener(null);
+            }
             mTtsSource.interrupt();
         } catch (Exception e) {
             e.printStackTrace();
@@ -189,6 +195,7 @@ public class DialogFlowService implements
 
     @Override
     public void talk(String words) {
+        stopTts();
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
             mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
@@ -443,7 +450,7 @@ public class DialogFlowService implements
     private SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
         @Override
         public void doSleep(String scene) {
-            stopTts();
+            stopTts(true);
             sleep();
         }
 
@@ -454,7 +461,7 @@ public class DialogFlowService implements
         @Override
         public void onSceneExit(String scene, boolean proactive) {
             // if not proactive, Don't reset context since it would clear the context of the following scenario
-            stopTts();
+            stopTts(false);
             if (proactive) {
                 mDialogFlow.resetContexts();
                 sleep();
