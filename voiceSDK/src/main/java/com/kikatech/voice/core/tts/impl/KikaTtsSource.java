@@ -53,7 +53,7 @@ public class KikaTtsSource implements TtsSource {
 
     @Override
     public void close() {
-        interrupt();
+        mMediaPlayer.stop();
         mMediaPlayer.release();
     }
 

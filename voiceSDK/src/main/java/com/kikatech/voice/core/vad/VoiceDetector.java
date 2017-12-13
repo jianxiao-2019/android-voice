@@ -87,6 +87,7 @@ public class VoiceDetector implements IDataPath {
     private class UpdateBuffSizeTask implements Runnable {
 
         private int mBuffSize;
+
         UpdateBuffSizeTask(int size) {
             mBuffSize = size;
         }
@@ -114,8 +115,7 @@ public class VoiceDetector implements IDataPath {
             }
             final byte[] data = mData;
             float[] sample = ByteToFloat(data, data.length / 2);
-            float prob = VadUtil.speechProbability(sample, 0, sample.length,
-                    VadUtil.sConf);
+            float prob = VadUtil.speechProbability(sample, 0, sample.length, VadUtil.sConf);
             if (mListener != null && mPrevProb != prob) {
                 mListener.onSpeechProbabilityChanged(prob);
             }
@@ -126,23 +126,21 @@ public class VoiceDetector implements IDataPath {
 
         private void handleVoiceData(byte[] data) {
             short[] vadData = ByteToShort(data, data.length / 2);
-            int vadSize = vadData.length;
-            if (vadSize + mBufLen < mFrameLength) {
-                System.arraycopy(vadData, 0, mBuf, mBufLen, vadSize);
-                mBufLen += vadSize;
-            } else {
-                int temp_len = vadSize + mBufLen - mFrameLength;
-                if (temp_len > 0) {
-                    System.arraycopy(vadData, 0, mBuf, mBufLen, mFrameLength - mBufLen);
-                    short[] temp_data = new short[temp_len];
-                    System.arraycopy(vadData, mFrameLength - mBufLen, temp_data, 0, temp_len);
-                    if (mDataPath != null) {
-                        mDataPath.onData(Speex_Encode_Func(mBuf, mFrameLength));
-                    }
-                    System.arraycopy(temp_data, 0, mBuf, 0, temp_len);
+            int tempLen = vadData.length;
+            int tempIdx = 0;
+            int length;
+            while (tempLen + mBufLen >= mFrameLength) {
+                length = mFrameLength - mBufLen;
+                System.arraycopy(vadData, tempIdx, mBuf, mBufLen, length);
+                tempLen -= length;
+                tempIdx += length;
+                if (mDataPath != null) {
+                    mDataPath.onData(Speex_Encode_Func(mBuf, mFrameLength));
                 }
-                mBufLen = temp_len;
+                mBufLen = 0;
             }
+            System.arraycopy(vadData, tempIdx, mBuf, mBufLen, tempLen);
+            mBufLen += tempLen;
         }
     }
 
@@ -194,5 +192,4 @@ public class VoiceDetector implements IDataPath {
         }
         return floats;
     }
-
 }

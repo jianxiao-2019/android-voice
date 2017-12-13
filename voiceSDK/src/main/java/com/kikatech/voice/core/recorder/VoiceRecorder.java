@@ -1,11 +1,5 @@
 package com.kikatech.voice.core.recorder;
 
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
-import android.media.audiofx.AcousticEchoCanceler;
-import android.support.annotation.NonNull;
-
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.log.Logger;
 
@@ -18,16 +12,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VoiceRecorder {
 
-    public static final int STATUS_SUCCESS = 0;
-    public static final int STATUS_RECORDER_INIT_FAIL = 1;
-    public static final int STATUS_RECORDER_RESTART = 2;
-
     private final IDataPath mDataPath;
     private final IVoiceSource mVoiceSource;
 
-    AudioRecordThread mAudioRecordThread;
-
-    //private final Object mSyncObj = new Object();
+    private AudioRecordThread mAudioRecordThread;
 
     public VoiceRecorder(IVoiceSource voiceSource, IDataPath dataPath) {
         mVoiceSource = voiceSource;
@@ -110,18 +98,16 @@ public class VoiceRecorder {
             int tempLen = readSize;
             int tempIdx = 0;
             int length;
-            while (tempLen + mBufLen > S_BYTE_LEN) {
+            while (tempLen + mBufLen >= S_BYTE_LEN) {
                 length = S_BYTE_LEN - mBufLen;
-                tempLen = tempLen - length;
                 System.arraycopy(audioData, tempIdx, mBuf, mBufLen, length);
+                tempLen -= length;
                 tempIdx += length;
                 mDataPath.onData(mBuf);
                 mBufLen = 0;
             }
-            if (tempLen + mBufLen <= S_BYTE_LEN) {
-                System.arraycopy(audioData, tempIdx, mBuf, mBufLen, tempLen);
-                mBufLen += tempLen;
-            }
+            System.arraycopy(audioData, tempIdx, mBuf, mBufLen, tempLen);
+            mBufLen += tempLen;
         }
     }
 }
