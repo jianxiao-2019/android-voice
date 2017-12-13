@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
 import com.kikatech.go.util.LogUtil;
@@ -21,6 +22,11 @@ public class StageOutgoing extends BaseSceneStage {
 
     public StageOutgoing(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_SHORT_COMMAND;
     }
 
     @Override

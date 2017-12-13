@@ -27,7 +27,7 @@ public class StageAskForSmsBody extends BaseSendSmsStage {
 
     @Override
     protected @AsrConfigUtil.ASRMode int getAsrMode() {
-        return AsrConfigUtil.SUGGEST_ASR_MODE_CONVERSATION_PLUS;
+        return AsrConfigUtil.ASR_MODE_CONVERSATION;
     }
 
     @Override

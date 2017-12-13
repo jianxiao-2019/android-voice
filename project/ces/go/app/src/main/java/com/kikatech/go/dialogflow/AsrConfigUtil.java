@@ -11,16 +11,16 @@ import com.kikatech.voice.service.conf.AsrConfiguration;
 
 public class AsrConfigUtil {
 
-    public static final int SUGGEST_ASR_MODE_CONVERSATION_NORMAL = 1;
-    public static final int SUGGEST_ASR_MODE_CONVERSATION_PLUS = 2;
-    public static final int SUGGEST_ASR_MODE_COMMAND_ALTER = 3;
-    public static final int SUGGEST_ASR_MODE_COMMAND_FULL = 4;
-    public static final int SUGGEST_ASR_MODE_COMMAND_ONLY = 5;
+    public static final int ASR_MODE_CONVERSATION_COMMAND   = 1;    // 長句指令
+    public static final int ASR_MODE_CONVERSATION           = 2;    // 長句對話
+    public static final int ASR_MODE_CONVERSATION_CMD_ALTER = 3;    // 長句指令可能糾錯
+    public static final int ASR_MODE_CONVERSATION_ALTER     = 4;    // 長句對話可能糾錯
+    public static final int ASR_MODE_SHORT_COMMAND          = 5;    // 短句指令 (不糾錯)
 
-    public static final int SUGGEST_ASR_MODE_DEFAULT = SUGGEST_ASR_MODE_CONVERSATION_NORMAL;
+    public static final int SUGGEST_ASR_MODE_DEFAULT = ASR_MODE_CONVERSATION_COMMAND;
 
-    @IntDef({SUGGEST_ASR_MODE_CONVERSATION_NORMAL, SUGGEST_ASR_MODE_CONVERSATION_PLUS,
-            SUGGEST_ASR_MODE_COMMAND_ALTER, SUGGEST_ASR_MODE_COMMAND_FULL, SUGGEST_ASR_MODE_COMMAND_ONLY})
+    @IntDef({ASR_MODE_CONVERSATION_COMMAND, ASR_MODE_CONVERSATION,
+            ASR_MODE_CONVERSATION_CMD_ALTER, ASR_MODE_CONVERSATION_ALTER, ASR_MODE_SHORT_COMMAND})
     public @interface ASRMode {
     }
 
@@ -32,48 +32,48 @@ public class AsrConfigUtil {
 
     static String getAsrModeName(@ASRMode int mode) {
         switch (mode) {
-            case SUGGEST_ASR_MODE_CONVERSATION_NORMAL:
-                return "CONVERSATION_NORMAL";
-            case SUGGEST_ASR_MODE_CONVERSATION_PLUS:
-                return "CONVERSATION_PLUS";
-            case SUGGEST_ASR_MODE_COMMAND_ALTER:
-                return "COMMAND_ALTER";
-            case SUGGEST_ASR_MODE_COMMAND_FULL:
-                return "COMMAND_FULL";
-            case SUGGEST_ASR_MODE_COMMAND_ONLY:
-                return "COMMAND_ONLY";
+            case ASR_MODE_CONVERSATION_COMMAND:
+                return "CONVERSATION_COMMAND";
+            case ASR_MODE_CONVERSATION:
+                return "CONVERSATION";
+            case ASR_MODE_CONVERSATION_CMD_ALTER:
+                return "CONVERSATION_CMD_ALTER";
+            case ASR_MODE_CONVERSATION_ALTER:
+                return "CONVERSATION_ALTER";
+            case ASR_MODE_SHORT_COMMAND:
+                return "SHORT_COMMAND";
         }
-        return "ERR_UNKNOWN_MODE";
+        return "ERR_UNKNOWN_ASR_MODE";
     }
 
     // https://docs.google.com/spreadsheets/d/1bKgyTxAGnNqjBviEZn_4_LfV9v-THbUg5F2xgggmMGk/edit#gid=0
     static AsrConfiguration getConfig(@NonNull AsrConfiguration asrConf, @ASRMode int mode) {
         switch (mode) {
-            case SUGGEST_ASR_MODE_CONVERSATION_NORMAL:
+            case ASR_MODE_CONVERSATION_COMMAND:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.CONVERSATION);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 break;
-            case SUGGEST_ASR_MODE_CONVERSATION_PLUS:
+            case ASR_MODE_CONVERSATION:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.CONVERSATION);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 break;
-            case SUGGEST_ASR_MODE_COMMAND_ALTER:
+            case ASR_MODE_CONVERSATION_CMD_ALTER:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 break;
-            case SUGGEST_ASR_MODE_COMMAND_FULL:
+            case ASR_MODE_CONVERSATION_ALTER:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 break;
-            case SUGGEST_ASR_MODE_COMMAND_ONLY:
+            case ASR_MODE_SHORT_COMMAND:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
