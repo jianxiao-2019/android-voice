@@ -213,6 +213,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
+                    public void onVadBos() {
+                        pauseAsr();
+                        mDialogFlowService.talkUncaught();
+                    }
+
+                    @Override
                     public void onASRPause() {
                         sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_PAUSE));
                     }
@@ -500,7 +506,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         PendingIntent closePendingIntent = PendingIntent.getService(DialogFlowForegroundService.this, getServiceId(), closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(DialogFlowForegroundService.this)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.ic_launcher))
                 .setContentTitle("KikaGo is running in the background")
                 .setContentText("Tap to close KikaGo")

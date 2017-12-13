@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.sms.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.sms.ReplySmsMessage;
@@ -18,7 +19,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/20.
  */
 
-public class BaseReplySmsStage extends SceneStage {
+public class BaseReplySmsStage extends BaseSceneStage {
 
     BaseReplySmsStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);

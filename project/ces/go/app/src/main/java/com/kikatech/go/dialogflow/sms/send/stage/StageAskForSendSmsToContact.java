@@ -44,7 +44,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
             case SceneActions.ACTION_SEND_SMS_MSGBODY:
                 return new StageAskForSendSmsToContact(mSceneBase, mFeedback);
             case Intent.ACTION_RCMD_EMOJI:
-                return new StageUpdateEmoji(mSceneBase, mFeedback);
+                return null;
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported action:" + action);
                 break;

@@ -91,13 +91,15 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onASRPause() {
+                    public void onVadBos() {
+                    }
 
+                    @Override
+                    public void onASRPause() {
                     }
 
                     @Override
                     public void onASRResume() {
-
                     }
 
                     @Override
@@ -139,17 +141,17 @@ public class KikaDialogFlowActivity extends BaseActivity {
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {
-                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
                     }
 
                     @Override
                     public void onComplete(String[] dbgMsg) {
-                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        if(LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
                     }
                 });
 

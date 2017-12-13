@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
@@ -17,7 +18,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/23.
  */
 
-public class BaseSendIMStage extends SceneStage {
+public class BaseSendIMStage extends BaseSceneStage {
 
     BaseSendIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);

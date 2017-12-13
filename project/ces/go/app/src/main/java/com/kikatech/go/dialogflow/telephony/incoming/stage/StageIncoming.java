@@ -2,10 +2,10 @@ package com.kikatech.go.dialogflow.telephony.incoming.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneActions;
-import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.AudioManagerUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -15,7 +15,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by tianli on 17-11-11.
  */
 
-public class StageIncoming extends SceneStage {
+public class StageIncoming extends BaseSceneStage {
 
     private String mCaller;
 

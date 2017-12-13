@@ -429,7 +429,7 @@ public class NavigationService extends Service {
 
         return new NotificationCompat.Builder(NavigationService.this)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.ic_launcher))
+                .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.ic_launcher_round))
                 .setContentTitle(TAG)
                 .setContentText("Click to close service.")
                 .setContentIntent(closePendingIntent)

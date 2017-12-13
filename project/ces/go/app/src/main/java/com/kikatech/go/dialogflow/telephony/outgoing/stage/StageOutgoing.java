@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
@@ -15,7 +16,7 @@ import com.kikatech.voice.util.contact.ContactManager;
  * Created by tianli on 17-11-11.
  */
 
-public class StageOutgoing extends SceneStage {
+public class StageOutgoing extends BaseSceneStage {
     private static final String TAG = "StageOutgoing";
 
     public StageOutgoing(SceneBase scene, ISceneFeedback feedback) {

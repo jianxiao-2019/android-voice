@@ -14,9 +14,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * @author SkeeterWang Created on 2017/11/29.
  */
 
-public class StageAskAgain extends SceneStage {
+public class StageAskAgainUnknown extends SceneStage {
 
-    public StageAskAgain(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    public StageAskAgainUnknown(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
@@ -24,6 +24,7 @@ public class StageAskAgain extends SceneStage {
     public SceneStage next(String action, Bundle extra) {
         switch (action) {
             case Intent.ACTION_UNKNOWN:
+            case Intent.ACTION_UNCAUGHT:
                 return new StageStopSession(mSceneBase, mFeedback);
         }
         return null;

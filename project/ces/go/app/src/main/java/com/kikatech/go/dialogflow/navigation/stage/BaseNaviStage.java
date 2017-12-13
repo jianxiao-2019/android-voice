@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.navigation.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -13,7 +14,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by bradchang on 2017/11/14.
  */
 
-public class BaseNaviStage extends SceneStage {
+public class BaseNaviStage extends BaseSceneStage {
 
     BaseNaviStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
