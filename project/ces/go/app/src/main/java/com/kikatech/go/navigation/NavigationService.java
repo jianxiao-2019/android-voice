@@ -171,11 +171,11 @@ public class NavigationService extends Service {
                 if(!isActive) {
                     isActive = true;
                     registerReceiver();
-                    Glide.with(NavigationService.this)
-                            .load(R.drawable.kika_gmap_awake)
-                            .dontTransform()
-                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                            .into(mStatusView);
+//                    Glide.with(NavigationService.this)
+//                            .load(R.drawable.kika_gmap_awake)
+//                            .dontTransform()
+//                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+//                            .into(mStatusView);
                 }
             }
         });

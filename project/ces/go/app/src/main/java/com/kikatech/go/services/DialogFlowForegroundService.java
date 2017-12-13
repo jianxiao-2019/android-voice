@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
@@ -69,6 +70,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private PowerManager.WakeLock mWakeLocker;
     private View mView;
     private ImageView mStatusView;
+    private GlideDrawableImageViewTarget mNonRepeatTarget;
 
 
     private IDialogFlowService mDialogFlowService;
@@ -377,6 +379,17 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         mStatusView = (ImageView) mView.findViewById(R.id.gmap_status);
 
+        mNonRepeatTarget = new GlideDrawableImageViewTarget(mStatusView, 1);
+
+        mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogFlowService != null) {
+                    mDialogFlowService.wakeUp();
+                }
+            }
+        });
+
         addView();
     }
 
@@ -446,12 +459,23 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
 
     private void handleStatusChanged(GoLayout.ViewStatus status) {
-        if (!(isViewAdded() && asrActive) || status == null) {
+        if (!isViewAdded() || status == null) {
             return;
         }
-        Glide.with(DialogFlowForegroundService.this)
+
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "handleStatusChanged: status: " + status.name());
+        }
+//        Glide.with(DialogFlowForegroundService.this)
+//                .load(status.getSmallRes())
+//                .dontTransform()
+//                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+//                .into(mStatusView);
+
+        Glide.with(DialogFlowForegroundService.this.getApplicationContext())
                 .load(status.getSmallRes())
                 .dontTransform()
+                .dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusView);
     }

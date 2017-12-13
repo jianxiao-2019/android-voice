@@ -70,16 +70,16 @@ public class GoLayout extends FrameLayout {
     }
 
     public enum ViewStatus {
-        STAND_BY_SLEEP(R.drawable.kika_vui_standby, R.drawable.kika_gmap_standby),
-        SLEEP_TO_AWAKE(R.drawable.kika_vui_trans_s_aw, R.drawable.kika_gmap_standby),
-        STAND_BY_AWAKE(R.drawable.kika_vui_awake, R.drawable.kika_gmap_awake),
+        STAND_BY_SLEEP(R.drawable.kika_vui_standby, R.drawable.gmap_kika_vui_standby),
+        SLEEP_TO_AWAKE(R.drawable.kika_vui_trans_s_aw, R.drawable.gmap_kika_vui_trans_s_aw),
+        STAND_BY_AWAKE(R.drawable.kika_vui_awake, R.drawable.gmap_kika_vui_awake),
 
-        TTS(R.drawable.kika_vui_t, R.drawable.kika_gmap_tts),
-        TTS_TO_LISTEN(R.drawable.kika_vui_trans_t_l, R.drawable.kika_gmap_tts),
-        LISTEN_1(R.drawable.kika_vui_l_l, R.drawable.kika_gmap_listening),
-        LISTEN_2(R.drawable.kika_vui_l_r, R.drawable.kika_gmap_listening),
-        ANALYZE(R.drawable.kika_vui_a, R.drawable.kika_gmap_listening),
-        ANALYZE_TO_TTS(R.drawable.kika_vui_trans_a_t, R.drawable.kika_gmap_listening);
+        TTS(R.drawable.kika_vui_t, R.drawable.gmap_kika_vui_t),
+        TTS_TO_LISTEN(R.drawable.kika_vui_trans_t_l, R.drawable.gmap_kika_vui_trans_t_l),
+        LISTEN_1(R.drawable.kika_vui_l_l, R.drawable.gmap_kika_vui_l_l),
+        LISTEN_2(R.drawable.kika_vui_l_r, R.drawable.gmap_kika_vui_l_r),
+        ANALYZE(R.drawable.kika_vui_a, R.drawable.gmap_kika_vui_a),
+        ANALYZE_TO_TTS(R.drawable.kika_vui_trans_a_t, R.drawable.gmap_kika_vui_trans_a_t);
 
         int normalRes, smallRes;
 
@@ -225,9 +225,6 @@ public class GoLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        if (mCurrentMode != null) {
-            setBackgroundResource(mCurrentMode.getBgRes());
-        }
     }
 
     private IOnModeChangedListener mModeChangedListener;
@@ -353,12 +350,8 @@ public class GoLayout extends FrameLayout {
 
     private void onModeChanged(DisplayMode mode) {
         mCurrentMode = mode;
-        requestLayout();
-        Glide.with(getContext())
-                .load(mode.getDefaultStatus().getNormalRes())
-                .dontTransform()
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(mStatusAnimationView);
+        setBackgroundResource(mCurrentMode.getBgRes());
+        loadStatusGif(mode.getDefaultStatus(), null);
     }
 
 
@@ -775,6 +768,9 @@ public class GoLayout extends FrameLayout {
     private Handler mUIHandler = new Handler(Looper.getMainLooper());
 
     private synchronized void loadStatusGif(final ViewStatus status, final IGifStatusListener listener) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "handleStatusChanged: status: " + status.name());
+        }
         DialogFlowForegroundService.processStatusChanged(status);
         mUIHandler.removeCallbacksAndMessages(null);
         mUIHandler.post(new Runnable() {

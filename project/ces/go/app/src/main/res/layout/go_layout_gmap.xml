@@ -5,18 +5,15 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/gmap_status"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_centerInParent="true"
-        android:contentDescription="@string/default_img_content_description"
-        android:src="@drawable/kika_gmap_bg"/>
+        android:contentDescription="@string/default_img_content_description"/>
 
     <ImageView
-        android:id="@+id/gmap_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:src="@drawable/kika_gmap_standby"
-        android:contentDescription="@string/default_img_content_description"/>
+        android:layout_width="61.3dp"
+        android:layout_height="61.3dp"
+        android:src="@drawable/gmap_kika_vui_cover"/>
 
 </RelativeLayout>
