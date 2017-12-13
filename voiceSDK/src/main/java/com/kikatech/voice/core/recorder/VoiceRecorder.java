@@ -67,6 +67,9 @@ public class VoiceRecorder {
 
         @Override
         public void run() {
+            // Sync Snowboy sample code
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+
             prepare();
             record();
             release();

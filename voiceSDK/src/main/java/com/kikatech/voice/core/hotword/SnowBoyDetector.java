@@ -1,17 +1,13 @@
 package com.kikatech.voice.core.hotword;
 
-import android.os.Build;
 import android.util.SparseIntArray;
 
-import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 import com.kikatech.voice.util.log.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.Map;
 
 import ai.kitt.snowboy.Constants;
 import ai.kitt.snowboy.SnowboyDetect;
