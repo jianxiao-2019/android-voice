@@ -161,7 +161,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mVoiceStateChangedListener.onStartListening();
         }
 
-        startVadBosTimer();
+        if (mWakeUpDetector == null || mWakeUpDetector.isAwake()) {
+            startVadBosTimer();
+        }
     }
 
     private void cleanVadBosTimer() {
