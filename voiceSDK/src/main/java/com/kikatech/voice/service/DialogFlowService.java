@@ -201,7 +201,7 @@ public class DialogFlowService implements
 
     @Override
     public void talk(String words) {
-        stopTts();
+        stopTts(true);
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
             mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
