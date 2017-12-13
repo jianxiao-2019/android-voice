@@ -1,17 +1,22 @@
 package com.kikatech.voice.util.log;
 
 import android.os.Environment;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.kikatech.voice.BuildConfig;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -35,7 +40,7 @@ public class FileLoggerUtil {
     }
 
     public synchronized static FileLoggerUtil getIns() {
-        if(sFileLoggerUtil == null) {
+        if (sFileLoggerUtil == null) {
             sFileLoggerUtil = new FileLoggerUtil();
         }
         return sFileLoggerUtil;
@@ -106,19 +111,12 @@ public class FileLoggerUtil {
     }
 
     void exit() {
-        for(BufferedWriter bw : mBufferedWriterPool) {
-            if(bw != null) {
-                try {
-                    bw.close();
-                    bw = null;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        for (BufferedWriter bw : mBufferedWriterPool) {
+            closeIO(bw);
         }
         mBufferedWriterPool.clear();
 
-        if(mExecutor != null) {
+        if (mExecutor != null) {
             mExecutor.shutdown();
         }
     }
@@ -128,18 +126,20 @@ public class FileLoggerUtil {
 
         //Read text from file
         StringBuilder text = new StringBuilder();
-
+        BufferedReader br = null;
         try {
-            BufferedReader br = new BufferedReader(new FileReader(fullPath));
+            br = new BufferedReader(new FileReader(fullPath));
             String line;
 
             while ((line = br.readLine()) != null) {
                 text.append(line);
                 text.append('\n');
             }
-            br.close();
+
         } catch (IOException e) {
             //You'll need to add proper error handling here
+        } finally {
+            closeIO(br);
         }
         return text.toString();
     }
@@ -151,5 +151,59 @@ public class FileLoggerUtil {
             file.mkdirs();
         }
         return file.getAbsolutePath();
+    }
+
+    public synchronized void asyncWriteToFile(final byte[] data, final String filePtah) {
+        if (mExecutor != null) {
+            mExecutor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    writeToFileImp(data, filePtah);
+                }
+            });
+        }
+    }
+
+    private void writeToFileImp(byte[] data, String filePtah) {
+        //        Logger.d("FileWriter writeToFile mFilePath = " + mFilePath + " data.length = " + data.length);
+        if (TextUtils.isEmpty(filePtah)) {
+            return;
+        }
+
+        // Create file
+        File file = new File(filePtah);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
+        boolean append = true;
+        OutputStream os = null;
+        try {
+            os = new BufferedOutputStream(new FileOutputStream(file, append));
+            int len = data.length;
+            os.write(data, 0, len);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            closeIO(os);
+        }
+    }
+
+    private void closeIO(Closeable... closeables) {
+        if (closeables == null) return;
+        try {
+            for (Closeable closeable : closeables) {
+                if (closeable != null) {
+                    closeable.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

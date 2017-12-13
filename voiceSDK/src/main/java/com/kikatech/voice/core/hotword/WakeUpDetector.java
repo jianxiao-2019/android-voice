@@ -19,8 +19,8 @@ public abstract class WakeUpDetector implements IDataPath {
         void onDetected();
     }
 
-    public static WakeUpDetector getDetector(OnHotWordDetectListener listener, IDataPath dataPath) {
-        return new SnowBoyDetector(listener, dataPath);
+    public static WakeUpDetector getDetector(OnHotWordDetectListener listener, IDataPath dataPath, String dbgPath) {
+        return new SnowBoyDetector(listener, dataPath, dbgPath);
     }
 
     @Override

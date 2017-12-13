@@ -8,6 +8,8 @@
 
 package ai.kitt.snowboy;
 
+import com.kikatech.voice.util.log.Logger;
+
 public class SnowboyDetect {
     private transient long swigCPtr;
     protected transient boolean swigCMemOwn;
@@ -22,6 +24,7 @@ public class SnowboyDetect {
     }
 
     protected void finalize() {
+        Logger.d("[sboy]finalize");
         delete();
     }
 
@@ -29,6 +32,7 @@ public class SnowboyDetect {
         if (swigCPtr != 0) {
             if (swigCMemOwn) {
                 swigCMemOwn = false;
+                Logger.d("[sboy]delete_SnowboyDetect");
                 snowboyJNI.delete_SnowboyDetect(swigCPtr);
             }
             swigCPtr = 0;
@@ -40,6 +44,7 @@ public class SnowboyDetect {
     }
 
     public boolean Reset() {
+        Logger.d("[sboy]SnowboyDetect_Reset");
         return snowboyJNI.SnowboyDetect_Reset(swigCPtr, this);
     }
 
