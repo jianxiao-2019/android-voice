@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.navigation.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
@@ -21,6 +22,11 @@ public class StageAskAddress extends BaseNaviStage {
     StageAskAddress(@NonNull SceneBase scene, ISceneFeedback feedback, boolean again) {
         super(scene, feedback);
         mAgain = again;
+    }
+
+    @Override
+    protected int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_CONVERSATION_COMMAND;
     }
 
     @Override

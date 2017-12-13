@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.navigation.stage;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -28,6 +29,11 @@ public class StageConfirmAddress extends BaseNaviStage {
         mNaviAddress = naviAddress;
         if (LogUtil.DEBUG)
             LogUtil.log(TAG, "StageConfirmAddress init, mNaviAddress:" + mNaviAddress);
+    }
+
+    @Override
+    protected int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_CONVERSATION_CMD_ALTER;
     }
 
     @Override
