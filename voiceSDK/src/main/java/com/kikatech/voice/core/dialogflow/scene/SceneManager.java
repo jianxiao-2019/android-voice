@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.util.Subscribe;
+import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.LogUtil;
 
 import java.util.List;
@@ -70,6 +72,11 @@ public class SceneManager implements DialogObserver, ISceneManager {
                 }
                 notifyObservers(intent);
             }
+        }
+
+        SceneBase currentScene = getScene(mScene);
+        if (currentScene != null) {
+            mCallback.onSceneStageAsrModeChange(currentScene.getAsrConfig());
         }
     }
 
@@ -169,6 +176,8 @@ public class SceneManager implements DialogObserver, ISceneManager {
         void onSceneEnter(String scene);
 
         void onSceneExit(String scene, boolean proactive);
+
+        void onSceneStageAsrModeChange(AsrConfiguration asrConfig);
     }
 
     public interface SceneQueryWordsStatus {

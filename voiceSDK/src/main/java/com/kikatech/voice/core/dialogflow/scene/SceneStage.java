@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
+import com.kikatech.voice.service.conf.AsrConfiguration;
+
 import java.io.Serializable;
 
 /**
@@ -17,6 +19,8 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
 
     protected final SceneBase mSceneBase;
     protected boolean isUncaughtLoop;
+
+    protected static AsrConfiguration mAsrConfig = new AsrConfiguration.Builder().build();
 
     public SceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         mFeedback = feedback;
@@ -106,6 +110,10 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
 
     protected boolean supportEmoji() {
         return false;
+    }
+
+    protected AsrConfiguration getAsrConfig() {
+        return mAsrConfig;
     }
 }
 

@@ -1,7 +1,5 @@
 package com.kikatech.voice.service.conf;
 
-import android.os.Build;
-
 import com.google.gson.Gson;
 
 /**
@@ -63,6 +61,29 @@ public class AsrConfiguration {
     public String toJsonString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    public void copyConfig(AsrConfiguration conf) {
+        this.speechMode = conf.speechMode;
+        this.alterEnabled = conf.alterEnabled;
+        this.emojiEnabled = conf.emojiEnabled;
+        this.punctuationEnabled = conf.punctuationEnabled;
+    }
+
+    public boolean update(AsrConfiguration asrConfig) {
+        if (sameValue(asrConfig)) {
+            return false;
+        } else {
+            copyConfig(asrConfig);
+            return true;
+        }
+    }
+
+    private boolean sameValue(AsrConfiguration asrConfig) {
+        return speechMode == asrConfig.speechMode &&
+                alterEnabled == asrConfig.alterEnabled &&
+                emojiEnabled == asrConfig.emojiEnabled &&
+                punctuationEnabled == asrConfig.punctuationEnabled;
     }
 
     public static class Builder {

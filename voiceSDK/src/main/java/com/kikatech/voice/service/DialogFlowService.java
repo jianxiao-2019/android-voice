@@ -19,6 +19,7 @@ import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.EmojiUtil;
 import com.kikatech.voice.util.log.LogUtil;
@@ -39,9 +40,12 @@ public class DialogFlowService implements
 
     private final IServiceCallback mCallback;
     private final IAgentQueryStatus mQueryStatusCallback;
-    private VoiceService mVoiceService;
+
     private DialogFlow mDialogFlow;
     private boolean mQueryAnyWords = false;
+
+    private VoiceService mVoiceService;
+    private final AsrConfiguration mAsrConfiguration = new AsrConfiguration.Builder().build();
 
     private SceneManager mSceneManager;
 
@@ -84,6 +88,8 @@ public class DialogFlowService implements
     }
 
     private void initVoiceService(@NonNull VoiceConfiguration conf) {
+        AsrConfiguration asrConfig = conf.getConnectionConfiguration().getAsrConfiguration();
+        mAsrConfiguration.copyConfig(asrConfig);
         mVoiceService = VoiceService.getService(mContext, conf);
         mVoiceService.setVoiceActiveStateListener(this);
         mVoiceService.setVoiceRecognitionListener(this);
@@ -242,8 +248,6 @@ public class DialogFlowService implements
 
         Message.unregisterAll();
     }
-
-//    mVoiceService.sendCommand(SERVER_COMMAND_CONTENT, mEditText.getText().toString());
 
     @Override
     public void onWakeUp() {
@@ -447,6 +451,12 @@ public class DialogFlowService implements
         }
     }
 
+    private void updateAsrConfig(AsrConfiguration asrConfig) {
+        if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
+            mVoiceService.updateAsrSettings(mAsrConfiguration);
+        }
+    }
+
     private SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
         @Override
         public void doSleep(String scene) {
@@ -467,6 +477,11 @@ public class DialogFlowService implements
                 sleep();
             }
             mCallback.onSceneExit(proactive);
+        }
+
+        @Override
+        public void onSceneStageAsrModeChange(AsrConfiguration asrConfig) {
+            updateAsrConfig(asrConfig);
         }
     };
 

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.LogUtil;
 
 /**
@@ -69,6 +70,10 @@ public abstract class SceneBase implements DialogObserver {
 
     boolean supportEmoji() {
         return mStage.supportEmoji();
+    }
+
+    AsrConfiguration getAsrConfig() {
+        return mStage.getAsrConfig();
     }
 
     private int mStageCondCount = 1;

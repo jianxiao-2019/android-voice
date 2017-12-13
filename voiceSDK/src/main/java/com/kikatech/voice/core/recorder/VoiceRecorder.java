@@ -87,6 +87,8 @@ public class VoiceRecorder {
 //                if (AudioRecord.ERROR_INVALID_OPERATION != readSize /*&& fos != null*/) {
                 if (readSize > 0) {
                     copy(audioData, readSize);
+                } else {
+                    Logger.e("[AudioRecordThread][Err] readSize = " + readSize);
                 }
             }
         }
