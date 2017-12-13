@@ -37,7 +37,7 @@ public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
             case SceneActions.ACTION_REPLY_SMS_NO:
                 return new AskMsgBodyReplySmsStage(mSceneBase, mFeedback);
             case Intent.ACTION_RCMD_EMOJI:
-                return new StageUpdateEmoji(mSceneBase, mFeedback);
+                return null;
             default:
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "Unsupported command : " + action + ", ask again");
                 return new ConfirmMsgBodyReplySmsStage(mSceneBase, mFeedback);

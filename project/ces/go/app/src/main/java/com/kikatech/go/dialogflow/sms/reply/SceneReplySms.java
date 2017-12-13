@@ -4,10 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.NonLoopSceneBase;
-import com.kikatech.go.dialogflow.im.reply.ReplyIMMessage;
 import com.kikatech.go.dialogflow.sms.ReplySmsMessage;
-import com.kikatech.go.dialogflow.sms.reply.stage.StageIdle;
-import com.kikatech.go.message.im.BaseIMObject;
+import com.kikatech.go.dialogflow.sms.reply.stage.StageReplySmsIdle;
 import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -61,6 +59,6 @@ public class SceneReplySms extends NonLoopSceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new StageIdle(this, mFeedback);
+        return new StageReplySmsIdle(this, mFeedback);
     }
 }

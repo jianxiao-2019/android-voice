@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.im.IMUtil;
@@ -22,6 +23,11 @@ public class BaseSendIMStage extends BaseSceneStage {
 
     BaseSendIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_SHORT_COMMAND;
     }
 
     IMContent getIMContent() {

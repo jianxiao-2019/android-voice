@@ -16,9 +16,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * Created by brad_chang on 2017/11/17.
  */
 
-public class StageIdle extends BaseReplySmsStage {
+public class StageReplySmsIdle extends BaseReplySmsStage {
 
-    public StageIdle(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    public StageReplySmsIdle(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
@@ -25,6 +26,11 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
     }
 
     @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_CONVERSATION_ALTER;
+    }
+
+    @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
@@ -37,7 +43,7 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
             case SceneActions.ACTION_REPLY_IM_NO:
                 return new AskMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
             case Intent.ACTION_RCMD_EMOJI:
-                return new ReplyIMStageUpdateEmoji(mSceneBase, mFeedback);
+                return null;
             default:
                 if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
                 return this;

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.kikatech.go.dialogflow.NonLoopSceneBase;
 import com.kikatech.go.dialogflow.im.IMUtil;
-import com.kikatech.go.dialogflow.im.send.stage.StageIdle;
+import com.kikatech.go.dialogflow.im.send.stage.StageSendIMIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.util.EmojiUtil;
@@ -52,7 +52,7 @@ public class SceneSendIM extends NonLoopSceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new StageIdle(this, mFeedback);
+        return new StageSendIMIdle(this, mFeedback);
     }
 
     @Override

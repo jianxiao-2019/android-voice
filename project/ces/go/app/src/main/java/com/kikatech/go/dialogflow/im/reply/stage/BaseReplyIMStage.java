@@ -32,6 +32,11 @@ public class BaseReplyIMStage extends BaseSceneStage {
         return ((SceneReplyIM) mSceneBase).getReplyMessage();
     }
 
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_SHORT_COMMAND;
+    }
+
     void updateIMContent(BaseIMObject imo) {
         ((SceneReplyIM) mSceneBase).updateIMContent(imo);
     }
