@@ -30,15 +30,22 @@ public class GooglePlaceApi {
     }
 
 
-    public void search(final Context context, final String keyword, final IOnSearchResultListener listener) {
+    public void search(final String keyword, final IOnSearchResultListener listener) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "search, keyword: " + keyword);
+        String url = Constants.getPlaceApiTextSearchUrl(keyword);
+        performSearch(url, listener);
+    }
+
+    public void searchWithLocation(final Context context, final String keyword, final IOnSearchResultListener listener) {
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "searchWithLocation, keyword: " + keyword);
         LocationMgr.fetchLocation(context, new LocationMgr.ILocationCallback() {
             @Override
             public void onGetLocation(String provider, double latitude, double longitude) {
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, "onGetLocation, latitude: " + latitude + ", longitude: " + longitude);
                 }
-                performSearch(keyword, latitude, longitude, listener);
+                String url = Constants.getPlaceApiTextSearchUrl(keyword, latitude, longitude);
+                performSearch(url, listener);
             }
 
             @Override
@@ -63,11 +70,7 @@ public class GooglePlaceApi {
         });
     }
 
-    private void performSearch(final String keyword, double latitude, double longitude, final IOnSearchResultListener listener) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "performSearch, keyword: " + keyword + ", latitude: " + latitude + ", longitude: " + longitude);
-        }
-        String url = Constants.getPlaceApiTextSearchUrl(keyword, latitude, longitude);
+    private void performSearch(final String url, final IOnSearchResultListener listener) {
         HttpClientExecutor.getIns().asyncGET(url, false, new HttpClientTask.HttpClientCallback() {
             @Override
             public void onResponse(Bundle result) {

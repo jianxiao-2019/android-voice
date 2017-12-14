@@ -43,9 +43,11 @@ public class LocationMgr {
     public static void init(final Activity activity) {
         if (!isGpsProviderEnabled(activity)) {
             enableGps(activity);
-        } else {
-            fetchLocation(activity, null);
         }
+//        TODO: prefetch if necessary
+//        else {
+//            fetchLocation(activity, null);
+//        }
     }
 
     public static void enableGps(final Activity activity) {

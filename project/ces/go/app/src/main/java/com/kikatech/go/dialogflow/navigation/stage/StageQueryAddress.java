@@ -39,7 +39,7 @@ public class StageQueryAddress extends BaseNaviStage {
     @Override
     public void action() {
         if (!TextUtils.isEmpty(mUserInput)) {
-            GooglePlaceApi.getIns().search(mSceneBase.getContext(), mUserInput, new GooglePlaceApi.IOnSearchResultListener() {
+            GooglePlaceApi.getIns().search(mUserInput, new GooglePlaceApi.IOnSearchResultListener() {
                 @Override
                 public void onResult(PlaceSearchResult result) {
                     mPlaceSearchResult = result;
