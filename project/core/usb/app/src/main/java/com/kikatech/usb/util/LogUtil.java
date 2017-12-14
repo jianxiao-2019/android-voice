@@ -74,7 +74,8 @@ public class LogUtil {
         log(logLabel, logTag, log, null);
     }
 
-    private static void log(LogLabel logLabel, String logTag, String log, Throwable throwable) {
+    private static void log(LogLabel logLabel, String logTag, String oriLog, Throwable throwable) {
+        String log = "[usb]" + oriLog;
         switch (logLabel) {
             case VERBOSE:
                 Log.v(logTag, log);
