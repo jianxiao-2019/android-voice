@@ -177,6 +177,7 @@ public class DialogFlowService implements
 
     @Override
     public void resetContexts() {
+        mQueryAnyWords = false;
         if (mDialogFlow != null) {
             mDialogFlow.resetContexts();
         }
@@ -474,6 +475,7 @@ public class DialogFlowService implements
         @Override
         public void onSceneExit(String scene, boolean proactive) {
             // if not proactive, Don't reset context since it would clear the context of the following scenario
+            mQueryAnyWords = false;
             stopTts(false);
             if (proactive) {
                 mDialogFlow.resetContexts();
