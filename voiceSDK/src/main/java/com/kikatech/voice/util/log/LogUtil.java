@@ -86,8 +86,9 @@ public class LogUtil
 		log( logLabel, logTag, log, null );
 	}
 
-	private static void log( LogLabel logLabel, String logTag, String log, Throwable throwable )
+	private static void log( LogLabel logLabel, String logTag, String oriLog, Throwable throwable )
 	{
+		String log = "[service]" + oriLog;
         switch( logLabel )
         {
             case VERBOSE:
@@ -117,7 +118,7 @@ public class LogUtil
 			if (mFileLoggerId == -1) {
 				mFileLoggerId = FileLoggerUtil.getIns().configFileLogger(LOG_FOLDER, LOG_FILE);
 			}
-			FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, logTag + " " + log);
+			FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, logTag + " " + oriLog);
 		}
     }
 

@@ -54,10 +54,11 @@ public class Logger {
         }
     }
 
-    private static void log(LogLabel logLabel, String logTag, String log) {
-        if(log == null) {
-            log = "<err><null>";
+    private static void log(LogLabel logLabel, String logTag, String oriLog) {
+        if(oriLog == null) {
+            oriLog = "<err><null>";
         }
+        String log = "[mvp]" + oriLog;
         switch (logLabel) {
             case VERBOSE:
                 Log.v(logTag, log);
