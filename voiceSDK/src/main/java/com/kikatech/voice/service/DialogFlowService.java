@@ -454,6 +454,9 @@ public class DialogFlowService implements
     private void updateAsrConfig(AsrConfiguration asrConfig) {
         if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
             mVoiceService.updateAsrSettings(mAsrConfiguration);
+            if(LogUtil.DEBUG) {
+                mCallback.onAsrConfigChange(mAsrConfiguration);
+            }
         }
     }
 

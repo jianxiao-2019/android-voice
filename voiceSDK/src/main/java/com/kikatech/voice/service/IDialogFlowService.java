@@ -6,6 +6,7 @@ import android.util.Pair;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
  * Created by bradchang on 2017/11/7.
@@ -44,6 +45,8 @@ public interface IDialogFlowService {
         void onStageEvent(Bundle extras);
 
         void onSceneExit(boolean proactive);
+
+        void onAsrConfigChange(AsrConfiguration asrConfig);
     }
 
     interface IAgentQueryStatus {
