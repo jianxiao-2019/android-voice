@@ -325,6 +325,7 @@ public class UiTaskManager {
                     @Override
                     public void onSelected(byte requestType, int index, Option option) {
                         if (mFeedback != null) {
+                            clearQueue();
                             mFeedback.onOptionSelected(requestType, index, option);
                         }
                     }
