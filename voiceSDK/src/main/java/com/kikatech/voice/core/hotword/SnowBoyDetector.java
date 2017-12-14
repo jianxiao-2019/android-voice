@@ -45,7 +45,7 @@ public class SnowBoyDetector extends WakeUpDetector {
         Logger.d("[sboy]SnowBoyDetector before new SnowboyDetect");
         mSnowboyDetect = new SnowboyDetect(commonRes, activeModel);
         Logger.d("[sboy]SnowBoyDetector after new SnowboyDetect");
-        mSnowboyDetect.SetSensitivity("0.6");
+        mSnowboyDetect.SetSensitivity(SnowBoyConfig.getSensitivity());
         //-detector.SetAudioGain(1);
         mSnowboyDetect.ApplyFrontend(true);
         Logger.d("[sboy] init done, spend :" + (System.currentTimeMillis() - t) + " ms");
