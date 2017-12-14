@@ -68,6 +68,7 @@ public class DialogFlowService implements
         Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
 
         callback.onInitComplete();
+        callback.onAsrConfigChange(mAsrConfiguration);
     }
 
     @Override
