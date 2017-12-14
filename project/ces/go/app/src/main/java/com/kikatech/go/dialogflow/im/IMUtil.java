@@ -42,7 +42,11 @@ public class IMUtil {
         if (LogUtil.DEBUG) LogUtil.log("IMContent", "parm:" + parm);
 
         String imApp = parseIMApp(parm);
-        String[] targetName = new String[]{getBundleString(parm, KEY_NAME)};
+        String name = getBundleString(parm, KEY_NAME);
+        String[] targetName = null;
+        if (!TextUtils.isEmpty(name)) {
+            targetName = new String[]{name};
+        }
         String msgBody = getBundleString(parm, KEY_ANY);
 
         IMContent imc = new IMContent(imApp, targetName, msgBody);

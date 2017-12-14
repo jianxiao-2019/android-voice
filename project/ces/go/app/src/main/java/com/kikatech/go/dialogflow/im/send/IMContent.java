@@ -25,6 +25,7 @@ public class IMContent extends EmojiMessage {
     public String toString() {
         return "parsedIMApp:" + parsedIMApp + ", imAppPkgName:" + imAppPkgName +
                 ", targetName:" + targetNamesToString() +
+                ", sendName : " + getSendTarget() +
                 ", explicitTarget:" + explicitTarget +
                 ", msgBody:" + messageBody + "\n, emoji:" + emojiUnicode + ", snedEmoji:" + mSendWithEmoji;
     }
@@ -108,7 +109,7 @@ public class IMContent extends EmojiMessage {
         explicitTarget = true;
     }
 
-    public void update(IMContent ic) {
+    void update(IMContent ic) {
         parsedIMApp = checkNUpdate(parsedIMApp, ic.parsedIMApp);
         imAppPkgName = checkNUpdate(imAppPkgName, ic.imAppPkgName);
         targetName = checkNUpdate(targetName, ic.targetName);
@@ -144,14 +145,10 @@ public class IMContent extends EmojiMessage {
     }
 
     private String[] checkNUpdate(String[] ov, String[] nv) {
-        return nv == null || nv.length == 0 ? ov : nv;
+        return (nv == null || nv.length == 0) ? ov : nv;
     }
 
     public void updateSendTarget(String[] target) {
         targetName = target;
-    }
-
-    public void setSendTarget(String[] sendTarget) {
-        targetName = sendTarget;
     }
 }

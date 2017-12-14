@@ -36,7 +36,7 @@ public class StageConfirmSendTarget extends BaseSendIMStage {
                 imc.userConfirmSendTarget();
                 return getCheckIMBodyStage(TAG, imc, mSceneBase, mFeedback);
             case SceneActions.ACTION_SEND_IM_NO:
-                imc.setSendTarget(null);
+                imc.updateSendTarget(null);
                 return getCheckSendTargetStage(TAG, imc, mSceneBase, mFeedback);
             default:
                 String[] userSay = Intent.parseUserInputNBest(extra);
