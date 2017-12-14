@@ -167,6 +167,14 @@ public class KikaAlphaUiActivity extends BaseActivity {
                     mUiManager.writeDebugLog(dbgAction, "");
                 }
                 break;
+            case DFServiceEvent.ACTION_ON_ASR_CONFIG:
+                if(GoLayout.ENABLE_LOG_VIEW) {
+                    text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
+                    mUiManager.writeDebugLogSeparator();
+                    mUiManager.writeDebugLog(dbgAction, text);
+                    mUiManager.writeDebugLogSeparator();
+                }
+                break;
         }
 
         if (GoLayout.ENABLE_LOG_VIEW && mIsAsrFinished) {

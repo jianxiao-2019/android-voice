@@ -43,6 +43,7 @@ import com.kikatech.usb.util.ImageUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -310,6 +311,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         }
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SCENE_EXIT);
                         event.putExtra(DFServiceEvent.PARAM_IS_PROACTIVE, proactive);
+                        sendDFServiceEvent(event);
+                    }
+
+                    @Override
+                    public void onAsrConfigChange(AsrConfiguration asrConfig) {
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_CONFIG);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, asrConfig.toJsonString());
                         sendDFServiceEvent(event);
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {

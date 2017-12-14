@@ -20,6 +20,7 @@ import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +138,11 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
                     @Override
                     public void onSceneExit(boolean proactive) {
+                    }
+
+                    @Override
+                    public void onAsrConfigChange(AsrConfiguration asrConfig) {
+
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
