@@ -39,7 +39,8 @@ public class StageAskAddress extends BaseNaviStage {
         }
 
         String userSays = Intent.parseUserInput(extra);
-        return new StageQueryAddress(mSceneBase, mFeedback, userSays);
+//        return new StageQueryAddress(mSceneBase, mFeedback, userSays);
+        return new StageConfirmAddress(mSceneBase, mFeedback, userSays, userSays);
     }
 
     @Override

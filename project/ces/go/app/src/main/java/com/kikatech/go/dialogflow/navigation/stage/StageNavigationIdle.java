@@ -32,7 +32,8 @@ public class StageNavigationIdle extends BaseNaviStage {
             if (TextUtils.isEmpty(naviAddress)) {
                 return new StageAskAddress(mSceneBase, mFeedback, false);
             } else {
-                return new StageQueryAddress(mSceneBase, mFeedback, naviAddress);
+//                return new StageQueryAddress(mSceneBase, mFeedback, naviAddress);
+                return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress, naviAddress);
             }
         } else if (action.equals(NaviSceneActions.ACTION_NAV_CANCEL)) {
             return new StageStopNavigation(mSceneBase, mFeedback);
