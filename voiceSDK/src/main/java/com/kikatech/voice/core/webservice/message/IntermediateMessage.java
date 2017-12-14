@@ -13,13 +13,13 @@ public class IntermediateMessage extends Message {
     public int state;           // status
     public String text;   // asr result
     public String engine;       // asr engine
-    public String cid;          // conversation id
+    public long cid;          // conversation id
 
     @Override
     protected void parseData(JSONObject dataObj) {
         state = dataObj.optInt("state");
         engine = dataObj.optString("engine");
-        cid = dataObj.optString("cid");
+        cid = dataObj.optLong("cid");
         try {
             parseTextResults(dataObj.getJSONArray("transcripts"));
         } catch (JSONException e) {
