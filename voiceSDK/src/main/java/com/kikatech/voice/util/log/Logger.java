@@ -15,47 +15,75 @@ public class Logger {
     public final static String LOG_FILE = "%s_voice_mvp.txt";
     private static int mFileLoggerId = -1;
 
+    private enum LogLabel {
+        VERBOSE,
+        DEBUG,
+        INFO,
+        WARN,
+        ERROR,
+        ASSERT
+    }
+
     public static void v(String message) {
         if (DEBUG) {
-            Log.v(TAG, message);
-            writeFileLog(message);
+            log(LogLabel.VERBOSE, TAG, message);
         }
     }
 
     public static void d(String message) {
         if (DEBUG) {
-            Log.d(TAG, message);
-            writeFileLog(message);
+            log(LogLabel.DEBUG, TAG, message);
         }
     }
 
     public static void i(String message) {
         if (DEBUG) {
-            Log.i(TAG, message);
-            writeFileLog(message);
+            log(LogLabel.INFO, TAG, message);
         }
     }
 
     public static void w(String message) {
         if (DEBUG) {
-            Log.w(TAG, message);
-            writeFileLog(message);
+            log(LogLabel.WARN, TAG, message);
         }
     }
 
     public static void e(String message) {
         if (DEBUG) {
-            Log.e(TAG, message);
-            writeFileLog(message);
+            log(LogLabel.ERROR, TAG, message);
         }
     }
 
-    private static void writeFileLog(String message) {
+    private static void log(LogLabel logLabel, String logTag, String log) {
+        if(log == null) {
+            log = "<err><null>";
+        }
+        switch (logLabel) {
+            case VERBOSE:
+                Log.v(logTag, log);
+                break;
+            case DEBUG:
+                Log.d(logTag, log);
+                break;
+            case INFO:
+                Log.i(logTag, log);
+                break;
+            case WARN:
+                Log.w(logTag, log);
+                break;
+            case ERROR:
+                Log.e(logTag, log);
+                break;
+            case ASSERT:
+                Log.wtf(logTag, log);
+                break;
+        }
+
         if (ENABLE_FILE_LOG) {
             if (mFileLoggerId == -1) {
                 mFileLoggerId = FileLoggerUtil.getIns().configFileLogger(LOG_FOLDER, LOG_FILE);
             }
-            FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, message);
+            FileLoggerUtil.getIns().writeLogToFile(mFileLoggerId, log);
         }
     }
 }
