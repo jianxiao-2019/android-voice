@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 
 public class SnowBoyConfig {
 
-    static final String SENSITIVITY = "0.6";
+    private static final String SENSITIVITY = "0.75";
 
     public static String getSensitivity() {
         try {
