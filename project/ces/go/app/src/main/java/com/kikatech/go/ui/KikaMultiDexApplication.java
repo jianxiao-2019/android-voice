@@ -7,6 +7,8 @@ import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
+import com.kikatech.go.util.LogUtil;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -27,7 +29,10 @@ public class KikaMultiDexApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+        Fabric.with(new Fabric.Builder(this)
+                .kits(new Crashlytics(), new CrashlyticsNdk())
+                .debuggable(LogUtil.DEBUG)
+                .build());
         sContext = this;
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();

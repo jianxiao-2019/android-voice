@@ -70,7 +70,10 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     // Fabric
     compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
-        transitive = true;
+        transitive = true
+    }
+    compile('com.crashlytics.sdk.android:crashlytics-ndk:2.0.1@aar') {
+        transitive = true
     }
     // Api.ai
     compile 'ai.api:libai:1.6.11'
@@ -89,3 +92,10 @@ dependencies {
     compile 'com.kikatech.voice:voice:1.0.1.3'
 //    compile project(':voice')
 }
+
+crashlytics {
+    enableNdk true
+    //androidNdkOut 'src/keyboard/default/obj'
+    //androidNdkLibsOut 'src/keyboard/default/jniLibs'
+}
+
