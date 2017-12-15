@@ -42,6 +42,7 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

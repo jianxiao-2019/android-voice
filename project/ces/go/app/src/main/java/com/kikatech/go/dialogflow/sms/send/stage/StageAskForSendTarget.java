@@ -45,6 +45,7 @@ public class StageAskForSendTarget extends BaseSendSmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

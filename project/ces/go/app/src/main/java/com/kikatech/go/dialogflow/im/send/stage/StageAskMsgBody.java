@@ -39,6 +39,7 @@ public class StageAskMsgBody extends BaseSendIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

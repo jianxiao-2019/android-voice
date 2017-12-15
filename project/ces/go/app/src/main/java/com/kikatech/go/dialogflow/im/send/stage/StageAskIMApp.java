@@ -42,6 +42,7 @@ public class StageAskIMApp extends BaseSendIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

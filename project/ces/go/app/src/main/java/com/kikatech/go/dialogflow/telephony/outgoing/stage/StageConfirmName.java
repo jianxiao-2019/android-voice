@@ -53,6 +53,7 @@ public class StageConfirmName extends StageOutgoing {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

@@ -32,6 +32,7 @@ public class StageCancel extends BaseSceneStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

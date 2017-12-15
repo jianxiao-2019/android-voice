@@ -40,6 +40,7 @@ public class ReplyIMStageAskAddEmoji extends BaseReplyIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

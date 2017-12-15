@@ -28,6 +28,7 @@ public abstract class NonLoopSceneBase extends SceneBase {
 
             @Override
             public void doAction() {
+                onStageActionStart();
                 action();
             }
 

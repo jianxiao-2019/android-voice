@@ -97,6 +97,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

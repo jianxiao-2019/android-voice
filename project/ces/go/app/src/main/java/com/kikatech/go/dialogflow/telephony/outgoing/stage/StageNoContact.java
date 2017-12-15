@@ -28,6 +28,7 @@ public class StageNoContact extends StageOutgoing {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

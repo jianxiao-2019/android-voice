@@ -48,6 +48,7 @@ public class StageIncoming extends BaseSceneStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

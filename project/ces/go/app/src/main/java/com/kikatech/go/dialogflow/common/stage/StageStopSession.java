@@ -30,6 +30,7 @@ public class StageStopSession extends SceneStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

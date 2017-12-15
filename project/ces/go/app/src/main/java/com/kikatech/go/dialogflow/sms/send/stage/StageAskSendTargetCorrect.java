@@ -66,6 +66,7 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

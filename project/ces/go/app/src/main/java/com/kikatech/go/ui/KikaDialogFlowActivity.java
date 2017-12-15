@@ -129,6 +129,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
+                    public void onStageActionStart() {
+                    }
+
+                    @Override
                     public void onStageActionDone(boolean isInterrupted) {
                     }
 

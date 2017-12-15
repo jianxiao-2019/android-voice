@@ -40,6 +40,7 @@ public class AskMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

@@ -38,6 +38,7 @@ public class AskToReadContentReplyIMStage extends BaseReplyIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

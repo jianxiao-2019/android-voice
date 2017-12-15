@@ -33,6 +33,7 @@ public class StageQueryAddress extends BaseNaviStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

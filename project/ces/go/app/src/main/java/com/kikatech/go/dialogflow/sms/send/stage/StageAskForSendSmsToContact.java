@@ -65,6 +65,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

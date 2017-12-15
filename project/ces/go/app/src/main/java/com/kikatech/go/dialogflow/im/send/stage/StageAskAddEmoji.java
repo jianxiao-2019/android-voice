@@ -41,6 +41,7 @@ public class StageAskAddEmoji extends BaseSendIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

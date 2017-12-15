@@ -20,6 +20,7 @@ public class StageCancel extends BaseSendSmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

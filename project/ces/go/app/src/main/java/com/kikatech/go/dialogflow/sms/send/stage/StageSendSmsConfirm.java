@@ -30,6 +30,7 @@ public class StageSendSmsConfirm extends BaseSendSmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

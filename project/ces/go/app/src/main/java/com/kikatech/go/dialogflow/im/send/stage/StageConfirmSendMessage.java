@@ -54,6 +54,7 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

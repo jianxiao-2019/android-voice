@@ -58,6 +58,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

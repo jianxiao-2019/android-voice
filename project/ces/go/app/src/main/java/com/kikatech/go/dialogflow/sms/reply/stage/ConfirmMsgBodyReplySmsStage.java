@@ -51,6 +51,7 @@ public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

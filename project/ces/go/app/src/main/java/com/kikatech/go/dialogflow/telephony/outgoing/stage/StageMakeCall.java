@@ -37,6 +37,7 @@ public class StageMakeCall extends StageOutgoing {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

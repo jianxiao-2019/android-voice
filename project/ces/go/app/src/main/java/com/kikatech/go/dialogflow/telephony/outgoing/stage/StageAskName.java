@@ -26,6 +26,7 @@ public class StageAskName extends StageOutgoing {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

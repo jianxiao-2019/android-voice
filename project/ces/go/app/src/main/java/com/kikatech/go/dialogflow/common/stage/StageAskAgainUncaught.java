@@ -36,6 +36,7 @@ public class StageAskAgainUncaught extends SceneStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

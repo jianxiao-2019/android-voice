@@ -32,6 +32,7 @@ public class StageStopNavigation extends BaseSceneStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

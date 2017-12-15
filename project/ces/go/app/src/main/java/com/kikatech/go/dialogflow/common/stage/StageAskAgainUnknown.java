@@ -36,6 +36,7 @@ public class StageAskAgainUnknown extends SceneStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

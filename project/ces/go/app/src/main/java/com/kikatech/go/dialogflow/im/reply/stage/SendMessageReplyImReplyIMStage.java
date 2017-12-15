@@ -24,6 +24,7 @@ public class SendMessageReplyImReplyIMStage extends BaseReplyIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

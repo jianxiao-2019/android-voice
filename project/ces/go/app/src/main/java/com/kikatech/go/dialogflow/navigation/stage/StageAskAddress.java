@@ -45,6 +45,7 @@ public class StageAskAddress extends BaseNaviStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

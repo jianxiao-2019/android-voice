@@ -31,6 +31,7 @@ public class StageNavigationGo extends BaseNaviStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

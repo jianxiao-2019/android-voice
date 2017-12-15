@@ -34,6 +34,7 @@ public class StageAskSendTarget extends BaseSendIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

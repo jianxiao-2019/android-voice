@@ -110,6 +110,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 handleStatusChanged(status);
                 break;
             case ToDFServiceEvent.ACTION_ON_NAVIGATION_STARTED:
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("action: %s", action));
+                }
                 pauseAsr();
                 showGMap();
                 break;
@@ -117,11 +120,17 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 removeView();
                 break;
             case ToDFServiceEvent.ACTION_DIALOG_FLOW_TALK:
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("action: %s", action));
+                }
                 String text = event.getExtras().getString(ToDFServiceEvent.PARAM_TEXT);
                 pauseAsr();
                 mDialogFlowService.talk(text);
                 break;
             case ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP:
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("action: %s", action));
+                }
                 mDialogFlowService.wakeUp();
                 break;
         }
@@ -198,12 +207,18 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 new IDialogFlowService.IServiceCallback() {
                     @Override
                     public void onInitComplete() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onInitComplete");
+                        }
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT);
                         sendDFServiceEvent(event);
                     }
 
                     @Override
                     public void onWakeUp() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onWakeUp");
+                        }
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_WAKE_UP);
                         sendDFServiceEvent(event);
                         resumeAsr();
@@ -211,12 +226,18 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onSleep() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onSleep");
+                        }
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SLEEP);
                         sendDFServiceEvent(event);
                     }
 
                     @Override
                     public void onVadBos() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onVadBos");
+                        }
                         pauseAsr();
                         mDialogFlowService.talkUncaught();
                     }
@@ -281,6 +302,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         event.putExtra(DFServiceEvent.PARAM_SCENE_ACTION, action);
                         event.putExtra(DFServiceEvent.PARAM_SCENE_STAGE, stage);
                         sendDFServiceEvent(event);
+                    }
+
+                    @Override
+                    public void onStageActionStart() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onStageActionStart");
+                        }
+                        pauseAsr();
                     }
 
                     @Override

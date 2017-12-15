@@ -37,6 +37,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

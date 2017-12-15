@@ -31,6 +31,7 @@ public class StageStop extends BaseSceneStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

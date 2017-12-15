@@ -43,6 +43,7 @@ public class StageAskForSmsBody extends BaseSendSmsStage {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 

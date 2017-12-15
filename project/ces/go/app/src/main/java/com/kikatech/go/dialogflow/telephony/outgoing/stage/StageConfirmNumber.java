@@ -80,6 +80,7 @@ public class StageConfirmNumber extends StageOutgoing {
 
     @Override
     public void doAction() {
+        onStageActionStart();
         action();
     }
 
