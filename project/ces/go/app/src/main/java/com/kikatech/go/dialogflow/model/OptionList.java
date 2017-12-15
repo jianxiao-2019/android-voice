@@ -19,6 +19,7 @@ public class OptionList extends UiModel {
     private byte requestType;
     private String title;
     private List<Option> options = new ArrayList<>();
+    private boolean isDefaultList;
 
     public OptionList(byte requestType) {
         this.requestType = requestType;
@@ -60,6 +61,10 @@ public class OptionList extends UiModel {
         return options;
     }
 
+    public boolean isDefaultList() {
+        return isDefaultList;
+    }
+
 
     public String getTextToSpeak(String title) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -88,6 +93,7 @@ public class OptionList extends UiModel {
         OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);
         optionList.setTitle("You can say");
         optionList.setIconRes(SceneUtil.ICON_TRIGGER);
+        optionList.isDefaultList = true;
         optionList.add(new Option("Navigate", null));
         optionList.add(new Option("Message", null));
         optionList.add(new Option("Make a call", null));

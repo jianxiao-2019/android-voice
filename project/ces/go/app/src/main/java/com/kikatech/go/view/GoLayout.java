@@ -97,7 +97,7 @@ public class GoLayout extends FrameLayout {
         }
     }
 
-    private DisplayMode mCurrentMode;
+    private DisplayMode mCurrentMode = DisplayMode.SLEEP;
     private ViewStatus mCurrentStatus;
 
     private LayoutInflater mLayoutInflater;
@@ -225,6 +225,9 @@ public class GoLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        if (mCurrentMode != null) {
+            setBackgroundResource(mCurrentMode.getBgRes());
+        }
     }
 
     private IOnModeChangedListener mModeChangedListener;
@@ -348,10 +351,18 @@ public class GoLayout extends FrameLayout {
         }
     }
 
-    private void onModeChanged(DisplayMode mode) {
+    private synchronized void onModeChanged(final DisplayMode mode) {
         mCurrentMode = mode;
-        setBackgroundResource(mCurrentMode.getBgRes());
-        loadStatusGif(mode.getDefaultStatus(), null);
+        loadStatusGif(mode.getDefaultStatus(), new IGifStatusListener() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onStop(Exception e) {
+                setBackgroundResource(mode.getBgRes());
+            }
+        });
     }
 
 
@@ -375,7 +386,9 @@ public class GoLayout extends FrameLayout {
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(mSpeakViewIcon);
 
-        mSpeakViewText.setText(ttsText.getUiText());
+        String uiText = ttsText.getUiText();
+        mSpeakViewText.setText(uiText);
+        DialogFlowForegroundService.processMsgChanged(uiText);
 
         mSpeakLayout.setVisibility(VISIBLE);
         mListenLayout.setVisibility(GONE);
@@ -466,6 +479,9 @@ public class GoLayout extends FrameLayout {
                 } else {
                     mOptionsTitleText.setText(title);
                     mOptionsTitleEmojiView.setVisibility(GONE);
+                }
+                if (!optionList.isDefaultList()) {
+                    DialogFlowForegroundService.processMsgChanged(title);
                 }
 
                 int ITEM_MARGIN = ResolutionUtil.dp2px(context, 7);
