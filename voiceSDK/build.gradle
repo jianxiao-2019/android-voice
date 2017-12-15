@@ -3,16 +3,13 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "26.0.0"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 10103
         versionName "1.1.03_20171013"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk {
-            abiFilters "armeabi-v7a","arm64-v8a"
-        }
     }
     buildTypes {
         release {
