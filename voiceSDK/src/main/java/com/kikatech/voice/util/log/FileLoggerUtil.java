@@ -43,14 +43,20 @@ public class FileLoggerUtil {
         return sFileLoggerUtil;
     }
 
-    public synchronized int configFileLogger(String logFolderPath, String logFilePath) {
+    public synchronized int configFileLogger(String logFolderPath, String logFilePath, boolean pureLog) {
         BufferedWriter logger = initLogger(logFolderPath, logFilePath);
         mBufferedWriterPool.add(logger);
 
         int idx = mBufferedWriterPool.indexOf(logger);
-        writeBasicInfo(idx);
+        if(!pureLog) {
+            writeBasicInfo(idx);
+        }
 
         return idx;
+    }
+
+    public synchronized int configFileLogger(String logFolderPath, String logFilePath) {
+        return configFileLogger(logFolderPath, logFilePath, false);
     }
 
     public File getLogFullPath(String logFolderPath, String logFilePath) {
@@ -86,7 +92,7 @@ public class FileLoggerUtil {
         }
     }
 
-    public void writeLogToFile(final int id, final String log) {
+    public void writeLogToFile(final int id, final String log, final boolean pureLog) {
         BackgroundThread.post(
                 new Runnable() {
                     @Override
@@ -94,8 +100,12 @@ public class FileLoggerUtil {
                         try {
                             BufferedWriter logger = mBufferedWriterPool.get(id);
                             if (logger != null) {
-                                String currentTime = DateFormat.format("MM/dd HH:mm:ss", System.currentTimeMillis()).toString();
-                                logger.append("[").append(currentTime).append("] ").append(log).append("\n");
+                                if(pureLog) {
+                                    logger.append(log);
+                                } else {
+                                    String currentTime = DateFormat.format("MM/dd HH:mm:ss", System.currentTimeMillis()).toString();
+                                    logger.append("[").append(currentTime).append("] ").append(log).append("\n");
+                                }
                                 logger.flush();
                             }
                         } catch (IOException e) {
@@ -103,6 +113,10 @@ public class FileLoggerUtil {
                         }
                     }
                 });
+    }
+
+    public void writeLogToFile(final int id, final String log) {
+        writeLogToFile(id, log, false);
     }
 
     void exit() {
