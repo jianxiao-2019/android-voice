@@ -6,6 +6,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.kikatech.voice.BuildConfig;
+import com.kikatech.voice.util.BackgroundThread;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -19,8 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by brad_chang on 2017/12/8.
@@ -28,7 +27,6 @@ import java.util.concurrent.Executors;
 
 public class FileLoggerUtil {
 
-    private final ExecutorService mExecutor;
     private final List<BufferedWriter> mBufferedWriterPool = new ArrayList<>();
 
     private final long mInitedTime = System.currentTimeMillis();
@@ -36,7 +34,6 @@ public class FileLoggerUtil {
     private static FileLoggerUtil sFileLoggerUtil;
 
     private FileLoggerUtil() {
-        mExecutor = Executors.newSingleThreadExecutor();
     }
 
     public synchronized static FileLoggerUtil getIns() {
@@ -57,7 +54,7 @@ public class FileLoggerUtil {
     }
 
     public File getLogFullPath(String logFolderPath, String logFilePath) {
-        String fullFolderPath = createSDCardFolder(logFolderPath);
+        String fullFolderPath = createFolderOnSDCard(logFolderPath);
         String filename = String.format(logFilePath, DateFormat.format("yyyyMMdd_HHmmss", mInitedTime).toString());
         return new File(fullFolderPath + "/" + filename);
     }
@@ -90,24 +87,22 @@ public class FileLoggerUtil {
     }
 
     public void writeLogToFile(final int id, final String log) {
-        if (mExecutor == null) {
-            return;
-        }
-        mExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    BufferedWriter logger = mBufferedWriterPool.get(id);
-                    if (logger != null) {
-                        String currentTime = DateFormat.format("MM/dd HH:mm:ss", System.currentTimeMillis()).toString();
-                        logger.append("[").append(currentTime).append("] ").append(log).append("\n");
-                        logger.flush();
+        BackgroundThread.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            BufferedWriter logger = mBufferedWriterPool.get(id);
+                            if (logger != null) {
+                                String currentTime = DateFormat.format("MM/dd HH:mm:ss", System.currentTimeMillis()).toString();
+                                logger.append("[").append(currentTime).append("] ").append(log).append("\n");
+                                logger.flush();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+                });
     }
 
     void exit() {
@@ -115,10 +110,6 @@ public class FileLoggerUtil {
             closeIO(bw);
         }
         mBufferedWriterPool.clear();
-
-        if (mExecutor != null) {
-            mExecutor.shutdown();
-        }
     }
 
     public String loadLogFile(String logFolderPath, String logFilePath) {
@@ -144,7 +135,7 @@ public class FileLoggerUtil {
         return text.toString();
     }
 
-    private static String createSDCardFolder(String folder) {
+    private static String createFolderOnSDCard(String folder) {
         String sdcard = Environment.getExternalStorageDirectory().getPath();
         File file = new File(sdcard, folder);
         if (!file.exists()) {
@@ -154,14 +145,16 @@ public class FileLoggerUtil {
     }
 
     public synchronized void asyncWriteToFile(final byte[] data, final String filePtah) {
-        if (mExecutor != null) {
-            mExecutor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    writeToFileImp(data, filePtah);
-                }
-            });
-        }
+        BackgroundThread.post(new Runnable() {
+            @Override
+            public void run() {
+                writeToFileImp(data, filePtah);
+            }
+        });
+    }
+
+    public synchronized void writeToFile(final byte[] data, final String filePtah) {
+        writeToFileImp(data, filePtah);
     }
 
     private void writeToFileImp(byte[] data, String filePtah) {
