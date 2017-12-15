@@ -37,6 +37,5 @@ public class BaseNaviStage extends BaseSceneStage {
 
     @Override
     public void action() {
-        onStageActionDone(false);
     }
 }

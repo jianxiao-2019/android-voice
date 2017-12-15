@@ -50,7 +50,7 @@ public class StageCancel extends BaseSceneStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted) {
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         exitScene();
     }
 }

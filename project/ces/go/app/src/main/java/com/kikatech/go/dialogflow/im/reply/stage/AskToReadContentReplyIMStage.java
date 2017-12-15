@@ -57,7 +57,7 @@ public class AskToReadContentReplyIMStage extends BaseReplyIMStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted) {
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         mSceneBase.nextStage(new AskToReadContentOptionReplyIMStage(mSceneBase, mFeedback));
     }
 }

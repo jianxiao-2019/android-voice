@@ -33,6 +33,6 @@ public class StageIgnore extends SceneStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted) {
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
     }
 }

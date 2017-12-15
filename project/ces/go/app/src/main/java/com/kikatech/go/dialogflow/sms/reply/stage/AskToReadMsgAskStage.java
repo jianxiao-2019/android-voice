@@ -54,7 +54,7 @@ public class AskToReadMsgAskStage extends BaseReplySmsStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted) {
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         mSceneBase.nextStage(new AskToReadMsgOptionStage(mSceneBase, mFeedback));
     }
 }

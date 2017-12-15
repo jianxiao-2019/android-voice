@@ -36,6 +36,7 @@ import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
+import com.kikatech.go.util.AsyncThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.GoLayout;
@@ -58,6 +59,8 @@ import java.util.List;
 
 public class DialogFlowForegroundService extends BaseForegroundService {
     private static final String TAG = "DialogFlowForegroundService";
+
+    private static final long TTS_DELAY_ASR_RESUME = 500;
 
     private static WindowManager mWindowManager;
     private static LayoutInflater mLayoutInflater;
@@ -314,11 +317,20 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onStageActionDone(boolean isInterrupted) {
+                    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("isInterrupted: %s", isInterrupted));
+                            LogUtil.log(TAG, String.format("isInterrupted: %1$s, delayAsrResume: %2$s", isInterrupted, delayAsrResume));
                         }
-                        resumeAsr();
+                        if (delayAsrResume) {
+                            AsyncThread.getIns().executeDelay(new Runnable() {
+                                @Override
+                                public void run() {
+                                    resumeAsr();
+                                }
+                            }, TTS_DELAY_ASR_RESUME);
+                        } else {
+                            resumeAsr();
+                        }
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE);
                         event.putExtra(DFServiceEvent.PARAM_IS_INTERRUPTED, isInterrupted);
                         sendDFServiceEvent(event);

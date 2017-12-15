@@ -27,8 +27,9 @@ public class StageConfirmAddress extends BaseNaviStage {
         super(scene, feedback);
         mUserInput = userInput;
         mNaviAddress = naviAddress;
-        if (LogUtil.DEBUG)
+        if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "StageConfirmAddress init, mNaviAddress:" + mNaviAddress);
+        }
     }
 
     @Override

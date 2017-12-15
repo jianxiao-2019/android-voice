@@ -43,7 +43,7 @@ public class StageStopNavigation extends BaseSceneStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted) {
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         //NaviSceneUtil.stopNavigation(mSceneBase.getContext(), ((SceneStopIntent) mSceneBase).getMainUIClass());
         NaviSceneUtil.stopNavigation(mSceneBase.getContext(), KikaAlphaUiActivity.class);
         exitScene();

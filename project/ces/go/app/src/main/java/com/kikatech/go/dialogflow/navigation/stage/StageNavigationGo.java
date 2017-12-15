@@ -21,7 +21,9 @@ public class StageNavigationGo extends BaseNaviStage {
     StageNavigationGo(SceneBase scene, ISceneFeedback feedback, String naviAddress) {
         super(scene, feedback);
         mNaviAddress = naviAddress;
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "StageNavigationGo init, mNaviAddress:" + mNaviAddress);
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "StageNavigationGo init, mNaviAddress:" + mNaviAddress);
+        }
     }
 
     @Override
@@ -50,7 +52,7 @@ public class StageNavigationGo extends BaseNaviStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted) {
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         exitScene();
     }
 }
