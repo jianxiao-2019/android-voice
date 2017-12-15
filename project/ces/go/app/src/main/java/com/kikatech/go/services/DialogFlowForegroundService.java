@@ -71,6 +71,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private PowerManager.WakeLock mWakeLocker;
     private View mView;
     private ImageView mStatusView;
+    private View mStatusWrapperView;
     private GlideDrawableImageViewTarget mNonRepeatTarget;
 
 
@@ -414,6 +415,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         mView = mLayoutInflater.inflate(R.layout.go_layout_gmap, null);
 
+        mStatusWrapperView = mView.findViewById(R.id.gmap_status_wrapper);
         mStatusView = (ImageView) mView.findViewById(R.id.gmap_status);
 
         mNonRepeatTarget = new GlideDrawableImageViewTarget(mStatusView, 1);
@@ -503,11 +505,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, "handleStatusChanged: status: " + status.name());
         }
-//        Glide.with(DialogFlowForegroundService.this)
-//                .load(status.getSmallRes())
-//                .dontTransform()
-//                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-//                .into(mStatusView);
+
+        if (mStatusWrapperView.getVisibility() == View.GONE) {
+            mStatusWrapperView.setVisibility(View.VISIBLE);
+        }
 
         Glide.with(DialogFlowForegroundService.this.getApplicationContext())
                 .load(status.getSmallRes())

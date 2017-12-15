@@ -46,11 +46,11 @@ public class StageNavigationGo extends BaseNaviStage {
             args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
             speak(ttsText, args);
         }
+        NaviSceneUtil.navigateToLocation(mSceneBase.getContext(), mNaviAddress);
     }
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
-        NaviSceneUtil.navigateToLocation(mSceneBase.getContext(), mNaviAddress);
         exitScene();
     }
 }
