@@ -16,7 +16,7 @@ public interface ISceneFeedback {
 
     void onStageActionStart();
 
-    void onStageActionDone(boolean isInterrupted);
+    void onStageActionDone(boolean isInterrupted, boolean delayAsrResume);
 
     void onStageEvent(Bundle extras);
 }

@@ -68,7 +68,7 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
     public void doAction() {
         onStageActionStart();
         action();
-        onStageActionDone(false);
+        onStageActionDone(false, false);
     }
 
     protected void speak(String text) {
@@ -101,9 +101,9 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted) {
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         if (mFeedback != null) {
-            mFeedback.onStageActionDone(isInterrupted);
+            mFeedback.onStageActionDone(isInterrupted, delayAsrResume);
         }
     }
 

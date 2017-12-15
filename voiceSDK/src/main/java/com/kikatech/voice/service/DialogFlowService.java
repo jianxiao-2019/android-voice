@@ -399,8 +399,8 @@ public class DialogFlowService implements
         }
 
         @Override
-        public void onStageActionDone(boolean isInterrupted) {
-            mCallback.onStageActionDone(isInterrupted);
+        public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+            mCallback.onStageActionDone(isInterrupted, delayAsrResume);
         }
 
         @Override
@@ -413,8 +413,6 @@ public class DialogFlowService implements
 
     private final class TtsStateDispatchListener implements TtsSource.TtsStateChangedListener {
         private ISceneStageFeedback listener;
-
-        private long DELAY = 500;
 
         private void bindListener(ISceneStageFeedback listener) {
             this.listener = listener;
@@ -437,12 +435,12 @@ public class DialogFlowService implements
             }
             final ISceneStageFeedback feedback = listener;
             if (feedback != null) {
-                AsyncThread.getIns().executeDelay(new Runnable() {
+                AsyncThread.getIns().execute(new Runnable() {
                     @Override
                     public void run() {
-                        feedback.onStageActionDone(false);
+                        feedback.onStageActionDone(false, true);
                     }
-                }, DELAY);
+                });
             }
         }
 
@@ -453,12 +451,12 @@ public class DialogFlowService implements
             }
             final ISceneStageFeedback feedback = listener;
             if (feedback != null) {
-                AsyncThread.getIns().executeDelay(new Runnable() {
+                AsyncThread.getIns().execute(new Runnable() {
                     @Override
                     public void run() {
-                        feedback.onStageActionDone(true);
+                        feedback.onStageActionDone(true, true);
                     }
-                }, DELAY);
+                });
             }
         }
 
@@ -469,12 +467,12 @@ public class DialogFlowService implements
             }
             final ISceneStageFeedback feedback = listener;
             if (feedback != null) {
-                AsyncThread.getIns().executeDelay(new Runnable() {
+                AsyncThread.getIns().execute(new Runnable() {
                     @Override
                     public void run() {
-                        feedback.onStageActionDone(true);
+                        feedback.onStageActionDone(true, true);
                     }
-                }, DELAY);
+                });
             }
         }
     }
@@ -482,7 +480,7 @@ public class DialogFlowService implements
     private void updateAsrConfig(AsrConfiguration asrConfig) {
         if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
             mVoiceService.updateAsrSettings(mAsrConfiguration);
-            if(LogUtil.DEBUG) {
+            if (LogUtil.DEBUG) {
                 mCallback.onAsrConfigChange(mAsrConfiguration);
             }
         }
