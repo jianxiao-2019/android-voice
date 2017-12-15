@@ -179,12 +179,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
-    public void resumeAsr() {
+    public synchronized void resumeAsr() {
         mIsAsrPaused = false;
         startVadBosTimer();
     }
 
-    public void pauseAsr() {
+    public synchronized void pauseAsr() {
         mIsAsrPaused = true;
         cleanVadBosTimer();
     }

@@ -5,8 +5,6 @@ package com.kikatech.voice.core.dialogflow.scene;
  */
 
 public interface ISceneManager {
-    void exitSceneAndSleep(SceneBase scene);
-
     void exitScene(SceneBase scene);
 
     void exitCurrentScene();

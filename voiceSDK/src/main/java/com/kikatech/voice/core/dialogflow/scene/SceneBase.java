@@ -46,12 +46,6 @@ public abstract class SceneBase implements DialogObserver {
         }
     }
 
-    void sleep() {
-        if (mSceneManager != null) {
-            mSceneManager.exitSceneAndSleep(this);
-        }
-    }
-
     final public Context getContext() {
         return mContext;
     }
@@ -79,7 +73,7 @@ public abstract class SceneBase implements DialogObserver {
     private int mStageCondCount = 1;
 
     @Override
-    public void onIntent(Intent intent) {
+    public synchronized void onIntent(Intent intent) {
         String action = intent.getAction();
         if (TextUtils.isEmpty(action)) {
             return;

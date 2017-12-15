@@ -53,10 +53,6 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
         mSceneBase.exit();
     }
 
-    final protected void exitSceneAndSleep() {
-        mSceneBase.sleep();
-    }
-
     final void prepareAction(String scene, String action, SceneStage stage) {
         prepare();
         if (mFeedback != null) {
@@ -99,6 +95,9 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
 
     @Override
     public void onStageActionStart() {
+        if (mFeedback != null) {
+            mFeedback.onStageActionStart();
+        }
     }
 
     @Override

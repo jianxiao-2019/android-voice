@@ -189,6 +189,9 @@ public class DialogFlowService implements
 
     @Override
     public void wakeUp() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "wakeUp");
+        }
         if (mVoiceService != null) {
             mVoiceService.wakeUp();
         }
@@ -196,6 +199,9 @@ public class DialogFlowService implements
 
     @Override
     public void sleep() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "sleep");
+        }
         if (mVoiceService != null) {
             mVoiceService.sleep();
         }
@@ -219,6 +225,9 @@ public class DialogFlowService implements
 
     @Override
     public void pauseAsr() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "pauseAsr");
+        }
         if (mVoiceService != null) {
             mVoiceService.pauseAsr();
             if (mCallback != null) {
@@ -229,6 +238,9 @@ public class DialogFlowService implements
 
     @Override
     public void resumeAsr() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "resumeAsr");
+        }
         if (mVoiceService != null) {
             mVoiceService.resumeAsr();
             if (mCallback != null) {
@@ -253,6 +265,9 @@ public class DialogFlowService implements
 
     @Override
     public void onWakeUp() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onWakeUp");
+        }
         if (mCallback != null) {
             mCallback.onWakeUp();
         }
@@ -260,6 +275,9 @@ public class DialogFlowService implements
 
     @Override
     public void onSleep() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onSleep");
+        }
         if (mCallback != null) {
             mCallback.onSleep();
         }
@@ -345,6 +363,9 @@ public class DialogFlowService implements
 
     @Override
     public void onVadBos() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onVadBos");
+        }
         if (mCallback != null) {
             mCallback.onVadBos();
         }
@@ -370,6 +391,11 @@ public class DialogFlowService implements
         @Override
         public void onStagePrepared(String scene, String action, SceneStage sceneStage) {
             mCallback.onStagePrepared(scene, action, sceneStage);
+        }
+
+        @Override
+        public void onStageActionStart() {
+            mCallback.onStageActionStart();
         }
 
         @Override
@@ -463,12 +489,6 @@ public class DialogFlowService implements
     }
 
     private SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
-        @Override
-        public void doSleep(String scene) {
-            stopTts(true);
-            sleep();
-        }
-
         @Override
         public void onSceneEnter(String scene) {
         }
