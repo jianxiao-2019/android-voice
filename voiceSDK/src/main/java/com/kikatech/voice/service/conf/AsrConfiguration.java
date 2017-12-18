@@ -14,12 +14,14 @@ public class AsrConfiguration {
     }
 
     private SpeechMode speechMode;
+    private boolean spellingEnabled;
     private boolean alterEnabled;
     private boolean emojiEnabled;
     private boolean punctuationEnabled;
 
-    private AsrConfiguration(SpeechMode speechMode, boolean alterEnabled,
+    private AsrConfiguration(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
                              boolean emojiEnable, boolean punctuationEnabled) {
+        this.spellingEnabled = spellingEnabled;
         this.speechMode = speechMode;
         this.alterEnabled = alterEnabled;
         this.emojiEnabled = emojiEnable;
@@ -32,6 +34,14 @@ public class AsrConfiguration {
 
     public SpeechMode getSpeechMode() {
         return this.speechMode;
+    }
+
+    public void setSpellingEnabled(boolean spellingEnabled) {
+        this.spellingEnabled = spellingEnabled;
+    }
+
+    public boolean getSpellingEnabled() {
+        return this.spellingEnabled;
     }
 
     public void setAlterEnabled(boolean alterEnabled) {
@@ -88,12 +98,18 @@ public class AsrConfiguration {
 
     public static class Builder {
         private SpeechMode speechMode = SpeechMode.CONVERSATION;
+        private boolean spellingEnabled = false;
         private boolean alterEnabled = false;
         private boolean emojiEnabled = false;
         private boolean punctuationEnabled = false;
 
         public Builder setSpeechMode(SpeechMode speechMode) {
             this.speechMode = speechMode;
+            return this;
+        }
+
+        public Builder setSpellingEnabled(boolean spellingEnabled) {
+            this.spellingEnabled = spellingEnabled;
             return this;
         }
 
@@ -113,7 +129,7 @@ public class AsrConfiguration {
         }
 
         public AsrConfiguration build() {
-            return new AsrConfiguration(speechMode, alterEnabled, emojiEnabled, punctuationEnabled);
+            return new AsrConfiguration(speechMode, spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled);
         }
     }
 }

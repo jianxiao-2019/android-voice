@@ -83,12 +83,14 @@ public class WebSocket {
                 Logger.d("appName = " + conf.appName);
 
                 AsrConfiguration asrConf = conf.getAsrConfiguration();
+                httpHeaders.put("spellingEnabled", String.valueOf(asrConf.getSpellingEnabled()));
                 httpHeaders.put("alterEnabled", String.valueOf(asrConf.getAlterEnabled()));
                 httpHeaders.put("emojiEnabled", String.valueOf(asrConf.getEmojiEnabled()));
                 httpHeaders.put("punctuationEnabled", String.valueOf(asrConf.getPunctuationEnabled()));
                 httpHeaders.put("speechMode", String.valueOf(asrConf.getSpeechMode()));
                 Logger.d("sign = " + conf.sign + " agent = " + conf.userAgent + " engine = " + conf.engine);
                 Logger.d("334567 alterEnabled = " + asrConf.getAlterEnabled() +
+                        " spellingEnabled = " + asrConf.getSpellingEnabled() +
                         " emojiEnabled = " + asrConf.getEmojiEnabled() +
                         " punctuationEnabled = " + asrConf.getPunctuationEnabled() +
                         " speechMode = " + String.valueOf(asrConf.getSpeechMode()));
