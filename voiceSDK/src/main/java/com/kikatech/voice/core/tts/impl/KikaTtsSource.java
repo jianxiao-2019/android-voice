@@ -5,6 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.kikatech.voice.core.tts.TtsSource;
@@ -23,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.TimeZone;
+import java.util.List;
 
 /**
  * Created by ryanlin on 29/11/2017.
@@ -76,8 +78,6 @@ public class KikaTtsSource implements TtsSource {
 
     @Override
     public void speak(Pair<String, Integer>[] sentences) {
-        Logger.d("[KikaTtsSource] start to speak sentences : " + sentences);
-
         JSONArray jsonArray = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         try {
@@ -95,11 +95,19 @@ public class KikaTtsSource implements TtsSource {
     }
 
     private void speakImp(String jsonString) {
-        KikaTtsCacheHelper.CacheInfo ci = new KikaTtsCacheHelper.CacheInfo(jsonString);
-        if (ci.hasCache()) {
-            Logger.d("[KikaTtsSource][speakImp] Cache hit, use :" + ci.getCacheJsonString());
-            playTtsByMediaPlayer(ci.getCacheJsonString());
+        Logger.d("[KikaTtsSource][speakImp] jsonString:" + jsonString);
+        String cacheJson = null;
+        try {
+            cacheJson = KikaTtsCacheHelper.getCacheListJsonString(jsonString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (!TextUtils.isEmpty(cacheJson)) {
+            Logger.d("[KikaTtsSource][speakImp] Cache(s) hit, use :" + cacheJson);
+            playTtsByMediaPlayer(cacheJson);
         } else {
+            Logger.d("[KikaTtsSource][speakImp] NO cache, query server :" + jsonString);
             new SendPostTask().execute(jsonString);
         }
 
@@ -135,14 +143,26 @@ public class KikaTtsSource implements TtsSource {
     }
 
     private void playTtsByMediaPlayer(String jsonString) {
+        Logger.d("[KikaTtsSource][playTtsByMediaPlayer] jsonString:" + jsonString);
+
+        List<KikaTtsCacheHelper.MediaSource> playList = KikaTtsCacheHelper.parseMediaSource(jsonString);
+        if (playList != null && playList.size() > 0) {
+            playTtsByMediaPlayer(playList, 0);
+        }
+    }
+
+    private void playTtsByMediaPlayer(final List<KikaTtsCacheHelper.MediaSource> playList, final int idx) {
         final long start_t = System.currentTimeMillis();
         try {
-            Logger.d("[KikaTtsSource] jsonString:" + jsonString);
+            if(idx >= playList.size()) {
+                return;
+            }
+
+            KikaTtsCacheHelper.MediaSource ms = playList.get(idx);
 
             mMediaPlayer.reset();
 
-            KikaTtsCacheHelper.MediaSource ms = new KikaTtsCacheHelper.MediaSource(mContext, jsonString);
-            AssetFileDescriptor descriptor = ms.getAssetFileDescriptor();
+            AssetFileDescriptor descriptor = ms.getAssetFileDescriptor(mContext);
             if (descriptor != null) {
                 mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
                 descriptor.close();
@@ -155,8 +175,9 @@ public class KikaTtsSource implements TtsSource {
                 public void onPrepared(MediaPlayer mp) {
                     Logger.d("[KikaTtsSource] onPostExecute, spend:" + (System.currentTimeMillis() - start_t) + " ms");
                     mp.start();
-                    if (mListener != null) {
+                    if (mListener != null && idx == 0) {
                         mListener.onTtsStart();
+                        Logger.d("[KikaTtsSource][playTtsByMediaPlayer] onTtsStart");
                     }
                 }
             });
@@ -164,10 +185,13 @@ public class KikaTtsSource implements TtsSource {
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    if (mListener != null && !mIsTtsInterrupted) {
+                    if (mListener != null && !mIsTtsInterrupted && idx == playList.size() - 1) {
                         mListener.onTtsComplete();
+                        mIsTtsInterrupted = false;
+                        Logger.d("[KikaTtsSource][playTtsByMediaPlayer] onTtsComplete");
+                    } else {
+                        playTtsByMediaPlayer(playList, idx + 1);
                     }
-                    mIsTtsInterrupted = false;
                     Logger.d("[KikaTtsSource] setOnCompletionListener, spend:" + (System.currentTimeMillis() - start_t) + " ms");
                 }
             });

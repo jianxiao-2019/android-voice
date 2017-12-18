@@ -3,6 +3,7 @@ package com.kikatech.voice.core.tts.impl;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.kikatech.voice.util.BackgroundThread;
 import com.kikatech.voice.util.log.FileLoggerUtil;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,7 +71,6 @@ class KikaTtsCacheHelper {
                 JSONObject jo = new JSONObject(jsonString);
                 speechText = jo.getJSONArray("contents").getJSONObject(0).getString("text");
             } catch (JSONException e) {
-                e.printStackTrace();
                 speechText = jsonString;
             }
             speechTextMd5 = MD5.getMD5(speechText);
@@ -241,35 +242,88 @@ class KikaTtsCacheHelper {
             JSONObject json = new JSONObject();
             json.put("url", url);
             jsonString = json.toString();
-        } catch (JSONException e) {
-
+        } catch (JSONException ignored) {
         }
         return jsonString;
     }
 
     static class MediaSource {
-        private AssetFileDescriptor afd = null;
+        private String assetFile = null;
         private String path = null;
 
-        MediaSource(Context ctx, String jsonString) throws JSONException, IOException {
-            JSONObject json = new JSONObject(jsonString);
+        MediaSource(JSONObject json) {
             if (json.has(KEY_ASSET_FILE)) {
-                String assetFile = json.getString(KEY_ASSET_FILE);
-                afd = ctx.getAssets().openFd(CACHE_FOLDER_NAME + "/" + assetFile);
-                LogUtil.log("KikaTtsSource", "afd.toString():" + afd.toString());
+                try {
+                    assetFile = json.getString(KEY_ASSET_FILE);
+                } catch (JSONException ignored) {
+                }
             } else if (json.has(KEY_URL)) {
-                path = json.getString(KEY_URL);
+                try {
+                    path = json.getString(KEY_URL);
+                } catch (JSONException ignored) {
+                }
             } else if (json.has(KEY_FILE_CACHE)) {
-                path = json.getString(KEY_FILE_CACHE);
+                try {
+                    path = json.getString(KEY_FILE_CACHE);
+                } catch (JSONException ignored) {
+                }
+            }
+
+            if (LogUtil.DEBUG && assetFile == null && path == null) {
+                LogUtil.log("KikaTtsSource", "Err, parse error, json:" + json.toString());
             }
         }
 
-        AssetFileDescriptor getAssetFileDescriptor() {
+        AssetFileDescriptor getAssetFileDescriptor(Context ctx) {
+            AssetFileDescriptor afd = null;
+            if(!TextUtils.isEmpty(assetFile)) {
+                try {
+                    afd = ctx.getAssets().openFd(CACHE_FOLDER_NAME + "/" + assetFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return afd;
         }
 
         String getPathSource() {
             return path;
         }
+    }
+
+    static List<KikaTtsCacheHelper.MediaSource> parseMediaSource(String jsonString) {
+        List<KikaTtsCacheHelper.MediaSource> list = new ArrayList<>();
+        try {
+            JSONArray arr = new JSONArray(jsonString);
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject jo = new JSONObject(arr.getString(i));
+                list.add(new MediaSource(jo));
+            }
+        } catch (JSONException e) {
+            // Not a Json array
+            try {
+                JSONObject jo = new JSONObject(jsonString);
+                list.add(new MediaSource(jo));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        return list;
+    }
+
+    static String getCacheListJsonString(String jsonString) throws JSONException {
+        JSONArray arr = new JSONObject(jsonString).getJSONArray("contents");
+        JSONArray arrResult = new JSONArray();
+        for (int i = 0; i < arr.length(); i++) {
+            String speechText = arr.getJSONObject(i).getString("text");
+            CacheInfo ci = new CacheInfo(speechText);
+            if(!ci.hasCache()) {
+                return null;
+            }
+            String cacheJson = ci.getCacheJsonString();
+            arrResult.put(cacheJson);
+        }
+        return arrResult.toString();
     }
 }
