@@ -157,6 +157,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
 
         Logger.d("VoiceService start 2");
+        if(mConf.isSupportWakeUpMode() && mWakeUpDetector == null) {
+            mWakeUpDetector = WakeUpDetector.getDetector(this, mVoiceDetector, mConf.getDebugFilePath() + "_WD");
+        }
         if (mWakeUpDetector != null) {
             mWakeUpDetector.reset();
         }
@@ -197,6 +200,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public void stop() {
         Logger.d("VoiceService stop");
+        if(mWakeUpDetector != null) {
+            mWakeUpDetector.close();
+            mWakeUpDetector = null;
+        }
         mVoiceRecorder.stop();
         mVoiceDetector.stopDetecting();
 

@@ -40,4 +40,5 @@ public abstract class WakeUpDetector implements IDataPath {
     public abstract void reset();
     public abstract void goSleep();
     public abstract void wakeUp();
+    public abstract void close();
 }

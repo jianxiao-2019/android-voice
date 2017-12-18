@@ -55,8 +55,11 @@ public class SnowBoyDetector extends WakeUpDetector {
     }
 
     @Override
-    protected void checkWakeUpCommand(byte[] data) {
+    protected synchronized void checkWakeUpCommand(byte[] data) {
         //Logger.d("[sboy]checkWakeUpCommand data len = " + data.length);
+        if(mSnowboyDetect == null) {
+            return;
+        }
         byte[] monoData = stereoToMono(data);
         short[] audioData = new short[monoData.length / 2];
         ByteBuffer.wrap(monoData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(audioData);
@@ -148,5 +151,14 @@ public class SnowBoyDetector extends WakeUpDetector {
     @Override
     public void wakeUp() {
         isAwake = true;
+    }
+
+    @Override
+    public synchronized void close() {
+        Logger.d("[sboy] close, mSnowboyDetect:" + mSnowboyDetect);
+        if (mSnowboyDetect != null) {
+            mSnowboyDetect.delete();
+            mSnowboyDetect = null;
+        }
     }
 }

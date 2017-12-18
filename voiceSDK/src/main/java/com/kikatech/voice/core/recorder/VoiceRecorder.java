@@ -23,7 +23,7 @@ public class VoiceRecorder {
     }
 
     public void start() {
-        Logger.d("VoiceRecorder start mAudioRecordThread = " + mAudioRecordThread);
+        Logger.d("[VoiceRecorder] start mAudioRecordThread = " + mAudioRecordThread);
         if (mAudioRecordThread != null) {
             mAudioRecordThread.stop();
         }
@@ -32,7 +32,7 @@ public class VoiceRecorder {
     }
 
     public void stop() {
-        Logger.d("VoiceRecorder stopRecording mAudioRecordThread = " + mAudioRecordThread);
+        Logger.d("[VoiceRecorder] stopRecording mAudioRecordThread = " + mAudioRecordThread);
         if (mAudioRecordThread != null) {
             mAudioRecordThread.stop();
             mAudioRecordThread = null;
@@ -49,7 +49,7 @@ public class VoiceRecorder {
         private int mBufLen = 0;
 
         public void stop() {
-            Logger.d("AudioRecordThread stop");
+            Logger.d("[VoiceRecorder] AudioRecordThread stop");
             mIsRunning.set(false);
         }
 
@@ -64,13 +64,13 @@ public class VoiceRecorder {
         }
 
         private void prepare() {
-            Logger.i("AudioRecordThread prepare");
+            Logger.i("[VoiceRecorder] AudioRecordThread prepare");
             mIsRunning.set(true);
             mVoiceSource.start();
         }
 
         private void record() {
-            Logger.i("AudioRecordThread record bufferSize = " + mVoiceSource.getBufferSize());
+            Logger.i("[VoiceRecorder] AudioRecordThread record bufferSize = " + mVoiceSource.getBufferSize());
             byte[] audioData = new byte[mVoiceSource.getBufferSize()];
             int readSize;
             while (mIsRunning.get()) {
@@ -79,7 +79,7 @@ public class VoiceRecorder {
                 if (readSize > 0) {
                     copy(audioData, readSize);
                 } else {
-                    Logger.e("[AudioRecordThread][Err] readSize = " + readSize);
+                    Logger.e("[VoiceRecorder][AudioRecordThread][Err] readSize = " + readSize);
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
@@ -90,10 +90,10 @@ public class VoiceRecorder {
         }
 
         private void release() {
-            Logger.i("AudioRecordThread release");
+            Logger.i("[VoiceRecorder] AudioRecordThread release");
             if (mBufLen > 0 && mDataPath != null) {
                 byte[] lastData = Arrays.copyOf(mBuf, mBufLen);
-                Logger.d("VoiceRecorder release lastData.length = " + lastData.length);
+                Logger.d("[VoiceRecorder] release lastData.length = " + lastData.length);
                 mDataPath.onData(lastData);
             }
             mVoiceSource.stop();
