@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.TimeZone;
 
 /**
  * Created by ryanlin on 29/11/2017.
@@ -65,6 +66,7 @@ public class KikaTtsSource implements TtsSource {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("language", "en_us");
+            jsonObject.put("timezone", TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT));
             jsonObject.put("contents", new JSONArray().put(genJsonData(text, 0)));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -83,6 +85,7 @@ public class KikaTtsSource implements TtsSource {
                 jsonArray.put(genJsonData(sentence.first, sentence.second));
             }
             jsonObject.put("language", "en_us");
+            jsonObject.put("timezone", TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT));
             jsonObject.put("contents", jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
