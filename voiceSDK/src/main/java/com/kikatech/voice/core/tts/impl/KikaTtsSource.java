@@ -143,7 +143,6 @@ public class KikaTtsSource implements TtsSource {
             if (descriptor != null) {
                 mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
                 descriptor.close();
-                descriptor.close();
             } else {
                 mMediaPlayer.setDataSource(ms.getPathSource());
             }
