@@ -80,6 +80,11 @@ public class VoiceRecorder {
                     copy(audioData, readSize);
                 } else {
                     Logger.e("[AudioRecordThread][Err] readSize = " + readSize);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

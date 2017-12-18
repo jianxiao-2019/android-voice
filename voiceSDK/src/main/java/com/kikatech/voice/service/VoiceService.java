@@ -89,8 +89,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mConf = conf;
 
         IVoiceSource voiceSource = mConf.getVoiceSource();
+        boolean isUsbVoiceSource = false; // TODO : This will be move to outside.
         if (voiceSource == null) {
             voiceSource = new VoiceSource();
+        } else {
+            isUsbVoiceSource = true;
         }
 
         // TODO : base on the VoiceConfiguration.
@@ -111,15 +114,18 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             }
         });
 
-        mNoiseSuppression = new NoiseSuppression(new FileWriter(mConf.getDebugFilePath() + "_NS", mVoiceDetector));
+        mNoiseSuppression = new NoiseSuppression(new FileWriter(mConf.getDebugFilePath() + "_NC", mVoiceDetector));
 
+        IDataPath nextPipe = isUsbVoiceSource ? mNoiseSuppression : mVoiceDetector;
+        String filePost = isUsbVoiceSource ? "_USB" : "";
         Logger.d("mConf.isSupportWakeUpMode() = " + mConf.isSupportWakeUpMode() + " [No NoiseSuppression]");
+        Logger.d("isUsbVoiceSource = " + isUsbVoiceSource + " nextPipe = " + nextPipe);
         if (mConf.isSupportWakeUpMode()) {
             AppResCopy.copyResFromAssetsToSD(context);
-            mWakeUpDetector = WakeUpDetector.getDetector(this, mVoiceDetector, mConf.getDebugFilePath() + "_WD");
-            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mWakeUpDetector));
+            mWakeUpDetector = WakeUpDetector.getDetector(this, nextPipe, mConf.getDebugFilePath() + "_WD");
+            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath() + filePost, mWakeUpDetector));
         } else {
-            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath(), mVoiceDetector));
+            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath() + filePost, nextPipe));
         }
 
         // Do not listen this message temporary.
