@@ -126,8 +126,8 @@ it's the alpha version now."</string>
         <item>"%s is calling. Answer, reject or ignore."</item>
     </string-array>
 
-    <string name="tts_response_not_get">"Sorry, I didn't get what you say. %s"</string><!-- previous tts content -->
-    <string name="tts_intent_unknown">"Sorry, I didn't catch you. %s"</string><!-- previous tts content -->
+    <string name="tts_response_not_get">"Sorry, I didn't get what you say."</string><!-- previous tts content -->
+    <string name="tts_intent_unknown">"Sorry, I didn't catch you."</string><!-- previous tts content -->
 
     <string name="ui_ask_app">"Which App?"</string>
     <string-array name="tts_ask_app">

@@ -2,11 +2,13 @@ package com.kikatech.go.dialogflow;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.core.tts.TtsSource;
 
 /**
  * @author SkeeterWang Created on 2017/12/12.
@@ -23,8 +25,13 @@ public abstract class BaseSceneStage extends SceneStage {
     @Override
     protected void speak(String text, Bundle extras) {
         if (isUncaughtLoop) {
-            String wrappedTts = SceneUtil.getResponseNotGet(mSceneBase.getContext(), text);
-            super.speak(wrappedTts, extras);
+            String wrappedTts = SceneUtil.getResponseNotGet(mSceneBase.getContext());
+
+            Pair<String, Integer>[] pairs = new Pair[2];
+            pairs[0] = new Pair<>(wrappedTts, TtsSource.TTS_SPEAKER_1);
+            pairs[1] = new Pair<>(text, TtsSource.TTS_SPEAKER_1);
+
+            super.speak(pairs, extras);
         } else {
             super.speak(text, extras);
         }
