@@ -4,6 +4,7 @@ import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.support.annotation.NonNull;
 
+import com.kikatech.voice.util.log.Logger;
 import com.xiao.usbaudio.AudioPlayBack;
 import com.xiao.usbaudio.UsbAudio;
 
@@ -23,25 +24,30 @@ public class KikaAudioDriver extends UsbHostDriver {
 
     @Override
     public boolean open() {
+        Logger.d("KikaAudioDriver open");
         if (openConnection()) {
+            Logger.d("KikaAudioDriver open openConnection  device name = " + mDevice.getDeviceName());
             if (mUsbAudio.setup(mDevice.getDeviceName(), mConnection.getFileDescriptor(),
                     mDevice.getProductId(), mDevice.getVendorId())) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        mUsbAudio.loop();
+                    }
+                }).start();
                 return true;
             }
+            Logger.d("KikaAudioDriver open setup fail.");
         }
+        Logger.d("KikaAudioDriver open setup fail 2.");
         return false;
     }
 
     @Override
     public void startRecording() {
         AudioPlayBack.setup(mAudioBuffer);
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                mUsbAudio.loop();
-            }
-        }).start();
+        mUsbAudio.start();
     }
 
     @Override

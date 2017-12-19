@@ -13,8 +13,8 @@ public class AudioBuffer {
     private final byte[] mBuffer;
     private int mBufferSize;
 
-    private int mOffset = 0;
-    private int mLength = 0;
+    private int mReadIndex = 0;
+    private int mWriteIndex = 0;
 
     private ReentrantLock mLock = new ReentrantLock();
 
@@ -29,18 +29,18 @@ public class AudioBuffer {
             if (sizeInBytes > mBufferSize) {
                 throw new IllegalArgumentException("sizeInBytes exceed buffer size");
             }
-            if (sizeInBytes + mLength < mBufferSize) {
-                System.arraycopy(audioData, 0, mBuffer, mLength, sizeInBytes);
+            if (mWriteIndex + sizeInBytes < mBufferSize) {
+                System.arraycopy(audioData, 0, mBuffer, mWriteIndex, sizeInBytes);
             } else {
-                int half = mBufferSize - mLength;
-                System.arraycopy(audioData, 0, mBuffer, sizeInBytes, half);
+                int half = mBufferSize - mWriteIndex;
+                System.arraycopy(audioData, 0, mBuffer, mWriteIndex, half);
                 System.arraycopy(audioData, half, mBuffer, 0, sizeInBytes - half);
-                if (mOffset < (sizeInBytes - half)) {
+                if (mReadIndex < (sizeInBytes - half)) {
                     Logger.w("Some data was been overridden.");
-                    mOffset = sizeInBytes - half;
+                    mReadIndex = sizeInBytes - half;
                 }
             }
-            mLength = (mLength + sizeInBytes) % mBufferSize;
+            mWriteIndex = (mWriteIndex + sizeInBytes) % mBufferSize;
         } finally {
             mLock.unlock();
         }
@@ -49,20 +49,20 @@ public class AudioBuffer {
     public int read(byte[] audioData, int offsetInBytes, int sizeInBytes) {
         try {
             mLock.lock();
-            int curLength = mLength;
-            if (mLength < mOffset) {
-                curLength += mBufferSize;
+            int curWIndex = mWriteIndex;
+            if (mWriteIndex < mReadIndex) {
+                curWIndex += mBufferSize;
             }
-            int size = Math.min(sizeInBytes, (curLength - mOffset));
+            int size = Math.min(sizeInBytes, (curWIndex - mReadIndex));
             if (size > 0) {
-                if (size <= mBufferSize - mOffset) {
-                    System.arraycopy(mBuffer, mOffset, audioData, offsetInBytes, size);
+                if (size <= mBufferSize - mReadIndex) {
+                    System.arraycopy(mBuffer, mReadIndex, audioData, offsetInBytes, size);
                 } else {
-                    int half = mBufferSize - mOffset;
-                    System.arraycopy(mBuffer, mOffset, audioData, offsetInBytes, half);
+                    int half = mBufferSize - mReadIndex;
+                    System.arraycopy(mBuffer, mReadIndex, audioData, offsetInBytes, half);
                     System.arraycopy(mBuffer, 0, audioData, offsetInBytes + half, size - half);
                 }
-                mOffset = (mOffset + size) % mBufferSize;
+                mReadIndex = (mReadIndex + size) % mBufferSize;
                 return size;
             }
             return 0;

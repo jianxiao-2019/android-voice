@@ -20,26 +20,28 @@ public class AudioPlayBack {
         if (len == 0) {
             return;
         }
-        byte[] monoResult = new byte[len / 2];
-        for (int i = 0; i < monoResult.length; i += 2) {
-            monoResult[i] = decodedAudio[i * 2];
-            monoResult[i + 1] = decodedAudio[i * 2 + 1];
-        }
-        sAudioBuffer.write(monoResult, monoResult.length);
-//        sAudioBuffer.write(decodedAudio, len );
+//        byte[] monoResult = new byte[len / 2];
+//        for (int i = 0; i < monoResult.length; i += 2) {
+//            monoResult[i] = decodedAudio[i * 2];
+//            monoResult[i + 1] = decodedAudio[i * 2 + 1];
+//        }
+//        sAudioBuffer.write(monoResult, monoResult.length);
+        sAudioBuffer.write(decodedAudio, len);
 
-        try {
-            for (int i = 0; i < len; i++) {
-                output.writeByte(decodedAudio[i]);
-            }
-        } catch (IOException e) {
-            Log.e("Error writing file : ", e.getMessage());
-        } finally {
-            if (output != null) {
-                try {
-                    output.flush();
-                } catch (IOException e) {
-                    Log.e("Error writing file : ", e.getMessage());
+        if (sFilePath != null) {
+            try {
+                for (int i = 0; i < len; i++) {
+                    output.writeByte(decodedAudio[i]);
+                }
+            } catch (IOException e) {
+                Log.e("Error writing file : ", e.getMessage());
+            } finally {
+                if (output != null) {
+                    try {
+                        output.flush();
+                    } catch (IOException e) {
+                        Log.e("Error writing file : ", e.getMessage());
+                    }
                 }
             }
         }
@@ -48,11 +50,13 @@ public class AudioPlayBack {
     public static void setup(AudioBuffer audioBuffer) {
         sAudioBuffer = audioBuffer;
 
-        mRecording = getFile("raw");
-        try {
-            output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(mRecording)));
-        } catch (IOException e) {
-            Log.e("Error writing file : ", e.getMessage());
+        if (sFilePath != null) {
+            mRecording = getFile("raw");
+            try {
+                output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(mRecording)));
+            } catch (IOException e) {
+                Log.e("Error writing file : ", e.getMessage());
+            }
         }
     }
 
@@ -66,9 +70,11 @@ public class AudioPlayBack {
     private static File mRecording;
 
     private static File getFile(final String suffix) {
-        Time time = new Time();
-        time.setToNow();
-        File file = new File(sFilePath, time.format("%Y%m%d_%H%M%S") + "." + suffix);
+        if (sFilePath == null) {
+            return null;
+        }
+
+        File file = new File(sFilePath + "_SRC");
         Log.d("Ryan", "file = " + file + " exist = " + file.exists());
         return file;
     }
