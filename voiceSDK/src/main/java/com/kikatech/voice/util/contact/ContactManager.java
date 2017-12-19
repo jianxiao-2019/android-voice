@@ -295,6 +295,11 @@ public class ContactManager {
             this.displayName = contact.displayName;
             this.phoneNumbers = contact.phoneNumbers;
         }
+
+        @Override
+        public String toString() {
+            return displayName + ", num count:" + phoneNumbers.size() + ", matchedType:" + matchedType + ", id:" + id;
+        }
     }
 
     public static class PhoneBookContact {
