@@ -2,7 +2,6 @@ package com.kikatech.go.ui;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
@@ -10,13 +9,11 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
 import com.kikatech.go.view.UiTaskManager.DebugLogType;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-import com.kikatech.voice.core.hotword.SnowBoyConfig;
 import com.kikatech.voice.util.contact.ContactManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -223,10 +220,10 @@ public class KikaAlphaUiActivity extends BaseActivity {
         super.onResume();
         DialogFlowForegroundService.processOnAppForeground();
 
-        if(LogUtil.DEBUG) {
-            String sen = SnowBoyConfig.getSensitivity();
-            Toast.makeText(this, "Snowboy Sensitivity : " + sen, Toast.LENGTH_SHORT).show();
-        }
+//        if(LogUtil.DEBUG) {
+//            String sen = SnowBoyConfig.getSensitivity();
+//            Toast.makeText(this, "Snowboy Sensitivity : " + sen, Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @Override
