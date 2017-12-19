@@ -16,11 +16,12 @@ public class AsrConfigUtil {
     public static final int ASR_MODE_CONVERSATION_CMD_ALTER = 3;    // 長句指令可能糾錯
     public static final int ASR_MODE_CONVERSATION_ALTER     = 4;    // 長句對話可能糾錯
     public static final int ASR_MODE_SHORT_COMMAND          = 5;    // 短句指令 (不糾錯)
+    public static final int ASR_MODE_SHORT_COMMAND_SPELLING = 6;    // 短句指令 (不糾錯, 需要拼寫)
 
     public static final int SUGGEST_ASR_MODE_DEFAULT = ASR_MODE_CONVERSATION_COMMAND;
 
-    @IntDef({ASR_MODE_CONVERSATION_COMMAND, ASR_MODE_CONVERSATION,
-            ASR_MODE_CONVERSATION_CMD_ALTER, ASR_MODE_CONVERSATION_ALTER, ASR_MODE_SHORT_COMMAND})
+    @IntDef({ASR_MODE_CONVERSATION_COMMAND, ASR_MODE_CONVERSATION, ASR_MODE_CONVERSATION_CMD_ALTER,
+            ASR_MODE_CONVERSATION_ALTER, ASR_MODE_SHORT_COMMAND, ASR_MODE_SHORT_COMMAND_SPELLING})
     public @interface ASRMode {
     }
 
@@ -54,30 +55,42 @@ public class AsrConfigUtil {
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
+                asrConf.setSpellingEnabled(false);
                 break;
             case ASR_MODE_CONVERSATION:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.CONVERSATION);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
+                asrConf.setSpellingEnabled(false);
                 break;
             case ASR_MODE_CONVERSATION_CMD_ALTER:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
+                asrConf.setSpellingEnabled(false);
                 break;
             case ASR_MODE_CONVERSATION_ALTER:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
+                asrConf.setSpellingEnabled(false);
                 break;
             case ASR_MODE_SHORT_COMMAND:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
+                asrConf.setSpellingEnabled(false);
+                break;
+            case ASR_MODE_SHORT_COMMAND_SPELLING:
+                asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
+                asrConf.setAlterEnabled(false);
+                asrConf.setEmojiEnabled(false);
+                asrConf.setPunctuationEnabled(false);
+                asrConf.setSpellingEnabled(true);
                 break;
         }
         return asrConf;

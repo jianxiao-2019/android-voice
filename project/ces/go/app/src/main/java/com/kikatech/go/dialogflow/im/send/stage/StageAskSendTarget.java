@@ -22,6 +22,11 @@ public class StageAskSendTarget extends BaseSendIMStage {
     }
 
     @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_SHORT_COMMAND_SPELLING;
+    }
+
+    @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
         setQueryAnyWords(false);
         IMContent imc = getIMContent();

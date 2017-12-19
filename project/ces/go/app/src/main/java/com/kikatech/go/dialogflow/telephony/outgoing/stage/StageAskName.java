@@ -2,6 +2,7 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 
 import android.os.Bundle;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.util.LogUtil;
@@ -20,6 +21,11 @@ public class StageAskName extends StageOutgoing {
 
     StageAskName(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_SHORT_COMMAND_SPELLING;
     }
 
     @Override
