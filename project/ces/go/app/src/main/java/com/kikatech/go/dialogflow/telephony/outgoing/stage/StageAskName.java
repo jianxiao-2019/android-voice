@@ -31,22 +31,28 @@ public class StageAskName extends StageOutgoing {
     @Override
     public SceneStage next(String action, Bundle extra) {
         setQueryAnyWords(false);
-        if(LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action + ", extra:" + extra);
-        if (action.equals(Intent.ACTION_USER_INPUT)) {
-            String[] nBestInput = Intent.parseUserInputNBest(extra);
-            ContactManager.MatchedContact matchedContact = null;
-            if (nBestInput != null && nBestInput.length != 0) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "try parsing from asr n-best");
-                }
-                matchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), nBestInput);
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action + ", extra:" + extra);
+
+        String[] nBestInput = Intent.parseUserInputNBest(extra);
+        ContactManager.MatchedContact matchedContact = null;
+        if (nBestInput != null && nBestInput.length != 0) {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "try parsing from asr n-best");
             }
-            StageOutgoing nextStage = getMatchedContactStage(matchedContact);
-            if (nextStage != null) {
-                return nextStage;
+            matchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), nBestInput);
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "matchedContact:" + matchedContact);
             }
         }
-        return new StageAskName(mSceneBase, mFeedback);
+        StageOutgoing nextStage = getMatchedContactStage(matchedContact);
+        if (nextStage != null) {
+            return nextStage;
+        } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "Cannot find matched contact, ask the calling target again");
+            }
+            return new StageAskName(mSceneBase, mFeedback);
+        }
     }
 
     @Override

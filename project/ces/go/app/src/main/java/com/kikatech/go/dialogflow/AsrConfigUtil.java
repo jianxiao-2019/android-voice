@@ -43,6 +43,8 @@ public class AsrConfigUtil {
                 return "CONVERSATION_ALTER";
             case ASR_MODE_SHORT_COMMAND:
                 return "SHORT_COMMAND";
+            case ASR_MODE_SHORT_COMMAND_SPELLING:
+                return "SHORT_COMMAND_SPELLING";
         }
         return "ERR_UNKNOWN_ASR_MODE";
     }
