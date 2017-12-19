@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="@dimen/go_layout_gmap_max_width"
     android:layout_height="wrap_content"
     android:background="@drawable/kika_gmap_msg_2line"
+    android:gravity="center_vertical"
     android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:maxWidth="@dimen/go_layout_gmap_max_width">
-
-    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
-        android:text="Hi Kika"
+        android:text="&#034;Hi Kika&#034;"
         android:textColor="@android:color/white"
         android:textSize="22dp"/>
 

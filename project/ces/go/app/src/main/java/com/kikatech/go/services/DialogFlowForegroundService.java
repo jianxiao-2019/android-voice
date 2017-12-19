@@ -5,26 +5,17 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.PixelFormat;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
@@ -38,7 +29,6 @@ import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.services.view.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
-import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.AsyncThread;
 import com.kikatech.go.util.IntentUtil;
@@ -66,44 +56,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private static final long TTS_DELAY_ASR_RESUME = 500;
 
-    private static FloatingUiManager mManager;
-
-    private static WindowManager.LayoutParams mLayoutParam = new WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_PRIORITY_PHONE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-    );
-
-    private WindowManager.LayoutParams mLayoutParamsTipsView = new WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_PRIORITY_PHONE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-    );
-
-    private WindowManager.LayoutParams mLayoutParamsMsgView = new WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_PRIORITY_PHONE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-    );
-
+    private FloatingUiManager mManager;
 
     private PowerManager.WakeLock mWakeLocker;
-    private boolean isTipViewShown;
-
-    private View mGMapView;
-    private ImageView mStatusView;
-    private View mStatusWrapperView;
-
-    private View mTipView;
-
-    private View mMsgView;
-    private TextView mMsgViewText;
 
     private IDialogFlowService mDialogFlowService;
     private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
@@ -127,36 +82,28 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
         switch (action) {
             case ToDFServiceEvent.ACTION_ON_APP_FOREGROUND:
-                if (mManager.isViewAdded(mGMapView)) {
-                    mGMapView.setVisibility(View.GONE);
-                    mTipView.setVisibility(View.GONE);
-                    mMsgView.setVisibility(View.GONE);
-                }
+                mManager.hideAllItems();
                 break;
             case ToDFServiceEvent.ACTION_ON_APP_BACKGROUND:
-                if (mManager.isViewAdded(mGMapView)) {
-                    mGMapView.setVisibility(View.VISIBLE);
-                    mTipView.setVisibility(View.VISIBLE);
-                    mMsgView.setVisibility(View.VISIBLE);
-                }
+                mManager.showAllItems();
                 break;
             case ToDFServiceEvent.ACTION_ON_STATUS_CHANGED:
                 GoLayout.ViewStatus status = (GoLayout.ViewStatus) event.getExtras().getSerializable(ToDFServiceEvent.PARAM_STATUS);
-                handleStatusChanged(status);
+                mManager.handleStatusChanged(status);
                 break;
             case ToDFServiceEvent.ACTION_ON_MSG_CHANGED:
                 String msg = event.getExtras().getString(ToDFServiceEvent.PARAM_TEXT);
-                handleMsgChanged(msg);
+                mManager.handleMsgChanged(msg);
                 break;
             case ToDFServiceEvent.ACTION_ON_NAVIGATION_STARTED:
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, String.format("action: %s", action));
                 }
                 pauseAsr();
-                showGMap();
+                mManager.showGMap();
                 break;
             case ToDFServiceEvent.ACTION_ON_NAVIGATION_STOPPED:
-                removeGMap();
+                mManager.removeGMap();
                 break;
             case ToDFServiceEvent.ACTION_DIALOG_FLOW_TALK:
                 if (LogUtil.DEBUG) {
@@ -181,6 +128,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         registerReceiver();
         initDialogFlowService();
         acquireWakeLock();
+
+        // TODO: remove after testing
+        DialogFlowForegroundService.processNavigationStarted();
     }
 
     @Override
@@ -188,7 +138,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         Toast.makeText(DialogFlowForegroundService.this, "KikaGo is closed", Toast.LENGTH_SHORT).show();
         releaseWakeLock();
         unregisterReceiver();
-        removeGMap();
+        mManager.removeGMap();
         for (BaseSceneManager bcm : mSceneManagers) {
             if (bcm != null) bcm.close();
         }
@@ -456,96 +406,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
 
-    private Runnable removeTipViewRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mManager.removeView(mTipView);
-        }
-    };
-
-    private Runnable removeMsgViewRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mManager.removeView(mMsgView);
-        }
-    };
-
-    private void showGMap() {
-        if (mManager.isViewAdded(mGMapView)) {
-            return;
-        }
-
-        mGMapView = mManager.inflate(R.layout.go_layout_gmap);
-
-        mStatusWrapperView = mGMapView.findViewById(R.id.gmap_status_wrapper);
-        mStatusView = (ImageView) mGMapView.findViewById(R.id.gmap_status);
-
-        mGMapView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mDialogFlowService != null) {
-                    mDialogFlowService.wakeUp();
-                }
-            }
-        });
-
-        mLayoutParam.gravity = Gravity.TOP | Gravity.RIGHT;
-        mLayoutParam.x = ResolutionUtil.dp2px(DialogFlowForegroundService.this, 14);
-        mLayoutParam.y = ResolutionUtil.dp2px(DialogFlowForegroundService.this, 14);
-
-        mManager.addView(mGMapView, mLayoutParam);
-
-        isTipViewShown = false;
-    }
-
-    private void removeGMap() {
-        mManager.removeView(mGMapView);
-        mManager.removeView(mTipView);
-        mManager.removeView(mMsgView);
-        mManager.removeCallbacks(removeTipViewRunnable);
-        mManager.removeCallbacks(removeMsgViewRunnable);
-    }
-
-    private void showTipView() {
-        if (mManager.isViewAdded(mTipView)) {
-            mManager.removeView(mTipView);
-            mManager.removeCallbacks(removeTipViewRunnable);
-        }
-
-        mTipView = mManager.inflate(R.layout.go_layout_gmap_tip);
-
-        mLayoutParamsTipsView.gravity = Gravity.TOP | Gravity.RIGHT;
-        mLayoutParamsTipsView.x = ResolutionUtil.dp2px(DialogFlowForegroundService.this, 82);
-        mLayoutParamsTipsView.y = ResolutionUtil.dp2px(DialogFlowForegroundService.this, 78) - ResolutionUtil.getStatusBarHeight(DialogFlowForegroundService.this);
-        mLayoutParamsTipsView.windowAnimations = android.R.style.Animation_Toast;
-
-        mManager.addView(mTipView, mLayoutParamsTipsView);
-
-        mManager.postDelay(removeTipViewRunnable, 3000);
-    }
-
-    private void showMsgView(String text) {
-        if (mManager.isViewAdded(mMsgView)) {
-            mManager.removeView(mMsgView);
-            mManager.removeCallbacks(removeMsgViewRunnable);
-        }
-
-        mMsgView = mManager.inflate(R.layout.go_layout_gmap_msg);
-        mMsgViewText = (TextView) mMsgView.findViewById(R.id.gmap_msg);
-
-        mMsgViewText.setText(text);
-
-        mLayoutParamsMsgView.gravity = Gravity.TOP | Gravity.RIGHT;
-        mLayoutParamsMsgView.x = ResolutionUtil.dp2px(DialogFlowForegroundService.this, 82);
-        mLayoutParamsMsgView.y = ResolutionUtil.dp2px(DialogFlowForegroundService.this, 78) - ResolutionUtil.getStatusBarHeight(DialogFlowForegroundService.this);
-        mLayoutParamsMsgView.windowAnimations = android.R.style.Animation_Toast;
-
-        mManager.addView(mMsgView, mLayoutParamsMsgView);
-
-        mManager.postDelay(removeMsgViewRunnable, 2200);
-    }
-
-
     private void registerReceiver() {
         unregisterReceiver();
         try {
@@ -569,8 +429,27 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 .setWindowManager((WindowManager) getSystemService(Context.WINDOW_SERVICE))
                 .setLayoutInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .setConfiguration(getResources().getConfiguration())
-                .setUiHandler(new Handler(Looper.getMainLooper()))
-                .build();
+                .setOnFloatingItemAction(new FloatingUiManager.IOnFloatingItemAction() {
+                    @Override
+                    public void onGMapClicked() {
+                        if (mDialogFlowService != null) {
+                            mDialogFlowService.wakeUp();
+                        }
+                    }
+
+                    @Override
+                    public void onBtnCloseEntered() {
+                        onStopForeground();
+                    }
+
+                    @Override
+                    public void onBtnOpenAppEntered() {
+                        Intent intent = new Intent(DialogFlowForegroundService.this, KikaAlphaUiActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        IntentUtil.sendPendingIntent(DialogFlowForegroundService.this, intent);
+                    }
+                })
+                .build(DialogFlowForegroundService.this);
     }
 
     @Override
@@ -584,41 +463,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         super.onDestroy();
     }
 
-
-    private void handleStatusChanged(GoLayout.ViewStatus status) {
-
-        if (!mManager.isViewAdded(mGMapView) || status == null) {
-            return;
-        }
-
-        if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, "handleStatusChanged: status: " + status.name());
-        }
-
-        if (mStatusWrapperView.getVisibility() == View.GONE) {
-            mStatusWrapperView.setVisibility(View.VISIBLE);
-        }
-
-        Glide.with(DialogFlowForegroundService.this.getApplicationContext())
-                .load(status.getSmallRes())
-                .dontTransform()
-                .dontAnimate()
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(mStatusView);
-
-        if (!isTipViewShown) {
-            showTipView();
-            isTipViewShown = true;
-        }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mManager.updateConfiguration(newConfig);
     }
-
-    private void handleMsgChanged(String text) {
-        if (!mManager.isViewAdded(mGMapView) || TextUtils.isEmpty(text)) {
-            return;
-        }
-        showMsgView(text);
-    }
-
 
     public synchronized static void processOnAppForeground() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_FOREGROUND);

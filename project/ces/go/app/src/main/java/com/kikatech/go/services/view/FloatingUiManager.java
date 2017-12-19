@@ -1,17 +1,36 @@
 package com.kikatech.go.services.view;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.kikatech.go.R;
+import com.kikatech.go.navigation.view.FlexibleOnTouchListener;
+import com.kikatech.go.services.view.item.BtnClose;
+import com.kikatech.go.services.view.item.BtnOpenApp;
+import com.kikatech.go.services.view.item.ItemGMap;
+import com.kikatech.go.services.view.item.ItemMsg;
+import com.kikatech.go.services.view.item.ItemTip;
+import com.kikatech.go.services.view.item.WindowFloatingButton;
+import com.kikatech.go.services.view.item.WindowFloatingItem;
+import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.view.GoLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author SkeeterWang Created on 2017/12/15.
+ * @author SkeeterWang Created on 2017/12/18.
  */
 
 @SuppressWarnings("SuspiciousNameCombination")
@@ -21,15 +40,125 @@ public class FloatingUiManager {
     private int DEVICE_WIDTH;
     private int DEVICE_HEIGHT;
 
-    private WindowManager mWindowManager;
-    private LayoutInflater mLayoutInflater;
+    private final Context mContext;
+    private final WindowManager mWindowManager;
+    private final LayoutInflater mLayoutInflater;
     private Configuration mConfiguration;
-    private Handler mUiHandler;
+    private IOnFloatingItemAction mListener;
+    private final Handler mUiHandler = new Handler(Looper.getMainLooper());
 
-    private FloatingUiManager(WindowManager manager, LayoutInflater inflater, Configuration configuration, Handler uiHandler) {
+    private WindowManagerContainer mContainer;
+    private ItemGMap mItemGMap;
+    private ItemTip mItemTip;
+    private ItemMsg mItemMsg;
+
+    private BtnClose mBtnClose;
+    private BtnOpenApp mBtnOpenApp;
+    private List<WindowFloatingButton> mButtonList = new ArrayList<>();
+
+    private boolean isTipViewShown;
+
+
+    private FlexibleOnTouchListener onGMapTouchListener = new FlexibleOnTouchListener(100, new FlexibleOnTouchListener.ITouchListener() {
+        private int[] viewOriginalXY = new int[2];
+        private float[] eventOriginalXY = new float[2];
+        private int[] deltaXY = new int[2];
+        private WindowFloatingItem mLastEnteredItem;
+        private boolean buttonShown;
+
+        @Override
+        public void onLongPress(View view, MotionEvent event) {
+        }
+
+        @Override
+        public void onShortPress(View view, MotionEvent event) {
+        }
+
+        @Override
+        public void onClick(View view, MotionEvent event) {
+            if (mListener != null) {
+                mListener.onGMapClicked();
+            }
+        }
+
+        @Override
+        public void onDown(View view, MotionEvent event) {
+            viewOriginalXY = mItemGMap.getViewXY();
+            eventOriginalXY = new float[]{event.getRawX(), event.getRawY()};
+            mItemTip.setViewVisibility(View.GONE);
+            mItemMsg.setViewVisibility(View.GONE);
+            buttonShown = false;
+        }
+
+        @Override
+        public void onMove(View view, MotionEvent event, long timeSpentFromStart) {
+            deltaXY = new int[]{(int) (event.getRawX() - eventOriginalXY[0]), (int) (event.getRawY() - eventOriginalXY[1])};
+            int targetX = getValidX(viewOriginalXY[0], deltaXY[0]);
+            int targetY = getValidY(viewOriginalXY[1], deltaXY[1]);
+            mContainer.moveItem(mItemGMap, targetX, targetY);
+
+            if (!buttonShown) {
+                if (mContainer.distance(deltaXY, viewOriginalXY) > ResolutionUtil.dp2px(mContext, 20)) {
+                    showButtons();
+                    buttonShown = true;
+                }
+            } else {
+                WindowFloatingButton enteredItem = getNearestItem(mItemGMap);
+                if (enteredItem != null) {
+                    mLastEnteredItem = enteredItem;
+                    mItemGMap.setAlpha(0.5f);
+                    mLastEnteredItem.setAlpha(0.5f);
+                } else if (mLastEnteredItem != null) {
+                    mItemGMap.setAlpha(1.0f);
+                    mLastEnteredItem.setAlpha(1.0f);
+                }
+            }
+        }
+
+        @Override
+        public void onUp(View view, MotionEvent event, long timeSpentFromStart) {
+            WindowFloatingItem enteredItem = getNearestItem(mItemGMap);
+            if (enteredItem != null) {
+                if (enteredItem == mBtnClose) {
+                    if (mListener != null) {
+                        mListener.onBtnCloseEntered();
+                    }
+                } else if (enteredItem == mBtnOpenApp) {
+                    if (mListener != null) {
+                        mListener.onBtnOpenAppEntered();
+                    }
+                }
+            }
+            mItemGMap.setAlpha(1.0f);
+            mContainer.moveItem(mItemGMap, viewOriginalXY[0], viewOriginalXY[1]);
+            hideButtons();
+            mItemTip.setViewVisibility(View.VISIBLE);
+            mItemMsg.setViewVisibility(View.VISIBLE);
+        }
+
+        private int getValidX(int viewOriginalX, int deltaX) {
+            int boundLeft = 0;
+            int boundRight = getDeviceWidthByOrientation() - mItemGMap.getItemView().getMeasuredWidth();
+            return (deltaX > 0)
+                    ? (viewOriginalX + deltaX < boundRight) ? viewOriginalX + deltaX : boundRight
+                    : (viewOriginalX + deltaX >= boundLeft) ? viewOriginalX + deltaX : boundLeft;
+        }
+
+        private int getValidY(int viewOriginalY, int deltaY) {
+            int boundTop = 0;
+            int boundBottom = getDeviceHeightByOrientation() - mItemGMap.getItemView().getMeasuredHeight();
+            return (deltaY > 0)
+                    ? (viewOriginalY + deltaY < boundBottom) ? viewOriginalY + deltaY : boundBottom
+                    : (viewOriginalY + deltaY >= boundTop) ? viewOriginalY + deltaY : boundTop;
+        }
+    });
+
+
+    private FloatingUiManager(Context context, WindowManager manager, LayoutInflater inflater, Configuration configuration, IOnFloatingItemAction listener) {
+        this.mContext = context;
         this.mWindowManager = manager;
         this.mLayoutInflater = inflater;
-        this.mUiHandler = uiHandler;
+        this.mListener = listener;
 
         mConfiguration = configuration;
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -46,45 +175,232 @@ public class FloatingUiManager {
                 DEVICE_HEIGHT = displayMetrics.heightPixels;
                 break;
         }
+
+        mContainer = new WindowManagerContainer(mWindowManager);
+
+        initItems();
+        initButtons();
     }
 
+    private void initItems() {
+        mItemGMap = new ItemGMap(inflate(R.layout.go_layout_gmap), onGMapTouchListener);
+        mItemTip = new ItemTip(inflate(R.layout.go_layout_gmap_tip), null);
+        mItemMsg = new ItemMsg(inflate(R.layout.go_layout_gmap_msg), null);
+    }
 
-    public synchronized void addView(View view, WindowManager.LayoutParams params) {
-        try {
-            mWindowManager.addView(view, params);
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+    private void initButtons() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "initButtons");
+        }
+        mBtnClose = new BtnClose(inflate(R.layout.go_layout_gmap_btn_close), null);
+        mBtnOpenApp = new BtnOpenApp(inflate(R.layout.go_layout_gmap_btn_open_app), null);
+
+        mButtonList.add(mBtnClose);
+        mButtonList.add(mBtnOpenApp);
+
+        mBtnClose.setGravity(Gravity.TOP | Gravity.LEFT);
+        mBtnOpenApp.setGravity(Gravity.TOP | Gravity.LEFT);
+
+        mContainer.addItem(mBtnClose);
+        mContainer.addItem(mBtnOpenApp);
+
+        hideButtons();
+    }
+
+    private void resetButtons() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "resetButtons");
+        }
+
+        int deviceWidth = getDeviceWidthByOrientation();
+        int yOffset = (int) ((mItemGMap.getMeasuredHeight() * 1.5) + ResolutionUtil.getStatusBarHeight(mContext));
+        int y = getDeviceHeightByOrientation() - yOffset;
+        int fixedDistance, firstBtnX, secondBtnX;
+
+        switch (mConfiguration.orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                fixedDistance = ResolutionUtil.dp2px(mContext, 30);
+                firstBtnX = deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 + fixedDistance;
+                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+            default:
+                fixedDistance = ResolutionUtil.dp2px(mContext, 5);
+                firstBtnX = (int) (deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 - (fixedDistance * 1.5f));
+                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
+                break;
+        }
+
+        mBtnClose.setViewXY(firstBtnX, y);
+        mBtnClose.setViewHeight(yOffset);
+
+        mBtnOpenApp.setViewXY(secondBtnX, y);
+        mBtnOpenApp.setViewHeight(yOffset);
+
+        mContainer.requestLayout(mBtnClose);
+        mContainer.requestLayout(mBtnOpenApp);
+    }
+
+    private void showButtons() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "showButtons");
+        }
+        resetButtons();
+        for (WindowFloatingButton btn : mButtonList) {
+            btn.show();
+        }
+    }
+
+    private void hideButtons() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "hideButtons");
+        }
+        for (WindowFloatingButton btn : mButtonList) {
+            btn.setAlpha(1.0f);
+            btn.hide();
+        }
+    }
+
+    private WindowFloatingButton getNearestItem(WindowFloatingItem item) {
+        double minDistance = Double.MAX_VALUE;
+        WindowFloatingButton nearestItem = null;
+        for (WindowFloatingButton btn : mButtonList) {
+            if (btn.isShowing()) {
+                double MIN_DISTANCE = (btn.getMeasuredWidth() / 2 + item.getMeasuredWidth() / 2);
+                double distance = mContainer.distance(item, btn);
+                if (distance < MIN_DISTANCE && distance < minDistance) {
+                    minDistance = distance;
+                    nearestItem = btn;
+                }
             }
         }
+        return nearestItem;
     }
 
-    public synchronized void removeView(View view) {
-        try {
-            mWindowManager.removeView(view);
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+    private Runnable removeTipViewRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mContainer.removeItem(mItemTip);
+        }
+    };
+
+    private Runnable removeMsgViewRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mContainer.removeItem(mItemMsg);
+        }
+    };
+
+
+    public synchronized void showGMap() {
+        if (mContainer.isViewAdded(mItemGMap)) {
+            return;
+        }
+
+        int deviceWidth = getDeviceWidthByOrientation();
+        int itemWidth = mItemGMap.getMeasuredWidth();
+
+        mItemGMap.setGravity(Gravity.TOP | Gravity.LEFT);
+        mItemGMap.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 14));
+        mItemGMap.setViewY(ResolutionUtil.dp2px(mContext, 14));
+        mContainer.addItem(mItemGMap);
+
+        isTipViewShown = false;
+    }
+
+    public synchronized void removeGMap() {
+        mContainer.removeItem(mItemGMap);
+        mContainer.removeItem(mItemTip);
+        mContainer.removeItem(mItemMsg);
+        removeCallbacks(removeTipViewRunnable);
+        removeCallbacks(removeMsgViewRunnable);
+    }
+
+    public synchronized void showTipView() {
+        if (mContainer.isViewAdded(mItemTip)) {
+            mContainer.removeItem(mItemTip);
+            removeCallbacks(removeTipViewRunnable);
+        }
+
+        int deviceWidth = getDeviceWidthByOrientation();
+        int itemWidth = mItemTip.getMeasuredWidth();
+
+        mItemTip.setGravity(Gravity.TOP | Gravity.LEFT);
+        mItemTip.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
+        mItemTip.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
+        mItemTip.setAnimation(android.R.style.Animation_Toast);
+
+        mContainer.addItem(mItemTip);
+
+        postDelay(removeTipViewRunnable, 4000);
+    }
+
+    public synchronized void showMsgView(String text) {
+        if (mContainer.isViewAdded(mItemMsg)) {
+            mContainer.removeItem(mItemMsg);
+            removeCallbacks(removeMsgViewRunnable);
+        }
+
+        mItemMsg.setText(text);
+
+        int deviceWidth = getDeviceWidthByOrientation();
+        int itemWidth = mItemMsg.getMeasuredWidth();
+
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("deviceWidth: %1$s, itemWidth: %2$s", deviceWidth, itemWidth));
+        }
+
+        mItemMsg.setGravity(Gravity.TOP | Gravity.LEFT);
+        mItemMsg.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
+        mItemMsg.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
+        mItemMsg.setAnimation(android.R.style.Animation_Toast);
+
+        mContainer.addItem(mItemMsg);
+
+        postDelay(removeMsgViewRunnable, 2800);
+    }
+
+
+    public void handleStatusChanged(GoLayout.ViewStatus status) {
+        if (!mContainer.isViewAdded(mItemGMap) || status == null) {
+            return;
+        }
+
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "handleStatusChanged: status: " + status.name());
+        }
+
+        mItemGMap.updateStatus(mContext, status);
+
+        if (!isTipViewShown) {
+            showTipView();
+            isTipViewShown = true;
         }
     }
 
-    public synchronized void updateView(View view, WindowManager.LayoutParams params) {
-        try {
-            mWindowManager.updateViewLayout(view, params);
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
+    public void handleMsgChanged(String text) {
+        if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(text)) {
+            return;
+        }
+        showMsgView(text);
+    }
+
+
+    public synchronized void hideAllItems() {
+        if (mContainer.isViewAdded(mItemGMap)) {
+            mItemGMap.setViewVisibility(View.GONE);
+            mItemTip.setViewVisibility(View.GONE);
+            mItemMsg.setViewVisibility(View.GONE);
         }
     }
 
-    public synchronized boolean isViewAdded(View view) {
-        try {
-            return view != null && view.getWindowToken() != null;
-        } catch (Exception ignore) {
+    public synchronized void showAllItems() {
+        if (mContainer.isViewAdded(mItemGMap)) {
+            mItemGMap.setViewVisibility(View.VISIBLE);
+            mItemTip.setViewVisibility(View.VISIBLE);
+            mItemMsg.setViewVisibility(View.VISIBLE);
         }
-        return true;
     }
 
 
@@ -92,7 +408,7 @@ public class FloatingUiManager {
         this.mConfiguration = configuration;
     }
 
-    public int getDeviceWidthByOrientation() {
+    private int getDeviceWidthByOrientation() {
         try {
             switch (mConfiguration.orientation) {
                 default:
@@ -109,7 +425,7 @@ public class FloatingUiManager {
         return DEVICE_WIDTH;
     }
 
-    public int getDeviceHeightByOrientation() {
+    private int getDeviceHeightByOrientation() {
         try {
             switch (mConfiguration.orientation) {
                 case Configuration.ORIENTATION_PORTRAIT:
@@ -126,43 +442,26 @@ public class FloatingUiManager {
     }
 
 
-    public synchronized View inflate(int resId) {
+    private synchronized View inflate(int resId) {
         return inflate(resId, null);
     }
 
-    public synchronized View inflate(int resId, ViewGroup root) {
+    @SuppressWarnings("SameParameterValue")
+    private synchronized View inflate(int resId, ViewGroup root) {
         return mLayoutInflater.inflate(resId, root);
     }
 
 
-    public void post(Runnable runnable) {
-        try {
-            mUiHandler.post(runnable);
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
-        }
+    private synchronized void post(Runnable runnable) {
+        mUiHandler.post(runnable);
     }
 
-    public void postDelay(Runnable runnable, long delayMillis) {
-        try {
-            mUiHandler.postDelayed(runnable, delayMillis);
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
-        }
+    private synchronized void postDelay(Runnable runnable, long delayMillis) {
+        mUiHandler.postDelayed(runnable, delayMillis);
     }
 
-    public void removeCallbacks(Runnable runnable) {
-        try {
-            mUiHandler.removeCallbacks(runnable);
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
-        }
+    private synchronized void removeCallbacks(Runnable runnable) {
+        mUiHandler.removeCallbacks(runnable);
     }
 
 
@@ -170,7 +469,7 @@ public class FloatingUiManager {
         private WindowManager mWindowManager;
         private LayoutInflater mLayoutInflater;
         private Configuration mConfiguration;
-        private Handler mUiHandler;
+        private IOnFloatingItemAction mListener;
 
         public Builder setWindowManager(WindowManager manager) {
             this.mWindowManager = manager;
@@ -187,13 +486,22 @@ public class FloatingUiManager {
             return this;
         }
 
-        public Builder setUiHandler(Handler handler) {
-            this.mUiHandler = handler;
+        public Builder setOnFloatingItemAction(IOnFloatingItemAction listener) {
+            this.mListener = listener;
             return this;
         }
 
-        public FloatingUiManager build() {
-            return new FloatingUiManager(mWindowManager, mLayoutInflater, mConfiguration, mUiHandler);
+        public FloatingUiManager build(Context context) {
+            return new FloatingUiManager(context, mWindowManager, mLayoutInflater, mConfiguration, mListener);
         }
+    }
+
+
+    public interface IOnFloatingItemAction {
+        void onGMapClicked();
+
+        void onBtnCloseEntered();
+
+        void onBtnOpenAppEntered();
     }
 }
