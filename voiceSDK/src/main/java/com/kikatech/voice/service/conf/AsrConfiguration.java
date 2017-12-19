@@ -21,6 +21,15 @@ public class AsrConfiguration {
 
     private AsrConfiguration(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
                              boolean emojiEnable, boolean punctuationEnabled) {
+        setConfig(speechMode, spellingEnabled, alterEnabled, emojiEnable, punctuationEnabled);
+    }
+
+    public void copyConfig(AsrConfiguration conf) {
+        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled, conf.punctuationEnabled);
+    }
+
+    private void setConfig(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
+                            boolean emojiEnable, boolean punctuationEnabled) {
         this.spellingEnabled = spellingEnabled;
         this.speechMode = speechMode;
         this.alterEnabled = alterEnabled;
@@ -71,13 +80,6 @@ public class AsrConfiguration {
     public String toJsonString() {
         Gson gson = new Gson();
         return gson.toJson(this);
-    }
-
-    public void copyConfig(AsrConfiguration conf) {
-        this.speechMode = conf.speechMode;
-        this.alterEnabled = conf.alterEnabled;
-        this.emojiEnabled = conf.emojiEnabled;
-        this.punctuationEnabled = conf.punctuationEnabled;
     }
 
     public boolean update(AsrConfiguration asrConfig) {

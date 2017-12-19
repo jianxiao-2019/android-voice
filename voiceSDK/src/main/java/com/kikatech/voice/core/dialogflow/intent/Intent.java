@@ -131,7 +131,7 @@ public class Intent {
         }
         String ret = detail.toString();
         if (ret.endsWith("\n")) {
-            ret = ret.substring(0, ret.length() - 2);
+            ret = ret.substring(0, ret.length() - 1);
         }
         return ret;
     }

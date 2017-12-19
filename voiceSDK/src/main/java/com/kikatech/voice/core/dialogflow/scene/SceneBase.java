@@ -79,7 +79,7 @@ public abstract class SceneBase implements DialogObserver {
             return;
         }
         if (LogUtil.DEBUG) {
-            LogUtil.logw(TAG, "onIntent : " + intent);
+            LogUtil.logw(TAG, "onIntent : [" + intent.getScene() + "-" + intent.getAction() + "]" + intent.getBundleDetail());
         }
         if (Intent.ACTION_EXIT.equals(action)) {
             onExit();
