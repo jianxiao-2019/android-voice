@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/button_permission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="8dp"
+        android:text="Audio permission" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_source_usb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Source Usb" />
+
+        <Button
+            android:id="@+id/button_source_android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Source Android" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start listening" />
+
+    <Button
+        android:id="@+id/button_stop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop listening" />
+
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:ems="10"
+        android:gravity="left|center_vertical|start"
+        android:text="Where are you going?" />
+
+    <Button
+        android:id="@+id/button_alter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sleep (for wake up command)" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_tts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tts" />
+
+        <Button
+            android:id="@+id/button_interrupt_tts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Interrupt Tts" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/server_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/button_update_asr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Update Asr Settings" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/check_alter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alter" />
+
+        <CheckBox
+            android:id="@+id/check_emoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Emoji" />
+
+        <CheckBox
+            android:id="@+id/check_punctuation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Punctuation" />
+
+        <CheckBox
+            android:id="@+id/check_spelling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Spelling" />
+
+        <CheckBox
+            android:id="@+id/check_one_shot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="One Shot" />
+    </LinearLayout>
+</LinearLayout>

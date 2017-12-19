@@ -78,6 +78,8 @@
         <activity android:name=".ui.KikaAlphaUiActivity"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
+        <activity android:name=".ui.KikaUsbVoiceSourceActivity"
+            android:screenOrientation="portrait" />
 
 
         <activity

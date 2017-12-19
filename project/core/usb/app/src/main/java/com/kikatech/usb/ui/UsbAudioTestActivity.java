@@ -20,27 +20,27 @@ public class UsbAudioTestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_usb);
-
-        btnStart = findViewById(R.id.start);
-        btnStop = findViewById(R.id.stop);
-        logTv = (TextView) findViewById(R.id.log_tv);
-
-        logTv.setMovementMethod(new ScrollingMovementMethod());
-        btnStart.setEnabled(false);
-        btnStop.setEnabled(false);
-
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+//        setContentView(R.layout.activity_usb);
+//
+//        btnStart = findViewById(R.id.start);
+//        btnStop = findViewById(R.id.stop);
+//        logTv = (TextView) findViewById(R.id.log_tv);
+//
+//        logTv.setMovementMethod(new ScrollingMovementMethod());
+//        btnStart.setEnabled(false);
+//        btnStop.setEnabled(false);
+//
+//        btnStart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            }
+//        });
+//
+//        btnStop.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            }
+//        });
 
     }
 }

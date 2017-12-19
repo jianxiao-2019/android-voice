@@ -124,5 +124,13 @@ public class KikaGoActivity extends Activity{
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.button_voice_source).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaUsbVoiceSourceActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

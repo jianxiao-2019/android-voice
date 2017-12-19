@@ -24,4 +24,13 @@
     <string name="btn1_stop">Stop</string>
     <string name="btn2_start">Play</string>
     <string name="btn2_stop">Stop</string>
+
+    <string name="cid_text">cid : %d</string>
+
+    <string-array name="hosts">
+        <item name="mvp_dev">ws://speech0-dev-mvp.kikakeyboard.com/v2/speech</item>
+        <item name="jincheng_dev">ws://speech0-poc.kikakeyboard.com/v2/speech</item>
+        <item name="hao_dev">ws://172.16.3.168:8080/v2/speech</item>
+        <item name="kika_dev">ws://speech0-dev.kikakeyboard.com/v2/speech</item>
+    </string-array>
 </resources>
