@@ -123,9 +123,12 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     @Override
     public void exitScene(SceneBase scene) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log("SceneManager", "mScene:" + mScene + ", scene:" + scene);
+        }
         if (!TextUtils.isEmpty(mScene) && mScene.equals(scene.scene())) {
-            doExitScene(mScene, true);
             mScene = null;
+            doExitScene(scene.scene(), true);
         }
     }
 
