@@ -35,7 +35,7 @@ public class StageOutgoing extends BaseSceneStage {
             switch (action) {
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
                 case SceneActions.ACTION_OUTGOING_START:
-                case SceneActions.ACTION_OUTGOING_CHANGE:
+                //case SceneActions.ACTION_OUTGOING_CHANGE:
                 case SceneActions.ACTION_OUTGOING_YES:
                     return getCheckContactStage(action, extra);
                 case SceneActions.ACTION_OUTGOING_NO:
@@ -57,7 +57,7 @@ public class StageOutgoing extends BaseSceneStage {
     private SceneStage getCheckContactStage(String action, Bundle extra) {
         boolean isStartStage = SceneActions.ACTION_OUTGOING_START.equals(action);
         boolean hasQueried = false;
-        ContactManager.MatchedContact mMatchedContact = null;
+        ContactManager.MatchedContact matchedContact = null;
 
         // try parsing from api.ai result
         String targetName = extra != null ? extra.getString(SceneActions.PARAM_OUTGOING_NAME) : null;
@@ -69,40 +69,48 @@ public class StageOutgoing extends BaseSceneStage {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "try parsing from api.ai result");
             }
-            mMatchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), targetName);
+            matchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), targetName);
             hasQueried = true;
         }
 
         // try parsing from asr n-best
-        if (mMatchedContact == null) {
+        if (matchedContact == null && !TextUtils.isEmpty(targetName)) {
             String[] nBestInput = extra != null ? Intent.parseUserInputNBest(extra) : null;
             if (nBestInput != null && nBestInput.length != 0) {
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, "try parsing from asr n-best");
                 }
-                mMatchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), nBestInput);
+                matchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), nBestInput);
                 hasQueried = true;
             }
         }
 
         // check query result
-        if (mMatchedContact != null) {
-            switch (mMatchedContact.matchedType) {
-                case ContactManager.MatchedContact.MatchedType.FULL_MATCHED:
-                    if (mMatchedContact.phoneNumbers.size() > 1) {
-                        return new StageConfirmNumber(mSceneBase, mFeedback, mMatchedContact);
-                    } else {
-                        return new StageMakeCall(mSceneBase, mFeedback, mMatchedContact);
-                    }
-                case ContactManager.MatchedContact.MatchedType.NUMBER_MATCHED:
-                    return new StageMakeCall(mSceneBase, mFeedback, mMatchedContact);
-                case ContactManager.MatchedContact.MatchedType.FUZZY_MATCHED:
-                    return new StageConfirmName(mSceneBase, mFeedback, mMatchedContact);
-                default:
-                    return new StageNoContact(mSceneBase, mFeedback);
-            }
+        StageOutgoing next = getMatchedContactStage(matchedContact);
+        if (next != null) {
+            return next;
         } else {
             return !isStartStage && hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
         }
+    }
+
+    StageOutgoing getMatchedContactStage(ContactManager.MatchedContact matchedContact) {
+        if (matchedContact != null) {
+            switch (matchedContact.matchedType) {
+                case ContactManager.MatchedContact.MatchedType.FULL_MATCHED:
+                    if (matchedContact.phoneNumbers.size() > 1) {
+                        return new StageConfirmNumber(mSceneBase, mFeedback, matchedContact);
+                    } else {
+                        return new StageMakeCall(mSceneBase, mFeedback, matchedContact);
+                    }
+                case ContactManager.MatchedContact.MatchedType.NUMBER_MATCHED:
+                    return new StageMakeCall(mSceneBase, mFeedback, matchedContact);
+                case ContactManager.MatchedContact.MatchedType.FUZZY_MATCHED:
+                    return new StageConfirmName(mSceneBase, mFeedback, matchedContact);
+                default:
+                    return new StageNoContact(mSceneBase, mFeedback);
+            }
+        }
+        return null;
     }
 }

@@ -22,7 +22,7 @@ public class StageConfirmName extends StageOutgoing {
 
     private ContactManager.PhoneBookContact mContact;
 
-    public StageConfirmName(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
+    StageConfirmName(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
         super(scene, feedback);
         mContact = contact;
     }

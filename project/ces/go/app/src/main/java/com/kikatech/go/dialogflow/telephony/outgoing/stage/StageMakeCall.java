@@ -25,7 +25,7 @@ public class StageMakeCall extends StageOutgoing {
     private ContactManager.PhoneBookContact mContact;
     private String mNumberToCall;
 
-    public StageMakeCall(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
+    StageMakeCall(SceneBase scene, ISceneFeedback feedback, ContactManager.PhoneBookContact contact) {
         super(scene, feedback);
         mContact = contact;
     }

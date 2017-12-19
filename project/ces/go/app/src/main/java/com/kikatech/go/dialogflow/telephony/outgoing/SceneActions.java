@@ -8,7 +8,7 @@ public class SceneActions {
     public static final String ACTION_OUTGOING_START = "telephony.outgoing.start";
     public static final String ACTION_OUTGOING_YES = "telephony.outgoing.yes";
     public static final String ACTION_OUTGOING_NO = "telephony.outgoing.no";
-    public static final String ACTION_OUTGOING_CHANGE = "telephony.outgoing.change";
+    //public static final String ACTION_OUTGOING_CHANGE = "telephony.outgoing.change";
     public static final String ACTION_OUTGOING_NUMBERS = "telephony.outgoing.numbers";
     public static final String ACTION_OUTGOING_CANCEL = "telephony.outgoing.cancel";
 
