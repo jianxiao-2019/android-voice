@@ -46,7 +46,6 @@ public abstract class BaseDrawerActivity extends BaseActivity implements DrawerL
         if (isDrawerAvailable()) {
             mDrawerLayout.addDrawerListener(this);
         }
-        openDrawer();
     }
 
     protected void openDrawer() {
