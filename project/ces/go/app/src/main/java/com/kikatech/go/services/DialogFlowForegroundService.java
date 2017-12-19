@@ -128,9 +128,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         registerReceiver();
         initDialogFlowService();
         acquireWakeLock();
-
-        // TODO: remove after testing
-        DialogFlowForegroundService.processNavigationStarted();
     }
 
     @Override
