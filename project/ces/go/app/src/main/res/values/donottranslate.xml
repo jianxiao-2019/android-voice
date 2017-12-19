@@ -153,4 +153,14 @@ it's the alpha version now."</string>
         <item>"Yes"</item>
         <item>"No"</item>
     </string-array>
+
+
+    <string name="drawer_main_title">"Settings"</string>
+    <string name="drawer_item_navigation">"Navigation"</string>
+    <string name="drawer_item_im">"Play messages"</string>
+    <string name="drawer_item_exit">"Exit app"</string>
+    <string name="drawer_item_im_popup_menu_item_yes">"Yes"</string>
+    <string name="drawer_item_im_popup_menu_item_no">"No"</string>
+    <string name="drawer_item_im_popup_menu_item_ask">"Ask me first"</string>
+
 </resources>

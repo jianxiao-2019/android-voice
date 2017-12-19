@@ -17,7 +17,7 @@ import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.MessageEventDispatcher;
 import com.kikatech.go.message.processor.IMProcessor;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.AppUtil;
+import com.kikatech.go.util.PackageManagerUtil;
 
 /**
  * @author jasonli Created on 2017/10/24.
@@ -57,7 +57,7 @@ public class KikaAccessibilityActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 String packageName = mAppInfo.getPackageName();
-                if (!AppUtil.isAppInstalled(context, packageName)) {
+                if (!PackageManagerUtil.isAppInstalled(context, packageName)) {
                     showToast("App not installed!");
                     return;
                 }
@@ -128,6 +128,7 @@ public class KikaAccessibilityActivity extends BaseActivity {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 }

@@ -28,6 +28,20 @@
 
     <color name="underline_color">#a3a3a3</color>
 
+    <color name="drawer_bg">#1b1d25</color>
+    <color name="drawer_underline">#060a0f</color>
+    <color name="drawer_title_area">#16181e</color>
+    <color name="drawer_item_area_pressed">#17191f</color>
+    <color name="drawer_title_text">#535871</color>
+    <color name="drawer_item_text">#8e94a9</color>
+    <color name="drawer_item_text_pressed">#c0cbea</color>
+
+    <color name="drawer_item_im_popup_menu_bg">#252933</color>
+    <color name="drawer_item_im_popup_menu_item_bg">@android:color/transparent</color>
+    <color name="drawer_item_im_popup_menu_item_bg_pressed">#2d4171</color>
+    <color name="drawer_item_im_popup_menu_item_text">#c0cbea</color>
+    <color name="drawer_item_im_popup_menu_item_text_pressed">#4fcede</color>
+
     <color name="standby_bg_color">#16181e</color>
     <color name="awake_bg_color">#20232C</color>
 </resources>

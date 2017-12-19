@@ -1,5 +1,6 @@
 package com.kikatech.go.dialogflow.im.reply.stage;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Pair;
@@ -45,6 +46,7 @@ public class ReadContentAndAskToReplyImReplyIMStage extends BaseReplyIMStage {
         action();
     }
 
+    @SuppressLint("SwitchIntDef")
     @Override
     public void action() {
         BaseIMObject imObject = getReplyMessage().getIMObject();
@@ -52,12 +54,12 @@ public class ReadContentAndAskToReplyImReplyIMStage extends BaseReplyIMStage {
             LogUtil.log(TAG, imObject.getUserName() + " said: " + imObject.getMsgContent() + ", do you want to reply ?");
         }
         String[] uiAndTtsText;
-        switch (UserSettings.getReplyMessageSetting()) {
-            case UserSettings.SETTING_REPLY_SMS_READ:
+        switch (getReplyImSetting()) {
+            case UserSettings.SETTING_REPLY_MSG_READ:
                 uiAndTtsText = SceneUtil.getReadMsgDirectly(mSceneBase.getContext(), imObject.getUserName(), imObject.getMsgContent());
                 break;
             default:
-            case UserSettings.SETTING_REPLY_SMS_ASK_USER:
+            case UserSettings.SETTING_REPLY_MSG_ASK_USER:
                 uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), imObject.getUserName(), imObject.getMsgContent());
                 break;
         }

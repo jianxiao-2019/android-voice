@@ -1,7 +1,10 @@
 package com.kikatech.go.ui;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
@@ -9,6 +12,8 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.ui.fragment.DrawerImFragment;
+import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
@@ -23,7 +28,7 @@ import org.greenrobot.eventbus.ThreadMode;
 /**
  * @author SkeeterWang Created on 2017/11/10.
  */
-public class KikaAlphaUiActivity extends BaseActivity {
+public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private static final String TAG = "KikaAlphaUiActivity";
 
     private GoLayout mGoLayout;
@@ -59,31 +64,33 @@ public class KikaAlphaUiActivity extends BaseActivity {
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
         switch (action) {
             case DFServiceEvent.ACTION_EXIT_APP:
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "Exit App, Goodbye !");
+                if (GoLayout.ENABLE_LOG_VIEW)
+                    mUiManager.writeDebugLog(dbgAction, "Exit App, Goodbye !");
                 finishAffinity();
                 break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
                 initUiTaskManager();
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "init UI Done");
+                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "init UI Done");
                 break;
             case DFServiceEvent.ACTION_ON_WAKE_UP:
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "Hi Kika Wake Up");
+                if (GoLayout.ENABLE_LOG_VIEW)
+                    mUiManager.writeDebugLog(dbgAction, "Hi Kika Wake Up");
                 mUiManager.dispatchWakeUp();
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
+                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
                 break;
             case DFServiceEvent.ACTION_ON_SLEEP:
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "Hi Kika Sleep");
+                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "Hi Kika Sleep");
                 mUiManager.dispatchSleep();
                 break;
             case DFServiceEvent.ACTION_ON_ASR_PAUSE:
-                if(GoLayout.ENABLE_LOG_VIEW) {
+                if (GoLayout.ENABLE_LOG_VIEW) {
                     long spend = System.currentTimeMillis() - mDbgLogResumeStartTime;
-                    int per = (int) (100 * ((float)mDbgLogASRRecogFullTime / spend));
+                    int per = (int) (100 * ((float) mDbgLogASRRecogFullTime / spend));
                     mUiManager.writeDebugLog(dbgAction, "asr section over (" + spend + " ms, " + per + "%)");
                 }
                 break;
             case DFServiceEvent.ACTION_ON_ASR_RESUME:
-                if(GoLayout.ENABLE_LOG_VIEW) {
+                if (GoLayout.ENABLE_LOG_VIEW) {
                     mUiManager.writeDebugLogSeparator();
                     mDbgLogResumeStartTime = System.currentTimeMillis();
                     mUiManager.writeDebugLog(dbgAction, "asr section start");
@@ -94,7 +101,7 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 isFinished = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_FINISHED, false);
                 String concat = StringUtil.upperCaseFirstWord(text);
 
-                if(GoLayout.ENABLE_LOG_VIEW) {
+                if (GoLayout.ENABLE_LOG_VIEW) {
                     mIsAsrFinished = isFinished;
                     if (!mDbgLogFirstAsrResult) {
                         mDbgLogFirstAsrResult = true;
@@ -112,44 +119,47 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);
                 mUiManager.dispatchTtsTask(text, extras);
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, text);
+                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, text);
                 break;
             case DFServiceEvent.ACTION_ON_TEXT_PAIRS:
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, text);
+                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, text);
                 mUiManager.dispatchTtsTask(text, extras);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_PREPARED:
                 stage = (SceneStage) event.getExtras().getSerializable(DFServiceEvent.PARAM_SCENE_STAGE);
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, stage.toString());
+                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, stage.toString());
                 mUiManager.dispatchStageTask(stage);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE:
                 isInterrupted = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_INTERRUPTED, false);
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "isInterrupted:" + isInterrupted);
+                if (GoLayout.ENABLE_LOG_VIEW)
+                    mUiManager.writeDebugLog(dbgAction, "isInterrupted:" + isInterrupted);
                 mUiManager.onStageActionDone(isInterrupted);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_EVENT:
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "Parameters:" + extras);
+                if (GoLayout.ENABLE_LOG_VIEW)
+                    mUiManager.writeDebugLog(dbgAction, "Parameters:" + extras);
                 mUiManager.dispatchEventTask(extras);
                 break;
             case DFServiceEvent.ACTION_ON_SCENE_EXIT:
                 boolean proactive = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_PROACTIVE);
-                if(GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "proactive:" + proactive);
+                if (GoLayout.ENABLE_LOG_VIEW)
+                    mUiManager.writeDebugLog(dbgAction, "proactive:" + proactive);
                 mUiManager.onSceneExit(proactive);
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_START:
                 mUiManager.dispatchAsrStart();
                 mDbgLogAPIQueryUITime = System.currentTimeMillis();
-                if(GoLayout.ENABLE_LOG_VIEW) {
+                if (GoLayout.ENABLE_LOG_VIEW) {
                     mUiManager.writeDebugLogSeparator();
                     mUiManager.writeDebugLog(dbgAction, "");
                 }
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_COMPLETE:
-                if(GoLayout.ENABLE_LOG_VIEW) {
+                if (GoLayout.ENABLE_LOG_VIEW) {
                     mDbgLogAPIQueryUITime = System.currentTimeMillis() - mDbgLogAPIQueryUITime;
                     String intentAction = event.getExtras().getString(DFServiceEvent.PARAM_DBG_INTENT_ACTION);
                     String intentParms = event.getExtras().getString(DFServiceEvent.PARAM_DBG_INTENT_PARMS);
@@ -158,14 +168,14 @@ public class KikaAlphaUiActivity extends BaseActivity {
                 }
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR:
-                if(GoLayout.ENABLE_LOG_VIEW) {
+                if (GoLayout.ENABLE_LOG_VIEW) {
                     mUiManager.writeDebugLog(DebugLogType.API_AI_ERROR);
                     mUiManager.writeDebugLogSeparator();
                     mUiManager.writeDebugLog(dbgAction, "");
                 }
                 break;
             case DFServiceEvent.ACTION_ON_ASR_CONFIG:
-                if(GoLayout.ENABLE_LOG_VIEW) {
+                if (GoLayout.ENABLE_LOG_VIEW) {
                     text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                     mUiManager.writeDebugLogSeparator();
                     mUiManager.writeDebugLog(dbgAction, text);
@@ -257,4 +267,47 @@ public class KikaAlphaUiActivity extends BaseActivity {
         } catch (Exception ignore) {
         }
     }
+
+    @Override
+    protected DrawerLayout getDrawerLayout() {
+        return (DrawerLayout) findViewById(R.id.go_drawer_layout);
+    }
+
+    @Override
+    protected View getDrawerView() {
+        return findViewById(R.id.go_layout_drawer);
+    }
+
+    @Override
+    protected Fragment getMainDrawerFragment() {
+        return mDrawerMainFragment;
+    }
+
+    private Fragment mDrawerMainFragment = DrawerMainFragment.newInstance(new DrawerMainFragment.IDrawerMainListener() {
+        @Override
+        public void onCloseDrawer() {
+            closeDrawer();
+        }
+
+        @Override
+        public void onItemNavigationClick() {
+        }
+
+        @Override
+        public void onItemImClicked() {
+            updateDrawerContent(mDrawerImFragment);
+        }
+
+        @Override
+        public void onItemExitClicked() {
+            finishAffinity();
+        }
+    });
+
+    private Fragment mDrawerImFragment = DrawerImFragment.newInstance(new DrawerImFragment.IDrawerImListener() {
+        @Override
+        public void onBackClicked() {
+            updateDrawerContent(mDrawerMainFragment);
+        }
+    });
 }

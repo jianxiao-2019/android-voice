@@ -1,9 +1,9 @@
 package com.kikatech.go.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -11,7 +11,7 @@ import android.widget.Toast;
  * @author jasonli Created on 2017/10/24.
  */
 
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends FragmentActivity {
 
     protected void showToast(final String message) {
         __showToast(message, Toast.LENGTH_SHORT);

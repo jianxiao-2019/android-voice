@@ -36,6 +36,19 @@
     <dimen name="go_layout_usr_msg_avatar_margin_left">15dp</dimen>
 
 
+    <!-- drawer -->
+    <dimen name="drawer_width">330dp</dimen>
+    <dimen name="drawer_title_area_height">100dp</dimen>
+    <dimen name="drawer_item_area_height">91dp</dimen>
+    <dimen name="drawer_underline_height">2dp</dimen>
+    <dimen name="drawer_title_text_size">26dp</dimen>
+    <dimen name="drawer_item_text_size">23dp</dimen>
+    <dimen name="drawer_item_im_popup_menu_width">295dp</dimen>
+    <dimen name="drawer_item_im_popup_menu_item_height">76dp</dimen>
+    <dimen name="drawer_item_im_popup_menu_item_text_size">21dp</dimen>
+
+
+    <!-- dialog -->
     <dimen name="dialog_margin_large">40dp</dimen>
     <dimen name="dialog_margin">22dp</dimen>
     <dimen name="dialog_padding">18dp</dimen>

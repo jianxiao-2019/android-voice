@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:ignore="SpUsage">
+
+    <LinearLayout
+        android:layout_width="@dimen/drawer_item_im_popup_menu_width"
+        android:layout_height="wrap_content"
+        android:background="@color/drawer_item_im_popup_menu_bg"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_yes"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/drawer_item_im_popup_menu_item_height"
+            android:background="@drawable/selector_bg_drawer_item_im_popup_menu_item"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="@string/drawer_item_im_popup_menu_item_yes"
+            android:textColor="@drawable/selector_text_drawer_item_im_popup_menu_item"
+            android:textSize="@dimen/drawer_item_im_popup_menu_item_text_size"/>
+
+        <TextView
+            android:id="@+id/item_no"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/drawer_item_im_popup_menu_item_height"
+            android:background="@drawable/selector_bg_drawer_item_im_popup_menu_item"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="@string/drawer_item_im_popup_menu_item_no"
+            android:textColor="@drawable/selector_text_drawer_item_im_popup_menu_item"
+            android:textSize="@dimen/drawer_item_im_popup_menu_item_text_size"/>
+
+        <TextView
+            android:id="@+id/item_ask"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/drawer_item_im_popup_menu_item_height"
+            android:background="@drawable/selector_bg_drawer_item_im_popup_menu_item"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="@string/drawer_item_im_popup_menu_item_ask"
+            android:textColor="@drawable/selector_text_drawer_item_im_popup_menu_item"
+            android:textSize="@dimen/drawer_item_im_popup_menu_item_text_size"/>
+    </LinearLayout>
+</LinearLayout>

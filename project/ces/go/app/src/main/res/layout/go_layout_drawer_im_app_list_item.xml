@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/drawer_item_area_height"
+    android:background="@drawable/selector_bg_drawer_item"
+    android:gravity="center_vertical"
+    android:paddingLeft="35dp"
+    android:paddingRight="20dp">
+
+    <ImageView
+        android:id="@+id/go_layout_drawer_im_app_list_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/go_layout_drawer_im_app_list_item_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_weight="1"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@drawable/selector_text_drawer_item"
+        android:textSize="@dimen/drawer_item_text_size"/>
+
+    <ImageView
+        android:id="@+id/go_layout_drawer_im_app_list_item_btn_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/kika_settings_ic_more"/>
+</LinearLayout>

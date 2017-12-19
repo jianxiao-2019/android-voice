@@ -9,6 +9,7 @@ import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.ReplyIMMessage;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.message.im.BaseIMObject;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -32,6 +33,13 @@ public class BaseReplyIMStage extends BaseSceneStage {
         return ((SceneReplyIM) mSceneBase).getReplyMessage();
     }
 
+    @UserSettings.ReplyMsgSetting int getReplyImSetting() {
+        BaseIMObject baseIMObject = getReplyMessage().getIMObject();
+        AppInfo appInfo = baseIMObject != null ? baseIMObject.getAppInfo() : null;
+        String pkgName = appInfo != null ? appInfo.getPackageName() : null;
+        return UserSettings.getReplyMsgSetting(pkgName);
+    }
+
     @Override
     protected @AsrConfigUtil.ASRMode int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_SHORT_COMMAND;
@@ -46,8 +54,8 @@ public class BaseReplyIMStage extends BaseSceneStage {
         if (action.equals(Intent.ACTION_RCMD_EMOJI)) {
             String emojiJson = Intent.parseEmojiJsonString(extra);
             ((SceneReplyIM) mSceneBase).updateEmoji(emojiJson);
-        } else if (UserSettings.getReplyMessageSetting() == UserSettings.SETTING_REPLY_SMS_IGNORE) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_SMS_IGNORE");
+        } else if (getReplyImSetting() == UserSettings.SETTING_REPLY_MSG_IGNORE) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_MSG_IGNORE");
             exitScene();
             return null;
         }
@@ -65,11 +73,9 @@ public class BaseReplyIMStage extends BaseSceneStage {
 
     @Override
     protected void prepare() {
-
     }
 
     @Override
     protected void action() {
-
     }
 }

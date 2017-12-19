@@ -6,9 +6,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.im.send.IMContent;
-import com.kikatech.go.util.AppConstants;
-import com.kikatech.go.util.AppUtil;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.PackageManagerUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,12 +31,7 @@ public class IMUtil {
 
     public static final String KEY_SWITCH_SCENE_NAME = "user_name";
 
-    // TODO should bind settings
-    private static final String[] SUPPORTED_IM = {AppConstants.PACKAGE_WHATSAPP};//, AppConstants.PACKAGE_MESSENGER};
-
-    private static String getBundleString(@NonNull Bundle parm, String key) {
-        return parm.getString(key, "").replace("\"", "");
-    }
+    public static final AppInfo[] SUPPORTED_IM = {AppInfo.SMS, AppInfo.WHATSAPP, AppInfo.MESSENGER};
 
     public static IMContent parse(@NonNull Bundle parm) {
         if (LogUtil.DEBUG) LogUtil.log("IMContent", "parm:" + parm);
@@ -55,6 +50,10 @@ public class IMUtil {
         return imc;
     }
 
+    private static String getBundleString(@NonNull Bundle parm, String key) {
+        return parm.getString(key, "").replace("\"", "");
+    }
+
     private static String parseIMApp(@NonNull Bundle parm) {
         String imApp = parm.getString(KEY_IM_APP, "");
         if (!TextUtils.isEmpty(imApp)) {
@@ -70,30 +69,6 @@ public class IMUtil {
         return "";
     }
 
-    public static boolean isIMAppSupported(Context ctx, String pkgName) {
-        if (TextUtils.isEmpty(pkgName)) {
-            return false;
-        }
-
-        if (!AppUtil.isAppInstalled(ctx, pkgName)) {
-            if (LogUtil.DEBUG) LogUtil.log("IMUtil", pkgName + " is not installed !!");
-            return false;
-        }
-
-        // Check if package is supported
-        for (String s : SUPPORTED_IM) {
-            if (s.equals(pkgName)) {
-                return checkPackageAvailability(pkgName);
-            }
-        }
-        return false;
-    }
-
-    private static boolean checkPackageAvailability(String pkgName) {
-        // Check if app is installed and enabled
-        return true;
-    }
-
     public static String prepareSwitchSceneInfo(IMContent sc) {
         if (sc == null || TextUtils.isEmpty(sc.getSendTarget())) {
             return null;
@@ -106,5 +81,23 @@ public class IMUtil {
         }
         if (LogUtil.DEBUG) LogUtil.log("IMUtil", "prepareSwitchSceneInfo:" + json.toString());
         return json.toString();
+    }
+
+    public static boolean isIMAppSupported(Context ctx, String pkgName) {
+        if (TextUtils.isEmpty(pkgName)) {
+            return false;
+        }
+        // Check if package is supported
+        for (AppInfo appInfo : SUPPORTED_IM) {
+            if (pkgName.equals(appInfo.getPackageName())) {
+                return checkPackageAvailability(ctx, pkgName);
+            }
+        }
+        return false;
+    }
+
+    private static boolean checkPackageAvailability(Context ctx, String pkgName) {
+        // Check if app is installed and enabled
+        return PackageManagerUtil.isAppInstalled(ctx, pkgName);
     }
 }

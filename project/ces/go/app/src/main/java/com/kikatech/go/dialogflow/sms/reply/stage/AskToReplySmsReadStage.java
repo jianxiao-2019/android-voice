@@ -1,5 +1,6 @@
 package com.kikatech.go.dialogflow.sms.reply.stage;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Pair;
@@ -46,16 +47,17 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
         action();
     }
 
+    @SuppressLint("SwitchIntDef")
     @Override
     public void action() {
         SmsObject smsObject = getReplyMessage().getSmsObject();
         String[] uiAndTtsText;
-        switch (UserSettings.getReplyMessageSetting()) {
-            case UserSettings.SETTING_REPLY_SMS_READ:
+        switch (getReplyMsgSetting()) {
+            case UserSettings.SETTING_REPLY_MSG_READ:
                 uiAndTtsText = SceneUtil.getReadMsgDirectly(mSceneBase.getContext(), smsObject.getUserName(), smsObject.getMsgContent());
                 break;
             default:
-            case UserSettings.SETTING_REPLY_SMS_ASK_USER:
+            case UserSettings.SETTING_REPLY_MSG_ASK_USER:
                 uiAndTtsText = SceneUtil.getReadMsg(mSceneBase.getContext(), smsObject.getUserName(), smsObject.getMsgContent());
                 break;
         }
