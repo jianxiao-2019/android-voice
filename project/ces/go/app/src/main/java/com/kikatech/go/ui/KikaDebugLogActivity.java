@@ -29,6 +29,8 @@ import java.util.ArrayList;
 
 public class KikaDebugLogActivity extends Activity {
 
+    private static final String LOG_FOLDER = com.kikatech.voice.util.log.LogUtil.LOG_FOLDER;
+
     private TextView tvLogContent;
     private int mCurrentCheckedId = R.id.log_display;
 
@@ -39,6 +41,18 @@ public class KikaDebugLogActivity extends Activity {
                     "What is the problem ?\n\n\n\n" +
                     "Reproduce Steps :\n1.\n2.\n3.\n";
 
+    private final static int[] VIEW_ID = new int[]{
+            R.id.radioGroupLog,
+
+            R.id.log_display,
+            R.id.log_kikago,
+            R.id.log_voice_sdk,
+            R.id.log_voice_mvp,
+
+            R.id.button_copy,
+            R.id.button_send
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +61,7 @@ public class KikaDebugLogActivity extends Activity {
 
         tvLogContent = (TextView) findViewById(R.id.log_content);
 
-        RadioGroup radioGroupLog = (RadioGroup) findViewById(R.id.radioGroupLog);
-        radioGroupLog.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        ((RadioGroup) findViewById(R.id.radioGroupLog)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 mCurrentCheckedId = checkedId;
@@ -74,13 +87,28 @@ public class KikaDebugLogActivity extends Activity {
                 sendMail();
             }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         loadLog();
     }
+
+    private final Runnable mLockUI = new Runnable() {
+        @Override
+        public void run() {
+            tvLogContent.setText("Loading ...");
+            for (int id : VIEW_ID) {
+                findViewById(id).setEnabled(false);
+            }
+        }
+    };
+
+    private final Runnable mReleaseUI = new Runnable() {
+        @Override
+        public void run() {
+            for (int id : VIEW_ID) {
+                findViewById(id).setEnabled(true);
+            }
+        }
+    };
 
     private void copyText(String logTitle, String log) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -98,9 +126,10 @@ public class KikaDebugLogActivity extends Activity {
         ArrayList<Uri> uris = new ArrayList<>();
         //convert from paths to Android friendly Parcelable Uri's
         File[] filePaths = new File[]{
-                FileLoggerUtil.getIns().getLogFullPath(LogUtil.LOG_FOLDER, LogOnViewUtil.LOG_FILE),
-                FileLoggerUtil.getIns().getLogFullPath(LogUtil.LOG_FOLDER, LogUtil.LOG_FILE),
-                FileLoggerUtil.getIns().getLogFullPath(com.kikatech.voice.util.log.LogUtil.LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, LogOnViewUtil.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, LogUtil.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, com.kikatech.voice.util.log.Logger.LOG_FILE),
         };
         for (File file : filePaths) {
             LogUtil.log("KikaDebugLogActivity", file.getAbsolutePath() + ":" + file.exists());
@@ -128,19 +157,19 @@ public class KikaDebugLogActivity extends Activity {
                 final String logTitle;
                 switch (mCurrentCheckedId) {
                     case R.id.log_display:
-                        log = FileLoggerUtil.getIns().loadLogFile(com.kikatech.go.util.LogUtil.LOG_FOLDER, LogOnViewUtil.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, LogOnViewUtil.LOG_FILE);
                         logTitle = "Log Display";
                         break;
                     case R.id.log_kikago:
-                        log = FileLoggerUtil.getIns().loadLogFile(com.kikatech.go.util.LogUtil.LOG_FOLDER, com.kikatech.go.util.LogUtil.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, com.kikatech.go.util.LogUtil.LOG_FILE);
                         logTitle = "Log Display";
                         break;
                     case R.id.log_voice_sdk:
-                        log = FileLoggerUtil.getIns().loadLogFile(com.kikatech.voice.util.log.LogUtil.LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE);
                         logTitle = "Voice SDK Log";
                         break;
                     case R.id.log_voice_mvp:
-                        log = FileLoggerUtil.getIns().loadLogFile(com.kikatech.voice.util.log.LogUtil.LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, com.kikatech.voice.util.log.Logger.LOG_FILE);
                         logTitle = "Voice MVP Log";
                         break;
                     default:
@@ -154,6 +183,8 @@ public class KikaDebugLogActivity extends Activity {
     }
 
     private void loadLog() {
+        LogUtil.log("KikaDebugLogActivity", "start");
+        tvLogContent.post(mLockUI);
         loadLogContent(new ILoadCallback() {
             @Override
             public void onLoadComplete(String logTitle, final String log) {
@@ -161,10 +192,10 @@ public class KikaDebugLogActivity extends Activity {
                     @Override
                     public void run() {
                         tvLogContent.setText(log);
+                        mReleaseUI.run();
                     }
                 });
             }
         });
-
     }
 }
