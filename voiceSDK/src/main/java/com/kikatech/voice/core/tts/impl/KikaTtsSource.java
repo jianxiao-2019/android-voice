@@ -126,9 +126,11 @@ public class KikaTtsSource implements TtsSource {
     @Override
     public void interrupt() {
         mMediaPlayer.stop();
-        if (mListener != null) {
-            mIsTtsInterrupted = true;
-            mListener.onTtsInterrupted();
+        mIsTtsInterrupted = true;
+        if(mMediaPlayer.isPlaying()) {
+            if (mListener != null) {
+                mListener.onTtsInterrupted();
+            }
         }
     }
 
