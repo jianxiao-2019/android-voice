@@ -98,6 +98,6 @@ public class IMUtil {
 
     private static boolean checkPackageAvailability(Context ctx, String pkgName) {
         // Check if app is installed and enabled
-        return PackageManagerUtil.isAppInstalled(ctx, pkgName);
+        return PackageManagerUtil.isAppInstalledAndEnabled(ctx, pkgName);
     }
 }

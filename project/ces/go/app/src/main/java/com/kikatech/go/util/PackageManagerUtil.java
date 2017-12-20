@@ -30,6 +30,15 @@ public class PackageManagerUtil {
         return false;
     }
 
+    public static boolean isAppInstalledAndEnabled(Context context, String packageName) {
+        try {
+            return context.getPackageManager().getApplicationInfo(packageName, 0).enabled;
+        } catch (Exception ignore) {
+            // possible PackageManager.NameNotFoundException
+        }
+        return false;
+    }
+
     public static String getAppName(Context context, String packageName) {
         String applicationName = "(unknown)";
         try {
