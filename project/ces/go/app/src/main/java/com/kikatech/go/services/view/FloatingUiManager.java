@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.kikatech.go.R;
-import com.kikatech.go.navigation.view.FlexibleOnTouchListener;
+import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.services.view.item.BtnClose;
 import com.kikatech.go.services.view.item.BtnOpenApp;
 import com.kikatech.go.services.view.item.ItemGMap;

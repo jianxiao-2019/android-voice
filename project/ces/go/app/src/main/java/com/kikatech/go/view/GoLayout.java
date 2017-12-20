@@ -27,7 +27,6 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
-import com.kikatech.go.navigation.view.FlexibleOnTouchListener;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.KikaDebugLogActivity;
 import com.kikatech.go.ui.ResolutionUtil;
