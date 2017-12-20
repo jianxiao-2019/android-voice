@@ -37,8 +37,11 @@ public class SnowBoyDetector extends WakeUpDetector {
     private long logTime = 0;
     private String dbgPath;
 
-    SnowBoyDetector(OnHotWordDetectListener listener, IDataPath dataPath, String dbgPath) {
-        super(dataPath);
+    private short[] audioDataBuffer;
+    private byte[] monoResultBuffer;
+
+    SnowBoyDetector(OnHotWordDetectListener listener, IDataPath dataPath, String dbgPath, boolean stereoVoice) {
+        super(dataPath, stereoVoice);
         this.dbgPath = dbgPath;
         mListener = listener;
         long t = System.currentTimeMillis();
@@ -58,16 +61,20 @@ public class SnowBoyDetector extends WakeUpDetector {
     protected synchronized void checkWakeUpCommand(byte[] data) {
         //Logger.d("[sboy]checkWakeUpCommand data len = " + data.length);
         if(mSnowboyDetect == null) {
+            Logger.d("[sboy]Err, mSnowboyDetect is null");
             return;
         }
-        byte[] monoData = stereoToMono(data);
-        short[] audioData = new short[monoData.length / 2];
-        ByteBuffer.wrap(monoData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(audioData);
 
-        FileLoggerUtil.getIns().asyncWriteToFile(monoData, dbgPath);
+        byte[] monoData = mStereoVoice ? stereoToMono(data) : data;
+        if(audioDataBuffer == null || audioDataBuffer.length != monoData.length / 2) {
+            audioDataBuffer = new short[monoData.length / 2];
+        }
+        ByteBuffer.wrap(monoData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(audioDataBuffer);
+
+        FileLoggerUtil.getIns().asyncWriteToFile(data, dbgPath);
 
         // Snowboy hotword detection.
-        int result = mSnowboyDetect.RunDetection(audioData, audioData.length);
+        int result = mSnowboyDetect.RunDetection(audioDataBuffer, audioDataBuffer.length);
 
         //Logger.d("[sboy]checkWakeUpCommand result = " + result);
 
@@ -112,7 +119,7 @@ public class SnowBoyDetector extends WakeUpDetector {
                     log.append(mSnowbpoyLog.keyAt(i)).append(":").append(mSnowbpoyLog.valueAt(i)).append(", ");
                     detectCount += mSnowbpoyLog.valueAt(i);
                 }
-                log.append("}, Detection count : ").append(detectCount);
+                log.append("}, Detection count : ").append(detectCount).append(", Stereo Source:").append(mStereoVoice);
                 Logger.d(log.toString());
                 logTime = System.currentTimeMillis();
                 mSnowbpoyLog.clear();
@@ -121,14 +128,15 @@ public class SnowBoyDetector extends WakeUpDetector {
     }
 
     private byte[] stereoToMono(byte[] stereoData) {
-//        byte[] monoResult = new byte[stereoData.length / 2];
-//        for (int i = 0; i < monoResult.length; i += 2) {
-//            monoResult[i] = stereoData[i * 2];
-//            monoResult[i + 1] = stereoData[i * 2 + 1];
-//        }
-//
-//        return monoResult;
-        return stereoData;
+        if(monoResultBuffer == null || monoResultBuffer.length != stereoData.length / 2) {
+            monoResultBuffer = new byte[stereoData.length / 2];
+        }
+        for (int i = 0; i < monoResultBuffer.length; i += 2) {
+            monoResultBuffer[i] = stereoData[i * 2];
+            monoResultBuffer[i + 1] = stereoData[i * 2 + 1];
+        }
+
+        return monoResultBuffer;
     }
 
     @Override
@@ -159,6 +167,12 @@ public class SnowBoyDetector extends WakeUpDetector {
         if (mSnowboyDetect != null) {
             mSnowboyDetect.delete();
             mSnowboyDetect = null;
+        }
+        if(audioDataBuffer != null) {
+            audioDataBuffer = null;
+        }
+        if(monoResultBuffer != null) {
+            monoResultBuffer = null;
         }
     }
 }

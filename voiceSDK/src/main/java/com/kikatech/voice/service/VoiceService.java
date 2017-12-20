@@ -92,6 +92,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         boolean isUsbVoiceSource = false; // TODO : This will be move to outside.
         if (voiceSource == null) {
             voiceSource = new VoiceSource();
+            mConf.source(voiceSource);
         } else {
             isUsbVoiceSource = true;
         }
@@ -122,7 +123,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         Logger.d("isUsbVoiceSource = " + isUsbVoiceSource + " nextPipe = " + nextPipe);
         if (mConf.isSupportWakeUpMode()) {
             AppResCopy.copyResFromAssetsToSD(context);
-            mWakeUpDetector = WakeUpDetector.getDetector(this, nextPipe, mConf.getDebugFilePath() + "_WD");
+            mWakeUpDetector = WakeUpDetector.getDetector(this, nextPipe, mConf.getDebugFilePath() + "_WD", voiceSource.isStereo());
             mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath() + filePost, mWakeUpDetector));
         } else {
             mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath() + filePost, nextPipe));
@@ -158,7 +159,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         Logger.d("VoiceService start 2");
         if(mConf.isSupportWakeUpMode() && mWakeUpDetector == null) {
-            mWakeUpDetector = WakeUpDetector.getDetector(this, mVoiceDetector, mConf.getDebugFilePath() + "_WD");
+            mWakeUpDetector = WakeUpDetector.getDetector(this, mVoiceDetector, mConf.getDebugFilePath() + "_WD", mConf.getVoiceSource().isStereo());
         }
         if (mWakeUpDetector != null) {
             mWakeUpDetector.reset();
@@ -235,6 +236,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public void destroy() {
         Logger.d("VoiceService mWebService.release()");
+
+        stop();
+
         if (mWebService == null) {
             return;
         }

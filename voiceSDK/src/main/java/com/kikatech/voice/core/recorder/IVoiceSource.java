@@ -16,4 +16,7 @@ public interface IVoiceSource {
 
     int getBufferSize();
 
+    // TODO Should return the voice source properties
+    boolean isStereo();
+
 }

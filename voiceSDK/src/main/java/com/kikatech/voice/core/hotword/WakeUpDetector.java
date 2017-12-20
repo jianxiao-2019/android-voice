@@ -10,17 +10,19 @@ import com.kikatech.voice.util.log.Logger;
 public abstract class WakeUpDetector implements IDataPath {
 
     private IDataPath mDataPath;
+    protected boolean mStereoVoice;
 
-    public WakeUpDetector(IDataPath iDataPath) {
+    public WakeUpDetector(IDataPath iDataPath, boolean stereoVoice) {
         mDataPath = iDataPath;
+        mStereoVoice = stereoVoice;
     }
 
     public interface OnHotWordDetectListener {
         void onDetected();
     }
 
-    public static WakeUpDetector getDetector(OnHotWordDetectListener listener, IDataPath dataPath, String dbgPath) {
-        return new SnowBoyDetector(listener, dataPath, dbgPath);
+    public static WakeUpDetector getDetector(OnHotWordDetectListener listener, IDataPath dataPath, String dbgPath, boolean stereoVoice) {
+        return new SnowBoyDetector(listener, dataPath, dbgPath, stereoVoice);
     }
 
     @Override

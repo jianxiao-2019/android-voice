@@ -63,6 +63,11 @@ public class HotWordVoiceSource implements IVoiceSource {
         return mBufferSizeInBytes;
     }
 
+    @Override
+    public boolean isStereo() {
+        return false;
+    }
+
     private AudioRecord createAudioRecord() {
         if (mBufferSizeInBytes <= 0) {
             return null;

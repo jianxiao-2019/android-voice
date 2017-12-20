@@ -1,6 +1,5 @@
 package com.kikatech.voice.core.recorder;
 
-import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -18,6 +17,8 @@ public class VoiceSource implements IVoiceSource {
     public final static int AUDIO_INPUT = MediaRecorder.AudioSource.VOICE_COMMUNICATION;
     public final static int AUDIO_SAMPLE_RATE = 16000;
 
+    private final static int AUDIO_FORMAT = AudioFormat.CHANNEL_IN_MONO;
+
     private AudioRecord mAudioRecord;
     private final int mBufferSizeInBytes;
 
@@ -25,7 +26,7 @@ public class VoiceSource implements IVoiceSource {
 
     public VoiceSource() {
         mBufferSizeInBytes = AudioRecord.getMinBufferSize(
-                AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+                AUDIO_SAMPLE_RATE, AUDIO_FORMAT, AudioFormat.ENCODING_PCM_16BIT);
     }
 
     @Override
@@ -62,6 +63,11 @@ public class VoiceSource implements IVoiceSource {
     @Override
     public int getBufferSize() {
         return mBufferSizeInBytes;
+    }
+
+    @Override
+    public boolean isStereo() {
+        return AUDIO_FORMAT == AudioFormat.CHANNEL_IN_STEREO;
     }
 
     @Override
