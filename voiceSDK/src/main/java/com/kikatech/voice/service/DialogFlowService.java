@@ -271,7 +271,13 @@ public class DialogFlowService implements
     @Override
     public synchronized void updateRecorderSource(VoiceConfiguration config) {
         initVoiceService(config);
-        mCallback.onRecorderSourceUpdate();
+        // Voice is re-initialized, go back to the
+        resetContexts();
+        if (mCallback != null) {
+            mCallback.onRecorderSourceUpdate();
+            // Notify that the service is now sleeping
+            mCallback.onSleep();
+        }
     }
 
     @Override
