@@ -359,6 +359,10 @@ public class GoLayout extends FrameLayout {
         }
     }
 
+    public void updateVoiceSourceInfo(String text) {
+        mDebugVersionView.setText(BuildConfig.VERSION_NAME + "  <Record From:" + text + ">");
+    }
+
     public void wakeUp() {
         DisplayMode targetMode = DisplayMode.AWAKE;
         onModeChanged(targetMode);

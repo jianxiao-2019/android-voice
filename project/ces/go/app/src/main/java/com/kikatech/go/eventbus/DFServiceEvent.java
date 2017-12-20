@@ -24,6 +24,7 @@ public class DFServiceEvent extends BaseDFServiceEvent{
     public static final String ACTION_ON_AGENT_QUERY_COMPLETE = "action_on_agent_query_done";
     public static final String ACTION_ON_AGENT_QUERY_ERROR = "action_on_agent_query_error";
     public static final String ACTION_ON_ASR_CONFIG = "action_on_asr_config";
+    public static final String ACTION_ON_VOICE_SRC_CHANGE = "action_on_voice_source_change";
 
     public static final String PARAM_EXTRAS = "param_extras";
     public static final String PARAM_TEXT = "param_text";

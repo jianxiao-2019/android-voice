@@ -155,31 +155,31 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             @Override
             public void run() {
                 final long start_t = System.currentTimeMillis();
-                if(mDialogFlowService == null) {
+                final String dbg;
+                if (mDialogFlowService == null) {
                     initDialogFlowService();
-                    if (LogUtil.DEBUG) {
-                        LogUtil.logv(TAG, "initDialogFlowService done, spend:" + (System.currentTimeMillis() - start_t) + " ms");
-                    }
+                    dbg = "initDialogFlowService";
                 } else {
                     updateVoiceSource();
-                    if (LogUtil.DEBUG) {
-                        LogUtil.logv(TAG, "updateVoiceSource done, spend:" + (System.currentTimeMillis() - start_t) + " ms");
-                    }
+                    dbg = "updateVoiceSource";
+                }
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, dbg + " done, spend:" + (System.currentTimeMillis() - start_t) + " ms");
                 }
             }
         });
     }
 
     private void updateVoiceSource() {
-        if(mDialogFlowService != null) {
+        if (mDialogFlowService != null) {
             VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, mAudioSource);
-            mDialogFlowService.updateVoiceConfig(config);
+            mDialogFlowService.updateRecorderSource(config);
         }
     }
 
     public void onTimeout() {
         if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, "onTimeout, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+            LogUtil.log(TAG, "onTimeout, spend:" + (System.currentTimeMillis() - start_t) + " ms");
         }
         setupDialogFlowService();
     }
@@ -446,6 +446,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         event.putExtra(DFServiceEvent.PARAM_TEXT, asrConfig.toJsonString());
                         sendDFServiceEvent(event);
                     }
+
+                    @Override
+                    public void onRecorderSourceUpdate() {
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, mAudioSource == null ? "Android" : "USB");
+                        sendDFServiceEvent(event);
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "updateVoiceSource, mAudioSource:" + mAudioSource);
+                        }
+                    }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {
@@ -557,8 +567,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         super.onDestroy();
 
-        // TODO Need Ryan's support to ensure crash would not happen while closing usb device
-        //closeUsbVoiceDevice();
+        closeUsbVoiceDevice();
     }
 
     private void closeUsbVoiceDevice() {

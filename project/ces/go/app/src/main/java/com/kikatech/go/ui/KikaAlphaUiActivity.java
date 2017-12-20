@@ -183,6 +183,16 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                     mUiManager.writeDebugLogSeparator();
                 }
                 break;
+            case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
+                if (GoLayout.ENABLE_LOG_VIEW) {
+                    text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
+                    mUiManager.writeDebugLogSeparator();
+                    mUiManager.writeDebugLog(dbgAction, "Voice Source:" + text);
+                    mUiManager.writeDebugLogSeparator();
+
+                    mGoLayout.updateVoiceSourceInfo(text);
+                }
+                break;
         }
 
         if (GoLayout.ENABLE_LOG_VIEW && mIsAsrFinished) {

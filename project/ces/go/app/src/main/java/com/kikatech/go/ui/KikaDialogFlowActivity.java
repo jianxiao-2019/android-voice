@@ -148,6 +148,11 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     public void onAsrConfigChange(AsrConfiguration asrConfig) {
 
                     }
+
+                    @Override
+                    public void onRecorderSourceUpdate() {
+
+                    }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {
