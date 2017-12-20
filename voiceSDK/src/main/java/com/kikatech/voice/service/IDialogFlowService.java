@@ -80,4 +80,6 @@ public interface IDialogFlowService {
     void resumeAsr();
 
     void quitService();
+
+    boolean updateVoiceConfig(VoiceConfiguration config);
 }

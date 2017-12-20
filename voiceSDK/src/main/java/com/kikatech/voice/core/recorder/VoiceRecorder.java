@@ -79,7 +79,7 @@ public class VoiceRecorder {
                 if (readSize > 0) {
                     copy(audioData, readSize);
                 } else {
-                    Logger.e("[VoiceRecorder][AudioRecordThread][Err] readSize = " + readSize);
+                    Logger.e("[VoiceRecorder][AudioRecordThread][Err] readSize = " + readSize + " mVoiceSource:" + mVoiceSource);
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
