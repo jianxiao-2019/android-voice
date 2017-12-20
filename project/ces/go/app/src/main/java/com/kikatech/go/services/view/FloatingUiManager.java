@@ -203,8 +203,6 @@ public class FloatingUiManager {
 
         mContainer.addItem(mBtnClose);
         mContainer.addItem(mBtnOpenApp);
-
-        hideButtons();
     }
 
     private void resetButtons() {

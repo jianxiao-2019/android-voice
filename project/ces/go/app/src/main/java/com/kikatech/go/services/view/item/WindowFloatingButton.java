@@ -14,6 +14,7 @@ public abstract class WindowFloatingButton extends WindowFloatingItem implements
 
     public WindowFloatingButton(View view, View.OnTouchListener listener) {
         super(view, listener);
+        mItemView.setVisibility(View.GONE);
     }
 
     @Override
