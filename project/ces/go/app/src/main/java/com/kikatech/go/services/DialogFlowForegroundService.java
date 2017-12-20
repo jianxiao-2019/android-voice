@@ -63,6 +63,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private static final long TTS_DELAY_ASR_RESUME = 500;
 
+    private static class Commands extends BaseForegroundService.Commands {
+        private static final String DIALOG_FLOW_SERVICE = "dialog_flow_service_";
+        private static final String OPEN_KIKA_GO = DIALOG_FLOW_SERVICE + "open_kika_go";
+    }
+
     private FloatingUiManager mManager;
 
     private PowerManager.WakeLock mWakeLocker;
@@ -88,7 +93,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     /**
      * <p>Reflection subscriber method used by EventBus,
      * <p>do not remove this except the subscriber is no longer needed.
-     * 
+     *
      * @param event event sent to {@link com.kikatech.go.services.DialogFlowForegroundService}
      */
     @SuppressWarnings("unused")
@@ -142,6 +147,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 break;
         }
     }
+
 
     @Override
     protected void onStartForeground() {
@@ -212,7 +218,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             LogUtil.log(TAG, "initUsbVoice, mAudioSource:" + mAudioSource);
         }
 
-        if(mAudioSource == null) {
+        if (mAudioSource == null) {
             start_t = System.currentTimeMillis();
 
             BackgroundThread.getHandler().postDelayed(mTimeOutTask, TIME_OUT_MS);
@@ -548,9 +554,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onBtnOpenAppEntered() {
-                        Intent intent = new Intent(DialogFlowForegroundService.this, KikaAlphaUiActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        IntentUtil.sendPendingIntent(DialogFlowForegroundService.this, intent);
+                        IntentUtil.openKikaGo(DialogFlowForegroundService.this);
                     }
                 })
                 .build(DialogFlowForegroundService.this);
@@ -558,6 +562,18 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        try {
+            //noinspection ConstantConditions
+            switch (intent.getAction()) {
+                case Commands.OPEN_KIKA_GO:
+                    IntentUtil.openKikaGo(DialogFlowForegroundService.this);
+                    return START_STICKY;
+            }
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -571,7 +587,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private void closeUsbVoiceDevice() {
-        if(mAudioSource != null) {
+        if (mAudioSource != null) {
             if (LogUtil.DEBUG) {
                 LogUtil.logw(TAG, "mAudioSource close ...");
             }
@@ -639,16 +655,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     @Override
     protected Notification getForegroundNotification() {
-        Intent closeIntent = new Intent(DialogFlowForegroundService.this, DialogFlowForegroundService.class);
-        closeIntent.setAction(Commands.STOP_FOREGROUND);
-        PendingIntent closePendingIntent = PendingIntent.getService(DialogFlowForegroundService.this, getServiceId(), closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent openIntent = new Intent(DialogFlowForegroundService.this, DialogFlowForegroundService.class);
+        openIntent.setAction(Commands.OPEN_KIKA_GO);
+        PendingIntent openPendingIntent = PendingIntent.getService(DialogFlowForegroundService.this, getServiceId(), openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(DialogFlowForegroundService.this)
                 .setSmallIcon(R.mipmap.app_icon)
                 .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.app_icon))
                 .setContentTitle("KikaGo is running in the background")
-                .setContentText("Tap to close KikaGo")
-                .setContentIntent(closePendingIntent)
+                .setContentText("Tap to open KikaGo")
+                .setContentIntent(openPendingIntent)
                 .setAutoCancel(true)
                 // .setColor( appCtx.getResources().getColor( R.color.gela_green ) )
                 .build();

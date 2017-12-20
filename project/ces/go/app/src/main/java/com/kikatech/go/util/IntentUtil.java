@@ -4,12 +4,20 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.kikatech.go.ui.KikaAlphaUiActivity;
+
 /**
  * @author SkeeterWang Created on 2017/11/29.
  */
 
 public class IntentUtil {
     private static final String TAG = "IntentUtil";
+
+    public static boolean openKikaGo(Context context) {
+        Intent intent = new Intent(context, KikaAlphaUiActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return IntentUtil.sendPendingIntent(context, intent);
+    }
 
     /**
      * due to issue
