@@ -10,6 +10,7 @@ import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by tianli on 17-10-29.
+ * Update by ryanlin on 25/12/2017.
  */
 
 public class VoiceSource implements IVoiceSource {
@@ -27,6 +28,10 @@ public class VoiceSource implements IVoiceSource {
     public VoiceSource() {
         mBufferSizeInBytes = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_RATE, AUDIO_FORMAT, AudioFormat.ENCODING_PCM_16BIT);
+    }
+
+    @Override
+    public void open() {
     }
 
     @Override
@@ -61,13 +66,12 @@ public class VoiceSource implements IVoiceSource {
     }
 
     @Override
-    public int getBufferSize() {
-        return mBufferSizeInBytes;
+    public void close() {
     }
 
     @Override
-    public boolean isStereo() {
-        return AUDIO_FORMAT == AudioFormat.CHANNEL_IN_STEREO;
+    public int getBufferSize() {
+        return mBufferSizeInBytes;
     }
 
     @Override

@@ -5,17 +5,17 @@ import com.kikatech.voice.util.log.FileLoggerUtil;
 import com.kikatech.voice.util.log.Logger;
 
 /**
- * Created by ryanlin on 06/11/2017.
+ * Created by ryanlin on 25/12/2017.
+ * Update by ryanlin on 25/12/2017.
  */
 
-public class FileWriter implements IDataPath {
+public class FileWriter extends IDataPath {
 
     private final String mFilePath;
-    private final IDataPath mDataOut;
 
-    public FileWriter(String filePath, IDataPath dataOut) {
+    public FileWriter(String filePath, IDataPath dataPath) {
+        super(dataPath);
         mFilePath = filePath;
-        mDataOut = dataOut;
     }
 
     @Override
@@ -24,9 +24,14 @@ public class FileWriter implements IDataPath {
             FileLoggerUtil.getIns().writeToFile(data, mFilePath);
         }
 
-        if (mDataOut != null) {
+        if (mNextPath != null) {
 //            Logger.d("FileWriter pass data to next : " + mDataOut);
-            mDataOut.onData(data);
+            mNextPath.onData(data);
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + mFilePath;
     }
 }

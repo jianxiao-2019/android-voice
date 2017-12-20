@@ -29,20 +29,17 @@ public class SnowBoyDetector extends WakeUpDetector {
     private final String commonRes = strEnvWorkSpace + ACTIVE_RES;
 
     private SnowboyDetect mSnowboyDetect;
-    private OnHotWordDetectListener mListener;
 
     private boolean isAwake;
 
     private SparseIntArray mSnowbpoyLog = new SparseIntArray();
     private long logTime = 0;
-    private String dbgPath;
 
     private short[] audioDataBuffer;
     private byte[] monoResultBuffer;
 
-    SnowBoyDetector(OnHotWordDetectListener listener, IDataPath dataPath, String dbgPath, boolean stereoVoice) {
-        super(dataPath, stereoVoice);
-        this.dbgPath = dbgPath;
+    SnowBoyDetector(OnHotWordDetectListener listener) {
+        super(listener);
         mListener = listener;
         long t = System.currentTimeMillis();
         Logger.d("[sboy]SnowBoyDetector before new SnowboyDetect:" + activeModel);
@@ -65,13 +62,12 @@ public class SnowBoyDetector extends WakeUpDetector {
             return;
         }
 
-        byte[] monoData = mStereoVoice ? stereoToMono(data) : data;
-        if(audioDataBuffer == null || audioDataBuffer.length != monoData.length / 2) {
-            audioDataBuffer = new short[monoData.length / 2];
+        if (audioDataBuffer == null || audioDataBuffer.length != data.length / 2) {
+            audioDataBuffer = new short[data.length / 2];
         }
-        ByteBuffer.wrap(monoData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(audioDataBuffer);
+        ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(audioDataBuffer);
 
-        FileLoggerUtil.getIns().asyncWriteToFile(data, dbgPath);
+//        FileLoggerUtil.getIns().asyncWriteToFile(data, dbgPath);
 
         // Snowboy hotword detection.
         int result = mSnowboyDetect.RunDetection(audioDataBuffer, audioDataBuffer.length);
@@ -119,7 +115,7 @@ public class SnowBoyDetector extends WakeUpDetector {
                     log.append(mSnowbpoyLog.keyAt(i)).append(":").append(mSnowbpoyLog.valueAt(i)).append(", ");
                     detectCount += mSnowbpoyLog.valueAt(i);
                 }
-                log.append("}, Detection count : ").append(detectCount).append(", Stereo Source:").append(mStereoVoice);
+                log.append("}, Detection count : ").append(detectCount);
                 Logger.d(log.toString());
                 logTime = System.currentTimeMillis();
                 mSnowbpoyLog.clear();

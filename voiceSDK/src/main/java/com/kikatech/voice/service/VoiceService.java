@@ -3,23 +3,18 @@ package com.kikatech.voice.service;
 import android.content.Context;
 import android.os.Handler;
 
-import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
-import com.kikatech.voice.core.ns.NoiseSuppression;
-import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
-import com.kikatech.voice.core.recorder.VoiceSource;
-import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
-
-import ai.kitt.snowboy.AppResCopy;
 
 /**
  * Created by tianli on 17-10-28.
+ * Update by ryanlin on 25/12/2017.
  */
 
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
@@ -35,10 +30,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private VoiceConfiguration mConf;
     private WebSocket mWebService;
 
-    private VoiceRecorder mVoiceRecorder;
-    private VoiceDetector mVoiceDetector;
-    private NoiseSuppression mNoiseSuppression;
-    private WakeUpDetector mWakeUpDetector;
+    private final IDataPath mDataPath;
+    private final WakeUpDetector mWakeUpDetector;
+    private final VoiceRecorder mVoiceRecorder;
 
     private VoiceRecognitionListener mVoiceRecognitionListener;
     private VoiceStateChangedListener mVoiceStateChangedListener;
@@ -70,8 +64,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         void onDestroyed();
 
-        void onSpeechProbabilityChanged(float prob);
-
         void onError(int reason);
 
         void onVadBos();
@@ -86,46 +78,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private VoiceService(Context context, VoiceConfiguration conf) {
         mConf = conf;
 
-        IVoiceSource voiceSource = mConf.getVoiceSource();
-        boolean isUsbVoiceSource = false; // TODO : This will be move to outside.
-        if (voiceSource == null) {
-            voiceSource = new VoiceSource();
-            mConf.source(voiceSource);
-        } else {
-            isUsbVoiceSource = true;
-        }
-
-        // TODO : base on the VoiceConfiguration.
-        mVoiceDetector = new VoiceDetector(
-                new FileWriter(mConf.getDebugFilePath() + "_speex", new VoiceDataSender()), new VoiceDetector.OnVadProbabilityChangeListener() {
-            @Override
-            public void onSpeechProbabilityChanged(final float speechProbability) {
-                if (mMainThreadHandler != null) {
-                    mMainThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mVoiceStateChangedListener != null) {
-                                mVoiceStateChangedListener.onSpeechProbabilityChanged(speechProbability);
-                            }
-                        }
-                    });
-                }
-            }
-        });
-
-        mNoiseSuppression = new NoiseSuppression(new FileWriter(mConf.getDebugFilePath() + "_NC", mVoiceDetector));
-
-        IDataPath nextPipe = isUsbVoiceSource ? mNoiseSuppression : mVoiceDetector;
-        String filePost = isUsbVoiceSource ? "_USB" : "";
-        Logger.d("mConf.isSupportWakeUpMode() = " + mConf.isSupportWakeUpMode() + " [No NoiseSuppression]");
-        Logger.d("isUsbVoiceSource = " + isUsbVoiceSource + " nextPipe = " + nextPipe);
-        if (mConf.isSupportWakeUpMode()) {
-            AppResCopy.copyResFromAssetsToSD(context);
-            mWakeUpDetector = WakeUpDetector.getDetector(this, nextPipe, mConf.getDebugFilePath() + "_WD", voiceSource.isStereo());
-            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath() + filePost, mWakeUpDetector));
-        } else {
-            mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath() + filePost, nextPipe));
-        }
+        IDataPath finalPath = new VoiceService.VoiceDataSender(null);
+        mWakeUpDetector = mConf.isSupportWakeUpMode() ? WakeUpDetector.getDetector(context, this) : null;
+        mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
+        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath);
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
@@ -143,6 +99,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         mWebService = WebSocket.openConnection(mWebSocketListener);
         mWebService.connect(mConf.getConnectionConfiguration());
+
+        mVoiceRecorder.open();
     }
 
     public void start() {
@@ -152,14 +110,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             return;
         }
 
-        Logger.d("VoiceService start 2");
-        if (mConf.isSupportWakeUpMode() && mWakeUpDetector == null) {
-            mWakeUpDetector = WakeUpDetector.getDetector(this, mVoiceDetector, mConf.getDebugFilePath() + "_WD", mConf.getVoiceSource().isStereo());
-        }
         if (mWakeUpDetector != null) {
             mWakeUpDetector.reset();
         }
-        mVoiceDetector.startDetecting();
+        mDataPath.start();
         mVoiceRecorder.start();
 
         if (mVoiceStateChangedListener != null) {
@@ -203,10 +157,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         Logger.d("VoiceService stop");
         if (mWakeUpDetector != null) {
             mWakeUpDetector.close();
-            mWakeUpDetector = null;
         }
         mVoiceRecorder.stop();
-        mVoiceDetector.stopDetecting();
+        mDataPath.stop();
 
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onStopListening();
@@ -239,6 +192,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         stop();
 
+        mVoiceRecorder.close();
         if (mWebService == null) {
             return;
         }
@@ -325,7 +279,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mVoiceActiveStateListener = listener;
     }
 
-    private class VoiceDataSender implements IDataPath {
+    private class VoiceDataSender extends IDataPath {
+
+        public VoiceDataSender(IDataPath nextPath) {
+            super(nextPath);
+        }
 
         @Override
         public void onData(byte[] data) {

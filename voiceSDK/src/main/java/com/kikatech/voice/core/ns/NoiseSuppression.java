@@ -8,15 +8,13 @@ import lib.android.anc.NoiseCancellation;
 
 /**
  * Created by tianli on 17-10-30.
+ * Update by ryanlin on 25/12/2017.
  */
 
-public class NoiseSuppression implements IDataPath {
-
-    private IDataPath mDataPath;
+public class NoiseSuppression extends IDataPath {
 
     public NoiseSuppression(IDataPath dataPath) {
-
-        mDataPath = dataPath;
+        super(dataPath);
 
         NoiseCancellation.Init();
 //        NoiseCancellation.SetVAD(4000);
@@ -47,8 +45,8 @@ public class NoiseSuppression implements IDataPath {
         }
 
         byte[] outData = ShortToByte(allOfOutBufs);
-        if (mDataPath != null) {
-            mDataPath.onData(outData);
+        if (mNextPath != null) {
+            mNextPath.onData(outData);
         }
     }
 

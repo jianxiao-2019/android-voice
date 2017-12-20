@@ -371,11 +371,6 @@ public class DialogFlowService implements
     }
 
     @Override
-    public void onSpeechProbabilityChanged(float prob) {
-        //if (LogUtil.DEBUG) LogUtil.log(TAG, "onSpeechProbabilityChanged:" + prob);
-    }
-
-    @Override
     public void onError(int reason) {
     }
 

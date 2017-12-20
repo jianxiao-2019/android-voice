@@ -4,10 +4,13 @@ import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.log.Logger;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by tianli on 17-10-28.
+ * Update by ryanlin on 25/12/2017.
  */
 
 public class VoiceRecorder {
@@ -15,11 +18,23 @@ public class VoiceRecorder {
     private final IDataPath mDataPath;
     private final IVoiceSource mVoiceSource;
 
+    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AudioRecordThread mAudioRecordThread;
 
     public VoiceRecorder(IVoiceSource voiceSource, IDataPath dataPath) {
         mVoiceSource = voiceSource;
         mDataPath = dataPath;
+    }
+
+    public void open() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mVoiceSource != null) {
+                    mVoiceSource.open();
+                }
+            }
+        });
     }
 
     public void start() {
@@ -28,7 +43,7 @@ public class VoiceRecorder {
             mAudioRecordThread.stop();
         }
         mAudioRecordThread = new AudioRecordThread();
-        new Thread(mAudioRecordThread).start();
+        mExecutor.execute(mAudioRecordThread);
     }
 
     public void stop() {
@@ -37,6 +52,20 @@ public class VoiceRecorder {
             mAudioRecordThread.stop();
             mAudioRecordThread = null;
         }
+    }
+
+    public void close() {
+        if (mAudioRecordThread != null) {
+            Logger.e("Please call stop() first.");
+        }
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mVoiceSource != null) {
+                    mVoiceSource.close();
+                }
+            }
+        });
     }
 
     private class AudioRecordThread implements Runnable {

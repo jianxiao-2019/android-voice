@@ -11,13 +11,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by tianli on 17-10-28.
+ * Update by ryanlin on 25/12/2017.
  */
 
-public class VoiceDetector implements IDataPath {
+public class VoiceDetector extends IDataPath {
 
     private static final int DEFAULT_FRAME_LENGTH = 6400;
-
-    private IDataPath mDataPath = null;
 
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mStopped = new AtomicBoolean(false);
@@ -36,24 +35,28 @@ public class VoiceDetector implements IDataPath {
     }
 
     public VoiceDetector(IDataPath dataPath, OnVadProbabilityChangeListener listener) {
-        mDataPath = dataPath;
+        super(dataPath);
         mListener = listener;
     }
 
-    public void startDetecting() {
+    @Override
+    public void start() {
+        super.start();
         Logger.d("VoiceDetector startDetecting");
         mStopped.set(false);
     }
 
-    public void stopDetecting() {
+    @Override
+    public void stop() {
+        super.stop();
         Logger.d("VoiceDetector stopDetecting");
         mStopped.set(true);
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 while (mBufLen > 0) {
-                    if (mDataPath != null) {
-                        mDataPath.onData(Speex_Encode_Func(mBuf, mBufLen));
+                    if (mNextPath != null) {
+                        mNextPath.onData(Speex_Encode_Func(mBuf, mBufLen));
                     }
                     mBufLen = 0;
                 }
@@ -106,8 +109,8 @@ public class VoiceDetector implements IDataPath {
                 System.arraycopy(vadData, tempIdx, mBuf, mBufLen, length);
                 tempLen -= length;
                 tempIdx += length;
-                if (mDataPath != null) {
-                    mDataPath.onData(Speex_Encode_Func(mBuf, mFrameLength));
+                if (mNextPath != null) {
+                    mNextPath.onData(Speex_Encode_Func(mBuf, mFrameLength));
                 }
                 mBufLen = 0;
             }
