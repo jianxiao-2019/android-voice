@@ -14,6 +14,7 @@ import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
+import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
@@ -309,6 +310,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
         @Override
         public void onItemNavigationClick() {
+            updateDrawerContent(mDrawerNavigationFragment);
         }
 
         @Override
@@ -319,6 +321,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         @Override
         public void onItemExitClicked() {
             finishAffinity();
+        }
+    });
+
+    private Fragment mDrawerNavigationFragment = DrawerNavigationFragment.newInstance(new DrawerNavigationFragment.IDrawerNavigationListener() {
+        @Override
+        public void onBackClicked() {
+            updateDrawerContent(mDrawerMainFragment);
         }
     });
 

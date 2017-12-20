@@ -23,10 +23,8 @@ import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.ui.adapter.BaseAdapter;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.NoPredictiveAnimationManager;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

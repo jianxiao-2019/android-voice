@@ -2,8 +2,13 @@ package com.kikatech.go.dialogflow;
 
 import android.support.annotation.IntDef;
 
+import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.util.AppConstants;
+import com.kikatech.go.util.Gson.GsonUtil;
 import com.kikatech.go.util.preference.GlobalPref;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by brad_chang on 2017/11/28.
@@ -45,5 +50,20 @@ public class UserSettings {
                 return GlobalPref.getIns().getSettingReplyMsgSms();
         }
         return ReplyMsgSetting.DEFAULT;
+    }
+
+    public static String getDefaultDestinationListJson() {
+        List<SettingDestination> list = new ArrayList<>();
+        list.add(new SettingDestination(SettingDestination.TYPE_DEFAULT_HOME, "Home"));
+        list.add(new SettingDestination(SettingDestination.TYPE_DEFAULT_WORK, "Work"));
+        return GsonUtil.toJson(list);
+    }
+
+    public static void saveSettingDestinationList(List<SettingDestination> list) {
+        GlobalPref.getIns().saveSettingDestinationList(list);
+    }
+
+    public static List<SettingDestination> getSettingDestinationList() {
+        return GlobalPref.getIns().getSettingDestinationList();
     }
 }

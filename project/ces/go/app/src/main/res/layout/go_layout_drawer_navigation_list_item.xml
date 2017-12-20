@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/drawer_item_area_height"
+    android:background="@drawable/selector_bg_drawer_item"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="35dp"
+    android:paddingRight="20dp"
+    tools:ignore="RtlHardcoded,SpUsage">
+
+    <ImageView
+        android:id="@+id/go_layout_drawer_navigation_list_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_home"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/go_layout_drawer_navigation_list_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:singleLine="true"
+            android:text="Home"
+            android:textColor="@drawable/selector_text_drawer_item"
+            android:textSize="@dimen/drawer_item_text_size"/>
+
+        <TextView
+            android:id="@+id/go_layout_drawer_navigation_list_item_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-light"
+            android:singleLine="true"
+            android:text="55 State St. New York Center"
+            android:textColor="#16A085"
+            android:textSize="@dimen/drawer_item_text_size"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/go_layout_drawer_navigation_list_item_btn_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delete"/>
+</LinearLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dialog_margin"
+        android:layout_marginRight="@dimen/dialog_margin"
+        android:background="@drawable/bg_dialog_gray"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/dialog_padding_left_right"
+        android:paddingRight="@dimen/dialog_padding_left_right"
+        android:paddingTop="@dimen/dialog_padding">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:paddingLeft="@dimen/dialog_text_content_padding_left_right"
+            android:paddingRight="@dimen/dialog_text_content_padding_left_right"
+            android:text="@string/drawer_item_navigation_dialog_add_title"
+            android:textColor="@android:color/white"
+            android:textDirection="locale"
+            android:textSize="@dimen/dialog_text_title_size"/>
+
+        <EditText
+            android:id="@+id/dialog_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dialog_content_margin_space"
+            android:backgroundTint="@android:color/darker_gray"
+            android:fontFamily="sans-serif-light"
+            android:hint="@string/drawer_item_navigation_dialog_add_hint"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="@dimen/dialog_text_content_size"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/underline_width"
+            android:layout_marginTop="15dp"
+            android:background="@color/underline_color"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialog_button_height"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/dialog_btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/dialog_common_cancel"
+                android:textColor="@color/dialog_btn_negative_color"
+                android:textSize="@dimen/dialog_button_text_size"/>
+
+            <View
+                android:layout_width="@dimen/underline_width"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/underline_color"/>
+
+            <TextView
+                android:id="@+id/dialog_btn_apply"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/dialog_common_confirm"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/dialog_button_text_size"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

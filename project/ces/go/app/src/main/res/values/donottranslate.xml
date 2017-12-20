@@ -155,6 +155,10 @@ it's the alpha version now."</string>
     </string-array>
 
 
+    <string name="dialog_common_confirm">"OK"</string>
+    <string name="dialog_common_cancel">"Cancel"</string>
+
+
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>
     <string name="drawer_item_im">"Play messages"</string>
@@ -162,5 +166,8 @@ it's the alpha version now."</string>
     <string name="drawer_item_im_popup_menu_item_yes">"Yes"</string>
     <string name="drawer_item_im_popup_menu_item_no">"No"</string>
     <string name="drawer_item_im_popup_menu_item_ask">"Ask me first"</string>
-
+    <string name="drawer_item_navigation_dialog_add_title">"Add Place"</string>
+    <string name="drawer_item_navigation_dialog_add_hint">"Type the name..."</string>
+    <string name="drawer_item_navigation_dialog_edit_title">"Edit"</string>
+    <string name="drawer_item_navigation_dialog_edit_hint">"Type the address..."</string>
 </resources>
