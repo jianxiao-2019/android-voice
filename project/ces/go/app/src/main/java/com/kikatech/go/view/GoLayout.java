@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -26,11 +27,12 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
+import com.kikatech.go.navigation.view.FlexibleOnTouchListener;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.KikaDebugLogActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.CountingTimer;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.widget.GoTextView;
@@ -327,12 +329,32 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
         mSleepLayout.setVisibility(VISIBLE);
-        setOnClickListener(new OnClickListener() {
+        setOnTouchListener(new FlexibleOnTouchListener(100, new FlexibleOnTouchListener.ITouchListener() {
             @Override
-            public void onClick(View v) {
+            public void onLongPress(View view, MotionEvent event) {
+            }
+
+            @Override
+            public void onShortPress(View view, MotionEvent event) {
+            }
+
+            @Override
+            public void onClick(View view, MotionEvent event) {
                 DialogFlowForegroundService.processDialogFlowWakeUp();
             }
-        });
+
+            @Override
+            public void onDown(View view, MotionEvent event) {
+            }
+
+            @Override
+            public void onMove(View view, MotionEvent event, long timeSpentFromStart) {
+            }
+
+            @Override
+            public void onUp(View view, MotionEvent event, long timeSpentFromStart) {
+            }
+        }));
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }
@@ -348,7 +370,7 @@ public class GoLayout extends FrameLayout {
         mUsrInfoLayout.setVisibility(GONE);
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
-        setOnClickListener(null);
+        setOnTouchListener(null);
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }

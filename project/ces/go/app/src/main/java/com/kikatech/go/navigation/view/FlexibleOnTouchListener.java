@@ -4,7 +4,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.kikatech.go.util.CountingTimer;
+import com.kikatech.go.util.timer.CountingTimer;
 
 
 /**
