@@ -33,6 +33,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
     private GoLayout mGoLayout;
     private UiTaskManager mUiManager;
+    private View mBtnOpenDrawer;
 
     private boolean mDbgLogFirstAsrResult = false;
     private boolean mIsAsrFinished = false;
@@ -252,6 +253,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
     private void bindView() {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
+        mBtnOpenDrawer = findViewById(R.id.go_layout_btn_open_drawer);
+        mBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDrawer();
+            }
+        });
     }
 
     private void registerReceivers() {

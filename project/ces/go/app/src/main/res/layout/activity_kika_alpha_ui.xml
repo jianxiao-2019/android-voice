@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout
-    android:id="@+id/go_drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/go_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.kikatech.go.view.GoLayout
-        android:id="@+id/go_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <com.kikatech.go.view.GoLayout
+            android:id="@+id/go_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:id="@+id/go_layout_btn_open_drawer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="19dp"
+            android:layout_marginTop="19dp"
+            android:src="@drawable/kika_settings_ic_drawer"/>
+    </RelativeLayout>
 
     <include
         android:id="@+id/go_layout_drawer"

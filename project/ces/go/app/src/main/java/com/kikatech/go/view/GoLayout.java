@@ -160,6 +160,9 @@ public class GoLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        if (isInEditMode()) {
+            return;
+        }
         bindView();
         sleep();
     }
