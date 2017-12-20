@@ -26,9 +26,12 @@ public class KikaAudioDriver extends UsbHostDriver {
     public boolean open() {
         Logger.d("KikaAudioDriver open");
         if (openConnection()) {
-            Logger.d("KikaAudioDriver open openConnection  device name = " + mDevice.getDeviceName());
-            if (mUsbAudio.setup(mDevice.getDeviceName(), mConnection.getFileDescriptor(),
-                    mDevice.getProductId(), mDevice.getVendorId())) {
+            Logger.d("KikaAudioDriver open openConnection  device name = " + mDevice.getDeviceName() + " mConnectionFileDes = " + mConnection.getFileDescriptor() + " productId = " + mDevice.getProductId() + " vendorId = " + mDevice.getVendorId());
+            if (mUsbAudio.setup(
+                    mDevice.getDeviceName(),
+                    mConnection.getFileDescriptor(),
+                    mDevice.getProductId(),
+                    mDevice.getVendorId())) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -62,6 +65,7 @@ public class KikaAudioDriver extends UsbHostDriver {
 
     @Override
     public void close() {
+        super.close();
         mUsbAudio.close();
     }
 }

@@ -46,6 +46,12 @@ public class UsbAudioService {
         mDeviceManager.scanDevices();
     }
 
+    public void close() {
+        if (mAudioSource != null) {
+            mAudioSource.close();
+        }
+    }
+
     private UsbDeviceManager.IUsbAudioDeviceListener mDeviceListener = new UsbDeviceManager.IUsbAudioDeviceListener() {
         @Override
         public void onDeviceAttached(UsbDevice device) {

@@ -58,12 +58,8 @@ class UsbDeviceManager {
     public void scanDevices() {
         UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        if (deviceList != null && deviceList.values() != null) {
-            Iterator<UsbDevice> iterator = deviceList.values().iterator();
-            while (iterator.hasNext()) {
-                UsbDevice device = iterator.next();
-                mDeviceListener.onUsbAttached(device);
-            }
+        for (UsbDevice device : deviceList.values()) {
+            mDeviceListener.onUsbAttached(device);
         }
     }
 
