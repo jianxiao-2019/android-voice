@@ -1,6 +1,5 @@
 package com.xiao.usbaudio;
 
-import android.text.format.Time;
 import android.util.Log;
 
 import com.kikatech.usb.driver.impl.AudioBuffer;
@@ -15,8 +14,26 @@ import java.io.IOException;
 public class AudioPlayBack {
     private static AudioBuffer sAudioBuffer;
 
+    // For debug
+    private static long previousWrite = 0;
+    private static String sTmpLog = "";
+    private static int count = 0;
+
     public static void write(byte[] decodedAudio, int len) {
-        Logger.d("AudioPlayBack write size = " + decodedAudio.length + " len = " + len);
+        if(Logger.DEBUG) {
+            String msg = "AudioPlayBack write size = " + decodedAudio.length + " len = " + len;
+            long diff = System.currentTimeMillis() - previousWrite;
+            count++;
+            if (diff > 2000 || !sTmpLog.equals(msg)) {
+                sTmpLog = msg;
+                msg += " (" + count + " same logs in " + diff + " ms)";
+                Logger.d(msg);
+                previousWrite = System.currentTimeMillis();
+                count = 0;
+            }
+            //Logger.d("AudioPlayBack write size = " + decodedAudio.length + " len = " + len);
+        }
+
         if (len == 0) {
             return;
         }
