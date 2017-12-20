@@ -69,6 +69,7 @@ public class DialogFlowService implements
 
         callback.onInitComplete();
         callback.onAsrConfigChange(mAsrConfiguration);
+        callback.onRecorderSourceUpdate();
     }
 
     @Override
@@ -88,7 +89,7 @@ public class DialogFlowService implements
         if (LogUtil.DEBUG) LogUtil.log(TAG, "idle DialogFlow ... Done");
     }
 
-    private boolean initVoiceService(@NonNull VoiceConfiguration conf) {
+    private void initVoiceService(@NonNull VoiceConfiguration conf) {
         if(mVoiceService != null) {
             mVoiceService.destroy();
             mVoiceService = null;
@@ -101,7 +102,6 @@ public class DialogFlowService implements
         mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
         if (LogUtil.DEBUG) LogUtil.log(TAG, "idle VoiceService ... Done");
-        return true;
     }
 
     private void initTts() {
@@ -269,10 +269,9 @@ public class DialogFlowService implements
     }
 
     @Override
-    public synchronized boolean updateVoiceConfig(VoiceConfiguration config) {
-        boolean ret = initVoiceService(config);
-        mCallback.onAsrConfigChange(mAsrConfiguration);
-        return ret;
+    public synchronized void updateRecorderSource(VoiceConfiguration config) {
+        initVoiceService(config);
+        mCallback.onRecorderSourceUpdate();
     }
 
     @Override

@@ -49,6 +49,8 @@ public interface IDialogFlowService {
         void onSceneExit(boolean proactive);
 
         void onAsrConfigChange(AsrConfiguration asrConfig);
+
+        void onRecorderSourceUpdate();
     }
 
     interface IAgentQueryStatus {
@@ -81,5 +83,5 @@ public interface IDialogFlowService {
 
     void quitService();
 
-    boolean updateVoiceConfig(VoiceConfiguration config);
+    void updateRecorderSource(VoiceConfiguration config);
 }
