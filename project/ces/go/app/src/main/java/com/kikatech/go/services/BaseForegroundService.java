@@ -43,21 +43,23 @@ public abstract class BaseForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try {
-            //noinspection ConstantConditions
-            switch (intent.getAction()) {
-                case Commands.START_FOREGROUND:
-                    handleStart();
-                    break;
-                case Commands.STOP_FOREGROUND:
-                    handleStop();
-                    return START_NOT_STICKY;
-                case Commands.STOP_FOREGROUND_WITH_CONFIRM:
-                    handleStopWithConfirm();
-                    break;
+        if(intent != null) {
+            try {
+                //noinspection ConstantConditions
+                switch (intent.getAction()) {
+                    case Commands.START_FOREGROUND:
+                        handleStart();
+                        break;
+                    case Commands.STOP_FOREGROUND:
+                        handleStop();
+                        return START_NOT_STICKY;
+                    case Commands.STOP_FOREGROUND_WITH_CONFIRM:
+                        handleStopWithConfirm();
+                        break;
+                }
+            } catch (Exception e) {
+                if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
         }
 
         return START_STICKY;

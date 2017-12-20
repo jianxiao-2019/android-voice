@@ -70,7 +70,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
 
     private void initDialogFlowService() {
         mDialogFlowService = DialogFlowService.queryService(this,
-                DialogFlowConfig.queryDemoConfig(this),
+                DialogFlowConfig.getVoiceConfig(this, null),
                 new IDialogFlowService.IServiceCallback() {
                     @Override
                     public void onInitComplete() {

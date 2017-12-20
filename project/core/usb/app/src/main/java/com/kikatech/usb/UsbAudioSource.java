@@ -37,6 +37,11 @@ public class UsbAudioSource implements IVoiceSource {
         return 640;
     }
 
+    @Override
+    public boolean isStereo() {
+        return true;
+    }
+
     public void close() {
         if (mAudioDriver != null) {
             mAudioDriver.close();

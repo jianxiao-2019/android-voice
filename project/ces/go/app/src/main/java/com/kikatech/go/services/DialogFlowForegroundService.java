@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -31,13 +33,18 @@ import com.kikatech.go.services.view.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.AsyncThread;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.GoLayout;
+import com.kikatech.usb.IUsbAudioListener;
+import com.kikatech.usb.UsbAudioService;
+import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.usb.util.ImageUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 
 import org.greenrobot.eventbus.EventBus;
@@ -63,11 +70,25 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private IDialogFlowService mDialogFlowService;
     private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
 
+    private UsbAudioSource mAudioSource;
+    private long start_t;
+    private Handler mMainHandler = new Handler(Looper.getMainLooper());
+
+    private final static int TIME_OUT_MS = 800;
+    final Runnable mTimeOutTask = new Runnable() {
+        @Override
+        public void run() {
+            onTimeout();
+        }
+    };
+
+    private boolean asrActive;
+
 
     /**
      * <p>Reflection subscriber method used by EventBus,
      * <p>do not remove this except the subscriber is no longer needed.
-     *
+     * 
      * @param event event sent to {@link com.kikatech.go.services.DialogFlowForegroundService}
      */
     @SuppressWarnings("unused")
@@ -122,12 +143,92 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
-
     @Override
     protected void onStartForeground() {
         registerReceiver();
-        initDialogFlowService();
+        initUsbVoice();
         acquireWakeLock();
+    }
+
+    private void setupDialogFlowService() {
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                final long start_t = System.currentTimeMillis();
+                if(mDialogFlowService == null) {
+                    initDialogFlowService();
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logv(TAG, "initDialogFlowService done, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+                    }
+                } else {
+                    updateVoiceSource();
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logv(TAG, "updateVoiceSource done, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+                    }
+                }
+            }
+        });
+    }
+
+    private void updateVoiceSource() {
+        if(mDialogFlowService != null) {
+            VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, mAudioSource);
+            mDialogFlowService.updateVoiceConfig(config);
+        }
+    }
+
+    public void onTimeout() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "onTimeout, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+        }
+        setupDialogFlowService();
+    }
+
+    IUsbAudioListener mUsbCallback = new IUsbAudioListener() {
+
+        @Override
+        public void onDeviceAttached(UsbAudioSource audioSource) {
+            BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
+            mAudioSource = audioSource;
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+            }
+            setupDialogFlowService();
+        }
+
+        @Override
+        public void onDeviceDetached() {
+            BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
+            mAudioSource = null;
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+            }
+            setupDialogFlowService();
+        }
+    };
+
+    private void initUsbVoice() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "initUsbVoice, mAudioSource:" + mAudioSource);
+        }
+
+        if(mAudioSource == null) {
+            start_t = System.currentTimeMillis();
+
+            BackgroundThread.getHandler().postDelayed(mTimeOutTask, TIME_OUT_MS);
+
+            UsbAudioService audioService = UsbAudioService.getInstance(this);
+            audioService.setListener(mUsbCallback);
+
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "scanDevices ...");
+            }
+            audioService.scanDevices();
+        } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "mAudioSource:" + mAudioSource);
+            }
+        }
     }
 
     @Override
@@ -186,10 +287,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
-
     private void initDialogFlowService() {
+        VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, mAudioSource);
+
         mDialogFlowService = DialogFlowService.queryService(this,
-                DialogFlowConfig.queryDemoConfig(this),
+                config,
                 new IDialogFlowService.IServiceCallback() {
                     @Override
                     public void onInitComplete() {
@@ -385,9 +487,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         EventBus.getDefault().post(event);
     }
 
-
-    private boolean asrActive;
-
     private synchronized void pauseAsr() {
         if (asrActive) {
             asrActive = false;
@@ -401,7 +500,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             asrActive = true;
         }
     }
-
 
     private void registerReceiver() {
         unregisterReceiver();
@@ -417,7 +515,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         } catch (Exception ignore) {
         }
     }
-
 
     @Override
     public void onCreate() {
@@ -457,7 +554,24 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     @Override
     public void onDestroy() {
         onStopForeground();
+
         super.onDestroy();
+
+        // TODO Need Ryan's support to ensure crash would not happen while closing usb device
+        //closeUsbVoiceDevice();
+    }
+
+    private void closeUsbVoiceDevice() {
+        if(mAudioSource != null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "mAudioSource close ...");
+            }
+            mAudioSource.close();
+            mAudioSource = null;
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "mAudioSource close OK");
+            }
+        }
     }
 
     @Override

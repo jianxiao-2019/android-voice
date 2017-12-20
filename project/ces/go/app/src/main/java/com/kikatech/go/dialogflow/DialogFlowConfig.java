@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
+import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.util.request.RequestManager;
 
@@ -21,16 +22,12 @@ public class DialogFlowConfig {
 
     private static final String APP_NAME = "KikaGo";
 
-    public static VoiceConfiguration queryDemoConfig(Context ctx) {
+    public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
         String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
 
-        Locale[] LOCALE_LIST = new Locale[]{
-                new Locale("en", "US"),
-                new Locale("zh", "CN"),
-        };
-
         VoiceConfiguration conf = new VoiceConfiguration();
-        conf.agent(new ApiAiAgentCreator());
+        conf.agent(new ApiAiAgentCreator())
+                .source(audioSource);
         conf.setDebugFilePath(getDebugFilePath(ctx));
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName(APP_NAME)
