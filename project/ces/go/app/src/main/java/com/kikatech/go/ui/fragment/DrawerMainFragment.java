@@ -15,7 +15,6 @@ import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.KikaDebugLogActivity;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.go.view.GoLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -114,11 +113,6 @@ public class DrawerMainFragment extends Fragment {
                 if (mListener != null) {
                     mListener.onItemImClicked();
                 }
-            }
-        });
-        mView.findViewById(R.id.drawer_item_mic).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
             }
         });
         mView.findViewById(R.id.drawer_item_exit).setOnClickListener(new View.OnClickListener() {
