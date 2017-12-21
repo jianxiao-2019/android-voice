@@ -95,6 +95,10 @@ public class AsrConfigUtil {
                 asrConf.setSpellingEnabled(true);
                 break;
         }
+
+        // According to the CES demo request, disable all Emoji recommendation
+        asrConf.setEmojiEnabled(false);
+
         return asrConf;
     }
 }
