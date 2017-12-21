@@ -25,8 +25,8 @@ public class SnowBoyDetector extends WakeUpDetector {
     private static final String ACTIVE_UMDL = Constants.ACTIVE_UMDL;
 
     private static String strEnvWorkSpace = Constants.DEFAULT_WORK_SPACE;
-    private String activeModel = strEnvWorkSpace + ACTIVE_UMDL;
-    private String commonRes = strEnvWorkSpace + ACTIVE_RES;
+    private final String activeModel = strEnvWorkSpace + ACTIVE_UMDL;
+    private final String commonRes = strEnvWorkSpace + ACTIVE_RES;
 
     private SnowboyDetect mSnowboyDetect;
     private OnHotWordDetectListener mListener;
@@ -45,7 +45,7 @@ public class SnowBoyDetector extends WakeUpDetector {
         this.dbgPath = dbgPath;
         mListener = listener;
         long t = System.currentTimeMillis();
-        Logger.d("[sboy]SnowBoyDetector before new SnowboyDetect");
+        Logger.d("[sboy]SnowBoyDetector before new SnowboyDetect:" + activeModel);
         mSnowboyDetect = new SnowboyDetect(commonRes, activeModel);
         Logger.d("[sboy]SnowBoyDetector after new SnowboyDetect");
         mSnowboyDetect.SetSensitivity(SnowBoyConfig.getSensitivity());
