@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 /**
@@ -30,6 +31,10 @@ class UsbDeviceReceiver extends BroadcastReceiver {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         context.registerReceiver(this, filter);
+    }
+
+    public void unregister(@NonNull Context context) {
+        context.unregisterReceiver(this);
     }
 
     @Override

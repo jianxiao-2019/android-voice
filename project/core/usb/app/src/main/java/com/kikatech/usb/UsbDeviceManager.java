@@ -63,6 +63,12 @@ class UsbDeviceManager {
         }
     }
 
+    public void close() {
+        if (mDeviceReceiver != null && mContext != null) {
+            mDeviceReceiver.unregister(mContext);
+        }
+    }
+
     private boolean isAudioDevice(UsbDevice device) {
         if (device != null && device.getInterfaceCount() > 0) {
             UsbInterface usbInterface = device.getInterface(0);

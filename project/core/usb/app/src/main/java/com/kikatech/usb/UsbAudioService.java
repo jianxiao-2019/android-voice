@@ -5,6 +5,7 @@ import android.hardware.usb.UsbDevice;
 
 import com.kikatech.usb.driver.UsbAudioDriver;
 import com.kikatech.usb.driver.impl.KikaAudioDriver;
+import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by tianli on 17-11-6.
@@ -49,6 +50,10 @@ public class UsbAudioService {
     public void close() {
         if (mAudioSource != null) {
             mAudioSource.close();
+            mAudioSource = null;
+        }
+        if (mDeviceManager != null) {
+            mDeviceManager.close();
         }
     }
 
@@ -70,8 +75,6 @@ public class UsbAudioService {
             mDevice = null;
             if (mAudioSource != null) {
                 mAudioSource.close();
-            }
-            if (mAudioSource != null) {
                 mAudioSource = null;
                 mListener.onDeviceDetached();
             }
