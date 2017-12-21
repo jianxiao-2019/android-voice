@@ -31,6 +31,7 @@ import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.services.view.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
+import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.AsyncThread;
 import com.kikatech.go.util.BackgroundThread;
@@ -91,6 +92,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     };
 
     private boolean asrActive;
+
+    private boolean serviceActive = false;
 
 
     /**
@@ -168,23 +171,34 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private void setupDialogFlowService() {
-        mMainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                final long start_t = System.currentTimeMillis();
-                final String dbg;
-                if (mDialogFlowService == null) {
-                    initDialogFlowService();
-                    dbg = "initDialogFlowService";
-                } else {
-                    updateVoiceSource();
-                    dbg = "updateVoiceSource";
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "setupDialogFlowService, serviceActive:" + serviceActive);
+        }
+        if(serviceActive) {
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    final long start_t = System.currentTimeMillis();
+                    final String dbg;
+                    if (mDialogFlowService == null) {
+                        initDialogFlowService();
+                        dbg = "initDialogFlowService";
+                    } else {
+                        updateVoiceSource();
+                        dbg = "updateVoiceSource";
+                    }
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logv(TAG, dbg + " done, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+                    }
                 }
-                if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, dbg + " done, spend:" + (System.currentTimeMillis() - start_t) + " ms");
-                }
-            }
-        });
+            });
+        } else {
+            closeUsbAudio();
+            Context ctx = KikaMultiDexApplication.getAppContext();
+            android.content.Intent intent = new android.content.Intent(ctx, KikaAlphaUiActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+            IntentUtil.sendPendingIntent(ctx, intent);
+        }
     }
 
     private void updateVoiceSource() {
@@ -208,7 +222,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
             mAudioSource = audioSource;
             if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+                LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms, serviceActive:" + serviceActive);
             }
             setupDialogFlowService();
         }
@@ -218,7 +232,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
             mAudioSource = null;
             if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+                LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms, serviceActive:" + serviceActive);
             }
             setupDialogFlowService();
         }
@@ -262,6 +276,18 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_EXIT_APP);
         sendDFServiceEvent(event);
+
+        closeUsbAudio();
+    }
+
+    private void closeUsbAudio() {
+        if (mAudioSource != null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "closeUsbAudio");
+            }
+            mAudioSource.close();
+            mAudioSource = null;
+        }
     }
 
     @Override
@@ -559,6 +585,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                 })
                 .build(DialogFlowForegroundService.this);
+
+        serviceActive = true;
     }
 
     @Override
@@ -584,20 +612,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         super.onDestroy();
 
-        closeUsbVoiceDevice();
-    }
-
-    private void closeUsbVoiceDevice() {
-        if (mAudioSource != null) {
-            if (LogUtil.DEBUG) {
-                LogUtil.logw(TAG, "mAudioSource close ...");
-            }
-            mAudioSource.close();
-            mAudioSource = null;
-            if (LogUtil.DEBUG) {
-                LogUtil.logw(TAG, "mAudioSource close OK");
-            }
-        }
+        serviceActive = false;
     }
 
     @Override
