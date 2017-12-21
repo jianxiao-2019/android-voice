@@ -84,6 +84,9 @@ public abstract class BaseDrawerActivity extends BaseActivity implements DrawerL
 
     @Override
     public void onDrawerClosed(View drawerView) {
+        if (isDrawerAvailable()) {
+            updateDrawerContent(getMainDrawerFragment());
+        }
     }
 
     @Override

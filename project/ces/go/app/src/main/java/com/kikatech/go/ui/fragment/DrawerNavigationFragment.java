@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.SettingDestination;
@@ -147,19 +146,21 @@ public class DrawerNavigationFragment extends Fragment {
             final String address = mDestination.getAddress();
             if (!TextUtils.isEmpty(address)) {
                 mDestinationHolder.mItemAddress.setText(address);
-            }
-
-            mDestinationHolder.mItemBtnDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mDestination.canRemove()) {
-                        mList.remove(mDestination);
-                    } else {
-                        mDestination.setAddress("");
+                mDestinationHolder.mItemBtnEdit.setVisibility(View.VISIBLE);
+            } else {
+                mDestinationHolder.mItemBtnDelete.setVisibility(View.VISIBLE);
+                mDestinationHolder.mItemBtnDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mDestination.canRemove()) {
+                            mList.remove(mDestination);
+                        } else {
+                            mDestination.setAddress("");
+                        }
+                        saveSettings();
                     }
-                    saveSettings();
-                }
-            });
+                });
+            }
 
             mDestinationHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -194,6 +195,8 @@ public class DrawerNavigationFragment extends Fragment {
             Glide.clear(mDestinationHolder.mItemIcon);
             mDestinationHolder.mItemName.setText("");
             mDestinationHolder.mItemAddress.setText("");
+            mDestinationHolder.mItemBtnEdit.setVisibility(View.GONE);
+            mDestinationHolder.mItemBtnDelete.setVisibility(View.GONE);
             mDestinationHolder.mItemBtnDelete.setOnClickListener(null);
         }
 
@@ -206,6 +209,7 @@ public class DrawerNavigationFragment extends Fragment {
             ImageView mItemIcon;
             TextView mItemName;
             TextView mItemAddress;
+            View mItemBtnEdit;
             View mItemBtnDelete;
 
             private DestinationHolder(View itemView) {
@@ -213,6 +217,7 @@ public class DrawerNavigationFragment extends Fragment {
                 mItemIcon = (ImageView) itemView.findViewById(R.id.go_layout_drawer_navigation_list_item_icon);
                 mItemName = (TextView) itemView.findViewById(R.id.go_layout_drawer_navigation_list_item_name);
                 mItemAddress = (TextView) itemView.findViewById(R.id.go_layout_drawer_navigation_list_item_address);
+                mItemBtnEdit = itemView.findViewById(R.id.go_layout_drawer_navigation_list_item_btn_edit);
                 mItemBtnDelete = itemView.findViewById(R.id.go_layout_drawer_navigation_list_item_btn_delete);
             }
         }

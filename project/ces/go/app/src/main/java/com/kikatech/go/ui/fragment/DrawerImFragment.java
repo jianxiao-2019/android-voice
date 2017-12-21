@@ -130,7 +130,7 @@ public class DrawerImFragment extends Fragment {
                     break;
             }
 
-            mAppHolder.mItemBtnMore.setOnClickListener(new View.OnClickListener() {
+            mAppHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     showPopUpMenu(mAppHolder.mItemBtnMore, mAppInfo.getPackageName());
@@ -188,7 +188,7 @@ public class DrawerImFragment extends Fragment {
             AppHolder mAppHolder = (AppHolder) holder;
             mAppHolder.mItemText.setText("");
             Glide.clear(mAppHolder.mItemIcon);
-            mAppHolder.mItemBtnMore.setOnClickListener(null);
+            mAppHolder.itemView.setOnClickListener(null);
         }
 
         @Override

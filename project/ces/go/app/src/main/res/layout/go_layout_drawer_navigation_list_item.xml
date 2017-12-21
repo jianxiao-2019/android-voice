@@ -47,6 +47,12 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/go_layout_drawer_navigation_list_item_btn_edit"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/selector_settings_ic_edit"/>
+
+    <ImageView
         android:id="@+id/go_layout_drawer_navigation_list_item_btn_delete"
         android:layout_width="22dp"
         android:layout_height="22dp"
