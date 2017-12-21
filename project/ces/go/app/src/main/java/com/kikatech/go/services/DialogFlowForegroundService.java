@@ -546,16 +546,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             mDialogFlowService.wakeUp();
                         }
                     }
-
-                    @Override
-                    public void onBtnCloseEntered() {
-                        onStopForeground();
-                    }
-
-                    @Override
-                    public void onBtnOpenAppEntered() {
-                        IntentUtil.openKikaGo(DialogFlowForegroundService.this);
-                    }
                 })
                 .build(DialogFlowForegroundService.this);
     }

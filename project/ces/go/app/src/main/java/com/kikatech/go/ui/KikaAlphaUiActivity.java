@@ -222,6 +222,18 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                         break;
                 }
             }
+
+            @Override
+            public void onLayoutModeChanged(GoLayout.DisplayMode mode) {
+                switch (mode) {
+                    case AWAKE:
+                        mBtnOpenDrawer.setVisibility(View.GONE);
+                        break;
+                    case SLEEP:
+                        mBtnOpenDrawer.setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
         });
     }
 

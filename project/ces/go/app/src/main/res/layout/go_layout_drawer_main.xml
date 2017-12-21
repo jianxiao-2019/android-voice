@@ -44,7 +44,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/kika_settings_ic_navi_normal"/>
+            android:src="@drawable/selector_settings_ic_navi"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -54,6 +54,7 @@
             android:text="@string/drawer_item_navigation"
             android:textColor="@drawable/selector_text_drawer_item"
             android:textSize="@dimen/drawer_item_text_size"/>
+
     </LinearLayout>
 
     <View
@@ -72,7 +73,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/kika_settings_ic_msg_normal"/>
+            android:src="@drawable/selector_settings_ic_msg"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -101,8 +102,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/kika_settings_ic_msg_normal"
-            android:visibility="invisible"/>
+            android:src="@drawable/selector_settings_ic_debug"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -132,7 +132,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/kika_settings_ic_exit_normal"/>
+            android:src="@drawable/selector_settings_ic_exit"/>
 
         <TextView
             android:layout_width="wrap_content"

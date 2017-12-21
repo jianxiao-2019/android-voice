@@ -15,7 +15,7 @@
         android:id="@+id/go_layout_drawer_navigation_list_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"/>
+        android:src="@drawable/selector_settings_ic_home"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -42,13 +42,13 @@
             android:fontFamily="sans-serif-light"
             android:singleLine="true"
             android:text="55 State St. New York Center"
-            android:textColor="#16A085"
-            android:textSize="@dimen/drawer_item_text_size"/>
+            android:textColor="#0aa2b4"
+            android:textSize="18dp"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/go_layout_drawer_navigation_list_item_btn_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_delete"/>
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/selector_settings_ic_delete"/>
 </LinearLayout>

@@ -3,12 +3,21 @@ package com.kikatech.go.services.view.item;
 import android.graphics.PixelFormat;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.kikatech.go.R;
+import com.kikatech.go.util.IntentUtil;
+import com.kikatech.go.util.LogUtil;
 
 /**
  * @author SkeeterWang Created on 2017/12/18.
  */
 
 public class BtnOpenApp extends WindowFloatingButton {
+    private static final String TAG = "BtnOpenApp";
 
     public BtnOpenApp(View view, View.OnTouchListener listener) {
         super(view, listener);
@@ -26,6 +35,49 @@ public class BtnOpenApp extends WindowFloatingButton {
     @Override
     public void hide() {
         animatePopDown();
+    }
+
+    @Override
+    public void onEnter() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onEnter");
+        }
+        TextView mBtnText = (TextView) mItemView.findViewById(R.id.btn_text);
+        if (mBtnText != null) {
+            mBtnText.setTextColor(mBtnText.getContext().getResources().getColor(R.color.floating_btn_open));
+        }
+        ImageView mBtnIcon = (ImageView) mItemView.findViewById(R.id.btn_icon);
+        if (mBtnIcon != null) {
+            Glide.with(mBtnIcon.getContext().getApplicationContext())
+                    .load(R.drawable.kika_floating_open_pressed)
+                    .dontTransform()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(mBtnIcon);
+        }
+    }
+
+    @Override
+    public void onLeaved() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onLeaved");
+        }
+        TextView mBtnText = (TextView) mItemView.findViewById(R.id.btn_text);
+        if (mBtnText != null) {
+            mBtnText.setTextColor(mBtnText.getContext().getResources().getColor(android.R.color.white));
+        }
+        ImageView mBtnIcon = (ImageView) mItemView.findViewById(R.id.btn_icon);
+        if (mBtnIcon != null) {
+            Glide.with(mBtnIcon.getContext().getApplicationContext())
+                    .load(R.drawable.kika_floating_open)
+                    .dontTransform()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(mBtnIcon);
+        }
+    }
+
+    @Override
+    public void onSelected() {
+        IntentUtil.openKikaGo(mItemView.getContext());
     }
 
     @Override

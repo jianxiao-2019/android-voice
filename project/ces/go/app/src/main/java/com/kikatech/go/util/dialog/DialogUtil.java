@@ -3,6 +3,7 @@ package com.kikatech.go.util.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -39,7 +40,7 @@ public class DialogUtil {
     }
 
 
-    public static void showDialogEditSettingDestination(final Context context, final IDialogListener listener) {
+    public static void showDialogEditSettingDestination(final Context context, final String originalText, final IDialogListener listener) {
         safeDismissDialog();
 
         mDialog = new Dialog(context);
@@ -52,6 +53,10 @@ public class DialogUtil {
         final EditText mInput = (EditText) dialogView.findViewById(R.id.dialog_edit_text);
         View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
         View mBtnCancel = dialogView.findViewById(R.id.dialog_btn_cancel);
+
+        if (!TextUtils.isEmpty(originalText)) {
+            mInput.setText(originalText);
+        }
 
         mBtnApply.setOnClickListener(new View.OnClickListener() {
             @Override

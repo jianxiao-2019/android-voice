@@ -44,4 +44,8 @@
 
     <color name="standby_bg_color">#16181e</color>
     <color name="awake_bg_color">#20232C</color>
+
+
+    <color name="floating_btn_close">#f66b6b</color>
+    <color name="floating_btn_open">#0dcbc4</color>
 </resources>

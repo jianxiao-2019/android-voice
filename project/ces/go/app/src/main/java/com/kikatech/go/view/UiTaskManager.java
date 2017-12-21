@@ -59,6 +59,9 @@ public class UiTaskManager {
         mLayout.setOnModeChangedListener(new GoLayout.IOnModeChangedListener() {
             @Override
             public void onChanged(GoLayout.DisplayMode mode) {
+                if (mFeedback != null) {
+                    mFeedback.onLayoutModeChanged(mode);
+                }
                 switch (mode) {
                     case AWAKE:
                         displayOptions(mDefaultOptionList);
@@ -417,6 +420,8 @@ public class UiTaskManager {
 
     public interface IUiManagerFeedback {
         void onOptionSelected(byte requestType, int index, Option option);
+
+        void onLayoutModeChanged(GoLayout.DisplayMode mode);
     }
 
 

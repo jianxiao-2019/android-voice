@@ -63,7 +63,7 @@ public class FloatingUiManager {
         private int[] viewOriginalXY = new int[2];
         private float[] eventOriginalXY = new float[2];
         private int[] deltaXY = new int[2];
-        private WindowFloatingItem mLastEnteredItem;
+        private WindowFloatingButton mLastEnteredBtn;
         private boolean buttonShown;
 
         @Override
@@ -103,31 +103,24 @@ public class FloatingUiManager {
                     buttonShown = true;
                 }
             } else {
-                WindowFloatingButton enteredItem = getNearestItem(mItemGMap);
+                WindowFloatingButton enteredItem = getNearestBtn(mItemGMap);
                 if (enteredItem != null) {
-                    mLastEnteredItem = enteredItem;
+                    mLastEnteredBtn = enteredItem;
+                    mLastEnteredBtn.onEnter();
                     mItemGMap.setAlpha(0.5f);
-                    mLastEnteredItem.setAlpha(0.5f);
-                } else if (mLastEnteredItem != null) {
+                } else if (mLastEnteredBtn != null) {
                     mItemGMap.setAlpha(1.0f);
-                    mLastEnteredItem.setAlpha(1.0f);
+                    mLastEnteredBtn.onLeaved();
                 }
             }
         }
 
         @Override
         public void onUp(View view, MotionEvent event, long timeSpentFromStart) {
-            WindowFloatingItem enteredItem = getNearestItem(mItemGMap);
-            if (enteredItem != null) {
-                if (enteredItem == mBtnClose) {
-                    if (mListener != null) {
-                        mListener.onBtnCloseEntered();
-                    }
-                } else if (enteredItem == mBtnOpenApp) {
-                    if (mListener != null) {
-                        mListener.onBtnOpenAppEntered();
-                    }
-                }
+            WindowFloatingButton enteredBtn = getNearestBtn(mItemGMap);
+            if (enteredBtn != null) {
+                enteredBtn.onSelected();
+                enteredBtn.onLeaved();
             }
             mItemGMap.setAlpha(1.0f);
             mContainer.moveItem(mItemGMap, viewOriginalXY[0], viewOriginalXY[1]);
@@ -210,24 +203,29 @@ public class FloatingUiManager {
             LogUtil.log(TAG, "resetButtons");
         }
 
+        final int BUTTON_SIZE_DP = 76;
+
         int deviceWidth = getDeviceWidthByOrientation();
-        int yOffset = (int) ((mItemGMap.getMeasuredHeight() * 1.5) + ResolutionUtil.getStatusBarHeight(mContext));
+        int yOffset = ResolutionUtil.dp2px(mContext, 18 + BUTTON_SIZE_DP) + ResolutionUtil.getStatusBarHeight(mContext);
         int y = getDeviceHeightByOrientation() - yOffset;
         int fixedDistance, firstBtnX, secondBtnX;
 
-        switch (mConfiguration.orientation) {
-            case Configuration.ORIENTATION_LANDSCAPE:
-                fixedDistance = ResolutionUtil.dp2px(mContext, 30);
-                firstBtnX = deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 + fixedDistance;
-                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
-                break;
-            case Configuration.ORIENTATION_PORTRAIT:
-            default:
-                fixedDistance = ResolutionUtil.dp2px(mContext, 5);
-                firstBtnX = (int) (deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 - (fixedDistance * 1.5f));
-                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
-                break;
-        }
+//        switch (mConfiguration.orientation) {
+//            case Configuration.ORIENTATION_LANDSCAPE:
+//                fixedDistance = ResolutionUtil.dp2px(mContext, 30);
+//                firstBtnX = deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 + fixedDistance;
+//                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
+//                break;
+//            case Configuration.ORIENTATION_PORTRAIT:
+//            default:
+//                fixedDistance = ResolutionUtil.dp2px(mContext, 5);
+//                firstBtnX = (int) (deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 - (fixedDistance * 1.5f));
+//                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
+//                break;
+//        }
+
+        firstBtnX = (deviceWidth - ResolutionUtil.dp2px(mContext, BUTTON_SIZE_DP * 2 + 70)) / 2;
+        secondBtnX = firstBtnX + ResolutionUtil.dp2px(mContext, BUTTON_SIZE_DP + 70);
 
         mBtnClose.setViewXY(firstBtnX, y);
         mBtnClose.setViewHeight(yOffset);
@@ -254,12 +252,11 @@ public class FloatingUiManager {
             LogUtil.log(TAG, "hideButtons");
         }
         for (WindowFloatingButton btn : mButtonList) {
-            btn.setAlpha(1.0f);
             btn.hide();
         }
     }
 
-    private WindowFloatingButton getNearestItem(WindowFloatingItem item) {
+    private WindowFloatingButton getNearestBtn(WindowFloatingItem item) {
         double minDistance = Double.MAX_VALUE;
         WindowFloatingButton nearestItem = null;
         for (WindowFloatingButton btn : mButtonList) {
@@ -497,9 +494,5 @@ public class FloatingUiManager {
 
     public interface IOnFloatingItemAction {
         void onGMapClicked();
-
-        void onBtnCloseEntered();
-
-        void onBtnOpenAppEntered();
     }
 }

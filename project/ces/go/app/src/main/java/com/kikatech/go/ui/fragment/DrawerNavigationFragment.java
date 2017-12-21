@@ -137,18 +137,14 @@ public class DrawerNavigationFragment extends Fragment {
                 return;
             }
 
-            Glide.with(mContext.getApplicationContext())
-                    .load(mDestination.getTypeIconRes())
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .dontTransform()
-                    .into(mDestinationHolder.mItemIcon);
+            mDestinationHolder.mItemIcon.setImageResource(mDestination.getTypeIconRes());
 
             String name = mDestination.getName();
             if (!TextUtils.isEmpty(name)) {
                 mDestinationHolder.mItemName.setText(name);
             }
 
-            String address = mDestination.getAddress();
+            final String address = mDestination.getAddress();
             if (!TextUtils.isEmpty(address)) {
                 mDestinationHolder.mItemAddress.setText(address);
             }
@@ -168,7 +164,7 @@ public class DrawerNavigationFragment extends Fragment {
             mDestinationHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DialogUtil.showDialogEditSettingDestination(mContext, new DialogUtil.IDialogListener() {
+                    DialogUtil.showDialogEditSettingDestination(mContext, address, new DialogUtil.IDialogListener() {
                         @Override
                         public void onApply(Bundle args) {
                             if (args == null) {

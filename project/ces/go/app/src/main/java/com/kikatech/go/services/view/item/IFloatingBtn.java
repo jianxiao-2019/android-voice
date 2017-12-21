@@ -9,5 +9,11 @@ public interface IFloatingBtn extends IFloatingItem {
 
     void hide();
 
+    void onEnter();
+
+    void onLeaved();
+
+    void onSelected();
+
     boolean isShowing();
 }

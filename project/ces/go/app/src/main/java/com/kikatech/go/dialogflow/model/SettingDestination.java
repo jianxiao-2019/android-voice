@@ -70,12 +70,12 @@ public class SettingDestination {
     public int getTypeIconRes() {
         switch (type) {
             case TYPE_DEFAULT_HOME:
-                return R.drawable.ic_home;
+                return R.drawable.selector_settings_ic_home;
             case TYPE_DEFAULT_WORK:
-                return R.drawable.ic_work;
+                return R.drawable.selector_settings_ic_work;
             default:
             case TYPE_CUSTOMIZED:
-                return R.drawable.ic_place;
+                return R.drawable.selector_settings_ic_place;
         }
     }
 

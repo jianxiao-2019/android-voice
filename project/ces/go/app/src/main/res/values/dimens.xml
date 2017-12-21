@@ -40,7 +40,7 @@
     <dimen name="drawer_width">330dp</dimen>
     <dimen name="drawer_title_area_height">100dp</dimen>
     <dimen name="drawer_item_area_height">91dp</dimen>
-    <dimen name="drawer_underline_height">2dp</dimen>
+    <dimen name="drawer_underline_height">0.5dp</dimen>
     <dimen name="drawer_title_text_size">26dp</dimen>
     <dimen name="drawer_item_text_size">23dp</dimen>
     <dimen name="drawer_item_im_popup_menu_width">295dp</dimen>
