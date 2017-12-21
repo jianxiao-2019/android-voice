@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -15,10 +16,16 @@ import android.widget.Toast;
 
 import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
+import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.view.GoLayout;
 import com.kikatech.voice.util.log.FileLoggerUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,6 +38,7 @@ public class KikaDebugLogActivity extends Activity {
 
     private static final String LOG_FOLDER = com.kikatech.voice.util.log.LogUtil.LOG_FOLDER;
 
+    private TextView tvLogAppVersion;
     private TextView tvLogContent;
     private int mCurrentCheckedId = R.id.log_display;
 
@@ -53,12 +61,48 @@ public class KikaDebugLogActivity extends Activity {
             R.id.button_send
     };
 
+
+    /**
+     * <p>Reflection subscriber method used by EventBus,
+     * <p>do not remove this except the subscriber is no longer needed.
+     *
+     * @param event event from {@link com.kikatech.go.services.DialogFlowForegroundService}
+     */
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onServiceEvent(DFServiceEvent event) {
+        if (event == null) {
+            return;
+        }
+        String action = event.getAction();
+        if (TextUtils.isEmpty(action)) {
+            return;
+        }
+        switch (action) {
+            case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
+                if (GoLayout.ENABLE_LOG_VIEW) {
+                    String text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
+                    updateVoiceSourceInfo(text);
+                }
+                break;
+        }
+    }
+
+    public void updateVoiceSourceInfo(String text) {
+        StringBuilder builder = new StringBuilder(BuildConfig.VERSION_NAME);
+        if (!TextUtils.isEmpty(text)) {
+            builder.append("  <Record From:").append(text).append(">");
+        }
+        tvLogAppVersion.setText(builder.toString());
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_kika_debug_log);
 
+        tvLogAppVersion = (TextView) findViewById(R.id.log_app_version);
         tvLogContent = (TextView) findViewById(R.id.log_content);
 
         ((RadioGroup) findViewById(R.id.radioGroupLog)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -88,7 +132,33 @@ public class KikaDebugLogActivity extends Activity {
             }
         });
 
+        registerReceivers();
+
+        updateVoiceSourceInfo(LogOnViewUtil.getIns().getVoiceSourceInfo());
+
         loadLog();
+    }
+
+
+    private void registerReceivers() {
+        try {
+            EventBus.getDefault().register(this);
+        } catch (Exception ignore) {
+        }
+    }
+
+    private void unregisterReceivers() {
+        try {
+            EventBus.getDefault().unregister(this);
+        } catch (Exception ignore) {
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceivers();
+        super.onDestroy();
     }
 
     private final Runnable mLockUI = new Runnable() {

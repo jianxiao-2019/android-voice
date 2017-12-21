@@ -1,7 +1,6 @@
 package com.kikatech.go.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -28,12 +27,11 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.ui.KikaDebugLogActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.view.widget.GoTextView;
 import com.vdurmont.emoji.EmojiManager;
 
@@ -137,8 +135,8 @@ public class GoLayout extends FrameLayout {
     private GlideDrawableImageViewTarget mRepeatTarget;
     private GlideDrawableImageViewTarget mNonRepeatTarget;
 
-    private TextView mDebugVersionView;
-    private TextView mDebugLogView;
+//    private TextView mDebugVersionView;
+//    private TextView mDebugLogView;
     private LogOnViewUtil mLogOnViewUtil;
 
 
@@ -207,22 +205,22 @@ public class GoLayout extends FrameLayout {
         mNonRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, 1);
 
         if (ENABLE_LOG_VIEW) {
-            mDebugVersionView = (TextView) findViewById(R.id.go_layout_debug_version);
-            mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
-            mDebugVersionView.setText(BuildConfig.VERSION_NAME);
+//            mDebugVersionView = (TextView) findViewById(R.id.go_layout_debug_version);
+//            mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
+//            mDebugVersionView.setText(BuildConfig.VERSION_NAME);
 
             mLogOnViewUtil = LogOnViewUtil.getIns()
-                    .configViews(mDebugLogView)
+//                    .configViews(mDebugLogView)
                     .configFilterClass("com.kikatech.go.dialogflow.");
 
-            mDebugLogView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(mDebugLogView.getContext(), KikaDebugLogActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    mDebugLogView.getContext().startActivity(intent);
-                }
-            });
+//            mDebugLogView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(mDebugLogView.getContext(), KikaDebugLogActivity.class);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    mDebugLogView.getContext().startActivity(intent);
+//                }
+//            });
         }
     }
 
@@ -360,7 +358,8 @@ public class GoLayout extends FrameLayout {
     }
 
     public void updateVoiceSourceInfo(String text) {
-        mDebugVersionView.setText(BuildConfig.VERSION_NAME + "  <Record From:" + text + ">");
+        mLogOnViewUtil.updateVoiceSourceInfo(text);
+//        mDebugVersionView.setText(BuildConfig.VERSION_NAME + "  <Record From:" + text + ">");
     }
 
     public void wakeUp() {

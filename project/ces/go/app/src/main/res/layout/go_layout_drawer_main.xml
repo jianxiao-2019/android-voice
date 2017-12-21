@@ -20,7 +20,7 @@
             android:id="@+id/drawer_title_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/kika_settings_ic_drawer"/>
+            android:src="@drawable/kika_settings_ic_drawer_open"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -30,6 +30,7 @@
             android:text="@string/drawer_main_title"
             android:textColor="@color/drawer_title_text"
             android:textSize="@dimen/drawer_title_text_size"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -87,6 +88,38 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/drawer_underline_height"
         android:background="@color/drawer_underline"/>
+
+    <LinearLayout
+        android:id="@+id/drawer_item_debug"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_item_area_height"
+        android:background="@drawable/selector_bg_drawer_item"
+        android:gravity="center_vertical"
+        android:paddingLeft="35dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/kika_settings_ic_msg_normal"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:fontFamily="sans-serif-light"
+            android:text="Debug Log"
+            android:textColor="@drawable/selector_text_drawer_item"
+            android:textSize="@dimen/drawer_item_text_size"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/drawer_item_debug_underline"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_underline_height"
+        android:background="@color/drawer_underline"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/drawer_item_exit"

@@ -1,58 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="6dp">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="6dp">
+
+    <TextView
+        android:id="@+id/log_app_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="16sp"/>
 
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="2dp"
         android:layout_weight="1"
-        android:fillViewport="true" >
+        android:fillViewport="true">
+
         <TextView
             android:id="@+id/log_content"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Debug information"
-            />
+            android:text="Debug information"/>
+
     </ScrollView>
 
     <RadioGroup
         android:id="@+id/radioGroupLog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/scroll_view"
         android:orientation="horizontal">
-            <RadioButton
-                android:text="Display"
-                android:id="@+id/log_display"
-                android:checked="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <RadioButton
-                android:text="KikaGo"
-                android:id="@+id/log_kikago"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        <RadioButton
-            android:text="VoiceSDK"
-            android:id="@+id/log_voice_sdk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
         <RadioButton
-            android:text="VoiceMVP"
+            android:id="@+id/log_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Display"/>
+
+        <RadioButton
+            android:id="@+id/log_kikago"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KikaGo"/>
+
+        <RadioButton
+            android:id="@+id/log_voice_sdk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VoiceSDK"/>
+
+        <RadioButton
             android:id="@+id/log_voice_mvp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        </RadioGroup>
+            android:layout_height="wrap_content"
+            android:text="VoiceMVP"/>
+    </RadioGroup>
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/radioGroupLog"
         android:orientation="horizontal">
 
         <Button
@@ -60,6 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Copy Log"/>
+
         <Button
             android:id="@+id/button_send"
             android:layout_width="wrap_content"

@@ -49,6 +49,8 @@ public class LogOnViewUtil {
     private int mLogCount = 1;
     private int mFileLoggerId = -1;
 
+    private String mVoiceSourceInfo;
+
     private static LogOnViewUtil sLogOnViewUtil;
 
     private LogOnViewUtil() {
@@ -105,6 +107,14 @@ public class LogOnViewUtil {
         updateLogView();
     }
 
+    public void updateVoiceSourceInfo(String text) {
+        mVoiceSourceInfo = text;
+    }
+
+    public String getVoiceSourceInfo() {
+        return mVoiceSourceInfo;
+    }
+
     private void addLog(int logCount, String log, boolean displayOnView) {
         LogInfo li = new LogInfo(logCount, log);
         if (displayOnView) {
@@ -124,6 +134,9 @@ public class LogOnViewUtil {
     }
 
     private void updateLogView() {
+        if (mDebugLogView == null) {
+            return;
+        }
         final StringBuilder log = new StringBuilder();
         int size = mLogLinkedList.size();
         for (int i = 0; i < size; i++) {
