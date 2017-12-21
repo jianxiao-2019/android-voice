@@ -162,6 +162,8 @@ it's the alpha version now."</string>
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>
     <string name="drawer_item_im">"Play messages"</string>
+    <string name="drawer_item_mic_status">"KikaGo Smart Mic"</string>
+    <string name="drawer_item_debug">"Debug Log"</string>
     <string name="drawer_item_exit">"Exit app"</string>
     <string name="drawer_item_im_popup_menu_item_yes">"Yes"</string>
     <string name="drawer_item_im_popup_menu_item_no">"No"</string>
@@ -170,6 +172,8 @@ it's the alpha version now."</string>
     <string name="drawer_item_navigation_dialog_add_hint">"Type the name..."</string>
     <string name="drawer_item_navigation_dialog_edit_title">"Edit"</string>
     <string name="drawer_item_navigation_dialog_edit_hint">"Type the address..."</string>
+    <string name="drawer_item_mic_status_connected">"connected"</string>
+    <string name="drawer_item_mic_status_disconnected">"disconnected"</string>
 
 
     <string name="floating_button_stop">"Stop"</string>

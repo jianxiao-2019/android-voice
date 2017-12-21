@@ -61,6 +61,9 @@ import java.util.List;
 public class DialogFlowForegroundService extends BaseForegroundService {
     private static final String TAG = "DialogFlowForegroundService";
 
+    public static final String VOICE_SOURCE_ANDROID = "Android";
+    public static final String VOICE_SOURCE_USB = "USB";
+
     private static final long TTS_DELAY_ASR_RESUME = 500;
 
     private static class Commands extends BaseForegroundService.Commands {
@@ -144,6 +147,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     LogUtil.logv(TAG, String.format("action: %s", action));
                 }
                 mDialogFlowService.wakeUp();
+                break;
+            case ToDFServiceEvent.ACTION_PING_VOICE_SOURCE:
+                DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
+                serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mAudioSource == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
+                sendDFServiceEvent(serviceEvent);
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "updateVoiceSource, mAudioSource:" + mAudioSource);
+                }
                 break;
         }
     }
@@ -456,7 +467,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     @Override
                     public void onRecorderSourceUpdate() {
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
-                        event.putExtra(DFServiceEvent.PARAM_TEXT, mAudioSource == null ? "Android" : "USB");
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, mAudioSource == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
                         sendDFServiceEvent(event);
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "updateVoiceSource, mAudioSource:" + mAudioSource);
@@ -635,6 +646,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processDialogFlowWakeUp() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processPingVoiceSource() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_PING_VOICE_SOURCE);
         sendToDFServiceEvent(event);
     }
 

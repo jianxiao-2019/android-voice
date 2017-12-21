@@ -33,6 +33,8 @@
     <color name="drawer_title_area">#16181e</color>
     <color name="drawer_item_area_pressed">#17191f</color>
     <color name="drawer_title_text">#535871</color>
+    <color name="drawer_subtitle_text">#0aa2b4</color>
+    <color name="drawer_subtitle_text_disable">#767d90</color>
     <color name="drawer_item_text">#8e94a9</color>
     <color name="drawer_item_text_pressed">#c0cbea</color>
 

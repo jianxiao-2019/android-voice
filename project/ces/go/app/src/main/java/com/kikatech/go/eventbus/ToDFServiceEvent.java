@@ -16,6 +16,7 @@ public class ToDFServiceEvent extends BaseDFServiceEvent {
     public static final String ACTION_ON_NAVIGATION_STOPPED = "action_navigation_stopped";
     public static final String ACTION_DIALOG_FLOW_TALK = "action_dialog_flow_talk";
     public static final String ACTION_DIALOG_FLOW_WAKE_UP = "action_dialog_flow_wake_up";
+    public static final String ACTION_PING_VOICE_SOURCE = "action_ping_voice_source";
 
     public static final String PARAM_STATUS = "param_status";
     public static final String PARAM_TEXT = "param_text";
