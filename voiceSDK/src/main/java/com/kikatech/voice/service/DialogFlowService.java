@@ -350,6 +350,7 @@ public class DialogFlowService implements
 
     @Override
     public void onCreated() {
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "onCreated, mVoiceService:" + mVoiceService);
         if (mVoiceService != null) {
             mVoiceService.start();
         }
@@ -411,8 +412,8 @@ public class DialogFlowService implements
         }
 
         @Override
-        public void onStageActionStart() {
-            mCallback.onStageActionStart();
+        public void onStageActionStart(boolean supportAsrInterrupted) {
+            mCallback.onStageActionStart(supportAsrInterrupted);
         }
 
         @Override

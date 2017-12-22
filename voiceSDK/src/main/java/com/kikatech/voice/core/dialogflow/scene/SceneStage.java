@@ -19,12 +19,14 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
 
     protected final SceneBase mSceneBase;
     protected boolean isUncaughtLoop;
+    protected boolean supportAsrInterrupted = false;
 
     protected static AsrConfiguration mAsrConfig = new AsrConfiguration.Builder().build();
 
     public SceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         mFeedback = feedback;
         mSceneBase = scene;
+        supportAsrInterrupted = false;
     }
 
     protected void setQueryAnyWords(boolean queryAnyWords) {
@@ -96,7 +98,7 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
     @Override
     public void onStageActionStart() {
         if (mFeedback != null) {
-            mFeedback.onStageActionStart();
+            mFeedback.onStageActionStart(supportAsrInterrupted);
         }
     }
 

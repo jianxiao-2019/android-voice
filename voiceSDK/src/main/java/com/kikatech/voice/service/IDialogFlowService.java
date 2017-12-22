@@ -40,7 +40,7 @@ public interface IDialogFlowService {
 
         void onStagePrepared(String scene, String action, SceneStage sceneStage);
 
-        void onStageActionStart();
+        void onStageActionStart(boolean supportAsrInterrupted);
 
         void onStageActionDone(boolean isInterrupted, boolean delayAsrResume);
 
