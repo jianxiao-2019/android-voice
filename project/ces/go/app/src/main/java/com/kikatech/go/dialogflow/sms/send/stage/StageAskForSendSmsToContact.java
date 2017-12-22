@@ -79,6 +79,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
 
     @Override
     public void action() {
+        supportAsrInterrupted = true;
         SmsContent sc = getSmsContent();
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, sc.getMessageBody());

@@ -58,7 +58,6 @@ public class StageConfirmAddress extends BaseNaviStage {
                 String userSays = Intent.parseUserInput(extra);
                 String[] userInputs = Intent.parseUserInputNBest(extra);
                 SceneStage stageGo = getStageByCheckDestinationSettings(userInputs);
-//                return new StageQueryAddress(mSceneBase, mFeedback, userSays);
                 return stageGo != null ? stageGo : new StageConfirmAddress(mSceneBase, mFeedback, userSays, userSays);
         }
         return this;
@@ -72,6 +71,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public void action() {
+        supportAsrInterrupted = true;
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmAddress(context, mUserInput);
         if (uiAndTtsText.length > 0) {

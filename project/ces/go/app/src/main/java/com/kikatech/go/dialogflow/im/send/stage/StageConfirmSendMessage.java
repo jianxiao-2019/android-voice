@@ -67,6 +67,7 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
 
     @Override
     public void action() {
+        supportAsrInterrupted = true;
         IMContent imc = getIMContent();
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, imc.getMessageBody());

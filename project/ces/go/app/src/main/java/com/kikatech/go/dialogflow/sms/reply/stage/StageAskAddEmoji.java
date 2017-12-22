@@ -46,6 +46,7 @@ public class StageAskAddEmoji extends BaseReplySmsStage {
 
     @Override
     public void action() {
+        supportAsrInterrupted = true;
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getReplyMessage().getEmojiUnicode());
         if (uiAndTtsText.length > 0) {

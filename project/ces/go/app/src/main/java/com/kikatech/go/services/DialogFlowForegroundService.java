@@ -436,11 +436,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onStageActionStart() {
+                    public void onStageActionStart(boolean supportAsrInterrupted) {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "onStageActionStart");
+                            LogUtil.log(TAG, "onStageActionStart, supportAsrInterrupted:" + supportAsrInterrupted);
                         }
                         pauseAsr();
+                        if(supportAsrInterrupted) {
+                            resumeAsr();
+                        }
                     }
 
                     @Override
