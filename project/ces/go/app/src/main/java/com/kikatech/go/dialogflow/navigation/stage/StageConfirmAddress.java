@@ -57,7 +57,7 @@ public class StageConfirmAddress extends BaseNaviStage {
             case NaviSceneActions.ACTION_NAV_CHANGE:
                 String userSays = Intent.parseUserInput(extra);
                 String[] userInputs = Intent.parseUserInputNBest(extra);
-                SceneStage stageGo = getStageByCheckDestinationSettings(userInputs);
+                SceneStage stageGo = getStageByCheckDestination(userInputs);
                 return stageGo != null ? stageGo : new StageConfirmAddress(mSceneBase, mFeedback, userSays, userSays);
         }
         return this;

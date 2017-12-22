@@ -6,6 +6,7 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -21,6 +22,7 @@ public class StageNavigationGo extends BaseNaviStage {
     StageNavigationGo(SceneBase scene, ISceneFeedback feedback, String naviAddress) {
         super(scene, feedback);
         mNaviAddress = naviAddress;
+        GlobalPref.getIns().addNavigatedAddress(mNaviAddress);
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "StageNavigationGo init, mNaviAddress:" + mNaviAddress);
         }

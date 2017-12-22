@@ -40,8 +40,7 @@ public class StageAskAddress extends BaseNaviStage {
 
         String userSays = Intent.parseUserInput(extra);
         String[] userInputs = Intent.parseUserInputNBest(extra);
-        SceneStage stageGo = getStageByCheckDestinationSettings(userInputs);
-//        return new StageQueryAddress(mSceneBase, mFeedback, userSays);
+        SceneStage stageGo = getStageByCheckDestination(userInputs);
         return stageGo != null ? stageGo : new StageConfirmAddress(mSceneBase, mFeedback, userSays, userSays);
     }
 

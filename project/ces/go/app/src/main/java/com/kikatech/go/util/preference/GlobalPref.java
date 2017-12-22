@@ -9,6 +9,9 @@ import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.util.Gson.GsonUtil;
 
+import org.json.JSONArray;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,5 +83,25 @@ public class GlobalPref {
         String json = sPref.getString(Key.KEY_SETTING_DESTINATION_LIST, UserSettings.getDefaultDestinationListJson());
         return GsonUtil.fromJsonList(json, new TypeToken<List<SettingDestination>>() {
         }.getType());
+    }
+
+    public void addNavigatedAddress(String address) {
+        List<String> list = getNavigatedAddressList();
+        if (!list.contains(address)) {
+            list.add(address);
+            String json = GsonUtil.toJson(list);
+            sEditor.putString(Key.KEY_NAVIGATED_ADDR_LIST, json);
+            apply();
+        }
+    }
+
+    public List<String> getNavigatedAddressList() {
+        String json = sPref.getString(Key.KEY_NAVIGATED_ADDR_LIST, "{}");
+        List<String> ret = GsonUtil.fromJsonList(json, new TypeToken<List<String>>() {
+        }.getType());
+        if (ret == null) {
+            ret = new ArrayList<>();
+        }
+        return ret;
     }
 }

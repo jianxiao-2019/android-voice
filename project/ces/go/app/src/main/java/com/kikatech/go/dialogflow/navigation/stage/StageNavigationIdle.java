@@ -7,6 +7,7 @@ import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.dialogflow.stop.stage.StageStopNavigation;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -41,8 +42,7 @@ public class StageNavigationIdle extends BaseNaviStage {
                 List<String> listToCheck = new ArrayList<>();
                 listToCheck.add(naviAddress);
                 listToCheck.addAll(Arrays.asList(userInputs));
-                SceneStage stageGo = getStageByCheckDestinationSettings(listToCheck.toArray(new String[0]));
-//                return new StageQueryAddress(mSceneBase, mFeedback, naviAddress);
+                SceneStage stageGo = getStageByCheckDestination(listToCheck.toArray(new String[0]));
                 return stageGo != null ? stageGo : new StageConfirmAddress(mSceneBase, mFeedback, naviAddress, naviAddress);
             }
         } else if (action.equals(NaviSceneActions.ACTION_NAV_CANCEL)) {

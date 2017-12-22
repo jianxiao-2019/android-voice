@@ -9,6 +9,7 @@ import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -44,11 +45,13 @@ public class BaseNaviStage extends BaseSceneStage {
     public void action() {
     }
 
-    SceneStage getStageByCheckDestinationSettings(String[] userInputs) {
+    SceneStage getStageByCheckDestination(String[] userInputs) {
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "getStageByCheckDestinationSettings");
+            LogUtil.log(TAG, "getStageByCheckDestination");
         }
         List<SettingDestination> list = UserSettings.getSettingDestinationList();
+        List<String> navigatedAddrList = GlobalPref.getIns().getNavigatedAddressList();
+
         if (list != null && userInputs != null) {
             for (String userInput : userInputs) {
                 if (!TextUtils.isEmpty(userInput)) {
@@ -67,9 +70,18 @@ public class BaseNaviStage extends BaseSceneStage {
                             return new StageNavigationGo(mSceneBase, mFeedback, address);
                         }
                     }
+                    for (String address : navigatedAddrList) {
+                        if (!TextUtils.isEmpty(address) && processedUserInput.equals(address.toLowerCase())) {
+                            if (LogUtil.DEBUG) {
+                                LogUtil.logd(TAG, "Skip asking, go to " + address + " directly");
+                            }
+                            return new StageNavigationGo(mSceneBase, mFeedback, address);
+                        }
+                    }
                 }
             }
         }
+
         return null;
     }
 }
