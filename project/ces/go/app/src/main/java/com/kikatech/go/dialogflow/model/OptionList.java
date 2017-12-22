@@ -94,9 +94,9 @@ public class OptionList extends UiModel {
         optionList.setTitle("You can say");
         optionList.setIconRes(SceneUtil.ICON_TRIGGER);
         optionList.isDefaultList = true;
-        optionList.add(new Option("Navigate", null));
-        optionList.add(new Option("Message", null));
-        optionList.add(new Option("Make a call", null));
+        optionList.add(new Option("Navigate to...", null));
+        optionList.add(new Option("Message to...", null));
+        optionList.add(new Option("Call...", null));
         return optionList;
     }
 
