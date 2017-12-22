@@ -150,7 +150,7 @@ public class VoiceTestingActivity extends BaseActivity
         Message.register("ASR", TextMessage.class);
 
         // Debug
-        AudioPlayBack.sFilePath = getExternalCacheDir().getPath();
+//        AudioPlayBack.sFilePath = getExternalCacheDir().getPath();
     }
 
     private void attachService(UsbAudioSource audioSource) {

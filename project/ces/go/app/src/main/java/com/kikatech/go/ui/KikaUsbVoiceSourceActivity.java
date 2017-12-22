@@ -253,7 +253,7 @@ public class KikaUsbVoiceSourceActivity extends BaseActivity implements VoiceSer
     private void attachService() {
 
         // Debug
-        AudioPlayBack.sFilePath = getDebugFilePath(this);
+//        AudioPlayBack.sFilePath = getDebugFilePath(this);
         mDebugFileName = getDebugFilePath(this);
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
