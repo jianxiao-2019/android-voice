@@ -113,7 +113,7 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
         return false;
     }
 
-    protected AsrConfiguration getAsrConfig() {
+    AsrConfiguration getAsrConfig() {
         return mAsrConfig;
     }
 }

@@ -170,9 +170,20 @@ public class KikaTtsSource implements TtsSource {
                 mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
                 descriptor.close();
             } else {
+                Logger.d("[KikaTtsSource] source:" + ms.getPathSource());
                 mMediaPlayer.setDataSource(ms.getPathSource());
             }
 
+            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    Logger.d("[KikaTtsSource] onError, what:" + what + ", extra:" + extra);
+                    if (mListener != null) {
+                        mListener.onTtsError();
+                    }
+                    return false;
+                }
+            });
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -214,7 +225,6 @@ public class KikaTtsSource implements TtsSource {
         protected String doInBackground(String... params) {
             Logger.d("[KikaTtsSource] json = " + params[0]);
             final String jsonString = params[0];
-            long t = System.currentTimeMillis();
             final StringBuilder ttsUrl = new StringBuilder();
             BufferedReader in = null;
             try {

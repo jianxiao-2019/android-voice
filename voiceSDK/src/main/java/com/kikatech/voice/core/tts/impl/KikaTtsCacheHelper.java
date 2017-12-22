@@ -5,7 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.kikatech.voice.util.BackgroundThread;
+import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 import com.kikatech.voice.util.log.LogUtil;
 import com.kikatech.voice.util.request.MD5;
@@ -182,7 +182,6 @@ class KikaTtsCacheHelper {
                 writeCacheList(ti.cacheInfo);
             }
 
-
         } catch (Exception e) {
             return e.toString();
         } finally {
@@ -224,14 +223,13 @@ class KikaTtsCacheHelper {
     }
 
     static void submitDownloadTask(final String ttsUrl, final String jsonString) {
-        BackgroundThread.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        KikaTtsCacheHelper.TaskInfo task = new KikaTtsCacheHelper.TaskInfo(ttsUrl, jsonString);
-                        downloadWithUrl(task);
-                    }
-                });
+        AsyncThread.getIns().executeDelay(new Runnable() {
+            @Override
+            public void run() {
+                KikaTtsCacheHelper.TaskInfo task = new KikaTtsCacheHelper.TaskInfo(ttsUrl, jsonString);
+                downloadWithUrl(task);
+            }
+        }, 1024);
     }
 
     static String composeUrlVoiceSource(String ttsUrl) {
