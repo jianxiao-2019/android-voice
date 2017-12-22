@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -16,11 +17,28 @@ import com.kikatech.voice.core.tts.TtsSource;
 
 public abstract class BaseSceneStage extends SceneStage {
 
+    private static final long DEFAULT_STAGE_TIMEOUT = 5000;
+
+    private CountingTimer mStageTimeoutTimer;
+
+
     public BaseSceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "init, AsrMode : " + AsrConfigUtil.getAsrModeName(getAsrMode()));
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "init, AsrMode : " + AsrConfigUtil.getAsrModeName(getAsrMode()));
+        }
         updateAsrConfig(getAsrMode());
     }
+
+    private void updateAsrConfig(@AsrConfigUtil.ASRMode int mode) {
+        AsrConfigUtil.getConfig(mAsrConfig, mode);
+    }
+
+    @AsrConfigUtil.ASRMode
+    protected int getAsrMode() {
+        return AsrConfigUtil.SUGGEST_ASR_MODE_DEFAULT;
+    }
+
 
     @Override
     protected void speak(String text, Bundle extras) {
@@ -37,11 +55,20 @@ public abstract class BaseSceneStage extends SceneStage {
         }
     }
 
-    void updateAsrConfig(@AsrConfigUtil.ASRMode int mode) {
-        AsrConfigUtil.getConfig(mAsrConfig, mode);
+
+    protected void startTimeoutTimer(CountingTimer.ICountingListener listener) {
+        startTimeoutTimer(DEFAULT_STAGE_TIMEOUT, listener);
     }
 
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
-        return AsrConfigUtil.SUGGEST_ASR_MODE_DEFAULT;
+    protected void startTimeoutTimer(long millis, CountingTimer.ICountingListener listener) {
+        stopTimeoutTimer();
+        mStageTimeoutTimer = new CountingTimer(millis, listener);
+        mStageTimeoutTimer.start();
+    }
+
+    protected void stopTimeoutTimer() {
+        if (mStageTimeoutTimer != null && mStageTimeoutTimer.isCounting()) {
+            mStageTimeoutTimer.stop();
+        }
     }
 }

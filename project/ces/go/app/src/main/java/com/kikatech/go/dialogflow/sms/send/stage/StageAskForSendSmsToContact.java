@@ -11,6 +11,7 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -30,8 +31,15 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    @AsrConfigUtil.ASRMode
+    protected int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_ALTER;
+    }
+
+    @Override
+    public SceneStage next(String action, Bundle extra) {
+        stopTimeoutTimer();
+        return super.next(action, extra);
     }
 
     @Override
@@ -39,7 +47,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
         SmsContent sc = getSmsContent();
         switch (action) {
             case SceneActions.ACTION_SEND_SMS_YES:
-                if(sc.hasEmoji()) {
+                if (sc.hasEmoji()) {
                     return new StageAskAddEmoji(mSceneBase, mFeedback);
                 } else {
                     return new StageSendSmsConfirm(mSceneBase, mFeedback);
@@ -88,5 +96,32 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
             args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }
+    }
+
+    @Override
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+        super.onStageActionDone(isInterrupted, delayAsrResume);
+        startTimeoutTimer(new CountingTimer.ICountingListener() {
+            @Override
+            public void onTimeTickStart() {
+            }
+
+            @Override
+            public void onTimeTick(long millis) {
+            }
+
+            @Override
+            public void onTimeTickEnd() {
+                if (getSmsContent().hasEmoji()) {
+                    mSceneBase.nextStage(new StageAskAddEmoji(mSceneBase, mFeedback));
+                } else {
+                    mSceneBase.nextStage(new StageSendSmsConfirm(mSceneBase, mFeedback));
+                }
+            }
+
+            @Override
+            public void onInterrupted(long stopMillis) {
+            }
+        });
     }
 }

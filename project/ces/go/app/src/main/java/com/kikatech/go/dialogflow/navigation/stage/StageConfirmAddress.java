@@ -9,6 +9,7 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -19,6 +20,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class StageConfirmAddress extends BaseNaviStage {
+    private static final String TAG = "StageConfirmAddress";
 
     private final String mUserInput;
     private final String mNaviAddress;
@@ -33,12 +35,15 @@ public class StageConfirmAddress extends BaseNaviStage {
     }
 
     @Override
+    @AsrConfigUtil.ASRMode
     protected int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_CMD_ALTER;
     }
 
     @Override
     public SceneStage next(String action, Bundle extra) {
+        stopTimeoutTimer();
+
         SceneStage superStage = super.next(action, extra);
         if (superStage != null) {
             return superStage;
@@ -83,5 +88,28 @@ public class StageConfirmAddress extends BaseNaviStage {
             args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }
+    }
+
+    @Override
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+        super.onStageActionDone(isInterrupted, delayAsrResume);
+        startTimeoutTimer(new CountingTimer.ICountingListener() {
+            @Override
+            public void onTimeTickStart() {
+            }
+
+            @Override
+            public void onTimeTick(long millis) {
+            }
+
+            @Override
+            public void onTimeTickEnd() {
+                mSceneBase.nextStage(new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress));
+            }
+
+            @Override
+            public void onInterrupted(long stopMillis) {
+            }
+        });
     }
 }

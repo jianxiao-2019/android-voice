@@ -10,6 +10,7 @@ import com.kikatech.go.dialogflow.im.send.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -25,10 +26,16 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
     }
 
     @Override
+    public SceneStage next(String action, Bundle extra) {
+        stopTimeoutTimer();
+        return super.next(action, extra);
+    }
+
+    @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_SEND_IM_YES:
-                if(getIMContent().hasEmoji()) {
+                if (getIMContent().hasEmoji()) {
                     return new StageAskAddEmoji(mSceneBase, mFeedback);
                 } else {
                     return new StageSendIMConfirm(mSceneBase, mFeedback);
@@ -77,5 +84,32 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
             args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }
+    }
+
+    @Override
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+        super.onStageActionDone(isInterrupted, delayAsrResume);
+        startTimeoutTimer(new CountingTimer.ICountingListener() {
+            @Override
+            public void onTimeTickStart() {
+            }
+
+            @Override
+            public void onTimeTick(long millis) {
+            }
+
+            @Override
+            public void onTimeTickEnd() {
+                if (getIMContent().hasEmoji()) {
+                    mSceneBase.nextStage(new StageAskAddEmoji(mSceneBase, mFeedback));
+                } else {
+                    mSceneBase.nextStage(new StageSendIMConfirm(mSceneBase, mFeedback));
+                }
+            }
+
+            @Override
+            public void onInterrupted(long stopMillis) {
+            }
+        });
     }
 }

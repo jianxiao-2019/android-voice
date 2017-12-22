@@ -10,6 +10,7 @@ import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -26,7 +27,8 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    @AsrConfigUtil.ASRMode
+    protected int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_ALTER;
     }
 
@@ -34,7 +36,7 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
-                if(getReplyMessage().hasEmoji()) {
+                if (getReplyMessage().hasEmoji()) {
                     return new ReplyIMStageAskAddEmoji(mSceneBase, mFeedback);
                 } else {
                     return new SendMessageReplyImReplyIMStage(mSceneBase, mFeedback);
@@ -45,7 +47,8 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
             case Intent.ACTION_RCMD_EMOJI:
                 return null;
             default:
-                if (LogUtil.DEBUG) LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
+                if (LogUtil.DEBUG)
+                    LogUtil.logw(TAG, "Unsupported command : " + action + ", ask again");
                 return this;
         }
     }
@@ -79,5 +82,32 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
             args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
             speak(ttsText, args);
         }
+    }
+
+    @Override
+    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+        super.onStageActionDone(isInterrupted, delayAsrResume);
+        startTimeoutTimer(new CountingTimer.ICountingListener() {
+            @Override
+            public void onTimeTickStart() {
+            }
+
+            @Override
+            public void onTimeTick(long millis) {
+            }
+
+            @Override
+            public void onTimeTickEnd() {
+                if (getReplyMessage().hasEmoji()) {
+                    mSceneBase.nextStage(new ReplyIMStageAskAddEmoji(mSceneBase, mFeedback));
+                } else {
+                    mSceneBase.nextStage(new SendMessageReplyImReplyIMStage(mSceneBase, mFeedback));
+                }
+            }
+
+            @Override
+            public void onInterrupted(long stopMillis) {
+            }
+        });
     }
 }
