@@ -11,6 +11,8 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
 
 public class UsbAudioSource implements IVoiceSource {
 
+    public static final int READ_FAIL = -99;
+
     private UsbAudioDriver mAudioDriver;
 
     public UsbAudioSource(UsbAudioDriver driver) {
@@ -19,17 +21,21 @@ public class UsbAudioSource implements IVoiceSource {
 
     @Override
     public void start() {
-        mAudioDriver.startRecording();
+        if(mAudioDriver != null)
+            mAudioDriver.startRecording();
     }
 
     @Override
     public void stop() {
-        mAudioDriver.stopRecording();
+        if(mAudioDriver != null)
+            mAudioDriver.stopRecording();
     }
 
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
-        return mAudioDriver.read(audioData, offsetInBytes, sizeInBytes);
+        if(mAudioDriver != null)
+            return mAudioDriver.read(audioData, offsetInBytes, sizeInBytes);
+        return READ_FAIL;
     }
 
     @Override
@@ -45,6 +51,7 @@ public class UsbAudioSource implements IVoiceSource {
     public void close() {
         if (mAudioDriver != null) {
             mAudioDriver.close();
+            mAudioDriver = null;
         }
     }
 }

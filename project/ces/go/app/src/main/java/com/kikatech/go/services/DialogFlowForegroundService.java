@@ -243,7 +243,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms, isStarted:" + isStarted);
             }
-            setupDialogFlowService();
+            if(isStarted) {
+                setupDialogFlowService();
+            }
         }
     };
 
