@@ -36,7 +36,9 @@ import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.AsyncThread;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
+import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
@@ -94,6 +96,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private boolean asrActive;
 
     private boolean serviceActive = false;
+
+
+    private boolean mDbgLogFirstAsrResult = false;
+    private boolean mIsAsrFinished = false;
+    private long mDbgLogAPIQueryUITime = 0;
+    private long mDbgLogASRRecogStartTime = 0;
+    private long mDbgLogResumeStartTime = 0;
+    private long mDbgLogASRRecogFullTime = 0;
 
 
     /**
@@ -165,6 +175,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     @Override
     protected void onStartForeground() {
+        LogOnViewUtil.getIns().configFilterClass("com.kikatech.go.dialogflow.");
         registerReceiver();
         initUsbVoice();
         acquireWakeLock();
@@ -174,7 +185,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, "setupDialogFlowService, serviceActive:" + serviceActive);
         }
-        if(serviceActive) {
+        if (serviceActive) {
             mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -274,8 +285,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         if (mDialogFlowService != null) {
             mDialogFlowService.quitService();
         }
-        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_EXIT_APP);
+
+        String action = DFServiceEvent.ACTION_EXIT_APP;
+        DFServiceEvent event = new DFServiceEvent(action);
         sendDFServiceEvent(event);
+
+        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+            LogOnViewUtil.getIns().addLog(getDbgAction(action), "Exit App, Goodbye !");
+        }
 
         closeUsbAudio();
     }
@@ -341,8 +358,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onInitComplete");
                         }
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT);
+                        String action = DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "init UI Done");
+                        }
                     }
 
                     @Override
@@ -350,9 +371,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onWakeUp");
                         }
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_WAKE_UP);
+                        String action = DFServiceEvent.ACTION_ON_WAKE_UP;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
                         resumeAsr();
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "Hi Kika Wake Up");
+                            LogOnViewUtil.getIns().addLog(DebugLogType.ASR_LISTENING.logType);
+                        }
                     }
 
                     @Override
@@ -360,8 +386,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSleep");
                         }
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SLEEP);
+                        String action = DFServiceEvent.ACTION_ON_SLEEP;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "Hi Kika Sleep");
+                        }
                     }
 
                     @Override
@@ -375,12 +405,26 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onASRPause() {
-                        sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_PAUSE));
+                        String action = DFServiceEvent.ACTION_ON_ASR_PAUSE;
+                        DFServiceEvent event = new DFServiceEvent(action);
+                        sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            long spend = System.currentTimeMillis() - mDbgLogResumeStartTime;
+                            int per = (int) (100 * ((float) mDbgLogASRRecogFullTime / spend));
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "asr section over (" + spend + " ms, " + per + "%)");
+                        }
                     }
 
                     @Override
                     public void onASRResume() {
-                        sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_RESUME));
+                        String action = DFServiceEvent.ACTION_ON_ASR_RESUME;
+                        DFServiceEvent event = new DFServiceEvent(action);
+                        sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addSeparator();
+                            mDbgLogResumeStartTime = System.currentTimeMillis();
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "asr section start");
+                        }
                     }
 
                     @Override
@@ -394,19 +438,40 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             pauseAsr();
                         }
 
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_RESULT);
+                        String action = DFServiceEvent.ACTION_ON_ASR_RESULT;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, speechText);
                         //event.putExtra(DFServiceEvent.PARAM_EMOJI, emojiUnicode);
                         event.putExtra(DFServiceEvent.PARAM_IS_FINISHED, isFinished);
                         sendDFServiceEvent(event);
+
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            mIsAsrFinished = isFinished;
+                            if (!mDbgLogFirstAsrResult) {
+                                mDbgLogFirstAsrResult = true;
+                                mDbgLogASRRecogStartTime = System.currentTimeMillis();
+                            }
+                            String finishMsg = isFinished ? "[OK]" : "";
+                            mDbgLogASRRecogFullTime = System.currentTimeMillis() - mDbgLogASRRecogStartTime;
+                            String spendTime = " (" + mDbgLogASRRecogFullTime + " ms)";
+                            String concat = StringUtil.upperCaseFirstWord(speechText);
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action) + finishMsg, concat + spendTime);
+                            if (mIsAsrFinished) {
+                                mDbgLogFirstAsrResult = false;
+                            }
+                        }
                     }
 
                     @Override
                     public void onText(String text, Bundle extras) {
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_TEXT);
+                        String action = DFServiceEvent.ACTION_ON_TEXT;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, text);
                         event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), text);
+                        }
                     }
 
                     @Override
@@ -417,10 +482,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                                 builder.append(pair.first);
                             }
                         }
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_TEXT_PAIRS);
-                        event.putExtra(DFServiceEvent.PARAM_TEXT, builder.toString());
+                        String text = builder.toString();
+                        String action = DFServiceEvent.ACTION_ON_TEXT_PAIRS;
+                        DFServiceEvent event = new DFServiceEvent(action);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, text);
                         event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), text);
+                        }
                     }
 
                     @Override
@@ -428,11 +498,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("scene: %1$s, action: %2$s, stage: %3$s", scene, action, stage.getClass().getSimpleName()));
                         }
+                        String eventAction = DFServiceEvent.ACTION_ON_STAGE_PREPARED;
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_PREPARED);
                         event.putExtra(DFServiceEvent.PARAM_SCENE, scene);
                         event.putExtra(DFServiceEvent.PARAM_SCENE_ACTION, action);
                         event.putExtra(DFServiceEvent.PARAM_SCENE_STAGE, stage);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(eventAction), stage.toString());
+                        }
                     }
 
                     @Override
@@ -461,16 +535,24 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         } else {
                             resumeAsr();
                         }
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE);
+                        String action = DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_IS_INTERRUPTED, isInterrupted);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "isInterrupted:" + isInterrupted);
+                        }
                     }
 
                     @Override
                     public void onStageEvent(Bundle extras) {
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_EVENT);
+                        String action = DFServiceEvent.ACTION_ON_STAGE_EVENT;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "Parameters:" + extras);
+                        }
                     }
 
                     @Override
@@ -481,34 +563,59 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (proactive) {
                             resumeAsr();
                         }
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SCENE_EXIT);
+                        String action = DFServiceEvent.ACTION_ON_SCENE_EXIT;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_IS_PROACTIVE, proactive);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "proactive:" + proactive);
+                        }
                     }
 
                     @Override
                     public void onAsrConfigChange(AsrConfiguration asrConfig) {
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_ASR_CONFIG);
-                        event.putExtra(DFServiceEvent.PARAM_TEXT, asrConfig.toJsonString());
+                        String asrConfigJson = asrConfig.toJsonString();
+                        String action = DFServiceEvent.ACTION_ON_ASR_CONFIG;
+                        DFServiceEvent event = new DFServiceEvent(action);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, asrConfigJson);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addSeparator();
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), asrConfigJson);
+                            LogOnViewUtil.getIns().addSeparator();
+                        }
                     }
 
                     @Override
                     public void onRecorderSourceUpdate() {
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
-                        event.putExtra(DFServiceEvent.PARAM_TEXT, mAudioSource == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
+                        String voiceSource = mAudioSource == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB;
+                        String action = DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE;
+                        DFServiceEvent event = new DFServiceEvent(action);
+                        event.putExtra(DFServiceEvent.PARAM_TEXT, voiceSource);
                         sendDFServiceEvent(event);
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "updateVoiceSource, mAudioSource:" + mAudioSource);
                         }
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addSeparator();
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action), "Voice Source:" + voiceSource);
+                            LogOnViewUtil.getIns().addSeparator();
+                        }
+                        LogOnViewUtil.getIns().updateVoiceSourceInfo(voiceSource);
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
                         pauseAsr();
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_START);
+                        String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_START;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            mDbgLogAPIQueryUITime = System.currentTimeMillis();
+                            LogOnViewUtil.getIns().addSeparator();
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action));
+                        }
                     }
 
                     @Override
@@ -516,17 +623,29 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
                         // dbgMsg[0] : scene - action
                         // dbgMsg[1] : parameters
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_COMPLETE);
+                        String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_COMPLETE;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_DBG_INTENT_ACTION, dbgMsg[0]);
                         event.putExtra(DFServiceEvent.PARAM_DBG_INTENT_PARMS, dbgMsg[1]);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            mDbgLogAPIQueryUITime = System.currentTimeMillis() - mDbgLogAPIQueryUITime;
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action) + " (" + mDbgLogAPIQueryUITime + "ms)", "\n" + dbgMsg[0] + "\n" + dbgMsg[1]);
+                            LogOnViewUtil.getIns().addSeparator();
+                        }
                     }
 
                     @Override
                     public void onError(Exception e) {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR);
+                        String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR;
+                        DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
+                        if (LogOnViewUtil.ENABLE_LOG_FILE) {
+                            LogOnViewUtil.getIns().addLog(DebugLogType.API_AI_ERROR.logType);
+                            LogOnViewUtil.getIns().addSeparator();
+                            LogOnViewUtil.getIns().addLog(getDbgAction(action));
+                        }
                     }
                 });
 
@@ -702,5 +821,25 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+
+    private String getDbgAction(String action) {
+        return "[" + action.replace("action_on_", "") + "]";
+    }
+
+
+    private enum DebugLogType {
+        ASR_LISTENING("ASR listening"),
+        ASR_STOP("ASR result"),
+        API_AI_START("Api.ai start query"),
+        API_AI_STOP("Api.ai stop query"),
+        API_AI_ERROR("Api.ai query error");
+
+        private String logType;
+
+        DebugLogType(String log) {
+            this.logType = log;
+        }
     }
 }

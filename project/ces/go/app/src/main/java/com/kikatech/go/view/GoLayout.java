@@ -21,7 +21,6 @@ import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.Target;
-import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -42,8 +41,6 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 public class GoLayout extends FrameLayout {
     private static final String TAG = "GoLayout";
-
-    public static final boolean ENABLE_LOG_VIEW = BuildConfig.DEBUG;
 
     private static final long EACH_STATUS_MIN_STAY_MILLIS = 1000;
 
@@ -137,7 +134,6 @@ public class GoLayout extends FrameLayout {
 
 //    private TextView mDebugVersionView;
 //    private TextView mDebugLogView;
-    private LogOnViewUtil mLogOnViewUtil;
 
 
     public GoLayout(Context context) {
@@ -168,7 +164,7 @@ public class GoLayout extends FrameLayout {
 
     private void bindView() {
         mLayoutInflater = LayoutInflater.from(getContext());
-        mLayoutInflater.inflate(ENABLE_LOG_VIEW ? R.layout.go_layout_debug : R.layout.go_layout, this);
+        mLayoutInflater.inflate(LogOnViewUtil.ENABLE_LOG_VIEW ? R.layout.go_layout_debug : R.layout.go_layout, this);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
         mSpeakViewIcon = (ImageView) findViewById(R.id.go_layout_speak_icon);
@@ -204,15 +200,13 @@ public class GoLayout extends FrameLayout {
         mRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, -1);
         mNonRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, 1);
 
-        if (ENABLE_LOG_VIEW) {
+//        if (LogOnViewUtil.ENABLE_LOG_VIEW) {
 //            mDebugVersionView = (TextView) findViewById(R.id.go_layout_debug_version);
 //            mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
 //            mDebugVersionView.setText(BuildConfig.VERSION_NAME);
-
-            mLogOnViewUtil = LogOnViewUtil.getIns()
-//                    .configViews(mDebugLogView)
-                    .configFilterClass("com.kikatech.go.dialogflow.");
-
+//
+//            LogOnViewUtil.getIns().configViews(mDebugLogView)
+//
 //            mDebugLogView.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
@@ -221,7 +215,7 @@ public class GoLayout extends FrameLayout {
 //                    mDebugLogView.getContext().startActivity(intent);
 //                }
 //            });
-        }
+//        }
     }
 
     @Override
@@ -355,11 +349,6 @@ public class GoLayout extends FrameLayout {
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }
-    }
-
-    public void updateVoiceSourceInfo(String text) {
-        mLogOnViewUtil.updateVoiceSourceInfo(text);
-//        mDebugVersionView.setText(BuildConfig.VERSION_NAME + "  <Record From:" + text + ">");
     }
 
     public void wakeUp() {
@@ -889,17 +878,6 @@ public class GoLayout extends FrameLayout {
         return mCurrentStatus;
     }
 
-    public void writeDebugInfo(String logType, String detail) {
-        if (ENABLE_LOG_VIEW && mLogOnViewUtil != null) {
-            mLogOnViewUtil.addLog(logType, detail);
-        }
-    }
-
-    public void writeDebugSeparator() {
-        if (ENABLE_LOG_VIEW && mLogOnViewUtil != null) {
-            mLogOnViewUtil.addSeparator();
-        }
-    }
 
     public interface IGifStatusListener {
         void onStart();

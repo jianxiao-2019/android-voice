@@ -16,6 +16,9 @@ import java.util.LinkedList;
 
 public class LogOnViewUtil {
 
+    public static final boolean ENABLE_LOG_FILE = BuildConfig.DEBUG;
+    public static final boolean ENABLE_LOG_VIEW = BuildConfig.DEBUG;
+
     private final static int DISPLAY_LOG_COUNT = 1;
     private final static String SEPARATOR = "-------------------------------------------------";
     private final static String CLASS_SEPARATOR = "@";
@@ -85,6 +88,10 @@ public class LogOnViewUtil {
     public synchronized void addSeparator() {
         addLog(-1, SEPARATOR, false);
         updateLogView();
+    }
+
+    public synchronized void addLog(@NonNull String logType) {
+        addLog(logType, "");
     }
 
     public synchronized void addLog(@NonNull String logType, String detail) {

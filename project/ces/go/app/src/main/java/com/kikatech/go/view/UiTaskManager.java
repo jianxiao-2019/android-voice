@@ -423,35 +423,4 @@ public class UiTaskManager {
 
         void onLayoutModeChanged(GoLayout.DisplayMode mode);
     }
-
-
-    public enum DebugLogType {
-        ASR_LISTENING("ASR listening"),
-        ASR_STOP("ASR result"),
-        API_AI_START("Api.ai start query"),
-        API_AI_STOP("Api.ai stop query"),
-        API_AI_ERROR("Api.ai query error");
-
-        private String logType;
-
-        DebugLogType(String log) {
-            this.logType = log;
-        }
-    }
-
-    public synchronized void writeDebugLog(final String logType, final String detail) {
-        if (mLayout != null) {
-            mLayout.writeDebugInfo(logType, detail);
-        }
-    }
-
-    public synchronized void writeDebugLogSeparator() {
-        if (mLayout != null) {
-            mLayout.writeDebugSeparator();
-        }
-    }
-
-    public synchronized void writeDebugLog(final DebugLogType logType) {
-        writeDebugLog(logType.logType, "");
-    }
 }

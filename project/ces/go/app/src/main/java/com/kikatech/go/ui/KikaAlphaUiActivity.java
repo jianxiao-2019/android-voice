@@ -18,7 +18,6 @@ import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
-import com.kikatech.go.view.UiTaskManager.DebugLogType;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.util.contact.ContactManager;
 
@@ -36,12 +35,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private UiTaskManager mUiManager;
     private View mBtnOpenDrawer;
 
-    private boolean mDbgLogFirstAsrResult = false;
-    private boolean mIsAsrFinished = false;
-    private long mDbgLogAPIQueryUITime = 0;
-    private long mDbgLogASRRecogStartTime = 0;
-    private long mDbgLogResumeStartTime = 0;
-    private long mDbgLogASRRecogFullTime = 0;
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -66,138 +59,64 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
         switch (action) {
             case DFServiceEvent.ACTION_EXIT_APP:
-                if (GoLayout.ENABLE_LOG_VIEW)
-                    mUiManager.writeDebugLog(dbgAction, "Exit App, Goodbye !");
                 finishAffinity();
                 break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
                 initUiTaskManager();
-                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "init UI Done");
                 break;
             case DFServiceEvent.ACTION_ON_WAKE_UP:
-                if (GoLayout.ENABLE_LOG_VIEW)
-                    mUiManager.writeDebugLog(dbgAction, "Hi Kika Wake Up");
                 mUiManager.dispatchWakeUp();
-                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(DebugLogType.ASR_LISTENING);
                 break;
             case DFServiceEvent.ACTION_ON_SLEEP:
-                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, "Hi Kika Sleep");
                 mUiManager.dispatchSleep();
                 break;
             case DFServiceEvent.ACTION_ON_ASR_PAUSE:
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    long spend = System.currentTimeMillis() - mDbgLogResumeStartTime;
-                    int per = (int) (100 * ((float) mDbgLogASRRecogFullTime / spend));
-                    mUiManager.writeDebugLog(dbgAction, "asr section over (" + spend + " ms, " + per + "%)");
-                }
                 break;
             case DFServiceEvent.ACTION_ON_ASR_RESUME:
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    mUiManager.writeDebugLogSeparator();
-                    mDbgLogResumeStartTime = System.currentTimeMillis();
-                    mUiManager.writeDebugLog(dbgAction, "asr section start");
-                }
                 break;
             case DFServiceEvent.ACTION_ON_ASR_RESULT:
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                 isFinished = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_FINISHED, false);
                 String concat = StringUtil.upperCaseFirstWord(text);
-
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    mIsAsrFinished = isFinished;
-                    if (!mDbgLogFirstAsrResult) {
-                        mDbgLogFirstAsrResult = true;
-                        mDbgLogASRRecogStartTime = System.currentTimeMillis();
-                    }
-                    String finishMsg = isFinished ? "[OK]" : "";
-                    mDbgLogASRRecogFullTime = System.currentTimeMillis() - mDbgLogASRRecogStartTime;
-                    String spendTime = " (" + mDbgLogASRRecogFullTime + " ms)";
-                    mUiManager.writeDebugLog(dbgAction + finishMsg, concat + spendTime);
-                }
-
                 mUiManager.dispatchSpeechTask(concat, isFinished);
                 break;
             case DFServiceEvent.ACTION_ON_TEXT:
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);
                 mUiManager.dispatchTtsTask(text, extras);
-                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, text);
                 break;
             case DFServiceEvent.ACTION_ON_TEXT_PAIRS:
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);
-                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, text);
                 mUiManager.dispatchTtsTask(text, extras);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_PREPARED:
                 stage = (SceneStage) event.getExtras().getSerializable(DFServiceEvent.PARAM_SCENE_STAGE);
-                if (GoLayout.ENABLE_LOG_VIEW) mUiManager.writeDebugLog(dbgAction, stage.toString());
                 mUiManager.dispatchStageTask(stage);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE:
                 isInterrupted = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_INTERRUPTED, false);
-                if (GoLayout.ENABLE_LOG_VIEW)
-                    mUiManager.writeDebugLog(dbgAction, "isInterrupted:" + isInterrupted);
                 mUiManager.onStageActionDone(isInterrupted);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_EVENT:
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);
-                if (GoLayout.ENABLE_LOG_VIEW)
-                    mUiManager.writeDebugLog(dbgAction, "Parameters:" + extras);
                 mUiManager.dispatchEventTask(extras);
                 break;
             case DFServiceEvent.ACTION_ON_SCENE_EXIT:
                 boolean proactive = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_PROACTIVE);
-                if (GoLayout.ENABLE_LOG_VIEW)
-                    mUiManager.writeDebugLog(dbgAction, "proactive:" + proactive);
                 mUiManager.onSceneExit(proactive);
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_START:
                 mUiManager.dispatchAsrStart();
-                mDbgLogAPIQueryUITime = System.currentTimeMillis();
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    mUiManager.writeDebugLogSeparator();
-                    mUiManager.writeDebugLog(dbgAction, "");
-                }
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_COMPLETE:
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    mDbgLogAPIQueryUITime = System.currentTimeMillis() - mDbgLogAPIQueryUITime;
-                    String intentAction = event.getExtras().getString(DFServiceEvent.PARAM_DBG_INTENT_ACTION);
-                    String intentParms = event.getExtras().getString(DFServiceEvent.PARAM_DBG_INTENT_PARMS);
-                    mUiManager.writeDebugLog(dbgAction + " (" + mDbgLogAPIQueryUITime + "ms)", "\n" + intentAction + "\n" + intentParms);
-                    mUiManager.writeDebugLogSeparator();
-                }
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR:
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    mUiManager.writeDebugLog(DebugLogType.API_AI_ERROR);
-                    mUiManager.writeDebugLogSeparator();
-                    mUiManager.writeDebugLog(dbgAction, "");
-                }
                 break;
             case DFServiceEvent.ACTION_ON_ASR_CONFIG:
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                    mUiManager.writeDebugLogSeparator();
-                    mUiManager.writeDebugLog(dbgAction, text);
-                    mUiManager.writeDebugLogSeparator();
-                }
                 break;
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                    mUiManager.writeDebugLogSeparator();
-                    mUiManager.writeDebugLog(dbgAction, "Voice Source:" + text);
-                    mUiManager.writeDebugLogSeparator();
-
-                    mGoLayout.updateVoiceSourceInfo(text);
-                }
                 break;
-        }
-
-        if (GoLayout.ENABLE_LOG_VIEW && mIsAsrFinished) {
-            mDbgLogFirstAsrResult = false;
         }
     }
 

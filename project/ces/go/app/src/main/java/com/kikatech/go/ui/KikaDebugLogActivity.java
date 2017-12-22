@@ -80,10 +80,8 @@ public class KikaDebugLogActivity extends Activity {
         }
         switch (action) {
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
-                if (GoLayout.ENABLE_LOG_VIEW) {
-                    String text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                    updateVoiceSourceInfo(text);
-                }
+                String text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
+                updateVoiceSourceInfo(text);
                 break;
         }
     }
