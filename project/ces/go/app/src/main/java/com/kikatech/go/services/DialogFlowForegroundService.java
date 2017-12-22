@@ -377,7 +377,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         resumeAsr();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Hi Kika Wake Up");
-                            LogOnViewUtil.getIns().addLog(DebugLogType.ASR_LISTENING.logType);
+                            LogOnViewUtil.getIns().addLog("ASR listening");
                         }
                     }
 
@@ -515,7 +515,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             LogUtil.log(TAG, "onStageActionStart, supportAsrInterrupted:" + supportAsrInterrupted);
                         }
                         pauseAsr();
-                        if(supportAsrInterrupted) {
+                        if (supportAsrInterrupted) {
                             resumeAsr();
                         }
                     }
@@ -642,7 +642,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
-                            LogOnViewUtil.getIns().addLog(DebugLogType.API_AI_ERROR.logType);
+                            LogOnViewUtil.getIns().addLog("Api.ai query error");
                             LogOnViewUtil.getIns().addSeparator();
                             LogOnViewUtil.getIns().addLog(getDbgAction(action));
                         }
@@ -826,20 +826,5 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private String getDbgAction(String action) {
         return "[" + action.replace("action_on_", "") + "]";
-    }
-
-
-    private enum DebugLogType {
-        ASR_LISTENING("ASR listening"),
-        ASR_STOP("ASR result"),
-        API_AI_START("Api.ai start query"),
-        API_AI_STOP("Api.ai stop query"),
-        API_AI_ERROR("Api.ai query error");
-
-        private String logType;
-
-        DebugLogType(String log) {
-            this.logType = log;
-        }
     }
 }
