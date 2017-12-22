@@ -14,7 +14,6 @@ import com.kikatech.go.accessibility.im.MessageEventDispatcher;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.message.processor.IMProcessor;
-import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -27,12 +26,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 public class StageSendIMConfirm extends BaseSendIMStage {
     StageSendIMConfirm(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-    }
-
-    private boolean backToMainActivity(Context ctx) {
-        android.content.Intent intent = new android.content.Intent(ctx, KikaAlphaUiActivity.class);
-        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-        return IntentUtil.sendPendingIntent(ctx, intent);
     }
 
     @Override
@@ -79,7 +72,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                         public void onStop() {
                             if (LogUtil.DEBUG) LogUtil.log(TAG, "End ...");
                             AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
-                            boolean succeed = backToMainActivity(ctx);
+                            boolean succeed = IntentUtil.openKikaGo(ctx);
 
                             if (succeed) {
                                 Bundle args = new Bundle();

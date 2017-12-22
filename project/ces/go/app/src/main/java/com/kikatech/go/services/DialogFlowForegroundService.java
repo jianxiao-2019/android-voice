@@ -95,8 +95,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private boolean asrActive;
 
-    private boolean serviceActive = false;
-
 
     private boolean mDbgLogFirstAsrResult = false;
     private boolean mIsAsrFinished = false;
@@ -183,9 +181,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private void setupDialogFlowService() {
         if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, "setupDialogFlowService, serviceActive:" + serviceActive);
+            LogUtil.logv(TAG, "setupDialogFlowService, isStarted:" + isStarted);
         }
-        if (serviceActive) {
+        if (isStarted) {
             mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -233,7 +231,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
             mAudioSource = audioSource;
             if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms, serviceActive:" + serviceActive);
+                LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms, isStarted:" + isStarted);
             }
             setupDialogFlowService();
         }
@@ -243,7 +241,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
             mAudioSource = null;
             if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms, serviceActive:" + serviceActive);
+                LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms, isStarted:" + isStarted);
             }
             setupDialogFlowService();
         }
@@ -707,8 +705,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                 })
                 .build(DialogFlowForegroundService.this);
-
-        serviceActive = true;
     }
 
     @Override
@@ -733,8 +729,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         onStopForeground();
 
         super.onDestroy();
-
-        serviceActive = false;
     }
 
     @Override

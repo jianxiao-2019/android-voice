@@ -15,7 +15,7 @@ import com.kikatech.go.util.LogUtil;
 public abstract class BaseForegroundService extends Service {
     private static final String TAG = "BaseForegroundService";
 
-    private boolean isStarted;
+    static protected boolean isStarted;
 
     protected abstract void onStartForeground();
 
