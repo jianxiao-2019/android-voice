@@ -16,6 +16,7 @@ public class VoiceConfiguration {
 
     private static final String DEFAULT_ENGINE = "google";
     private static final String DEFAULT_LOCALE = "en_US";
+    private static final int DEFAULT_BOS_DURATION = 6000;
 
     private IVoiceSource mVoiceSource;
     private AgentCreator mAgentCreator;
@@ -23,28 +24,37 @@ public class VoiceConfiguration {
     private ConnectionConfiguration mConnConf;
     private ServerConfiguration mServerConf;
 
+    private int bosDuration = DEFAULT_BOS_DURATION;
     private String mDebugFilePath;
     private boolean mSupportWakeUpMode;
 
-    public VoiceConfiguration(){
+    public VoiceConfiguration() {
     }
 
-    public VoiceConfiguration source(IVoiceSource source){
+    public VoiceConfiguration source(IVoiceSource source) {
         mVoiceSource = source;
         return this;
     }
 
-    public VoiceConfiguration agent(AgentCreator creator){
+    public VoiceConfiguration agent(AgentCreator creator) {
         mAgentCreator = creator;
         return this;
     }
 
-    public AgentCreator getAgent(){
+    public AgentCreator getAgent() {
         return mAgentCreator;
     }
 
     public IVoiceSource getVoiceSource() {
         return mVoiceSource;
+    }
+
+    public void setBosDuration(int bosDuration) {
+        this.bosDuration = bosDuration;
+    }
+
+    public int getBosDuration() {
+        return bosDuration;
     }
 
     public void setDebugFilePath(String filePath) {
@@ -107,7 +117,7 @@ public class VoiceConfiguration {
         public final Bundle bundle = new Bundle();
 
         private ConnectionConfiguration(String appName, String url, String locale, String sign, String userAgent,
-                                       String engine, AsrConfiguration asrConfiguration, Bundle bundle) {
+                                        String engine, AsrConfiguration asrConfiguration, Bundle bundle) {
 
             this.appName = appName;
             this.url = url;

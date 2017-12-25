@@ -28,7 +28,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public static final int REASON_NOT_CREATED = 1;
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
 
-    private static final int VAD_BOS_TIMEOUT = 6000;
     private static final int HEARTBEAT_DURATION = 10 * 1000;
 
     private static final int MSG_VAD_BOS = 1;
@@ -158,7 +157,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
 
         Logger.d("VoiceService start 2");
-        if(mConf.isSupportWakeUpMode() && mWakeUpDetector == null) {
+        if (mConf.isSupportWakeUpMode() && mWakeUpDetector == null) {
             mWakeUpDetector = WakeUpDetector.getDetector(this, mVoiceDetector, mConf.getDebugFilePath() + "_WD", mConf.getVoiceSource().isStereo());
         }
         if (mWakeUpDetector != null) {
@@ -185,7 +184,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private void startVadBosTimer() {
         if (mTimerHandler != null) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
-            mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, VAD_BOS_TIMEOUT);
+            mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, mConf.getBosDuration());
         }
     }
 
@@ -201,7 +200,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public void stop() {
         Logger.d("VoiceService stop");
-        if(mWakeUpDetector != null) {
+        if (mWakeUpDetector != null) {
             mWakeUpDetector.close();
             mWakeUpDetector = null;
         }
