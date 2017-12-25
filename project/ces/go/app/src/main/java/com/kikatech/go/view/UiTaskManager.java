@@ -11,7 +11,7 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.model.UserMsg;
-import com.kikatech.go.ui.MediaPlayerUtil;
+import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;

@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.util;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -17,6 +17,8 @@ import java.io.IOException;
 public class MediaPlayerUtil {
     private static final String TAG = "MediaPlayerUtil";
 
+    private static final int STREAM_TYPE_ALERT = AudioManager.STREAM_MUSIC;
+
     private static MediaPlayer mMediaPlayer = new MediaPlayer();
     private static IPlayStatusListener playStatusListener;
 
@@ -28,7 +30,7 @@ public class MediaPlayerUtil {
                 mMediaPlayer = new MediaPlayer();
             }
 
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+            mMediaPlayer.setAudioStreamType(STREAM_TYPE_ALERT);
 
             AssetFileDescriptor afd = context.getResources().openRawResourceFd(alertRes);
             safeSetMediaPlayerSource(mMediaPlayer, afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
