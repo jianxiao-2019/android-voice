@@ -12,7 +12,6 @@ import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.core.webservice.WebSocket;
-import com.kikatech.voice.core.webservice.message.ConfigMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
@@ -127,9 +126,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         } else {
             mVoiceRecorder = new VoiceRecorder(voiceSource, new FileWriter(mConf.getDebugFilePath() + filePost, nextPipe));
         }
-
-        // Do not listen this message temporary.
-        // Message.register("CONFIG", ConfigMessage.class);
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
@@ -295,11 +291,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         @Override
         public void onMessage(final Message message) {
-            if (message instanceof ConfigMessage) {
-                mConf.updateServerConfig((ConfigMessage) message);
-                mVoiceDetector.updatePacketInterval(((ConfigMessage) message).packetInterval);
-                return;
-            }
             cleanVadBosTimer();
             if (mMainThreadHandler != null) {
                 mMainThreadHandler.post(new Runnable() {

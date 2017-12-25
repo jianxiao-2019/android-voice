@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.AgentCreator;
 import com.kikatech.voice.core.recorder.IVoiceSource;
-import com.kikatech.voice.core.webservice.message.ConfigMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
@@ -22,7 +21,6 @@ public class VoiceConfiguration {
     private AgentCreator mAgentCreator;
 
     private ConnectionConfiguration mConnConf;
-    private ServerConfiguration mServerConf;
 
     private int bosDuration = DEFAULT_BOS_DURATION;
     private String mDebugFilePath;
@@ -86,22 +84,6 @@ public class VoiceConfiguration {
             return;
         }
         mConnConf.mAsrConfiguration = conf;
-    }
-
-    public void updateServerConfig(ConfigMessage configMessage) {
-        mServerConf = new ServerConfiguration(configMessage.packetInterval);
-    }
-
-    public ServerConfiguration getServerConfiguration() {
-        return mServerConf;
-    }
-
-    public static class ServerConfiguration {
-        public final int packetInterval;
-
-        public ServerConfiguration(int packetInterval) {
-            this.packetInterval = packetInterval;
-        }
     }
 
     public static class ConnectionConfiguration {

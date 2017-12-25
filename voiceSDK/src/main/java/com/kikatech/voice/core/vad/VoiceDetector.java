@@ -72,34 +72,6 @@ public class VoiceDetector implements IDataPath {
         mExecutor.execute(new DetectorTask(tempData));
     }
 
-    public void updatePacketInterval(int packetInterval) {
-        Logger.d("updatePacketInterval packetInterval = " + packetInterval + " buff size = " + getFrameLength(packetInterval));
-        int newFrameLength = getFrameLength(packetInterval);
-        if (newFrameLength != mFrameLength) {
-            mExecutor.execute(new UpdateBuffSizeTask(newFrameLength));
-        }
-    }
-
-    private int getFrameLength(int packetInterval) {
-        return DEFAULT_FRAME_LENGTH * packetInterval / 500;
-    }
-
-    private class UpdateBuffSizeTask implements Runnable {
-
-        private int mBuffSize;
-
-        UpdateBuffSizeTask(int size) {
-            mBuffSize = size;
-        }
-
-        @Override
-        public void run() {
-            mBuf = new short[mBuffSize];
-            mBufLen = 0;
-            mFrameLength = mBuffSize;
-        }
-    }
-
     private class DetectorTask implements Runnable {
 
         private byte[] mData;
