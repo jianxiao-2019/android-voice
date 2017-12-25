@@ -290,11 +290,6 @@ public class VoiceTestingActivity extends BaseActivity
     }
 
     @Override
-    public void onSpeechProbabilityChanged(float prob) {
-        Logger.d("VoiceTestingActivity onStartListening prob = " + prob);
-    }
-
-    @Override
     public void onError(int reason) {
         Logger.d("VoiceTestingActivity onError reason = " + reason);
 

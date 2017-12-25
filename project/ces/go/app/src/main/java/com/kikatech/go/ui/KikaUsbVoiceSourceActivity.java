@@ -516,10 +516,6 @@ public class KikaUsbVoiceSourceActivity extends BaseActivity implements VoiceSer
     }
 
     @Override
-    public void onSpeechProbabilityChanged(float prob) {
-    }
-
-    @Override
     public void onError(int reason) {
         if (reason == REASON_NOT_CREATED) {
             if (mTextView != null) {
