@@ -18,23 +18,26 @@ public class AsrConfiguration {
     private boolean alterEnabled;
     private boolean emojiEnabled;
     private boolean punctuationEnabled;
+    private boolean vprEnabled;
 
     private AsrConfiguration(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
-                             boolean emojiEnable, boolean punctuationEnabled) {
-        setConfig(speechMode, spellingEnabled, alterEnabled, emojiEnable, punctuationEnabled);
+                             boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled) {
+        setConfig(speechMode, spellingEnabled, alterEnabled,
+                emojiEnable, punctuationEnabled, vprEnabled);
     }
 
     public void copyConfig(AsrConfiguration conf) {
-        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled, conf.punctuationEnabled);
+        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled, conf.punctuationEnabled, conf.vprEnabled);
     }
 
     private void setConfig(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
-                            boolean emojiEnable, boolean punctuationEnabled) {
+                            boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled) {
         this.spellingEnabled = spellingEnabled;
         this.speechMode = speechMode;
         this.alterEnabled = alterEnabled;
         this.emojiEnabled = emojiEnable;
         this.punctuationEnabled = punctuationEnabled;
+        this.vprEnabled = vprEnabled;
     }
 
     public void setSpeechMode(SpeechMode speechMode) {
@@ -73,6 +76,14 @@ public class AsrConfiguration {
         this.punctuationEnabled = punctuationEnabled;
     }
 
+    public boolean getVprEnabled() {
+        return this.vprEnabled;
+    }
+
+    public void setVprEnabled(boolean vprEnabled) {
+        this.vprEnabled = vprEnabled;
+    }
+
     public boolean getPunctuationEnabled() {
         return this.punctuationEnabled;
     }
@@ -104,6 +115,7 @@ public class AsrConfiguration {
         private boolean alterEnabled = false;
         private boolean emojiEnabled = false;
         private boolean punctuationEnabled = false;
+        private boolean vprEnabled = false;
 
         public Builder setSpeechMode(SpeechMode speechMode) {
             this.speechMode = speechMode;
@@ -130,8 +142,13 @@ public class AsrConfiguration {
             return this;
         }
 
+        public Builder setVprEnabled(boolean vprEnabled) {
+            this.vprEnabled = vprEnabled;
+            return this;
+        }
+
         public AsrConfiguration build() {
-            return new AsrConfiguration(speechMode, spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled);
+            return new AsrConfiguration(speechMode, spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled);
         }
     }
 }

@@ -88,11 +88,13 @@ public class WebSocket {
                 httpHeaders.put("emojiEnabled", String.valueOf(asrConf.getEmojiEnabled()));
                 httpHeaders.put("punctuationEnabled", String.valueOf(asrConf.getPunctuationEnabled()));
                 httpHeaders.put("speechMode", String.valueOf(asrConf.getSpeechMode()));
+                httpHeaders.put("vprEnabled", String.valueOf(asrConf.getVprEnabled()));
                 Logger.d("sign = " + conf.sign + " agent = " + conf.userAgent + " engine = " + conf.engine);
-                Logger.d("334567 alterEnabled = " + asrConf.getAlterEnabled() +
+                Logger.d("alterEnabled = " + asrConf.getAlterEnabled() +
                         " spellingEnabled = " + asrConf.getSpellingEnabled() +
                         " emojiEnabled = " + asrConf.getEmojiEnabled() +
                         " punctuationEnabled = " + asrConf.getPunctuationEnabled() +
+                        " vprEnabled = " + asrConf.getVprEnabled() +
                         " speechMode = " + String.valueOf(asrConf.getSpeechMode()));
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));
