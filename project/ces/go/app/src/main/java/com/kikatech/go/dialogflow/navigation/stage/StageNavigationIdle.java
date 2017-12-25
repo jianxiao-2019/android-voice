@@ -39,11 +39,15 @@ public class StageNavigationIdle extends BaseNaviStage {
                 return new StageAskAddress(mSceneBase, mFeedback, false);
             } else {
                 String[] userInputs = Intent.parseUserInputNBest(extra);
-                List<String> listToCheck = new ArrayList<>();
-                listToCheck.add(naviAddress);
-                listToCheck.addAll(Arrays.asList(userInputs));
-                SceneStage stageGo = getStageByCheckDestination(listToCheck.toArray(new String[0]));
-                return stageGo != null ? stageGo : new StageConfirmAddress(mSceneBase, mFeedback, naviAddress, naviAddress);
+                if(userInputs != null && userInputs.length > 0) {
+                    List<String> listToCheck = new ArrayList<>();
+                    listToCheck.add(naviAddress);
+                    listToCheck.addAll(Arrays.asList(userInputs));
+                    SceneStage stageGo = getStageByCheckDestination(listToCheck.toArray(new String[0]));
+                    return stageGo != null ? stageGo : new StageConfirmAddress(mSceneBase, mFeedback, naviAddress, naviAddress);
+                } else {
+                    return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress, naviAddress);
+                }
             }
         } else if (action.equals(NaviSceneActions.ACTION_NAV_CANCEL)) {
             return new StageStopNavigation(mSceneBase, mFeedback);
