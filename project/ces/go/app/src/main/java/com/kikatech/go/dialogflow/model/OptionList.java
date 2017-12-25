@@ -120,7 +120,7 @@ public class OptionList extends UiModel {
         dest.writeList(options);
     }
 
-    private OptionList(Parcel in) {
+    protected OptionList(Parcel in) {
         super(in);
         requestType = in.readByte();
         title = in.readString();

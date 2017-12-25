@@ -120,6 +120,10 @@ public class SmsContent extends EmojiMessage {
         return mMatchedContact != null ? mMatchedContact.displayName : null;
     }
 
+    public String getMatchedAvatar() {
+        return mMatchedContact != null ? mMatchedContact.photoUri : null;
+    }
+
     public boolean isSimilarContact() {
         return mMatchedContact != null && mMatchedContact.matchedType != ContactManager.MatchedContact.MatchedType.FULL_MATCHED;
     }

@@ -39,6 +39,16 @@
             android:visibility="gone"/>
 
         <include
+            android:id="@+id/go_layout_options_contact"
+            layout="@layout/go_layout_options_contact"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+            android:layout_marginRight="@dimen/go_layout_content_padding_left_right"
+            android:visibility="gone"/>
+
+
+        <include
             android:id="@+id/go_layout_usr_info"
             layout="@layout/go_layout_usr_info"
             android:layout_width="match_parent"

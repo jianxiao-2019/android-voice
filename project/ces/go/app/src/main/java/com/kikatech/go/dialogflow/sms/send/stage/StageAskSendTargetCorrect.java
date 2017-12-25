@@ -1,14 +1,19 @@
 package com.kikatech.go.dialogflow.sms.send.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.ContactOptionList;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -30,7 +35,8 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    protected @AsrConfigUtil.ASRMode
+    int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_CMD_ALTER;
     }
 
@@ -72,14 +78,25 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
 
     @Override
     public void action() {
-        mCurrentName = getSmsContent().getMatchedName();
-        String[] uiAndTtsText = SceneUtil.getConfirmContact(mSceneBase.getContext(), mCurrentName);
+        Context context = mSceneBase.getContext();
+        SmsContent smsContent = getSmsContent();
+        mCurrentName = smsContent.getMatchedName();
+        String photoUri = smsContent.getMatchedAvatar();
+        String[] uiAndTtsText = SceneUtil.getConfirmContact(context, mCurrentName);
         if (uiAndTtsText.length > 0) {
+            String[] options = SceneUtil.getOptionsCommon(context);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
-            TtsText tText = new TtsText(SceneUtil.ICON_MSG, uiText);
+            ContactOptionList contactOptionList = new ContactOptionList(OptionList.REQUEST_TYPE_TEXT);
+            contactOptionList.setTitle(uiText);
+            contactOptionList.setAvatar(photoUri);
+            contactOptionList.setAppInfo(AppInfo.SMS);
+            contactOptionList.setIconRes(SceneUtil.ICON_MSG);
+            for (String option : options) {
+                contactOptionList.add(new Option(option, null));
+            }
             Bundle args = new Bundle();
-            args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
+            args.putParcelable(SceneUtil.EXTRA_CONTACT_OPTIONS_LIST, contactOptionList);
             speak(ttsText, args);
         }
     }

@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import com.kikatech.go.dialogflow.EmojiMessage;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.util.AppConstants;
+import com.kikatech.go.util.AppInfo;
+import com.kikatech.go.util.FileUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
 
@@ -79,6 +81,18 @@ public class IMContent extends EmojiMessage {
 
     public String getSendTarget() {
         return targetName != null && targetName.length != 0 ? targetName[0] : null;
+    }
+
+    public AppInfo getAppInfo() {
+        String appPkgName = getIMAppPackageName();
+        return !TextUtils.isEmpty(appPkgName) ? AppInfo.toAppInfo(appPkgName) : null;
+    }
+
+    public String getSendTargetAvatar() {
+        String name = getSendTarget();
+        AppInfo appInfo = getAppInfo();
+        String appName = appInfo != null ? appInfo.getAppName() : null;
+        return !TextUtils.isEmpty(name) && !TextUtils.isEmpty(appName) ? FileUtil.getImAvatarFilePath(appName, name) : null;
     }
 
     public boolean isExplicitTarget(Context ctx) {

@@ -28,6 +28,7 @@ public class SceneUtil {
     public static final String EXTRA_EVENT = "extra_event";
     public static final String EXTRA_ALERT = "extra_alert";
     public static final String EXTRA_OPTIONS_LIST = "extra_options_list";
+    public static final String EXTRA_CONTACT_OPTIONS_LIST = "extra_contact_options_list";
     public static final String EXTRA_UI_TEXT = "extra_ui_text";
     public static final String EXTRA_TTS_TEXT = "extra_tts_text";
     public static final String EXTRA_USR_INFO = "extra_usr_info";

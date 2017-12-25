@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="go_layout_content_padding_top_bottom">30dp</dimen>
+    <dimen name="go_layout_content_padding_left_right">40dp</dimen>
+
+    <dimen name="go_layout_sleep_title_text_size">27dp</dimen>
+    <dimen name="go_layout_sleep_item_text_size">45dp</dimen>
+
+    <dimen name="go_layout_speak_text_max_size">45dp</dimen>
+    <dimen name="go_layout_speak_text_min_size">33dp</dimen>
+
+    <dimen name="go_layout_listen_text_max_size">33dp</dimen>
+    <dimen name="go_layout_listen_text_min_size">30dp</dimen>
+
+    <dimen name="go_layout_option_title_text_max_size">33dp</dimen>
+    <dimen name="go_layout_option_title_text_min_size">27dp</dimen>
+    <dimen name="go_layout_option_emoji_text_margin_top">112dp</dimen>
+    <dimen name="go_layout_option_emoji_text_size">78dp</dimen>
+
+    <dimen name="go_layout_option_item_text_max_size">45dp</dimen>
+    <dimen name="go_layout_option_item_text_min_size">33dp</dimen>
+
+    <dimen name="go_layout_usr_info_name_im_name_text_size">27dp</dimen>
+    <dimen name="go_layout_usr_info_name_text_max_size">45dp</dimen>
+    <dimen name="go_layout_usr_info_name_text_min_size">33dp</dimen>
+
+    <dimen name="go_layout_usr_msg_name_text_size">27dp</dimen>
+    <dimen name="go_layout_usr_msg_content_text_max_size">33dp</dimen>
+    <dimen name="go_layout_usr_msg_content_text_min_size">27dp</dimen>
+
+    <dimen name="go_layout_msg_sent_text_size">45dp</dimen>
+
+    <dimen name="go_layout_status_bar_height">156dp</dimen>
+
+    <dimen name="go_layout_usr_msg_avatar_margin_top">13.5dp</dimen>
+    <dimen name="go_layout_usr_msg_avatar_margin_left">15dp</dimen>
+
+
+    <!-- drawer -->
+    <dimen name="drawer_width">330dp</dimen>
+    <dimen name="drawer_title_area_height">100dp</dimen>
+    <dimen name="drawer_item_area_height">91dp</dimen>
+    <dimen name="drawer_underline_height">0.5dp</dimen>
+    <dimen name="drawer_title_text_size">26dp</dimen>
+    <dimen name="drawer_item_text_size">23dp</dimen>
+    <dimen name="drawer_item_im_popup_menu_width">295dp</dimen>
+    <dimen name="drawer_item_im_popup_menu_item_height">76dp</dimen>
+    <dimen name="drawer_item_im_popup_menu_item_text_size">21dp</dimen>
+
+
+    <!-- dialog -->
+    <dimen name="dialog_margin_large">40dp</dimen>
+    <dimen name="dialog_margin">22dp</dimen>
+    <dimen name="dialog_padding">18dp</dimen>
+    <dimen name="dialog_padding_left_right">12dp</dimen>
+    <dimen name="dialog_content_margin_space">10dp</dimen>
+    <dimen name="dialog_text_title_size">18sp</dimen>
+    <dimen name="dialog_text_content_size">16sp</dimen>
+    <dimen name="dialog_text_content_padding_left_right">4dp</dimen>
+    <dimen name="dialog_button_text_size">16sp</dimen>
+    <dimen name="dialog_button_height">44dp</dimen>
+
+    <dimen name="underline_width">2px</dimen>
+</resources>

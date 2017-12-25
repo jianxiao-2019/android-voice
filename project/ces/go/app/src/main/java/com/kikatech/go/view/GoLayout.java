@@ -22,6 +22,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.model.ContactOptionList;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
@@ -105,6 +106,12 @@ public class GoLayout extends FrameLayout {
     private View mListenLayout;
     private GoTextView mListenView;
 
+    private View mOptionsContactLayout;
+    private LinearLayout mOptionsContactItemLayout;
+    private ImageView mOptionsContactAvatar;
+    private TextView mOptionsContactName;
+    private ImageView mOptionsContactImIcon;
+
     private View mOptionsLayout;
     private LinearLayout mOptionsItemLayout;
     private ImageView mOptionsTitleIcon;
@@ -178,6 +185,12 @@ public class GoLayout extends FrameLayout {
         mOptionsTitleText = (GoTextView) findViewById(R.id.go_layout_options_title_text);
         mOptionsItemLayout = (LinearLayout) findViewById(R.id.go_layout_options_item);
         mOptionsTitleEmojiView = (TextView) findViewById(R.id.go_layout_options_title_emoji_view);
+
+        mOptionsContactLayout = findViewById(R.id.go_layout_options_contact);
+        mOptionsContactItemLayout = (LinearLayout) findViewById(R.id.go_layout_options_contact_item);
+        mOptionsContactAvatar = (ImageView) findViewById(R.id.go_layout_options_contact_avatar);
+        mOptionsContactName = (TextView) findViewById(R.id.go_layout_options_contact_name);
+        mOptionsContactImIcon = (ImageView) findViewById(R.id.go_layout_options_contact_im_icon);
 
         mUsrInfoLayout = findViewById(R.id.go_layout_usr_info);
         mUsrInfoAvatar = (ImageView) findViewById(R.id.go_layout_usr_info_avatar);
@@ -313,12 +326,7 @@ public class GoLayout extends FrameLayout {
     public void sleep() {
         DisplayMode targetMode = DisplayMode.SLEEP;
         onModeChanged(targetMode);
-        mSpeakLayout.setVisibility(GONE);
-        mListenLayout.setVisibility(GONE);
-        mOptionsLayout.setVisibility(GONE);
-        mUsrInfoLayout.setVisibility(GONE);
-        mUsrMsgLayout.setVisibility(GONE);
-        mMsgSentLayout.setVisibility(GONE);
+        adjustComponentsViewVisibility(null);
         mSleepLayout.setVisibility(VISIBLE);
         setOnTouchListener(new FlexibleOnTouchListener(100, new FlexibleOnTouchListener.ITouchListener() {
             @Override
@@ -355,12 +363,7 @@ public class GoLayout extends FrameLayout {
         DisplayMode targetMode = DisplayMode.AWAKE;
         onModeChanged(targetMode);
         mSleepLayout.setVisibility(GONE);
-        mSpeakLayout.setVisibility(GONE);
-        mListenLayout.setVisibility(GONE);
-        mOptionsLayout.setVisibility(GONE);
-        mUsrInfoLayout.setVisibility(GONE);
-        mUsrMsgLayout.setVisibility(GONE);
-        mMsgSentLayout.setVisibility(GONE);
+        adjustComponentsViewVisibility(null);
         setOnTouchListener(null);
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
@@ -406,12 +409,7 @@ public class GoLayout extends FrameLayout {
         mSpeakViewText.setText(uiText);
         DialogFlowForegroundService.processMsgChanged(uiText);
 
-        mSpeakLayout.setVisibility(VISIBLE);
-        mListenLayout.setVisibility(GONE);
-        mOptionsLayout.setVisibility(GONE);
-        mUsrInfoLayout.setVisibility(GONE);
-        mUsrMsgLayout.setVisibility(GONE);
-        mMsgSentLayout.setVisibility(GONE);
+        adjustComponentsViewVisibility(mSpeakLayout);
 
         onStatusChanged(ViewStatus.TTS);
     }
@@ -438,12 +436,7 @@ public class GoLayout extends FrameLayout {
         }
         mListenView.setText(text);
 
-        mSpeakLayout.setVisibility(GONE);
-        mListenLayout.setVisibility(VISIBLE);
-        mOptionsLayout.setVisibility(GONE);
-        mUsrInfoLayout.setVisibility(GONE);
-        mUsrMsgLayout.setVisibility(GONE);
-        mMsgSentLayout.setVisibility(GONE);
+        adjustComponentsViewVisibility(mListenLayout);
 
         if (!isFinished) {
             onStatusChanged(ViewStatus.LISTEN_1);
@@ -464,12 +457,7 @@ public class GoLayout extends FrameLayout {
 
         lock();
 
-        mSpeakLayout.setVisibility(GONE);
-        mListenLayout.setVisibility(GONE);
-        mOptionsLayout.setVisibility(VISIBLE);
-        mUsrInfoLayout.setVisibility(GONE);
-        mUsrMsgLayout.setVisibility(GONE);
-        mMsgSentLayout.setVisibility(GONE);
+        adjustComponentsViewVisibility(mOptionsLayout);
 
         mOptionsItemLayout.removeAllViews();
 
@@ -534,6 +522,85 @@ public class GoLayout extends FrameLayout {
         onStatusChanged(ViewStatus.TTS);
     }
 
+    /**
+     * display content spoken by tts service with contact option list
+     **/
+    public synchronized void displayContactOptions(final ContactOptionList optionList, final IOnOptionSelectListener listener) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "displayOptions");
+        }
+
+        if (DisplayMode.SLEEP.equals(mCurrentMode)) {
+            return;
+        }
+
+        lock();
+
+        adjustComponentsViewVisibility(mOptionsContactLayout);
+
+        mOptionsContactItemLayout.removeAllViews();
+
+        try {
+            if (optionList != null && !optionList.isEmpty()) {
+                Context appCtx = getContext().getApplicationContext();
+
+                AppInfo appInfo = optionList.getAppInfo();
+                if (appInfo != null) {
+                    Glide.with(appCtx)
+                            .load(appInfo.getAppIconSmall())
+                            .dontTransform()
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .into(mOptionsContactImIcon);
+                } else {
+                    Glide.clear(mOptionsContactImIcon);
+                }
+
+                Glide.with(appCtx)
+                        .load(optionList.getAvatar())
+                        .asBitmap()
+                        .error(R.drawable.kika_userpic_small_default)
+                        .transform(new FitCenter(appCtx), new CropCircleTransformation(appCtx))
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(mOptionsContactAvatar);
+
+                String contactName = optionList.getTitle();
+                mOptionsContactName.setText(contactName);
+                DialogFlowForegroundService.processMsgChanged(contactName);
+
+                int ITEM_MARGIN = ResolutionUtil.dp2px(appCtx, 7);
+                for (final Option option : optionList.getList()) {
+                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_options_item, null);
+                    mOptionsContactItemLayout.addView(optionView);
+                    optionView.setText(option.getDisplayText());
+                    optionView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (listener != null) {
+                                listener.onSelected(optionList.getRequestType(), optionList.indexOf(option), option);
+                            }
+                        }
+                    });
+                    int topMargin = ITEM_MARGIN / 2;
+                    int bottomMargin = ITEM_MARGIN / 2;
+                    int idxOption = optionList.indexOf(option);
+                    if (idxOption == 0) {
+                        topMargin = 0;
+                    } else if (idxOption == optionList.size() - 1) {
+                        bottomMargin = 0;
+                    }
+                    LinearLayout.LayoutParams optionParam = (LinearLayout.LayoutParams) optionView.getLayoutParams();
+                    optionParam.setMargins(0, topMargin, 0, bottomMargin);
+                }
+            }
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
+
+        onStatusChanged(ViewStatus.TTS);
+    }
+
     public synchronized void displayUsrInfo(String usrAvatar, String usrName, AppInfo appInfo) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayUsrInfo");
@@ -545,12 +612,7 @@ public class GoLayout extends FrameLayout {
 
         lock();
 
-        mSpeakLayout.setVisibility(GONE);
-        mListenLayout.setVisibility(GONE);
-        mOptionsLayout.setVisibility(GONE);
-        mUsrInfoLayout.setVisibility(VISIBLE);
-        mUsrMsgLayout.setVisibility(GONE);
-        mMsgSentLayout.setVisibility(GONE);
+        adjustComponentsViewVisibility(mUsrInfoLayout);
 
         Context context = getContext();
         Glide.with(context.getApplicationContext())
@@ -589,11 +651,7 @@ public class GoLayout extends FrameLayout {
 
         lock();
 
-        mSpeakLayout.setVisibility(GONE);
-        mListenLayout.setVisibility(GONE);
-        mOptionsLayout.setVisibility(GONE);
-        mUsrInfoLayout.setVisibility(GONE);
-        mUsrMsgLayout.setVisibility(VISIBLE);
+        adjustComponentsViewVisibility(mUsrMsgLayout);
 
         Context context = getContext();
         Glide.with(context.getApplicationContext())
@@ -631,14 +689,22 @@ public class GoLayout extends FrameLayout {
 
         lock();
 
+        adjustComponentsViewVisibility(mMsgSentLayout);
+
+        onStatusChanged(ViewStatus.TTS);
+    }
+
+    private synchronized void adjustComponentsViewVisibility(View componentsToShow) {
         mSpeakLayout.setVisibility(GONE);
         mListenLayout.setVisibility(GONE);
         mOptionsLayout.setVisibility(GONE);
+        mOptionsContactLayout.setVisibility(GONE);
         mUsrInfoLayout.setVisibility(GONE);
         mUsrMsgLayout.setVisibility(GONE);
-        mMsgSentLayout.setVisibility(VISIBLE);
-
-        onStatusChanged(ViewStatus.TTS);
+        mMsgSentLayout.setVisibility(GONE);
+        if (componentsToShow != null) {
+            componentsToShow.setVisibility(VISIBLE);
+        }
     }
 
 

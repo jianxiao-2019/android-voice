@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.ContactOptionList;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
@@ -130,6 +131,12 @@ public class UiTaskManager {
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
         if (extras != null) {
             String uiText = extras.getString(SceneUtil.EXTRA_UI_TEXT, text);
+            if (extras.containsKey(SceneUtil.EXTRA_CONTACT_OPTIONS_LIST)) {
+                ContactOptionList contactOptionList = extras.getParcelable(SceneUtil.EXTRA_CONTACT_OPTIONS_LIST);
+                if (contactOptionList != null && !contactOptionList.isEmpty()) {
+                    displayContactOptions(contactOptionList);
+                }
+            }
             if (extras.containsKey(SceneUtil.EXTRA_OPTIONS_LIST)) {
                 OptionList optionList = extras.getParcelable(SceneUtil.EXTRA_OPTIONS_LIST);
                 if (optionList != null && !optionList.isEmpty()) {
@@ -325,6 +332,27 @@ public class UiTaskManager {
             @Override
             public void run() {
                 layout.displayOptions(optionList, new GoLayout.IOnOptionSelectListener() {
+                    @Override
+                    public void onSelected(byte requestType, int index, Option option) {
+                        if (mFeedback != null) {
+                            clearQueue();
+                            mFeedback.onOptionSelected(requestType, index, option);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void displayContactOptions(final ContactOptionList contactOptionList) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.displayContactOptions(contactOptionList, new GoLayout.IOnOptionSelectListener() {
                     @Override
                     public void onSelected(byte requestType, int index, Option option) {
                         if (mFeedback != null) {
