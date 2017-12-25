@@ -1,37 +1,46 @@
 package com.kikatech.go.util.timer;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 /**
  * @author SkeeterWang Created on 2017/12/20.
  */
 
-class TimerThread {
+class TimerThread extends HandlerThread {
     private static TimerThread sIns;
-
-    private ScheduledThreadPoolExecutor mExecutor;
-
-    static synchronized TimerThread getIns() {
-        if (sIns == null) {
-            sIns = new TimerThread();
-        }
-        return sIns;
-    }
+    private static Handler sHandler;
 
     private TimerThread() {
-        mExecutor = new ScheduledThreadPoolExecutor(1, new ScheduledThreadPoolExecutor.DiscardOldestPolicy());
+        super("TimerThread", android.os.Process.THREAD_PRIORITY_DEFAULT);
     }
 
-    void execute(Runnable runnable) {
-        mExecutor.execute(runnable);
+    private static void ensureThreadLocked() {
+        if (sIns == null) {
+            sIns = new TimerThread();
+            sIns.start();
+            sHandler = new Handler(sIns.getLooper());
+        }
     }
 
-    void executeDelay(Runnable runnable, long delay) {
-        mExecutor.schedule(runnable, delay, TimeUnit.MILLISECONDS);
+    public static TimerThread get() {
+        synchronized (TimerThread.class) {
+            ensureThreadLocked();
+            return sIns;
+        }
     }
 
-    void remove(Runnable runnable) {
-        mExecutor.remove(runnable);
+    public static Handler getHandler() {
+        synchronized (TimerThread.class) {
+            ensureThreadLocked();
+            return sHandler;
+        }
+    }
+
+    public static void post(final Runnable runnable) {
+        synchronized (TimerThread.class) {
+            ensureThreadLocked();
+            sHandler.post(runnable);
+        }
     }
 }

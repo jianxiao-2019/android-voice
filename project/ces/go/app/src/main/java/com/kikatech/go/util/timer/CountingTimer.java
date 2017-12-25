@@ -1,7 +1,5 @@
 package com.kikatech.go.util.timer;
 
-import com.kikatech.go.util.LogUtil;
-
 /**
  * @author SkeeterWang Created on 2017/3/6.
  */
@@ -57,7 +55,7 @@ public class CountingTimer implements Runnable {
     }
 
     private void reset() {
-        TimerThread.getIns().remove(this);
+        TimerThread.getHandler().removeCallbacks(this);
         isCounting = false;
         mCountedTime = 0;
     }
@@ -69,7 +67,7 @@ public class CountingTimer implements Runnable {
         if (mCountingListener != null) mCountingListener.onTimeTick(mCountedTime);
         restTime = restTime - countDownInterval;
         countDownInterval = restTime == 0 || restTime > mCountDownInterval ? mCountDownInterval : restTime;
-        TimerThread.getIns().executeDelay(this, countDownInterval);
+        TimerThread.getHandler().postDelayed(this, countDownInterval);
     }
 
     private void endStop() {
@@ -83,7 +81,7 @@ public class CountingTimer implements Runnable {
         if (mCountedTime == 0 && mCountingListener != null)
             mCountingListener.onTimeTickStart();
         isCounting = true;
-        TimerThread.getIns().execute(this);
+        TimerThread.getHandler().post(this);
     }
 
     public void stop() {
