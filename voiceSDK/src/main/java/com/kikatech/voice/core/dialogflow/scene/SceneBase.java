@@ -79,11 +79,13 @@ public abstract class SceneBase implements DialogObserver {
             return;
         }
         if (LogUtil.DEBUG) {
+            LogUtil.logw(TAG, "Current:" + this);
             LogUtil.logw(TAG, "onIntent : [" + intent.getScene() + "-" + intent.getAction() + "]" + intent.getBundleDetail());
         }
         if (Intent.ACTION_EXIT.equals(action)) {
             onExit();
             mStage = idle();
+            if(LogUtil.DEBUG) LogUtil.logw(TAG, "set mStage:" + mStage);
         } else {
             boolean isDefaultScene = Intent.DEFAULT_SCENE.equals(scene());
             boolean isUnknownIntent = Intent.ACTION_UNKNOWN.equals(action);
@@ -103,7 +105,13 @@ public abstract class SceneBase implements DialogObserver {
                 nextStage = mStage.next(action, intent.getExtra());
             }
 
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "mStage:" + mStage + ", toStayCurrentStage:" + toStayCurrentStage);
+                LogUtil.logw(TAG, "nextStage:" + nextStage);
+            }
+
             if (nextStage == null) {
+                LogUtil.logw(TAG, "[Warning] nextStage is null !!");
                 return;
             }
 
@@ -117,6 +125,7 @@ public abstract class SceneBase implements DialogObserver {
             }
 
             mStage = nextStage;
+            if(LogUtil.DEBUG) LogUtil.logw(TAG, "[brad] set mStage:" + mStage);
             mStage.isUncaughtLoop = isUncaughtIntent;
             mStage.prepareAction(scene(), action, mStage);
         }
@@ -137,6 +146,7 @@ public abstract class SceneBase implements DialogObserver {
     public void nextStage(SceneStage stage) {
         if (stage != null) {
             mStage = stage;
+            if(LogUtil.DEBUG) LogUtil.logw(TAG, "[brad] set mStage:" + mStage);
             stage.prepareAction(scene(), "", stage);
         }
     }

@@ -18,6 +18,7 @@ import java.util.List;
 public class SceneManager implements DialogObserver, ISceneManager {
 
     private Subscribe<SceneBase> mSubscribe = new Subscribe<>();
+    private static final String TAG = "SceneManager";
 
     private String mScene = null;
 
@@ -48,8 +49,8 @@ public class SceneManager implements DialogObserver, ISceneManager {
         intent.correctScene(mScene);
         String scene = intent.getScene();
         if (LogUtil.DEBUG) {
-            LogUtil.log("Intent", String.format("mScene: %s", mScene));
-            LogUtil.log("Intent", String.format("scene: %s", scene));
+            LogUtil.log(TAG, String.format("mScene: %s", mScene));
+            LogUtil.log(TAG, String.format("scene: %s", scene));
         }
         if (!TextUtils.isEmpty(scene)) {
             if (!TextUtils.isEmpty(mScene)) {
@@ -82,7 +83,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     private void prepareSwitchSceneInfo(String targetScene, Intent intent) {
         if (LogUtil.DEBUG) {
-            LogUtil.log("Intent", "prepareSwitchSceneInfo, current:"+mScene+", target:" + targetScene+ ", intent:" + intent);
+            LogUtil.log(TAG, "prepareSwitchSceneInfo, current:"+mScene+", target:" + targetScene+ ", intent:" + intent);
         }
         if (!TextUtils.isEmpty(mScene) && intent != null) {
             SceneBase src = getScene(mScene);
@@ -92,7 +93,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
                     intent.getExtra().putString(Intent.KEY_SWITCH_SCENE_INFO, json);
                 }
                 if (LogUtil.DEBUG) {
-                    LogUtil.log("Intent", "prepareSwitchSceneInfo, json:" + json);
+                    LogUtil.log(TAG, "prepareSwitchSceneInfo, json:" + json);
                 }
             }
         }
@@ -110,6 +111,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     private void notifyObservers(Intent intent) {
         String scene = intent.getScene();
+        LogUtil.log(TAG, "scene:" + scene + ", intent:" + intent);
         boolean isEmojiIntent = intent.isEmoji();
         List<SceneBase> list = mSubscribe.list(scene);
         for (SceneBase subscriber : list) {
@@ -124,7 +126,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
     @Override
     public void exitScene(SceneBase scene) {
         if (LogUtil.DEBUG) {
-            LogUtil.log("SceneManager", "mScene:" + mScene + ", scene:" + scene);
+            LogUtil.log(TAG, "mScene:" + mScene + ", scene:" + scene);
         }
         if (!TextUtils.isEmpty(mScene) && mScene.equals(scene.scene())) {
             mScene = null;
