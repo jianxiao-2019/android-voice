@@ -67,7 +67,7 @@ public class BaseNaviStage extends BaseSceneStage {
                             LogUtil.logd(TAG, String.format("name: %1$s, address: %2$s", name, address));
                         }
                         if (processedUserInput.equals(name.toLowerCase()) && !TextUtils.isEmpty(address)) {
-                            return new StageNavigationGo(mSceneBase, mFeedback, address);
+                            return new StageNavigationGo(mSceneBase, mFeedback, address, name, true);
                         }
                     }
                     for (String address : navigatedAddrList) {
@@ -75,7 +75,7 @@ public class BaseNaviStage extends BaseSceneStage {
                             if (LogUtil.DEBUG) {
                                 LogUtil.logd(TAG, "Skip asking, go to " + address + " directly");
                             }
-                            return new StageNavigationGo(mSceneBase, mFeedback, address);
+                            return new StageNavigationGo(mSceneBase, mFeedback, address, null, true);
                         }
                     }
                 }

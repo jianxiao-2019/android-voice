@@ -1,6 +1,8 @@
 package com.kikatech.go.dialogflow.navigation.stage;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
@@ -17,11 +19,15 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 public class StageNavigationGo extends BaseNaviStage {
 
+    private final String mNaviPlaceName;
     private final String mNaviAddress;
+    private final boolean mSpeakDestination;
 
-    StageNavigationGo(SceneBase scene, ISceneFeedback feedback, String naviAddress) {
+    StageNavigationGo(SceneBase scene, ISceneFeedback feedback, String naviAddress, String naviPlaceName, boolean speakDestination) {
         super(scene, feedback);
         mNaviAddress = naviAddress;
+        mNaviPlaceName = naviPlaceName;
+        mSpeakDestination = speakDestination;
         GlobalPref.getIns().addNavigatedAddress(mNaviAddress);
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "StageNavigationGo init, mNaviAddress:" + mNaviAddress);
@@ -41,7 +47,14 @@ public class StageNavigationGo extends BaseNaviStage {
 
     @Override
     public void action() {
-        String[] uiAndTtsText = SceneUtil.getStartNavigation(mSceneBase.getContext());
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText;
+        if (mSpeakDestination) {
+            String destinationToSpeak = !TextUtils.isEmpty(mNaviPlaceName) ? mNaviPlaceName : mNaviAddress;
+            uiAndTtsText = SceneUtil.getStartNavigationWithDestination(context, destinationToSpeak);
+        } else {
+            uiAndTtsText = SceneUtil.getStartNavigation(context);
+        }
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];

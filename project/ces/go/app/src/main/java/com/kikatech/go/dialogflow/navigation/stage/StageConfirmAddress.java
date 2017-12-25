@@ -51,7 +51,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
         switch (action) {
             case NaviSceneActions.ACTION_NAV_YES:
-                return new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress);
+                return new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress, null, false);
             case NaviSceneActions.ACTION_NAV_NO:
                 return new StageAskAddress(mSceneBase, mFeedback, false);
             case NaviSceneActions.ACTION_NAV_CHANGE:
@@ -104,7 +104,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
             @Override
             public void onTimeTickEnd() {
-                mSceneBase.nextStage(new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress));
+                mSceneBase.nextStage(new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress, null, false));
             }
 
             @Override

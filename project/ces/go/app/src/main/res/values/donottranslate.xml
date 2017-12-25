@@ -35,6 +35,10 @@ it's the alpha version now."</string>
         <item>"Navigation start."</item>
     </string-array>
 
+    <string-array name="tts_start_navigation_with_destination">
+        <item>"Ok, start navigation to %s."</item>
+    </string-array>
+
     <string-array name="tts_stop_navigation">
         <item>"OK! Stopping navigation."</item>
         <item>"No problem, stopping navigation."</item>

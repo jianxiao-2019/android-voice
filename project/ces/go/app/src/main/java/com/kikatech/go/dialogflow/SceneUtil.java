@@ -63,6 +63,13 @@ public class SceneUtil {
         return new String[]{ui, getStringFromArray(ttsArray)};
     }
 
+    public static String[] getStartNavigationWithDestination(Context context, String destination) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_start_navigation);
+        String[] ttsArray = resource.getStringArray(R.array.tts_start_navigation_with_destination);
+        return new String[]{ui, tryFormat(getStringFromArray(ttsArray), destination)};
+    }
+
     public static String getStopNavigation(Context context) {
         Resources resource = context.getResources();
         String[] ttsArray = resource.getStringArray(R.array.tts_stop_navigation);
