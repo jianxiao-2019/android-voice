@@ -70,11 +70,17 @@ public class ApiAiAgent extends Agent {
 
         AIResponse aiResponse = null;
 
+        long t = System.currentTimeMillis();
         try {
             aiResponse = mAIService.textRequest(request);
         } catch (final AIServiceException e) {
-            if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Err:" + e);
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
         }
+        if (LogUtil.DEBUG)
+            LogUtil.logd(TAG, "query complete, spend: " + (System.currentTimeMillis() - t) + " ms");
 
         return fromResponse(aiResponse, nBestWords);
     }

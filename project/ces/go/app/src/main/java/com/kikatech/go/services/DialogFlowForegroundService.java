@@ -516,7 +516,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         }
                         pauseAsr();
                         if (supportAsrInterrupted) {
-                            resumeAsr();
+                            resumeAsr(false);
                         }
                     }
 
@@ -560,9 +560,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSceneExit");
                         }
-                        if (proactive) {
-                            resumeAsr();
-                        }
+
                         String action = DFServiceEvent.ACTION_ON_SCENE_EXIT;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_IS_PROACTIVE, proactive);
@@ -669,9 +667,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
-    private synchronized void resumeAsr() {
+    private void resumeAsr() {
+        resumeAsr(true);
+    }
+
+    private synchronized void resumeAsr(boolean startBosNow) {
         if (!asrActive) {
-            mDialogFlowService.resumeAsr();
+            mDialogFlowService.resumeAsr(startBosNow);
             asrActive = true;
         }
     }
