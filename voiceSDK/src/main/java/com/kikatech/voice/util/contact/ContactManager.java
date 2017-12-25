@@ -54,7 +54,7 @@ public class ContactManager {
                             final long t = System.currentTimeMillis();
                             HashMap<String, PhoneBookContact> pb = getPhoneBook(ctx);
                             mPhoneBook.clear();
-                            if(pb != null && pb.size() > 0) {
+                            if (pb != null && pb.size() > 0) {
                                 mPhoneBook.putAll(pb);
                             }
 
@@ -195,11 +195,13 @@ public class ContactManager {
         HashMap<String, PhoneBookContact> phoneBook = new HashMap<>();
 
         final int nameIdx = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+        final int photoIdx = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
         final int pnIdx = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
         final int idIdx = phones.getColumnIndex(ContactsContract.Contacts._ID);
 
         while (phones.moveToNext()) {
             String name = phones.getString(nameIdx);
+            String photoUri = phones.getString(photoIdx);
             String phoneNumber = phones.getString(pnIdx);
             long id = Long.valueOf(phones.getString(idIdx));
 
@@ -211,7 +213,7 @@ public class ContactManager {
                         contact.addNumber(phoneNumber, numberType);
                     }
                 } else {
-                    phoneBook.put(name, new PhoneBookContact(id, name, phoneNumber, numberType));
+                    phoneBook.put(name, new PhoneBookContact(id, name, photoUri, phoneNumber, numberType));
                 }
 
                 if (LogUtil.DEBUG) {
@@ -293,6 +295,7 @@ public class ContactManager {
             this.matchedType = matchType;
             this.id = contact.id;
             this.displayName = contact.displayName;
+            this.photoUri = contact.photoUri;
             this.phoneNumbers = contact.phoneNumbers;
         }
 
@@ -306,15 +309,17 @@ public class ContactManager {
 
         public long id;
         public String displayName;
+        public String photoUri;
         public List<NumberType> phoneNumbers = new ArrayList<>();
 
         PhoneBookContact(String phoneNumber, String type) {
-            this(-1, null, phoneNumber, type);
+            this(-1, null, null, phoneNumber, type);
         }
 
-        PhoneBookContact(long id, String displayName, String phoneNumber, String type) {
+        PhoneBookContact(long id, String displayName, String photoUri, String phoneNumber, String type) {
             this.id = id;
             this.displayName = displayName;
+            this.photoUri = photoUri;
             if (!TextUtils.isEmpty(phoneNumber)) {
                 this.phoneNumbers.add(new NumberType(phoneNumber, type));
                 //phoneNumbers.put(phoneNumber, type);
@@ -327,7 +332,7 @@ public class ContactManager {
         public PhoneBookContact clone(int idxNumber) {
             if (idxNumber < phoneNumbers.size()) {
                 NumberType nt = phoneNumbers.get(idxNumber);
-                return new PhoneBookContact(id, displayName, nt.number, nt.type);
+                return new PhoneBookContact(id, displayName, photoUri, nt.number, nt.type);
             }
             return null;
         }
