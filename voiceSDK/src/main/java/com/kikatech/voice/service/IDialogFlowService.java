@@ -79,7 +79,7 @@ public interface IDialogFlowService {
 
     void pauseAsr();
 
-    void resumeAsr();
+    void resumeAsr(boolean startBosNow);
 
     void quitService();
 

@@ -183,14 +183,19 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     private void startVadBosTimer() {
         if (mTimerHandler != null) {
+            Logger.d("VoiceService startVadBosTimer");
             mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, mConf.getBosDuration());
         }
     }
 
-    public synchronized void resumeAsr() {
+    public synchronized void resumeAsr(boolean startBosNow) {
         mIsAsrPaused = false;
-        startVadBosTimer();
+        if(startBosNow) {
+            startVadBosTimer();
+        } else {
+            Logger.w("VoiceService BOS is NOT starting now !!");
+        }
     }
 
     public synchronized void pauseAsr() {
