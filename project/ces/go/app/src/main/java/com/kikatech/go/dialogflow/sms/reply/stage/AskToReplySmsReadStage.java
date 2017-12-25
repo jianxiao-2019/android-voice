@@ -75,7 +75,7 @@ public class AskToReplySmsReadStage extends BaseReplySmsStage {
 
             Pair<String, Integer>[] pairs = new Pair[2];
             pairs[0] = new Pair<>(ttsPart1, TtsSource.TTS_SPEAKER_1);
-            pairs[1] = new Pair<>(ttsPart2, TtsSource.TTS_SPEAKER_2);
+            pairs[1] = new Pair<>(ttsPart2, TtsSource.TTS_SPEAKER_1);
             speak(pairs, args);
         }
     }
