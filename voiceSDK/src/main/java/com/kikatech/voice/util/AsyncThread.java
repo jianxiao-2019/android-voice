@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AsyncThread {
 
+    private static final int POOL_SIZE = 2;
     private static AsyncThread sIns;
 
     private ScheduledThreadPoolExecutor mExecutor;
@@ -19,7 +20,7 @@ public class AsyncThread {
     }
 
     private AsyncThread() {
-        mExecutor = new ScheduledThreadPoolExecutor(2, new ScheduledThreadPoolExecutor.DiscardOldestPolicy());
+        mExecutor = new ScheduledThreadPoolExecutor(POOL_SIZE, new ScheduledThreadPoolExecutor.DiscardOldestPolicy());
     }
 
     public void execute(Runnable runnable) {
@@ -32,5 +33,9 @@ public class AsyncThread {
 
     public void remove(Runnable runnable) {
         mExecutor.remove(runnable);
+    }
+
+    public synchronized boolean isBusy() {
+        return mExecutor.getQueue().size() > 0;
     }
 }
