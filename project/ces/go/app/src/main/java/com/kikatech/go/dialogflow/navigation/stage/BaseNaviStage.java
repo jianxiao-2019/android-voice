@@ -32,7 +32,7 @@ public class BaseNaviStage extends BaseSceneStage {
             LogUtil.log(TAG, "action:" + action);
         }
         if (NaviSceneActions.ACTION_NAV_CANCEL.equals(action)) {
-            return new StageCancelNaviation(mSceneBase, mFeedback);
+            return new StageCancelNavigation(mSceneBase, mFeedback);
         }
         return null;
     }

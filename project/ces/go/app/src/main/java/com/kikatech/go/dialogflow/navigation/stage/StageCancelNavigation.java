@@ -14,9 +14,9 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * @author SkeeterWang Created on 2017/11/27.
  */
 
-public class StageCancelNaviation extends BaseSceneStage {
+public class StageCancelNavigation extends BaseSceneStage {
 
-    public StageCancelNaviation(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    public StageCancelNavigation(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
     }
 
