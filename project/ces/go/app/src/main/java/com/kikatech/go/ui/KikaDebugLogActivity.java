@@ -20,7 +20,6 @@ import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.go.view.GoLayout;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -252,11 +251,11 @@ public class KikaDebugLogActivity extends Activity {
 
     private void loadLog() {
         LogUtil.log("KikaDebugLogActivity", "start");
-        tvLogContent.post(mLockUI);
+        runOnUiThread(mLockUI);
         loadLogContent(new ILoadCallback() {
             @Override
             public void onLoadComplete(String logTitle, final String log) {
-                tvLogContent.post(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         tvLogContent.setText(log);
