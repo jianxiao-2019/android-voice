@@ -68,6 +68,9 @@ public class StageNavigationGo extends BaseNaviStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onStageActionDone, isInterrupted:" + isInterrupted + ", delayAsrResume:" + delayAsrResume);
+        }
         exitScene();
     }
 }

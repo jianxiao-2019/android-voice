@@ -56,17 +56,23 @@ public abstract class BaseSceneStage extends SceneStage {
     }
 
 
-    protected void startTimeoutTimer(CountingTimer.ICountingListener listener) {
+    protected synchronized void startTimeoutTimer(CountingTimer.ICountingListener listener) {
         startTimeoutTimer(DEFAULT_STAGE_TIMEOUT, listener);
     }
 
-    protected void startTimeoutTimer(long millis, CountingTimer.ICountingListener listener) {
+    private void startTimeoutTimer(long millis, CountingTimer.ICountingListener listener) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "startTimeoutTimer:" + millis);
+        }
         stopTimeoutTimer();
         mStageTimeoutTimer = new CountingTimer(millis, listener);
         mStageTimeoutTimer.start();
     }
 
-    protected void stopTimeoutTimer() {
+    protected synchronized void stopTimeoutTimer() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "stopTimeoutTimer");
+        }
         if (mStageTimeoutTimer != null && mStageTimeoutTimer.isCounting()) {
             mStageTimeoutTimer.stop();
         }

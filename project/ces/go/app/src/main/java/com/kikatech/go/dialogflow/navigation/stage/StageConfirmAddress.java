@@ -96,19 +96,31 @@ public class StageConfirmAddress extends BaseNaviStage {
         startTimeoutTimer(new CountingTimer.ICountingListener() {
             @Override
             public void onTimeTickStart() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "onTimeTickStart");
+                }
             }
 
             @Override
             public void onTimeTick(long millis) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "millis:" + millis);
+                }
             }
 
             @Override
             public void onTimeTickEnd() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "onTimeTickEnd");
+                }
                 mSceneBase.nextStage(new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress, null, false));
             }
 
             @Override
             public void onInterrupted(long stopMillis) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "onInterrupted:" + stopMillis);
+                }
             }
         });
     }
