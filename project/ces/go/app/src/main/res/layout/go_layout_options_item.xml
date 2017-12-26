@@ -20,7 +20,9 @@
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="-12dp"
         android:indeterminate="false"
+        android:indeterminateTint="#4fcede"
         android:visibility="gone"/>
 
 </LinearLayout>

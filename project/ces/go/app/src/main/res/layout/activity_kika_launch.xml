@@ -11,14 +11,14 @@
         android:id="@+id/launch_page_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-20dp"
+        android:layout_marginTop="-70dp"
         android:src="@drawable/kika_landing_logo"/>
 
     <TextView
         android:id="@+id/launch_page_slogan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:gravity="center"
         android:text="@string/launch_page_slogan"
         android:textColor="@android:color/white"
