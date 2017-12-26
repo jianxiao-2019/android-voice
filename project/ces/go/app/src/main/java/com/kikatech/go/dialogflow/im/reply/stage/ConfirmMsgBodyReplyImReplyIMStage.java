@@ -67,7 +67,7 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
 
     @Override
     public void action() {
-        supportAsrInterrupted = true;
+//        supportAsrInterrupted = true;
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmMsg(context, getReplyMessage().getMessageBody());
         if (uiAndTtsText.length > 0) {

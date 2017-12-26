@@ -70,7 +70,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public void action() {
-        supportAsrInterrupted = true;
+//        supportAsrInterrupted = true;
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmAddress(context, mUserInput);
         if (uiAndTtsText.length > 0) {
