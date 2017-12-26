@@ -128,7 +128,7 @@ public abstract class SceneBase implements DialogObserver {
 
             mStage = nextStage;
             if(LogUtil.DEBUG) LogUtil.logw(TAG, "set mStage:" + mStage);
-            mStage.isUncaughtLoop = isUncaughtIntent;
+            mStage.isUncaughtLoop = isUncaughtIntent && !isOverrideUncaughtAction;
             mStage.prepareAction(scene(), action, mStage);
         }
     }

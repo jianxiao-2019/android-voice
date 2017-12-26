@@ -28,6 +28,7 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
         mFeedback = feedback;
         mSceneBase = scene;
         supportAsrInterrupted = false;
+        overrideUncaughtAction = false;
     }
 
     protected void setQueryAnyWords(boolean queryAnyWords) {
