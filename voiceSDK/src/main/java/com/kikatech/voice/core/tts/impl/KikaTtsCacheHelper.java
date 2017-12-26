@@ -5,7 +5,6 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 import com.kikatech.voice.util.log.LogUtil;
 import com.kikatech.voice.util.request.MD5;
@@ -15,12 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,8 +58,8 @@ class KikaTtsCacheHelper {
     }
 
     static class CacheInfo {
-        private String speechText;
-        private String speechTextMd5;
+        String speechText;
+        String speechTextMd5;
         private String cacheFileName;
 
         CacheInfo(String jsonString) {
@@ -116,7 +110,7 @@ class KikaTtsCacheHelper {
                     }
                 }
                 jsonString = json.toString();
-            } catch (JSONException e) {
+            } catch (JSONException ignored) {
 
             }
             return jsonString;
@@ -124,8 +118,8 @@ class KikaTtsCacheHelper {
     }
 
     static class TaskInfo {
-        private String downloadUrl;
-        private final CacheInfo cacheInfo;
+        String downloadUrl;
+        final CacheInfo cacheInfo;
 
         TaskInfo(String ttsUrl, String jsonString) {
             cacheInfo = new CacheInfo(jsonString);
@@ -137,73 +131,6 @@ class KikaTtsCacheHelper {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private static boolean downloadFile(TaskInfo ti) {
-        InputStream input = null;
-        OutputStream output = null;
-        HttpURLConnection connection = null;
-        //String textMd5 = md5(textQuery);
-        if (LogUtil.DEBUG)
-            LogUtil.log(TAG, "textMd5:" + ti.cacheInfo.speechTextMd5 + ", textQuery:" + ti.cacheInfo.speechText + ", strUrl:" + ti.downloadUrl);
-        try {
-            URL url = new URL(ti.downloadUrl);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setConnectTimeout(4000);
-            connection.setReadTimeout(4000);
-            connection.connect();
-
-            // expect HTTP 200 OK, so we don't mistakenly save error report
-            // instead of the file
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                if (LogUtil.DEBUG)
-                    LogUtil.log(TAG, "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage());
-                return false;
-            }
-
-            // this will be useful to display download percentage
-            // might be -1: server did not report the length
-            int fileLength = connection.getContentLength();
-
-            // download the file
-            input = connection.getInputStream();
-            File saveFile = ti.cacheInfo.getFileCache();
-            output = new FileOutputStream(saveFile);
-
-            byte data[] = new byte[4096];
-            long total = 0;
-            int count;
-            while ((count = input.read(data)) != -1) {
-                total += count;
-                if (LogUtil.DEBUG && fileLength > 0) {// only if total length is known
-                    LogUtil.log(TAG, "progress:" + (int) (total * 100 / fileLength));
-                }
-                output.write(data, 0, count);
-            }
-
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "Download complete, textQuery:" + ti.cacheInfo.speechText + ", hash:" + ti.cacheInfo.speechTextMd5 + ", " + saveFile.getAbsolutePath());
-                writeCacheList(ti.cacheInfo);
-            }
-
-            return true;
-
-        } catch (Exception e) {
-            if (LogUtil.DEBUG)
-                LogUtil.log(TAG, "Err:" + e);
-            return false;
-        } finally {
-            try {
-                if (output != null)
-                    output.close();
-                if (input != null)
-                    input.close();
-            } catch (IOException ignored) {
-            }
-
-            if (connection != null)
-                connection.disconnect();
         }
     }
 
@@ -224,22 +151,19 @@ class KikaTtsCacheHelper {
                 LogUtil.log(TAG, "downloadFile ... voiceUrl:" + ti.downloadUrl + ", speechText:" + ti.cacheInfo.speechText);
 
             long t = System.currentTimeMillis();
-            boolean ret = downloadFile(ti);
+            boolean ret = KikaTtsServerHelper.downloadFile(ti);
+            if(ret) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "Download complete, textQuery:" + ti.cacheInfo.speechText + ", hash:" + ti.cacheInfo.speechTextMd5);
+                    writeCacheList(ti.cacheInfo);
+                }
+            }
 
             if (LogUtil.DEBUG)
                 LogUtil.log(TAG, "downloadFile ret:" + ret + ", spend:" + (System.currentTimeMillis() - t) + " ms");
 
             return ret;
         }
-    }
-
-    static void submitDownloadTask(final String ttsUrl, final String jsonString) {
-        AsyncThread.getIns().executeDelay(new Runnable() {
-            @Override
-            public void run() {
-                syncDownloadTask(ttsUrl, jsonString);
-            }
-        }, 1024);
     }
 
     static boolean syncDownloadTask(final String ttsUrl, final String jsonString) {

@@ -189,10 +189,7 @@ public class AndroidTtsSource implements TtsSource {
 
     @Override
     public boolean isTtsSpeaking() {
-        if (mTts != null) {
-            return mTts.isSpeaking();
-        }
-        return false;
+        return mTts != null && mTts.isSpeaking();
     }
 
     @Override
