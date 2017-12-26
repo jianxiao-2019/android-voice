@@ -243,7 +243,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms, isStarted:" + isStarted);
             }
-            if(isStarted) {
+            if (isStarted) {
                 setupDialogFlowService();
             }
         }
@@ -521,7 +521,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+                    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume, final Integer overrideAsrBos) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("isInterrupted: %1$s, delayAsrResume: %2$s", isInterrupted, delayAsrResume));
                         }
@@ -529,11 +529,21 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             AsyncThread.getIns().executeDelay(new Runnable() {
                                 @Override
                                 public void run() {
-                                    resumeAsr();
+                                    pauseAsr();
+                                    if (overrideAsrBos != null) {
+                                        resumeAsr(overrideAsrBos);
+                                    } else {
+                                        resumeAsr();
+                                    }
                                 }
                             }, TTS_DELAY_ASR_RESUME);
                         } else {
-                            resumeAsr();
+                            pauseAsr();
+                            if (overrideAsrBos != null) {
+                                resumeAsr(overrideAsrBos);
+                            } else {
+                                resumeAsr();
+                            }
                         }
                         String action = DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE;
                         DFServiceEvent event = new DFServiceEvent(action);
@@ -667,8 +677,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
-    private void resumeAsr() {
+    private synchronized void resumeAsr() {
         resumeAsr(true);
+    }
+
+    private synchronized void resumeAsr(int bosDuration) {
+        if (!asrActive) {
+            mDialogFlowService.resumeAsr(bosDuration);
+            asrActive = true;
+        }
     }
 
     private synchronized void resumeAsr(boolean startBosNow) {

@@ -9,7 +9,6 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -27,6 +26,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     StageConfirmAddress(SceneBase scene, ISceneFeedback feedback, String userInput, String naviAddress) {
         super(scene, feedback);
+        overrideUncaughtAction = true;
         mUserInput = userInput;
         mNaviAddress = naviAddress;
         if (LogUtil.DEBUG) {
@@ -42,14 +42,13 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public SceneStage next(String action, Bundle extra) {
-        stopTimeoutTimer();
-
         SceneStage superStage = super.next(action, extra);
         if (superStage != null) {
             return superStage;
         }
 
         switch (action) {
+            case Intent.ACTION_UNCAUGHT:
             case NaviSceneActions.ACTION_NAV_YES:
                 return new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress, null, false);
             case NaviSceneActions.ACTION_NAV_NO:
@@ -91,37 +90,7 @@ public class StageConfirmAddress extends BaseNaviStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
-        super.onStageActionDone(isInterrupted, delayAsrResume);
-        startTimeoutTimer(new CountingTimer.ICountingListener() {
-            @Override
-            public void onTimeTickStart() {
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "onTimeTickStart");
-                }
-            }
-
-            @Override
-            public void onTimeTick(long millis) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "millis:" + millis);
-                }
-            }
-
-            @Override
-            public void onTimeTickEnd() {
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "onTimeTickEnd");
-                }
-                mSceneBase.nextStage(new StageNavigationGo(mSceneBase, mFeedback, mNaviAddress, null, false));
-            }
-
-            @Override
-            public void onInterrupted(long stopMillis) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "onInterrupted:" + stopMillis);
-                }
-            }
-        });
+    public Integer overrideAsrBos() {
+        return SceneUtil.CONFIRM_BOS_DURATION;
     }
 }

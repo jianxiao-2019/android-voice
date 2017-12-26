@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -16,11 +15,6 @@ import com.kikatech.voice.core.tts.TtsSource;
  */
 
 public abstract class BaseSceneStage extends SceneStage {
-
-    private static final long DEFAULT_STAGE_TIMEOUT = 5000;
-
-    private CountingTimer mStageTimeoutTimer;
-
 
     public BaseSceneStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
@@ -52,29 +46,6 @@ public abstract class BaseSceneStage extends SceneStage {
             super.speak(pairs, extras);
         } else {
             super.speak(text, extras);
-        }
-    }
-
-
-    protected synchronized void startTimeoutTimer(CountingTimer.ICountingListener listener) {
-        startTimeoutTimer(DEFAULT_STAGE_TIMEOUT, listener);
-    }
-
-    private void startTimeoutTimer(long millis, CountingTimer.ICountingListener listener) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "startTimeoutTimer:" + millis);
-        }
-        stopTimeoutTimer();
-        mStageTimeoutTimer = new CountingTimer(millis, listener);
-        mStageTimeoutTimer.start();
-    }
-
-    protected synchronized void stopTimeoutTimer() {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "stopTimeoutTimer");
-        }
-        if (mStageTimeoutTimer != null && mStageTimeoutTimer.isCounting()) {
-            mStageTimeoutTimer.stop();
         }
     }
 }

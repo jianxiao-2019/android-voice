@@ -11,7 +11,6 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.send.SceneActions;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -28,6 +27,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
      */
     StageAskForSendSmsToContact(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+        overrideUncaughtAction = true;
     }
 
     @Override
@@ -37,15 +37,10 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     }
 
     @Override
-    public SceneStage next(String action, Bundle extra) {
-        stopTimeoutTimer();
-        return super.next(action, extra);
-    }
-
-    @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
         SmsContent sc = getSmsContent();
         switch (action) {
+            case Intent.ACTION_UNCAUGHT:
             case SceneActions.ACTION_SEND_SMS_YES:
                 if (sc.hasEmoji()) {
                     return new StageAskAddEmoji(mSceneBase, mFeedback);
@@ -100,29 +95,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
-        super.onStageActionDone(isInterrupted, delayAsrResume);
-        startTimeoutTimer(new CountingTimer.ICountingListener() {
-            @Override
-            public void onTimeTickStart() {
-            }
-
-            @Override
-            public void onTimeTick(long millis) {
-            }
-
-            @Override
-            public void onTimeTickEnd() {
-                if (getSmsContent().hasEmoji()) {
-                    mSceneBase.nextStage(new StageAskAddEmoji(mSceneBase, mFeedback));
-                } else {
-                    mSceneBase.nextStage(new StageSendSmsConfirm(mSceneBase, mFeedback));
-                }
-            }
-
-            @Override
-            public void onInterrupted(long stopMillis) {
-            }
-        });
+    public Integer overrideAsrBos() {
+        return SceneUtil.CONFIRM_BOS_DURATION;
     }
 }
