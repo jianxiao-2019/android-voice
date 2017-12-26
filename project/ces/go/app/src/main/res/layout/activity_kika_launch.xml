@@ -11,6 +11,7 @@
         android:id="@+id/launch_page_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="-20dp"
         android:src="@drawable/kika_landing_logo"/>
 
     <TextView
