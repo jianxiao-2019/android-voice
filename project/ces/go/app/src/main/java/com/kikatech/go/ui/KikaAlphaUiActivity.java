@@ -96,7 +96,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE:
                 isInterrupted = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_INTERRUPTED, false);
-                mUiManager.onStageActionDone(isInterrupted);
+                int bosDuration = event.getExtras().getInt(DFServiceEvent.PARAM_BOS_DURATION, 0);
+                mUiManager.onStageActionDone(isInterrupted, bosDuration);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_EVENT:
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);

@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kikatech.go.view.widget.GoTextView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fontFamily="sans-serif-medium"
-    android:gravity="left"
-    android:textColor="@color/go_layout_option_item_text_color"
-    app:max_text_size="@dimen/go_layout_option_item_text_max_size"
-    app:min_text_size="@dimen/go_layout_option_item_text_min_size"/>
+    android:orientation="vertical">
+
+    <com.kikatech.go.view.widget.GoTextView
+        android:id="@+id/options_item_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/go_layout_option_item_text_color"
+        app:max_text_size="@dimen/go_layout_option_item_text_max_size"
+        app:min_text_size="@dimen/go_layout_option_item_text_min_size"/>
+
+    <ProgressBar
+        android:id="@+id/options_item_progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:visibility="gone"/>
+
+</LinearLayout>

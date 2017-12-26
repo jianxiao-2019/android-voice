@@ -230,8 +230,11 @@ public class UiTaskManager {
         }
     }
 
-    public synchronized void onStageActionDone(boolean isInterrupted) {
+    public synchronized void onStageActionDone(boolean isInterrupted, int bosDuration) {
         unlock(!isInterrupted);
+        if (bosDuration > 0) {
+            startOptionProgress(bosDuration);
+        }
     }
 
     public synchronized void onSceneExit(boolean proactive) {
@@ -340,6 +343,19 @@ public class UiTaskManager {
                         }
                     }
                 });
+            }
+        });
+    }
+
+    private void startOptionProgress(final int bosDuration) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.startOptionProgress(bosDuration);
             }
         });
     }

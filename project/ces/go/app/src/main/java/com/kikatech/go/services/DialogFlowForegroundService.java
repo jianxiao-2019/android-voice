@@ -548,6 +548,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         String action = DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_IS_INTERRUPTED, isInterrupted);
+                        if (overrideAsrBos != null) {
+                            event.putExtra(DFServiceEvent.PARAM_BOS_DURATION, overrideAsrBos);
+                        }
                         sendDFServiceEvent(event);
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "isInterrupted:" + isInterrupted);

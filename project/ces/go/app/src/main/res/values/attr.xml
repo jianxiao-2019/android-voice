@@ -24,4 +24,8 @@
         <attr name="min_text_size" format="dimension"/>
         <attr name="max_text_size" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="ShimmerView">
+        <attr name="reflectionColor" format="color"/>
+    </declare-styleable>
 </resources>

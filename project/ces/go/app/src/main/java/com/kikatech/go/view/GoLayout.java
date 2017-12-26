@@ -1,6 +1,9 @@
 package com.kikatech.go.view;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -490,9 +494,10 @@ public class GoLayout extends FrameLayout {
 
                 int ITEM_MARGIN = ResolutionUtil.dp2px(context, 7);
                 for (final Option option : optionList.getList()) {
-                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_options_item, null);
+                    View optionView = mLayoutInflater.inflate(R.layout.go_layout_options_item, null);
+                    final GoTextView optionText = (GoTextView) optionView.findViewById(R.id.options_item_text);
                     mOptionsItemLayout.addView(optionView);
-                    optionView.setText(option.getDisplayText());
+                    optionText.setText(option.getDisplayText());
                     optionView.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -520,6 +525,45 @@ public class GoLayout extends FrameLayout {
         }
 
         onStatusChanged(ViewStatus.TTS);
+    }
+
+    public synchronized void startOptionProgress(int bosDuration) {
+        if (mOptionsItemLayout.getVisibility() == GONE || mOptionsItemLayout.getChildCount() == 0) {
+            return;
+        }
+        View optionView = mOptionsItemLayout.getChildAt(0);
+        final GoTextView optionText = (GoTextView) optionView.findViewById(R.id.options_item_text);
+        final ProgressBar progress = (ProgressBar) optionView.findViewById(R.id.options_item_progress);
+
+        progress.setVisibility(VISIBLE);
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(100, 0);
+        valueAnimator.setDuration(bosDuration);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int value = (int) valueAnimator.getAnimatedValue();
+                progress.setProgress(value);
+            }
+        });
+        valueAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                optionText.setTextColor(Color.WHITE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        valueAnimator.start();
     }
 
     /**
@@ -569,10 +613,11 @@ public class GoLayout extends FrameLayout {
 
                 int ITEM_MARGIN = ResolutionUtil.dp2px(appCtx, 7);
                 for (final Option option : optionList.getList()) {
-                    GoTextView optionView = (GoTextView) mLayoutInflater.inflate(R.layout.go_layout_options_item, null);
+                    View optionView = mLayoutInflater.inflate(R.layout.go_layout_options_item, null);
+                    final GoTextView optionText = (GoTextView) optionView.findViewById(R.id.options_item_text);
                     mOptionsContactItemLayout.addView(optionView);
-                    optionView.setText(option.getDisplayText());
-                    optionView.setOnClickListener(new OnClickListener() {
+                    optionText.setText(option.getDisplayText());
+                    optionText.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (listener != null) {

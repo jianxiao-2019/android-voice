@@ -32,6 +32,7 @@ public class DFServiceEvent extends BaseDFServiceEvent{
     public static final String PARAM_SCENE = "param_scene";
     public static final String PARAM_SCENE_ACTION = "param_scene_action";
     public static final String PARAM_SCENE_STAGE = "param_scene_stage";
+    public static final String PARAM_BOS_DURATION = "param_bos_duration";
     public static final String PARAM_IS_INTERRUPTED = "param_is_interrupted";
     public static final String PARAM_IS_PROACTIVE = "param_is_proactive";
 
