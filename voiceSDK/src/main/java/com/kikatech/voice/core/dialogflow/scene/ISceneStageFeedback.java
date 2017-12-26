@@ -8,4 +8,9 @@ public interface ISceneStageFeedback {
     void onStageActionStart();
 
     void onStageActionDone(boolean isInterrupted, boolean delayAsrResume);
+
+    /**
+     * @return null if no need to override asr bos duration
+     **/
+    Integer overrideAsrBos();
 }

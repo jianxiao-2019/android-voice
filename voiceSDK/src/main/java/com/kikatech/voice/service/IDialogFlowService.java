@@ -42,7 +42,7 @@ public interface IDialogFlowService {
 
         void onStageActionStart(boolean supportAsrInterrupted);
 
-        void onStageActionDone(boolean isInterrupted, boolean delayAsrResume);
+        void onStageActionDone(boolean isInterrupted, boolean delayAsrResume, Integer overrideAsrBos);
 
         void onStageEvent(Bundle extras);
 
@@ -78,6 +78,8 @@ public interface IDialogFlowService {
     void talkUncaught();
 
     void pauseAsr();
+
+    void resumeAsr(int bosDuration);
 
     void resumeAsr(boolean startBosNow);
 

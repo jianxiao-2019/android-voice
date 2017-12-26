@@ -20,6 +20,7 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
     protected final SceneBase mSceneBase;
     protected boolean isUncaughtLoop;
     protected boolean supportAsrInterrupted = false;
+    protected boolean overrideUncaughtAction = false;
 
     protected static AsrConfiguration mAsrConfig = new AsrConfiguration.Builder().build();
 
@@ -105,8 +106,13 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
     @Override
     public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         if (mFeedback != null) {
-            mFeedback.onStageActionDone(isInterrupted, delayAsrResume);
+            mFeedback.onStageActionDone(isInterrupted, delayAsrResume, overrideAsrBos());
         }
+    }
+
+    @Override
+    public Integer overrideAsrBos() {
+        return null;
     }
 
     protected boolean supportEmoji() {

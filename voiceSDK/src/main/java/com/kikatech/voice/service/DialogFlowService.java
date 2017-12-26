@@ -250,6 +250,16 @@ public class DialogFlowService implements
     }
 
     @Override
+    public void resumeAsr(int bosDuration) {
+        if (mVoiceService != null) {
+            mVoiceService.resumeAsr(bosDuration);
+            if (mCallback != null) {
+                mCallback.onASRResume();
+            }
+        }
+    }
+
+    @Override
     public void resumeAsr(boolean startBosNow) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "resumeAsr");
@@ -420,8 +430,8 @@ public class DialogFlowService implements
         }
 
         @Override
-        public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
-            mCallback.onStageActionDone(isInterrupted, delayAsrResume);
+        public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume, Integer overrideAsrBos) {
+            mCallback.onStageActionDone(isInterrupted, delayAsrResume, overrideAsrBos);
         }
 
         @Override
