@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.AgentCreator;
 import com.kikatech.voice.core.recorder.IVoiceSource;
+import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
@@ -25,6 +26,7 @@ public class VoiceConfiguration {
     private int bosDuration = DEFAULT_BOS_DURATION;
     private String mDebugFilePath;
     private boolean mSupportWakeUpMode;
+    private TtsService.TtsSourceType mTtsSource = TtsService.TtsSourceType.KIKA_WEB;
 
     public VoiceConfiguration() {
     }
@@ -39,12 +41,21 @@ public class VoiceConfiguration {
         return this;
     }
 
+    public VoiceConfiguration tts(TtsService.TtsSourceType type) {
+        mTtsSource = type;
+        return this;
+    }
+
     public AgentCreator getAgent() {
         return mAgentCreator;
     }
 
     public IVoiceSource getVoiceSource() {
         return mVoiceSource;
+    }
+
+    public TtsService.TtsSourceType getTtsType() {
+        return mTtsSource;
     }
 
     public void setBosDuration(int bosDuration) {

@@ -125,7 +125,7 @@ public abstract class SceneBase implements DialogObserver {
             }
 
             mStage = nextStage;
-            if(LogUtil.DEBUG) LogUtil.logw(TAG, "[brad] set mStage:" + mStage);
+            if(LogUtil.DEBUG) LogUtil.logw(TAG, "set mStage:" + mStage);
             mStage.isUncaughtLoop = isUncaughtIntent;
             mStage.prepareAction(scene(), action, mStage);
         }
@@ -146,7 +146,7 @@ public abstract class SceneBase implements DialogObserver {
     public void nextStage(SceneStage stage) {
         if (stage != null) {
             mStage = stage;
-            if(LogUtil.DEBUG) LogUtil.logw(TAG, "[brad] set mStage:" + mStage);
+            if(LogUtil.DEBUG) LogUtil.logw(TAG, "set mStage:" + mStage);
             stage.prepareAction(scene(), "", stage);
         }
     }

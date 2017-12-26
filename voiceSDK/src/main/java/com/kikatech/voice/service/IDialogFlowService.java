@@ -84,4 +84,6 @@ public interface IDialogFlowService {
     void quitService();
 
     void updateRecorderSource(VoiceConfiguration config);
+
+    void updateTtsSource(VoiceConfiguration config);
 }

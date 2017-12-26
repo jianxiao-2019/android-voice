@@ -60,7 +60,7 @@ public class DialogFlowService implements
         mSceneManager = new SceneManager(mSceneCallback, mSceneQueryWordsStatusCallback);
         initDialogFlow(conf);
         initVoiceService(conf);
-        initTts();
+        initTts(conf);
 
         Message.register(Message.MSG_TYPE_INTERMEDIATE, IntermediateMessage.class);
         Message.register(Message.MSG_TYPE_ALTER, EditTextMessage.class);
@@ -104,12 +104,20 @@ public class DialogFlowService implements
         if (LogUtil.DEBUG) LogUtil.log(TAG, "idle VoiceService ... Done");
     }
 
-    private void initTts() {
+    private void initTts(@NonNull VoiceConfiguration conf) {
         if (mTtsSource == null) {
-            mTtsSource = TtsService.getInstance().getSpeaker(TtsService.TtsSourceType.KIKA_WEB);
+            mTtsSource = TtsService.getInstance().getSpeaker(conf.getTtsType());
             mTtsSource.init(mContext, null);
             mTtsSource.setTtsStateChangedListener(mTtsListener);
         }
+    }
+
+    public void updateTtsSource(@NonNull VoiceConfiguration conf) {
+        if (mTtsSource != null) {
+            mTtsSource.close();
+            mTtsSource = null;
+        }
+        initTts(conf);
     }
 
     private void tts(Pair<String, Integer>[] pairs, ISceneStageFeedback listener) {

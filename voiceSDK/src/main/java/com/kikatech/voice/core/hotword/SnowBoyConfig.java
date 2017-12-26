@@ -32,7 +32,7 @@ public class SnowBoyConfig {
     }
 
     private static String __getSensitivity() throws JSONException, IOException {
-        String sen;
+        String sen = SENSITIVITY;
         if (LogUtil.DEBUG) {
             String folder = Environment.getExternalStorageDirectory().getPath();
             File file = new File(folder, "kika_go");

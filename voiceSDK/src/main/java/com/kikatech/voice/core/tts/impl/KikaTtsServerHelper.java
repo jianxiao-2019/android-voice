@@ -27,7 +27,7 @@ import java.net.URLConnection;
  * Created by brad_chang on 2017/12/26.
  */
 
-public class KikaTtsServerHelper {
+class KikaTtsServerHelper {
 
     private static final String TAG = "KikaTtsServerHelper";
 
@@ -45,7 +45,7 @@ public class KikaTtsServerHelper {
     }
 
     private static int __getTimeout() throws JSONException, IOException {
-        int timeout;
+        int timeout = TIMEOUT;
         if (LogUtil.DEBUG) {
             String folder = Environment.getExternalStorageDirectory().getPath();
             File file = new File(folder, "kika_go");
