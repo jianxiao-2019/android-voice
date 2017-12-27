@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.Option;
@@ -15,10 +16,13 @@ import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
+import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.CustomConfig;
 import com.kikatech.voice.util.contact.ContactManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -167,17 +171,24 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         LocationMgr.init(this);
         registerReceivers();
         DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+
+        if(GlobalPref.getIns().isFirstLaunch()) {
+            CustomConfig.removeAllCustomConfigFiles();
+        }
+
+        if(LogUtil.DEBUG) {
+            String sen = CustomConfig.getSnowboySensitivity();
+            int timeout = CustomConfig.getKikaTtsServerTimeout();
+            String msg = "[config] Sensitivity: " + sen + " , Timeout: " + timeout + " ms";
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            LogUtil.log(TAG, msg);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         DialogFlowForegroundService.processOnAppForeground();
-
-//        if(LogUtil.DEBUG) {
-//            String sen = SnowBoyConfig.getSensitivity();
-//            Toast.makeText(this, "Snowboy Sensitivity : " + sen, Toast.LENGTH_SHORT).show();
-//        }
     }
 
     @Override

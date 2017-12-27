@@ -104,4 +104,13 @@ public class GlobalPref {
         }
         return ret;
     }
+
+    public boolean isFirstLaunch() {
+        boolean isFirst = sPref.getBoolean(Key.KEY_FIRST_LAUNCH, true);
+        if(isFirst) {
+            sEditor.putBoolean(Key.KEY_FIRST_LAUNCH, false);
+            apply();
+        }
+        return isFirst;
+    }
 }
