@@ -46,14 +46,16 @@ public class StageAskAgainUnknown extends SceneStage {
     protected void action() {
         final String PRE_UNKNOWN = "Please say again";
         String uiText = PRE_UNKNOWN;
-        String ttsText = SceneUtil.getIntentUnknown(mSceneBase.getContext());
+        SceneUtil.UnknownIntentResult uir = SceneUtil.getRandomIntentUnknown(mSceneBase.getContext());
         TtsText tText = new TtsText(SceneUtil.ICON_COMMON, uiText);
         Bundle args = new Bundle();
         args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
 
-        Pair<String, Integer>[] pairs = new Pair[2];
-        pairs[0] = new Pair<>(ttsText, TtsSource.TTS_SPEAKER_1);
-        pairs[1] = new Pair<>(PRE_UNKNOWN, TtsSource.TTS_SPEAKER_1);
+        Pair<String, Integer>[] pairs = new Pair[uir.appendCommonString ? 2 : 1];
+        pairs[0] = new Pair<>(uir.response, TtsSource.TTS_SPEAKER_1);
+        if (uir.appendCommonString) {
+            pairs[1] = new Pair<>(PRE_UNKNOWN, TtsSource.TTS_SPEAKER_1);
+        }
 
         speak(pairs, args);
     }

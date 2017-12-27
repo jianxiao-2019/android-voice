@@ -5,6 +5,8 @@ import android.content.res.Resources;
 
 import com.kikatech.go.R;
 
+import java.util.Random;
+
 /**
  * @author SkeeterWang Created on 2017/11/22.
  */
@@ -35,6 +37,7 @@ public class SceneUtil {
     public static final String EXTRA_USR_INFO = "extra_usr_info";
     public static final String EXTRA_USR_MSG = "extra_usr_msg";
 
+    static int sPrevUnknownResponseIdx = -1;
 
     public static String[] getAskAddress(Context context) {
         Resources resource = context.getResources();
@@ -198,9 +201,34 @@ public class SceneUtil {
         return resource.getString(R.string.tts_response_not_get);
     }
 
+    public static class UnknownIntentResult {
+        public String response;
+        public boolean appendCommonString;
+    }
+
     public static String getIntentUnknown(Context context) {
         Resources resource = context.getResources();
-        return tryFormat(resource.getString(R.string.tts_intent_unknown));
+        String[] ttsArray = resource.getStringArray(R.array.tts_intent_unknown);
+        return getStringFromArray(ttsArray);
+    }
+
+    public static UnknownIntentResult getRandomIntentUnknown(Context context) {
+        Resources resource = context.getResources();
+        UnknownIntentResult uir = new UnknownIntentResult();
+        String[] ttsArray = resource.getStringArray(R.array.tts_intent_unknown);
+        sPrevUnknownResponseIdx = getRandomIndex(ttsArray.length, sPrevUnknownResponseIdx);
+        uir.response = ttsArray[sPrevUnknownResponseIdx];
+        uir.appendCommonString = sPrevUnknownResponseIdx == 0;
+        return uir;
+    }
+
+    private static int getRandomIndex(int size, int prevIndex) {
+        Random ran = new Random();
+        int ret = ran.nextInt(size);
+        if (prevIndex == ret && size > 1) {
+            return getRandomIndex(size, prevIndex);
+        }
+        return ret;
     }
 
     public static String[] getAskApp(Context context) {

@@ -131,7 +131,12 @@ it's the alpha version now."</string>
     </string-array>
 
     <string name="tts_response_not_get">"Sorry, I didn't get what you say."</string><!-- previous tts content -->
-    <string name="tts_intent_unknown">"Sorry, I didn't catch you."</string><!-- previous tts content -->
+    <string-array name="tts_intent_unknown">
+        <item>"Sorry, I didn't catch you."</item>
+        <item>"I am good at messaging and navigation while driving, how can i help you?"</item>
+        <item>"Sorry, i am not sure i understand. You can say navigate to somewhere, call or message someone."</item>
+        <item>"Hey, I am not like Alexa, i am professional at hands free navigation and messaging. What would you like to do?"</item>
+    </string-array>
 
     <string name="ui_ask_app">"Which App?"</string>
     <string-array name="tts_ask_app">
