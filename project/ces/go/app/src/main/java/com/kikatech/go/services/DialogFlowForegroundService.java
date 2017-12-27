@@ -479,7 +479,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         StringBuilder builder = new StringBuilder();
                         if (pairs != null && pairs.length > 0) {
                             for (Pair<String, Integer> pair : pairs) {
-                                builder.append(pair.first);
+                                if(pair != null) {
+                                    builder.append(pair.first);
+                                }
                             }
                         }
                         String text = builder.toString();
