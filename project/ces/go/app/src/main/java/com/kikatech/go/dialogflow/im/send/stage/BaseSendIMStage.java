@@ -31,10 +31,11 @@ public class BaseSendIMStage extends BaseSceneStage {
     }
 
     IMContent getIMContent() {
+        IMContent im = ((SceneSendIM) mSceneBase).getIMContent();
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, ((SceneSendIM) mSceneBase).getIMContent().toString());
+            LogUtil.log(TAG, (im == null ? "[warn] IMContent is null" : im.toString()));
         }
-        return ((SceneSendIM) mSceneBase).getIMContent();
+        return im;
     }
 
     @Override
