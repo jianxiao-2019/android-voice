@@ -2,11 +2,11 @@ package com.kikatech.voice.core.hotword;
 
 import android.util.SparseIntArray;
 
-import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.CustomConfig;
-import com.kikatech.voice.util.log.FileLoggerUtil;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.voice.util.request.MD5;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -21,6 +21,8 @@ public class SnowBoyDetector extends WakeUpDetector {
     static {
         System.loadLibrary("snowboy-detect-android");
     }
+
+    private static final String TAG = "SnowBoyDetector";
 
     private static final String ACTIVE_RES = Constants.ACTIVE_RES;
     private static final String ACTIVE_UMDL = Constants.ACTIVE_UMDL;
@@ -43,23 +45,33 @@ public class SnowBoyDetector extends WakeUpDetector {
         super(listener);
         mListener = listener;
         long t = System.currentTimeMillis();
-        Logger.d("[sboy]SnowBoyDetector before new SnowboyDetect:" + activeModel);
+        String sensitivity = CustomConfig.getSnowboySensitivity();
+
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "SnowBoyDetector before new SnowBoyDetector:" + activeModel);
+            String md5 = MD5.getFileMD5(new File(activeModel));
+            LogUtil.log(TAG, "model:" + activeModel + ", md5:" + md5);
+            LogUtil.log(TAG, "sensitivity:" + sensitivity);
+        }
+
         mSnowboyDetect = new SnowboyDetect(commonRes, activeModel);
-        Logger.d("[sboy]SnowBoyDetector after new SnowboyDetect");
-        mSnowboyDetect.SetSensitivity(CustomConfig.getSnowboySensitivity());
+        mSnowboyDetect.SetSensitivity(sensitivity);
         //-detector.SetAudioGain(1);
         mSnowboyDetect.ApplyFrontend(true);
-        Logger.d("[sboy] init done, spend :" + (System.currentTimeMillis() - t) + " ms");
-        Logger.d("[sboy] hotwords:" + mSnowboyDetect.NumHotwords() + ", Sensitivity:" + mSnowboyDetect.GetSensitivity() +
-                ", BitsPerSample:" + mSnowboyDetect.BitsPerSample() + ", NumChannels:" + mSnowboyDetect.NumChannels() +
-                ", SampleRate:" + mSnowboyDetect.SampleRate());
+
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "init done, spend :" + (System.currentTimeMillis() - t) + " ms");
+            LogUtil.log(TAG, "hotwords:" + mSnowboyDetect.NumHotwords() + ", Sensitivity:" + mSnowboyDetect.GetSensitivity() +
+                    ", BitsPerSample:" + mSnowboyDetect.BitsPerSample() + ", NumChannels:" + mSnowboyDetect.NumChannels() +
+                    ", SampleRate:" + mSnowboyDetect.SampleRate());
+        }
     }
 
     @Override
     protected synchronized void checkWakeUpCommand(byte[] data) {
-        //Logger.d("[sboy]checkWakeUpCommand data len = " + data.length);
-        if(mSnowboyDetect == null) {
-            Logger.d("[sboy]Err, mSnowboyDetect is null");
+        //if(LogUtil.DEBUG) LogUtil.log(TAG, "checkWakeUpCommand data len = " + data.length);
+        if (mSnowboyDetect == null) {
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "Err, mSnowboyDetect is null");
             return;
         }
 
@@ -73,7 +85,7 @@ public class SnowBoyDetector extends WakeUpDetector {
         // Snowboy hotword detection.
         int result = mSnowboyDetect.RunDetection(audioDataBuffer, audioDataBuffer.length);
 
-        //Logger.d("[sboy]checkWakeUpCommand result = " + result);
+        //if(LogUtil.DEBUG) LogUtil.log(TAG, "checkWakeUpCommand result = " + result);
 
         switch (result) {
             case -2:
@@ -92,7 +104,7 @@ public class SnowBoyDetector extends WakeUpDetector {
                     // sendMessage(MsgEnum.MSG_ACTIVE, null);
                     // Log.i("Snowboy: ", "Hotword " + Integer.toString(result) + " detected!");
                     // player.start();
-                    Logger.d("[sboy]checkWakeUpCommand result wake up");
+                    if (LogUtil.DEBUG) LogUtil.log(TAG, "checkWakeUpCommand result wake up");
                     isAwake = true;
                     if (mListener != null) {
                         mListener.onDetected();
@@ -105,19 +117,19 @@ public class SnowBoyDetector extends WakeUpDetector {
     }
 
     private void debugDetectResult(int result) {
-        if (Logger.DEBUG) {
+        if (LogUtil.DEBUG) {
             Integer v = mSnowbpoyLog.get(result);
             mSnowbpoyLog.put(result, v + 1);
             long lll = System.currentTimeMillis() - logTime;
             if (lll > 2000 || result > 0) {
                 int detectCount = 0;
-                StringBuilder log = new StringBuilder("[sboy] {");
+                StringBuilder log = new StringBuilder("{");
                 for (int i = 0; i < mSnowbpoyLog.size(); i++) {
                     log.append(mSnowbpoyLog.keyAt(i)).append(":").append(mSnowbpoyLog.valueAt(i)).append(", ");
                     detectCount += mSnowbpoyLog.valueAt(i);
                 }
                 log.append("}, Detection count : ").append(detectCount);
-                Logger.d(log.toString());
+                if (LogUtil.DEBUG) LogUtil.log(TAG, log.toString());
                 logTime = System.currentTimeMillis();
                 mSnowbpoyLog.clear();
             }
@@ -125,7 +137,7 @@ public class SnowBoyDetector extends WakeUpDetector {
     }
 
     private byte[] stereoToMono(byte[] stereoData) {
-        if(monoResultBuffer == null || monoResultBuffer.length != stereoData.length / 2) {
+        if (monoResultBuffer == null || monoResultBuffer.length != stereoData.length / 2) {
             monoResultBuffer = new byte[stereoData.length / 2];
         }
         for (int i = 0; i < monoResultBuffer.length; i += 2) {
@@ -160,15 +172,15 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     @Override
     public synchronized void close() {
-        Logger.d("[sboy] close, mSnowboyDetect:" + mSnowboyDetect);
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "close, mSnowboyDetect:" + mSnowboyDetect);
         if (mSnowboyDetect != null) {
             mSnowboyDetect.delete();
             mSnowboyDetect = null;
         }
-        if(audioDataBuffer != null) {
+        if (audioDataBuffer != null) {
             audioDataBuffer = null;
         }
-        if(monoResultBuffer != null) {
+        if (monoResultBuffer != null) {
             monoResultBuffer = null;
         }
     }

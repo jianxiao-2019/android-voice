@@ -4,7 +4,6 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.kikatech.voice.util.log.LogUtil;
-import com.kikatech.voice.util.log.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +33,7 @@ public class CustomConfig {
     // Snowboy sensitivity config
     private static final String CONFIG_FILE_SNOWBOY = "snowboy_config.txt";
     private static final String TAG_SNOWBOY_SENSITIVITY = "sensitivity";
-    private static final String DEFAULT_SNOWBOY_SENSITIVITY = "1.0";
+    private static final String DEFAULT_SNOWBOY_SENSITIVITY = "0.9";
     private static String SNOWBOY_SENSITIVITY = null;
 
 
