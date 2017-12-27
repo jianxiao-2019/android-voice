@@ -40,6 +40,22 @@ public class AppConstants {
     public static final String NAME_PLUS = "Plus";
     public static final String NAME_SMS = "SMS";
 
+    public static final int ICON_WECHAT = R.drawable.st_im_wechat;
+    public static final int ICON_LINE = R.drawable.st_im_line;
+    public static final int ICON_MESSENGER = R.drawable.st_im_messenger;
+    public static final int ICON_WHATSAPP = R.drawable.st_im_whatsapp;
+    public static final int ICON_SKYPE = R.drawable.st_im_skype;
+    public static final int ICON_KIK = R.drawable.st_im_kik;
+    public static final int ICON_KAKAOTALK = R.drawable.st_im_kakaotalk;
+    public static final int ICON_VIBER = R.drawable.st_im_viber;
+    public static final int ICON_SLACK = R.drawable.st_im_slack;
+    public static final int ICON_TELEGRAM = R.drawable.st_im_telegram;
+    public static final int ICON_HANGOUTS = R.drawable.st_im_hangout;
+    public static final int ICON_ALLO = R.drawable.st_im_google_allo;
+    public static final int ICON_BETWEEN = R.drawable.st_im_between;
+    public static final int ICON_PLUS = R.drawable.st_im_plus_messenger;
+    public static final int ICON_SMS = R.drawable.st_icon_sms;
+
     public static final int SMALL_ICON_WECHAT = R.drawable.st_icon_wechat_small;
     public static final int SMALL_ICON_LINE = R.drawable.st_im_line_smal;
     public static final int SMALL_ICON_MESSENGER = R.drawable.st_im_messenger_smal;

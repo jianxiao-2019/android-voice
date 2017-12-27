@@ -114,7 +114,7 @@ public class DrawerImFragment extends Fragment {
             }
 
             Glide.with(mContext.getApplicationContext())
-                    .load(mAppInfo.getAppIconSmall())
+                    .load(mAppInfo.getAppIcon())
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontTransform()
                     .into(mAppHolder.mItemIcon);
