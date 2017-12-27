@@ -1,6 +1,7 @@
 package com.kikatech.go.dialogflow;
 
 import android.support.annotation.IntDef;
+import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.util.AppConstants;
@@ -41,13 +42,15 @@ public class UserSettings {
     }
 
     public static int getReplyMsgSetting(String pkgName) {
-        switch (pkgName) {
-            case AppConstants.PACKAGE_WHATSAPP:
-                return GlobalPref.getIns().getSettingReplyMsgWhatsApp();
-            case AppConstants.PACKAGE_MESSENGER:
-                return GlobalPref.getIns().getSettingReplyMsgMessenger();
-            case AppConstants.PACKAGE_SMS:
-                return GlobalPref.getIns().getSettingReplyMsgSms();
+        if(!TextUtils.isEmpty(pkgName)) {
+            switch (pkgName) {
+                case AppConstants.PACKAGE_WHATSAPP:
+                    return GlobalPref.getIns().getSettingReplyMsgWhatsApp();
+                case AppConstants.PACKAGE_MESSENGER:
+                    return GlobalPref.getIns().getSettingReplyMsgMessenger();
+                case AppConstants.PACKAGE_SMS:
+                    return GlobalPref.getIns().getSettingReplyMsgSms();
+            }
         }
         return ReplyMsgSetting.DEFAULT;
     }
