@@ -3,6 +3,7 @@ package com.kikatech.voice.core.hotword;
 import android.util.SparseIntArray;
 
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.util.CustomConfig;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -45,7 +46,7 @@ public class SnowBoyDetector extends WakeUpDetector {
         Logger.d("[sboy]SnowBoyDetector before new SnowboyDetect:" + activeModel);
         mSnowboyDetect = new SnowboyDetect(commonRes, activeModel);
         Logger.d("[sboy]SnowBoyDetector after new SnowboyDetect");
-        mSnowboyDetect.SetSensitivity(SnowBoyConfig.getSensitivity());
+        mSnowboyDetect.SetSensitivity(CustomConfig.getSnowboySensitivity());
         //-detector.SetAudioGain(1);
         mSnowboyDetect.ApplyFrontend(true);
         Logger.d("[sboy] init done, spend :" + (System.currentTimeMillis() - t) + " ms");

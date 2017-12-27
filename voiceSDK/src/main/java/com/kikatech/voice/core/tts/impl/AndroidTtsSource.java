@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.kikatech.voice.core.tts.TtsSource;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtil;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -19,6 +19,11 @@ import java.util.Locale;
  */
 
 public class AndroidTtsSource implements TtsSource {
+
+    private static final String TAG = "TAG";
+
+    private static final String FIRST_VOICE = "female_1-local";
+    private static final String SECOND_VOICE = "male_1-local";
 
     private TextToSpeech mTts;
     private TtsStateChangedListener mStateChangedListener;
@@ -55,20 +60,24 @@ public class AndroidTtsSource implements TtsSource {
                         mTts.setLanguage(l);
                     }
 
-                    mVoices[0] = mTts.getDefaultVoice();
                     for (Voice voice : mTts.getVoices()) {
-                        if (voice.getName().startsWith("en-us")) {
-                            Logger.d("voice name = " + voice.getName());
-                            if (!mVoices[0].getName().startsWith("en-us")) {
+                        String voiceName = voice.getName();
+                        if (voiceName.startsWith("en-us")) {
+                            if (LogUtil.DEBUG) LogUtil.log(TAG, "voice name = " + voiceName);
+                            if (voiceName.endsWith(FIRST_VOICE)) {
                                 mVoices[0] = voice;
-                            } else {
+                            } else if (voiceName.endsWith(SECOND_VOICE)) {
                                 mVoices[1] = voice;
-                                break;
                             }
                         }
                     }
                     if (mVoices[1] == null) {
                         mVoices[1] = mVoices[0];
+                    }
+
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, "mVoices[0] = " + mVoices[0].getName());
+                        LogUtil.log(TAG, "mVoices[1] = " + mVoices[1].getName());
                     }
 
                     if (listener != null) {
@@ -90,7 +99,8 @@ public class AndroidTtsSource implements TtsSource {
 
             @Override
             public void onDone(String utteranceId) {
-                Logger.d("AndroidTtsSource onDone mPlayList.size() = " + mPlayList.size());
+                if (LogUtil.DEBUG)
+                    LogUtil.log(TAG, "AndroidTtsSource onDone mPlayList.size() = " + mPlayList.size());
                 if (mPlayList.size() > 0) {
                     playSingleList();
                 } else if (mStateChangedListener != null && !mIsTtsInterrupted) {
@@ -122,7 +132,8 @@ public class AndroidTtsSource implements TtsSource {
         mPlayList.clear();
         mPlayListSize = 0;
         mIsTtsInterrupted = false;
-        Logger.d("Android TtsSource speak text = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
+        if (LogUtil.DEBUG)
+            LogUtil.log(TAG, "Android TtsSource speak text = " + text + " mTts = " + mTts + " mIsInitialized = " + mIsInitialized);
         if (mTts == null) {
             return;
         }
