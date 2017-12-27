@@ -18,6 +18,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.ui.adapter.BaseAdapter;
+import com.kikatech.go.util.PopupMenuUtil;
 import com.kikatech.go.util.dialog.DialogKeys;
 import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.go.view.NoPredictiveAnimationManager;
@@ -37,6 +38,7 @@ public class DrawerNavigationFragment extends Fragment {
         return fragment;
     }
 
+
     private IDrawerNavigationListener mListener;
 
     private void setListener(IDrawerNavigationListener listener) {
@@ -47,7 +49,9 @@ public class DrawerNavigationFragment extends Fragment {
         void onBackClicked();
     }
 
+
     private RecyclerView mListView;
+    private TextView mConfirmSubTv;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,8 +61,10 @@ public class DrawerNavigationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.go_layout_drawer_navigation, null);
+        final View mView = inflater.inflate(R.layout.go_layout_drawer_navigation, null);
         mListView = (RecyclerView) mView.findViewById(R.id.drawer_navigation_list);
+        mConfirmSubTv = (TextView) mView.findViewById(R.id.drawer_navigation_confirm_subtitle);
+
         mView.findViewById(R.id.drawer_title_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +73,7 @@ public class DrawerNavigationFragment extends Fragment {
                 }
             }
         });
+
         mView.findViewById(R.id.drawer_navigation_btn_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +96,20 @@ public class DrawerNavigationFragment extends Fragment {
                 });
             }
         });
+        mView.findViewById(R.id.drawer_navigation_confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View mConfirmBtnMore = mView.findViewById(R.id.drawer_navigation_confirm_btn_more);
+                PopupMenuUtil.showDrawerNavigationConfirmPopup(getActivity(), mConfirmBtnMore, new PopupMenuUtil.IPopupListener() {
+                    @Override
+                    public void onDismiss() {
+                        updateConfirmSub();
+                    }
+                });
+            }
+        });
         setupListView();
+        updateConfirmSub();
         return mView;
     }
 
@@ -101,10 +121,16 @@ public class DrawerNavigationFragment extends Fragment {
         mListView.setLayoutManager(mLayoutManager);
     }
 
+    private void updateConfirmSub() {
+        boolean toAsk = UserSettings.getSettingConfirmDestination();
+        mConfirmSubTv.setText(getString(toAsk ? R.string.drawer_item_navigation_confirm_item_ask : R.string.drawer_item_navigation_confirm_item_skip));
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
+
 
     private final class DestinationAdapter extends BaseAdapter {
 

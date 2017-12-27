@@ -140,6 +140,35 @@
         android:background="@color/drawer_underline"/>
 
     <LinearLayout
+        android:id="@+id/drawer_item_advanced"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_item_area_height"
+        android:background="@drawable/selector_bg_drawer_item"
+        android:gravity="center_vertical"
+        android:paddingLeft="35dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/selector_settings_ic_advanced"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/drawer_item_advanced"
+            android:textColor="@drawable/selector_text_drawer_item"
+            android:textSize="@dimen/drawer_item_text_size"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_underline_height"
+        android:background="@color/drawer_underline"/>
+
+    <LinearLayout
         android:id="@+id/drawer_item_debug"
         android:layout_width="match_parent"
         android:layout_height="@dimen/drawer_item_area_height"

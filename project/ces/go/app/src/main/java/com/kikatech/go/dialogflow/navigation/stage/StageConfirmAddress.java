@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
@@ -26,7 +27,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     StageConfirmAddress(SceneBase scene, ISceneFeedback feedback, String userInput, String naviAddress) {
         super(scene, feedback);
-        overrideUncaughtAction = true;
+        overrideUncaughtAction = UserSettings.getSettingConfirmCounter();
         mUserInput = userInput;
         mNaviAddress = naviAddress;
         if (LogUtil.DEBUG) {
@@ -91,6 +92,6 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public Integer overrideAsrBos() {
-        return SceneUtil.CONFIRM_BOS_DURATION;
+        return overrideUncaughtAction ? SceneUtil.CONFIRM_BOS_DURATION : null;
     }
 }

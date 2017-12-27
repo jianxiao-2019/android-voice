@@ -21,6 +21,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.IMUtil;
+import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.ui.adapter.BaseAdapter;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.view.NoPredictiveAnimationManager;
@@ -180,7 +181,7 @@ public class DrawerImFragment extends Fragment {
 
             menuView.measure(0, 0);
 
-            popupWindow.showAsDropDown(anchorView, 0 - menuView.getMeasuredWidth(), 0, Gravity.RIGHT);
+            popupWindow.showAsDropDown(anchorView, 0 - menuView.getMeasuredWidth(), ResolutionUtil.dp2px(mContext, 10), Gravity.RIGHT);
         }
 
         @Override

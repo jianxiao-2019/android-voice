@@ -53,6 +53,7 @@ public class BaseNaviStage extends BaseSceneStage {
         List<String> navigatedAddrList = GlobalPref.getIns().getNavigatedAddressList();
 
         if (list != null && userInputs != null) {
+            boolean confirmDestination = UserSettings.getSettingConfirmDestination();
             for (String userInput : userInputs) {
                 if (!TextUtils.isEmpty(userInput)) {
                     if (LogUtil.DEBUG) {
@@ -67,7 +68,9 @@ public class BaseNaviStage extends BaseSceneStage {
                             LogUtil.logd(TAG, String.format("name: %1$s, address: %2$s", name, address));
                         }
                         if (processedUserInput.equals(name.toLowerCase()) && !TextUtils.isEmpty(address)) {
-                            return new StageNavigationGo(mSceneBase, mFeedback, address, name, true);
+                            return confirmDestination
+                                    ? new StageConfirmAddress(mSceneBase, mFeedback, name, address)
+                                    : new StageNavigationGo(mSceneBase, mFeedback, address, name, true);
                         }
                     }
                     for (String address : navigatedAddrList) {
@@ -75,7 +78,9 @@ public class BaseNaviStage extends BaseSceneStage {
                             if (LogUtil.DEBUG) {
                                 LogUtil.logd(TAG, "Skip asking, go to " + address + " directly");
                             }
-                            return new StageNavigationGo(mSceneBase, mFeedback, address, null, true);
+                            return confirmDestination
+                                    ? new StageConfirmAddress(mSceneBase, mFeedback, userInput, address)
+                                    : new StageNavigationGo(mSceneBase, mFeedback, address, null, true);
                         }
                     }
                 }

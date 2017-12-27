@@ -172,17 +172,24 @@ it's the alpha version now."</string>
     <string name="drawer_item_navigation">"Navigation"</string>
     <string name="drawer_item_im">"Play messages"</string>
     <string name="drawer_item_mic_status">"KikaGo Smart Mic"</string>
+    <string name="drawer_item_advanced">"Advanced settings"</string>
     <string name="drawer_item_debug">"Debug log"</string>
     <string name="drawer_item_exit">"Exit KikaGo"</string>
     <string name="drawer_item_im_popup_menu_item_yes">"Yes"</string>
     <string name="drawer_item_im_popup_menu_item_no">"No"</string>
     <string name="drawer_item_im_popup_menu_item_ask">"Ask me first"</string>
+    <string name="drawer_item_navigation_confirm_title">"The place I've been to"</string>
+    <string name="drawer_item_navigation_confirm_item_skip">"Skip final confirmation"</string>
+    <string name="drawer_item_navigation_confirm_item_ask">"Always ask for final confirmation"</string>
     <string name="drawer_item_navigation_dialog_add_title">"Add Place"</string>
     <string name="drawer_item_navigation_dialog_add_hint">"Add a place or address..."</string>
     <string name="drawer_item_navigation_dialog_edit_title">"Edit"</string>
     <string name="drawer_item_navigation_dialog_edit_hint">"Edit the address..."</string>
     <string name="drawer_item_mic_status_connected">"Connected"</string>
     <string name="drawer_item_mic_status_disconnected">"Disconnected"</string>
+    <string name="drawer_item_advanced_confirmation_title">"Confirmation"</string>
+    <string name="drawer_item_advanced_confirmation_item_auto">"Auto confirm before sending messages and starting navigation"</string>
+    <string name="drawer_item_advanced_confirmation_item_manually">"Confirm manually before sending messages and starting navigation"</string>
 
 
     <string name="floating_button_stop">"Stop"</string>

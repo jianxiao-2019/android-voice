@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -23,7 +24,7 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
 
     ConfirmMsgBodyReplyImReplyIMStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        overrideUncaughtAction = true;
+        overrideUncaughtAction = UserSettings.getSettingConfirmCounter();
     }
 
     @Override
@@ -88,6 +89,6 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
 
     @Override
     public Integer overrideAsrBos() {
-        return SceneUtil.CONFIRM_BOS_DURATION;
+        return overrideUncaughtAction ? SceneUtil.CONFIRM_BOS_DURATION : null;
     }
 }

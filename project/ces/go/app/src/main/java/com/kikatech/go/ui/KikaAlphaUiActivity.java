@@ -13,6 +13,7 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.ui.fragment.DrawerAdvancedFragment;
 import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
@@ -262,6 +263,11 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         }
 
         @Override
+        public void onItemAdvancedClicked() {
+            updateDrawerContent(mDrawerAdvancedFragment);
+        }
+
+        @Override
         public void onItemExitClicked() {
             finishAffinity();
         }
@@ -275,6 +281,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     });
 
     private Fragment mDrawerImFragment = DrawerImFragment.newInstance(new DrawerImFragment.IDrawerImListener() {
+        @Override
+        public void onBackClicked() {
+            updateDrawerContent(mDrawerMainFragment);
+        }
+    });
+
+    private Fragment mDrawerAdvancedFragment = DrawerAdvancedFragment.newInstance(new DrawerAdvancedFragment.IDrawerAdvancedListener() {
         @Override
         public void onBackClicked() {
             updateDrawerContent(mDrawerMainFragment);

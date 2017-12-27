@@ -73,6 +73,25 @@ public class GlobalPref {
     }
 
 
+    public void saveSettingConfirmDestination(boolean toConfirm) {
+        sEditor.putBoolean(Key.KEY_SETTING_CONFIRM_DESTINATION, toConfirm);
+        apply();
+    }
+
+    public boolean getSettingConfirmDestination() {
+        return sPref.getBoolean(Key.KEY_SETTING_CONFIRM_DESTINATION, false);
+    }
+
+    public void saveSettingConfirmCounter(boolean enable) {
+        sEditor.putBoolean(Key.KEY_SETTING_CONFIRM_COUNTER, enable);
+        apply();
+    }
+
+    public boolean getSettingConfirmCounter() {
+        return sPref.getBoolean(Key.KEY_SETTING_CONFIRM_COUNTER, true);
+    }
+
+
     public void saveSettingDestinationList(List<SettingDestination> list) {
         String json = GsonUtil.toJson(list);
         sEditor.putString(Key.KEY_SETTING_DESTINATION_LIST, json);

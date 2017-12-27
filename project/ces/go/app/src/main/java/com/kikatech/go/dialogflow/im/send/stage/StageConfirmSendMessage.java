@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.im.send.SceneActions;
 import com.kikatech.go.dialogflow.model.Option;
@@ -22,7 +23,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 public class StageConfirmSendMessage extends BaseSendIMStage {
     StageConfirmSendMessage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        overrideUncaughtAction = true;
+        overrideUncaughtAction = UserSettings.getSettingConfirmCounter();
     }
 
     @Override
@@ -84,6 +85,6 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
 
     @Override
     public Integer overrideAsrBos() {
-        return SceneUtil.CONFIRM_BOS_DURATION;
+        return overrideUncaughtAction ? SceneUtil.CONFIRM_BOS_DURATION : null;
     }
 }

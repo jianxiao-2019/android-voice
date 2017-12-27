@@ -52,6 +52,23 @@ public class UserSettings {
         return ReplyMsgSetting.DEFAULT;
     }
 
+    public static void saveSettingConfirmDestination(boolean toConfirm) {
+        GlobalPref.getIns().saveSettingConfirmDestination(toConfirm);
+    }
+
+    public static boolean getSettingConfirmDestination() {
+        return GlobalPref.getIns().getSettingConfirmDestination();
+    }
+
+    public static void saveSettingConfirmCounter(boolean enable) {
+        GlobalPref.getIns().saveSettingConfirmCounter(enable);
+    }
+
+    public static boolean getSettingConfirmCounter() {
+        return GlobalPref.getIns().getSettingConfirmCounter();
+    }
+
+
     public static String getDefaultDestinationListJson() {
         List<SettingDestination> list = new ArrayList<>();
         list.add(new SettingDestination(SettingDestination.TYPE_DEFAULT_HOME, "Home"));
