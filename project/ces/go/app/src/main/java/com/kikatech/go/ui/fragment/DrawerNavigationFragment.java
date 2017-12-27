@@ -116,7 +116,12 @@ public class DrawerNavigationFragment extends Fragment {
     private void setupListView() {
         final Context mContext = getActivity();
         DestinationAdapter mAdapter = new DestinationAdapter(mContext, UserSettings.getSettingDestinationList());
-        NoPredictiveAnimationManager mLayoutManager = new NoPredictiveAnimationManager(mContext);
+        NoPredictiveAnimationManager mLayoutManager = new NoPredictiveAnimationManager(mContext) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
         mListView.setAdapter(mAdapter);
         mListView.setLayoutManager(mLayoutManager);
     }

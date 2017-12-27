@@ -33,193 +33,205 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/drawer_item_navigation"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_item_area_height"
-        android:background="@drawable/selector_bg_drawer_item"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_settings_ic_navi"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/drawer_item_navigation"
-            android:textColor="@drawable/selector_text_drawer_item"
-            android:textSize="@dimen/drawer_item_text_size"/>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_underline_height"
-        android:background="@color/drawer_underline"/>
-
-    <LinearLayout
-        android:id="@+id/drawer_item_im"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_item_area_height"
-        android:background="@drawable/selector_bg_drawer_item"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_settings_ic_msg"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/drawer_item_im"
-            android:textColor="@drawable/selector_text_drawer_item"
-            android:textSize="@dimen/drawer_item_text_size"/>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_underline_height"
-        android:background="@color/drawer_underline"/>
-
-    <LinearLayout
-        android:id="@+id/drawer_item_mic"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_item_area_height"
-        android:background="@drawable/selector_bg_drawer_item"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_settings_ic_mic"/>
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/drawer_item_mic_status"
+            <LinearLayout
+                android:id="@+id/drawer_item_navigation"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
-                android:singleLine="true"
-                android:text="@string/drawer_item_mic_status"
-                android:textColor="@drawable/selector_text_drawer_item"
-                android:textSize="@dimen/drawer_item_text_size"/>
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp">
 
-            <TextView
-                android:id="@+id/drawer_item_mic_status_text"
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_navi"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/drawer_item_navigation"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+
+            </LinearLayout>
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-light"
-                android:singleLine="true"
-                android:text="@string/drawer_item_mic_status_disconnected"
-                android:textColor="@color/drawer_subtitle_text_disable"
-                android:textSize="18dp"/>
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"/>
+
+            <LinearLayout
+                android:id="@+id/drawer_item_im"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_msg"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/drawer_item_im"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"/>
+
+            <LinearLayout
+                android:id="@+id/drawer_item_mic"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_mic"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/drawer_item_mic_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:singleLine="true"
+                        android:text="@string/drawer_item_mic_status"
+                        android:textColor="@drawable/selector_text_drawer_item"
+                        android:textSize="@dimen/drawer_item_text_size"/>
+
+                    <TextView
+                        android:id="@+id/drawer_item_mic_status_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-light"
+                        android:singleLine="true"
+                        android:text="@string/drawer_item_mic_status_disconnected"
+                        android:textColor="@color/drawer_subtitle_text_disable"
+                        android:textSize="18dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"/>
+
+            <LinearLayout
+                android:id="@+id/drawer_item_advanced"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_advanced"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/drawer_item_advanced"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"/>
+
+            <LinearLayout
+                android:id="@+id/drawer_item_debug"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_debug"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/drawer_item_debug"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/drawer_item_debug_underline"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/drawer_item_exit"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_exit"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/drawer_item_exit"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+            </LinearLayout>
         </LinearLayout>
 
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_underline_height"
-        android:background="@color/drawer_underline"/>
-
-    <LinearLayout
-        android:id="@+id/drawer_item_advanced"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_item_area_height"
-        android:background="@drawable/selector_bg_drawer_item"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_settings_ic_advanced"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/drawer_item_advanced"
-            android:textColor="@drawable/selector_text_drawer_item"
-            android:textSize="@dimen/drawer_item_text_size"/>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_underline_height"
-        android:background="@color/drawer_underline"/>
-
-    <LinearLayout
-        android:id="@+id/drawer_item_debug"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_item_area_height"
-        android:background="@drawable/selector_bg_drawer_item"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_settings_ic_debug"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/drawer_item_debug"
-            android:textColor="@drawable/selector_text_drawer_item"
-            android:textSize="@dimen/drawer_item_text_size"/>
-    </LinearLayout>
-
-    <View
-        android:id="@+id/drawer_item_debug_underline"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_underline_height"
-        android:background="@color/drawer_underline"
-        android:visibility="gone"/>
-
-    <LinearLayout
-        android:id="@+id/drawer_item_exit"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_item_area_height"
-        android:background="@drawable/selector_bg_drawer_item"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_settings_ic_exit"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/drawer_item_exit"
-            android:textColor="@drawable/selector_text_drawer_item"
-            android:textSize="@dimen/drawer_item_text_size"/>
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
