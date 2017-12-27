@@ -188,25 +188,25 @@ public class KikaTtsSource implements TtsSource {
             @Override
             public void onTtsStart() {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "[BackUpAndroidTts] onTtsStart");
-                if(mListener != null) mListener.onTtsStart();
+                if (mListener != null) mListener.onTtsStart();
             }
 
             @Override
             public void onTtsComplete() {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "[BackUpAndroidTts] onTtsComplete");
-                if(mListener != null) mListener.onTtsComplete();
+                if (mListener != null) mListener.onTtsComplete();
             }
 
             @Override
             public void onTtsInterrupted() {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "[BackUpAndroidTts] onTtsInterrupted");
-                if(mListener != null) mListener.onTtsInterrupted();
+                if (mListener != null) mListener.onTtsInterrupted();
             }
 
             @Override
             public void onTtsError() {
                 if (LogUtil.DEBUG) LogUtil.log(TAG, "[BackUpAndroidTts] onTtsError");
-                if(mListener != null) mListener.onTtsError();
+                if (mListener != null) mListener.onTtsError();
             }
         });
     }
@@ -218,6 +218,8 @@ public class KikaTtsSource implements TtsSource {
         List<KikaTtsCacheHelper.MediaSource> playList = KikaTtsCacheHelper.parseMediaSource(jsonString);
         if (playList != null && playList.size() > 0) {
             playTtsByMediaPlayer(playList, 0);
+        } else if (mListener != null) {
+            mListener.onTtsError();
         }
     }
 
@@ -301,22 +303,26 @@ public class KikaTtsSource implements TtsSource {
                 String ttsUrl = KikaTtsServerHelper.fetchTssUrl(mContext, ttsInfo.jsonString);
 
                 if (LogUtil.DEBUG)
-                    LogUtil.log(TAG, "fetchTssUrl OK");
+                    LogUtil.log(TAG, "fetchTssUrl " + (TextUtils.isEmpty(ttsUrl) ? "Fail" : "OK"));
 
-                boolean ret = KikaTtsCacheHelper.syncDownloadTask(ttsUrl, ttsInfo.jsonString);
+                KikaTtsCacheHelper.TaskInfo task = new KikaTtsCacheHelper.TaskInfo(ttsUrl, ttsInfo.jsonString);
+                boolean ret = KikaTtsCacheHelper.downloadWithTask(task);
                 //boolean ret = false;
 
-                if (LogUtil.DEBUG)
-                    LogUtil.log(TAG, "syncDownloadTask, result:" + ret);
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "downloadWithTask, result:" + ret);
+                    LogUtil.log(TAG, "ttsUrl:" + ttsUrl);
+                    LogUtil.log(TAG, "ttsInfo.jsonString:" + ttsInfo.jsonString);
+                }
 
-                if (!ret && mListener != null) {
+                if ((!ret || TextUtils.isEmpty(ttsUrl)) && mListener != null) {
 
                     if (LogUtil.DEBUG)
                         LogUtil.log(TAG, "Error occurs !! use backup Android tts !!");
 
-                    if(ttsInfo.inputText != null) {
+                    if (ttsInfo.inputText != null) {
                         mBackupAndroidTts.speak(ttsInfo.inputText);
-                    } else if(ttsInfo.inputSentences != null) {
+                    } else if (ttsInfo.inputSentences != null) {
                         mBackupAndroidTts.speak(ttsInfo.inputSentences);
                     }
 

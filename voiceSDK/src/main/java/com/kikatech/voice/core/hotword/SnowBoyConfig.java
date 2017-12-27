@@ -31,12 +31,16 @@ public class SnowBoyConfig {
         return SENSITIVITY;
     }
 
+    public static File getConfigFile() {
+        String folder = Environment.getExternalStorageDirectory().getPath();
+        File file = new File(folder, "kika_go");
+        return new File(file, "snowboy_config.txt");
+    }
+
     private static String __getSensitivity() throws JSONException, IOException {
         String sen = SENSITIVITY;
         if (LogUtil.DEBUG) {
-            String folder = Environment.getExternalStorageDirectory().getPath();
-            File file = new File(folder, "kika_go");
-            File config = new File(file, "snowboy_config.txt");
+            File config = getConfigFile();
             Logger.d("[sboy] config file :" + config);
             if (!config.exists()) {
                 JSONObject json = new JSONObject();

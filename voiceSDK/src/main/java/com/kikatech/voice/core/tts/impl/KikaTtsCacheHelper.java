@@ -141,7 +141,10 @@ class KikaTtsCacheHelper {
         FileLoggerUtil.getIns().writeLogToFile(sFileId, ci.getLogInfo(), true);
     }
 
-    private static boolean downloadWithUrl(TaskInfo ti) {
+    public static boolean downloadWithTask(TaskInfo ti) {
+        if(ti == null) {
+            return false;
+        }
         if (ti.cacheInfo.hasFileCache()) {
             if (LogUtil.DEBUG)
                 LogUtil.log(TAG, "Cache hit :" + ti.cacheInfo.speechText + ", return");
@@ -164,11 +167,6 @@ class KikaTtsCacheHelper {
 
             return ret;
         }
-    }
-
-    static boolean syncDownloadTask(final String ttsUrl, final String jsonString) {
-        KikaTtsCacheHelper.TaskInfo task = new KikaTtsCacheHelper.TaskInfo(ttsUrl, jsonString);
-        return downloadWithUrl(task);
     }
 
     static String composeUrlVoiceSource(String ttsUrl) {
