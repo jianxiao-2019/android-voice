@@ -32,10 +32,11 @@ public class BaseSendSmsStage extends BaseSceneStage {
     }
 
     SmsContent getSmsContent() {
+        SmsContent sms = ((SceneSendSms) mSceneBase).getSmsContent();
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, ((SceneSendSms) mSceneBase).getSmsContent().toString());
+            LogUtil.log(TAG, (sms == null ? "[warn] SmsContent is null" : sms.toString()));
         }
-        return ((SceneSendSms) mSceneBase).getSmsContent();
+        return sms;
     }
 
     protected int getAnyTAgParseTarget(String action) {
