@@ -376,7 +376,7 @@ public class GoLayout extends FrameLayout {
 
     private synchronized void onModeChanged(final DisplayMode mode) {
         mCurrentMode = mode;
-        loadStatusGif(mode.getDefaultStatus(), new IGifStatusListener() {
+        loadStatusGif(mode.getDefaultStatus(), true, new IGifStatusListener() {
             @Override
             public void onStart() {
             }
@@ -826,12 +826,13 @@ public class GoLayout extends FrameLayout {
 
     private synchronized void onNewStatus(ViewStatus status, final IGifStatusListener listener) {
         mCurrentStatus = status;
+        boolean toRepeat = listener == null;
         switch (status) {
             case TTS:
-                loadStatusGif(status, listener);
+                loadStatusGif(status, toRepeat, listener);
                 break;
             case TTS_TO_LISTEN:
-                loadStatusGif(status, new IGifStatusListener() {
+                loadStatusGif(status, false, new IGifStatusListener() {
                     @Override
                     public void onStart() {
                         if (listener != null) {
@@ -849,7 +850,7 @@ public class GoLayout extends FrameLayout {
                 });
                 break;
             case LISTEN_1:
-                loadStatusGif(status, new GoLayout.IGifStatusListener() {
+                loadStatusGif(status, false, new GoLayout.IGifStatusListener() {
                     @Override
                     public void onStart() {
                         if (listener != null) {
@@ -867,7 +868,7 @@ public class GoLayout extends FrameLayout {
                 });
                 break;
             case LISTEN_2:
-                loadStatusGif(status, new GoLayout.IGifStatusListener() {
+                loadStatusGif(status, false, new GoLayout.IGifStatusListener() {
                     @Override
                     public void onStart() {
                         if (listener != null) {
@@ -885,10 +886,10 @@ public class GoLayout extends FrameLayout {
                 });
                 break;
             case ANALYZE:
-                loadStatusGif(ViewStatus.ANALYZE, listener);
+                loadStatusGif(ViewStatus.ANALYZE, toRepeat, listener);
                 break;
             case ANALYZE_TO_TTS:
-                loadStatusGif(ViewStatus.ANALYZE_TO_TTS, new GoLayout.IGifStatusListener() {
+                loadStatusGif(ViewStatus.ANALYZE_TO_TTS, false, new GoLayout.IGifStatusListener() {
                     @Override
                     public void onStart() {
                         if (listener != null) {
@@ -910,7 +911,7 @@ public class GoLayout extends FrameLayout {
 
     private Handler mUIHandler = new Handler(Looper.getMainLooper());
 
-    private synchronized void loadStatusGif(final ViewStatus status, final IGifStatusListener listener) {
+    private synchronized void loadStatusGif(final ViewStatus status, final boolean toRepeat, final IGifStatusListener listener) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "handleStatusChanged: status: " + status.name());
         }
@@ -960,7 +961,7 @@ public class GoLayout extends FrameLayout {
                                 return false;
                             }
                         }) //仅仅加载一次gif动画
-                        .into(listener != null ? mNonRepeatTarget : mRepeatTarget);
+                        .into(toRepeat ? mRepeatTarget : mNonRepeatTarget);
             }
         });
     }
