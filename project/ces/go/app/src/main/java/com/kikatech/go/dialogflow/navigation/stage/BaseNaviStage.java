@@ -8,12 +8,16 @@ import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
+import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,8 +35,30 @@ public class BaseNaviStage extends BaseSceneStage {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "action:" + action);
         }
-        if (NaviSceneActions.ACTION_NAV_CANCEL.equals(action)) {
-            return new StageCancelNavigation(mSceneBase, mFeedback);
+        if (!TextUtils.isEmpty(action)) {
+            switch (action) {
+                case NaviSceneActions.ACTION_NAV_CANCEL:
+                    return new StageCancelNavigation(mSceneBase, mFeedback);
+                case NaviSceneActions.ACTION_NAV_START:
+                    String naviAddress = NaviSceneUtil.parseAddress(extra);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logd(TAG, "naviAddress:" + naviAddress);
+                    }
+                    if (TextUtils.isEmpty(naviAddress)) {
+                        return new StageAskAddress(mSceneBase, mFeedback, false);
+                    } else {
+                        String[] userInputs = Intent.parseUserInputNBest(extra);
+                        if (userInputs != null && userInputs.length > 0) {
+                            List<String> listToCheck = new ArrayList<>();
+                            listToCheck.add(naviAddress);
+                            listToCheck.addAll(Arrays.asList(userInputs));
+                            SceneStage stageGo = getStageByCheckDestination(listToCheck.toArray(new String[0]));
+                            return stageGo != null ? stageGo : new StageConfirmAddress(mSceneBase, mFeedback, naviAddress, naviAddress);
+                        } else {
+                            return new StageConfirmAddress(mSceneBase, mFeedback, naviAddress, naviAddress);
+                        }
+                    }
+            }
         }
         return null;
     }
