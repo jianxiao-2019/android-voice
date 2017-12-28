@@ -12,6 +12,12 @@ import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+
 /**
  * Created by tianli on 17-10-28.
  * Update by ryanlin on 25/12/2017.
@@ -222,9 +228,23 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
+    // TODO : hide this interface?
     public void sendCommand(String command, String alter) {
         if (mWebService != null) {
             mWebService.sendCommand(command, alter);
+        }
+    }
+
+    public void sendAlignment(String[] alignment) {
+        JSONArray mJSONArray = new JSONArray(Arrays.asList(alignment));
+        if (mWebService != null) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("alignments", mJSONArray);
+                mWebService.sendCommand("ALIGNMENT", jsonObject.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

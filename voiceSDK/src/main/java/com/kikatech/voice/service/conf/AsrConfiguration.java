@@ -19,25 +19,27 @@ public class AsrConfiguration {
     private boolean emojiEnabled;
     private boolean punctuationEnabled;
     private boolean vprEnabled;
+    private int eosPackets;
 
     private AsrConfiguration(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
-                             boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled) {
+                             boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
         setConfig(speechMode, spellingEnabled, alterEnabled,
-                emojiEnable, punctuationEnabled, vprEnabled);
+                emojiEnable, punctuationEnabled, vprEnabled, eosPackets);
     }
 
     public void copyConfig(AsrConfiguration conf) {
-        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled, conf.punctuationEnabled, conf.vprEnabled);
+        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled, conf.punctuationEnabled, conf.vprEnabled, conf.eosPackets);
     }
 
     private void setConfig(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
-                            boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled) {
+                            boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
         this.spellingEnabled = spellingEnabled;
         this.speechMode = speechMode;
         this.alterEnabled = alterEnabled;
         this.emojiEnabled = emojiEnable;
         this.punctuationEnabled = punctuationEnabled;
         this.vprEnabled = vprEnabled;
+        this.eosPackets = eosPackets;
     }
 
     public void setSpeechMode(SpeechMode speechMode) {
@@ -70,6 +72,14 @@ public class AsrConfiguration {
 
     public boolean getEmojiEnabled() {
         return this.emojiEnabled;
+    }
+
+    public void setEosPackets(int eosPackets) {
+        this.eosPackets = eosPackets;
+    }
+
+    public int getEosPackets() {
+        return eosPackets;
     }
 
     public void setPunctuationEnabled(boolean punctuationEnabled) {
@@ -116,6 +126,7 @@ public class AsrConfiguration {
         private boolean emojiEnabled = false;
         private boolean punctuationEnabled = false;
         private boolean vprEnabled = false;
+        private int eosPackets = 1;
 
         public Builder setSpeechMode(SpeechMode speechMode) {
             this.speechMode = speechMode;
@@ -147,8 +158,13 @@ public class AsrConfiguration {
             return this;
         }
 
+        public Builder setEosPackets(int eosPackets) {
+            this.eosPackets = eosPackets;
+            return this;
+        }
+
         public AsrConfiguration build() {
-            return new AsrConfiguration(speechMode, spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled);
+            return new AsrConfiguration(speechMode, spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled, eosPackets);
         }
     }
 }
