@@ -11,7 +11,6 @@ import com.kikatech.go.dialogflow.im.send.SceneActions;
 import com.kikatech.go.dialogflow.model.ContactOptionList;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
-import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -24,6 +23,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 public class StageConfirmSendTarget extends BaseSendIMStage {
     StageConfirmSendTarget(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+        overrideUnknownAction = true;
     }
 
     @Override
