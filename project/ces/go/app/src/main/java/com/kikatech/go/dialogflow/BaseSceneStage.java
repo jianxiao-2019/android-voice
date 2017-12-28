@@ -30,9 +30,8 @@ public abstract class BaseSceneStage extends SceneStage {
 
     @AsrConfigUtil.ASRMode
     protected int getAsrMode() {
-        return AsrConfigUtil.SUGGEST_ASR_MODE_DEFAULT;
+        return AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT;
     }
-
 
     @Override
     protected void speak(String text, Bundle extras) {

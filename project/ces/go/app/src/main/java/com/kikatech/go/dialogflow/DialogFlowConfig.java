@@ -36,7 +36,7 @@ public class DialogFlowConfig {
                 .setUrl(WEB_SOCKET_URL_DEV)
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
-                .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.SUGGEST_ASR_MODE_DEFAULT))
+                .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))
                 .build());
         conf.setBosDuration(BOS_DURATION);
         conf.setSupportWakeUpMode(true);

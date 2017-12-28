@@ -18,11 +18,10 @@ public class AsrConfigUtil {
     public static final int ASR_MODE_SHORT_COMMAND          = 5;    // 短句指令 (不糾錯)
     public static final int ASR_MODE_SHORT_COMMAND_SPELLING = 6;    // 短句指令 (不糾錯, 需要拼寫)
 
-    public static final int SUGGEST_ASR_MODE_DEFAULT = ASR_MODE_CONVERSATION_COMMAND;
-
     @IntDef({ASR_MODE_CONVERSATION_COMMAND, ASR_MODE_CONVERSATION, ASR_MODE_CONVERSATION_CMD_ALTER,
             ASR_MODE_CONVERSATION_ALTER, ASR_MODE_SHORT_COMMAND, ASR_MODE_SHORT_COMMAND_SPELLING})
     public @interface ASRMode {
+        int ASR_MODE_DEFAULT = ASR_MODE_CONVERSATION_COMMAND;
     }
 
 
