@@ -20,6 +20,7 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
     protected final SceneBase mSceneBase;
     protected boolean isUncaughtLoop;
     protected boolean supportAsrInterrupted = false;
+    protected boolean overrideUnknownAction = false;
     protected boolean overrideUncaughtAction = false;
 
     protected static AsrConfiguration mAsrConfig = new AsrConfiguration.Builder().build();

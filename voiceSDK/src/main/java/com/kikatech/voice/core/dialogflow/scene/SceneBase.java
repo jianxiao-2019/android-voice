@@ -96,12 +96,13 @@ public abstract class SceneBase implements DialogObserver {
             boolean isDefaultUncaught = isDefaultScene && isUncaughtIntent;
 
             boolean isOverrideUncaughtAction = mStage != null && mStage.overrideUncaughtAction;
+            boolean isOverrideUnknownAction = mStage != null && mStage.overrideUnknownAction;
 
             boolean toStayCurrentStage = !isDefaultUnknown && !isDefaultUncaught && !isOverrideUncaughtAction && (isUnknownIntent || isUncaughtIntent);
             boolean toCheckStayCount = isUserInput || isUnknownIntent || isUncaughtIntent;
 
             SceneStage nextStage;
-            if (toStayCurrentStage && !isOverrideUncaughtAction) {
+            if (toStayCurrentStage && !isOverrideUncaughtAction && !isOverrideUnknownAction) {
                 nextStage = mStage;
             } else {
                 nextStage = mStage.next(action, intent.getExtra());
