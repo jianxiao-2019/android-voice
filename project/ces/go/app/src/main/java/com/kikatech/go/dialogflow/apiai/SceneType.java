@@ -1,5 +1,6 @@
 package com.kikatech.go.dialogflow.apiai;
 
+import com.kikatech.go.dialogflow.gotomain.SceneGotoMain;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
 import com.kikatech.go.dialogflow.navigation.SceneNavigation;
@@ -15,6 +16,7 @@ import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
 public enum SceneType {
 
     DEFAULT("Default"), //default scene, un-know intents will go through
+    GOTO_MAIN_INTENT(SceneGotoMain.SCENE),
     STOP_INTENT(SceneStopIntent.SCENE),
     NAVIGATION(SceneNavigation.SCENE),
     SEND_SMS(SceneSendSms.SCENE),

@@ -22,6 +22,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.common.CommonSceneManager;
+import com.kikatech.go.dialogflow.gotomain.GotoMainSceneManager;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
@@ -95,6 +96,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private boolean asrActive;
 
+    private static boolean isAppForeground = true;
 
     private boolean mDbgLogFirstAsrResult = false;
     private boolean mIsAsrFinished = false;
@@ -177,6 +179,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         registerReceiver();
         initUsbVoice();
         acquireWakeLock();
+    }
+
+    public static boolean isAppForeground() {
+        return isAppForeground;
     }
 
     private void setupDialogFlowService() {
@@ -669,6 +675,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new IMSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new CommonSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new GotoMainSceneManager(this, mDialogFlowService));
     }
 
     private void sendDFServiceEvent(DFServiceEvent event) {
@@ -766,11 +773,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     public synchronized static void processOnAppForeground() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_FOREGROUND);
         sendToDFServiceEvent(event);
+        isAppForeground = true;
     }
 
     public synchronized static void processOnAppBackground() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_BACKGROUND);
         sendToDFServiceEvent(event);
+        isAppForeground = false;
     }
 
     public synchronized static void processStatusChanged(GoLayout.ViewStatus status) {
