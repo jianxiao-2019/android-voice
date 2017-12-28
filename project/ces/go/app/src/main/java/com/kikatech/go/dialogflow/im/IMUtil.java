@@ -25,8 +25,8 @@ public class IMUtil {
     public static final String DF_ENTIY_IM_APP_FB_MESSENGER = "facebook messenger";
     public static final String DF_ENTIY_IM_APP_WECHAT = "wechat";
 
-    private static final String KEY_ANY = "any";
-    private static final String KEY_NAME = "given-name";
+    private static final String KEY_MESSAGE_BODY = "messageBody";
+    private static final String KEY_NAME = "name";
     private static final String KEY_IM_APP = "im-app";
 
     public static final String KEY_SWITCH_SCENE_NAME = "user_name";
@@ -42,7 +42,7 @@ public class IMUtil {
         if (!TextUtils.isEmpty(name)) {
             targetName = new String[]{name};
         }
-        String msgBody = getBundleString(parm, KEY_ANY);
+        String msgBody = getBundleString(parm, KEY_MESSAGE_BODY);
 
         IMContent imc = new IMContent(imApp, targetName, msgBody);
         if (LogUtil.DEBUG) LogUtil.log("IMContent", "IMContent:" + imc);
