@@ -9,13 +9,13 @@ import android.support.v7.widget.RecyclerView;
 
 public abstract class BaseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public abstract void resetHolder(@NonNull RecyclerView.ViewHolder holder);
+    public abstract void resetHolder(@NonNull RecyclerView.ViewHolder holder, int position);
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder == null) {
             return;
         }
-        resetHolder(holder);
+        resetHolder(holder, position);
     }
 }

@@ -120,6 +120,14 @@ public class DrawerMainFragment extends Fragment {
             public void onClick(View v) {
             }
         });
+        mView.findViewById(R.id.drawer_item_tip).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemTipClicked();
+                }
+            }
+        });
         mView.findViewById(R.id.drawer_item_advanced).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,6 +196,8 @@ public class DrawerMainFragment extends Fragment {
         void onItemNavigationClick();
 
         void onItemImClicked();
+
+        void onItemTipClicked();
 
         void onItemAdvancedClicked();
 

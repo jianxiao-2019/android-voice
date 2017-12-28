@@ -172,6 +172,7 @@ it's the alpha version now."</string>
     <string name="drawer_item_navigation">"Navigation"</string>
     <string name="drawer_item_im">"Play messages"</string>
     <string name="drawer_item_mic_status">"KikaGo Smart Mic"</string>
+    <string name="drawer_item_tip">"Quick commands"</string>
     <string name="drawer_item_advanced">"Advanced settings"</string>
     <string name="drawer_item_debug">"Debug log"</string>
     <string name="drawer_item_exit">"Exit KikaGo"</string>

@@ -221,7 +221,7 @@ public class DrawerNavigationFragment extends Fragment {
         }
 
         @Override
-        public void resetHolder(@NonNull RecyclerView.ViewHolder holder) {
+        public void resetHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             DestinationHolder mDestinationHolder = (DestinationHolder) holder;
             Glide.clear(mDestinationHolder.mItemIcon);
             mDestinationHolder.mItemName.setText("");

@@ -185,7 +185,7 @@ public class DrawerImFragment extends Fragment {
         }
 
         @Override
-        public void resetHolder(@NonNull RecyclerView.ViewHolder holder) {
+        public void resetHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             AppHolder mAppHolder = (AppHolder) holder;
             mAppHolder.mItemText.setText("");
             Glide.clear(mAppHolder.mItemIcon);

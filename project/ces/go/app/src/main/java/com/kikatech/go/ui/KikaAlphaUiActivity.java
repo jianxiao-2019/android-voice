@@ -17,6 +17,7 @@ import com.kikatech.go.ui.fragment.DrawerAdvancedFragment;
 import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
+import com.kikatech.go.ui.fragment.DrawerTipFragment;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.preference.GlobalPref;
@@ -173,11 +174,11 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         registerReceivers();
         DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
 
-        if(GlobalPref.getIns().isFirstLaunch()) {
+        if (GlobalPref.getIns().isFirstLaunch()) {
             CustomConfig.removeAllCustomConfigFiles();
         }
 
-        if(LogUtil.DEBUG) {
+        if (LogUtil.DEBUG) {
             String sen = CustomConfig.getSnowboySensitivity();
             int timeout = CustomConfig.getKikaTtsServerTimeout();
             String msg = "[config] Sensitivity: " + sen + " , Timeout: " + timeout + " ms";
@@ -263,6 +264,11 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         }
 
         @Override
+        public void onItemTipClicked() {
+            updateDrawerContent(mDrawerTipFragment);
+        }
+
+        @Override
         public void onItemAdvancedClicked() {
             updateDrawerContent(mDrawerAdvancedFragment);
         }
@@ -281,6 +287,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     });
 
     private Fragment mDrawerImFragment = DrawerImFragment.newInstance(new DrawerImFragment.IDrawerImListener() {
+        @Override
+        public void onBackClicked() {
+            updateDrawerContent(mDrawerMainFragment);
+        }
+    });
+
+    private Fragment mDrawerTipFragment = DrawerTipFragment.newInstance(new DrawerTipFragment.IDrawerTipListener() {
         @Override
         public void onBackClicked() {
             updateDrawerContent(mDrawerMainFragment);
