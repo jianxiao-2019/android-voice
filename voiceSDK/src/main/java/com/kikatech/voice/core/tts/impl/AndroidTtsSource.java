@@ -76,8 +76,8 @@ public class AndroidTtsSource implements TtsSource {
                     }
 
                     if (LogUtil.DEBUG) {
-                        LogUtil.log(TAG, "mVoices[0] = " + mVoices[0].getName());
-                        LogUtil.log(TAG, "mVoices[1] = " + mVoices[1].getName());
+                        LogUtil.log(TAG, "mVoices[0] = " + (mVoices[0] != null ? mVoices[0].getName() : "<null>"));
+                        LogUtil.log(TAG, "mVoices[1] = " + (mVoices[1] != null ? mVoices[1].getName() : "<null>"));
                     }
 
                     if (listener != null) {
