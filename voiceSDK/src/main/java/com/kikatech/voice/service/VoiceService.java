@@ -150,7 +150,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public synchronized void resumeAsr(boolean startBosNow) {
         mIsAsrPaused = false;
-        if(startBosNow) {
+        if (startBosNow) {
             startVadBosTimer();
         } else {
             Logger.w("VoiceService BOS is NOT starting now !!");
@@ -259,7 +259,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (mVoiceRecognitionListener != null) {
+                        if (mVoiceRecognitionListener != null && !mIsAsrPaused) {
                             mVoiceRecognitionListener.onRecognitionResult(message);
                         }
                     }
