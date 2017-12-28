@@ -46,7 +46,7 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
         switch (action) {
             case SceneActions.ACTION_SEND_SMS_NO:
 
-                SmsContent.IntentContent ic = SmsUtil.parseContactName(extra);
+                SmsContent.IntentContent ic = SmsUtil.parseSmsContent(extra);
                 if (ic.isNameEmpty()) {
                     sc.setIntentContent(ic);
                     return new StageAskForSendTarget(mSceneBase, mFeedback);

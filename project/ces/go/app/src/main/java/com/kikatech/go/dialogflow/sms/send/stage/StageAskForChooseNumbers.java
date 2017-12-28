@@ -40,6 +40,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
     StageAskForChooseNumbers(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
         mErrStatus = ERR_STATUS_NONE;
+        overrideUncaughtAction = true;
     }
 
     private StageAskForChooseNumbers(@NonNull SceneBase scene, ISceneFeedback feedback, byte err) {
@@ -48,7 +49,8 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    protected @AsrConfigUtil.ASRMode
+    int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_CMD_ALTER;
     }
 
@@ -66,6 +68,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
             if (!TextUtils.isEmpty(userSays)) {
                 for (int i = 0; i < numbers.size(); i++) {
                     if (userSays.contains(numbers.get(i).type.toLowerCase())) {
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "Matched " + userSays + " !!");
                         sc.setChosenNumber(sc.getPhoneNumbers().get(i).number);
                         return getStageCheckSmsBody(TAG, sc, mSceneBase, mFeedback);
                     }

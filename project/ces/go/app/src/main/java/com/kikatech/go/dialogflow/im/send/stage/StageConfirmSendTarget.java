@@ -23,7 +23,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 public class StageConfirmSendTarget extends BaseSendIMStage {
     StageConfirmSendTarget(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-        overrideUnknownAction = true;
+        overrideUncaughtAction = true;
     }
 
     @Override

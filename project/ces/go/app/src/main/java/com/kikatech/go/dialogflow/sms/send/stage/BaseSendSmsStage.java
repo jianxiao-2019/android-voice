@@ -40,11 +40,11 @@ public class BaseSendSmsStage extends BaseSceneStage {
     }
 
     protected int getAnyTAgParseTarget(String action) {
-        int tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_MSG_BODY;
+        int tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_USER_INPUT;
         if (action.equals(SceneActions.ACTION_SEND_SMS_NO)) {
             tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_NAME;
         } else if (action.equals(Intent.ACTION_USER_INPUT)) {
-            tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_USER_INPUT;
+            tagAnyTarget = SmsUtil.TAG_ANY_STAND_FOR_MSG_BODY;
         }
         return tagAnyTarget;
     }
@@ -52,14 +52,17 @@ public class BaseSendSmsStage extends BaseSceneStage {
     @Override
     public SceneStage next(String action, Bundle extra) {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action);
-        if (action.equals(Intent.ACTION_RCMD_EMOJI)) {
-            String emojiJson = Intent.parseEmojiJsonString(extra);
-            ((SceneSendSms) mSceneBase).updateEmoji(emojiJson);
-        } else if (action.equals(SceneActions.ACTION_SEND_SMS_CANCEL)) {
-            return new StageCancel(mSceneBase, mFeedback);
-        } else {
-            int tagAnyTarget = getAnyTAgParseTarget(action);
-            ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseContactName(extra, tagAnyTarget));
+        switch (action) {
+            case Intent.ACTION_RCMD_EMOJI:
+                String emojiJson = Intent.parseEmojiJsonString(extra);
+                ((SceneSendSms) mSceneBase).updateEmoji(emojiJson);
+                break;
+            case SceneActions.ACTION_SEND_SMS_CANCEL:
+                return new StageCancel(mSceneBase, mFeedback);
+            default:
+                int parseTarget = getAnyTAgParseTarget(action);
+                ((SceneSendSms) mSceneBase).updateSmsContent(SmsUtil.parseSmsContent(extra, parseTarget));
+                break;
         }
         return getNextStage(action, extra);
     }

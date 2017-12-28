@@ -33,7 +33,7 @@ public class AskMsgBodyReplySmsStage extends BaseReplySmsStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         setQueryAnyWords(false);
         if(action.equals(SceneActions.ACTION_REPLY_SMS_MSG_BODY)) {
-            String messageBody = SmsUtil.parseTagAny(extra);
+            String messageBody = SmsUtil.parseTagMessageBody(extra);
             getReplyMessage().updateMsgBody(messageBody);
             return new ConfirmMsgBodyReplySmsStage(mSceneBase, mFeedback);
         }

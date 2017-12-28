@@ -7,6 +7,7 @@ import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.TtsText;
+import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -31,7 +32,7 @@ public class AskMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
     public SceneStage getNextStage(String action, Bundle extra) {
         setQueryAnyWords(false);
         if(action.equals(SceneActions.ACTION_REPLY_IM_MSG_BODY)) {
-            String messageBody = SmsUtil.parseTagAny(extra);
+            String messageBody = SmsUtil.parseTagMessageBody(extra);
             getReplyMessage().updateMsgBody(messageBody);
             return new ConfirmMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);
         }
