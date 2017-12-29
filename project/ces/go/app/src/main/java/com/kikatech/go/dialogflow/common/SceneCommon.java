@@ -19,6 +19,9 @@ public class SceneCommon extends NonLoopSceneBase {
 
     public static final String SCENE = Intent.DEFAULT_SCENE;
 
+    public static final String PRE_UNCAUGHT = "Please say again";
+    public static final String PRE_UNKNOWN = "Canceling conversation";
+
     public SceneCommon(Context context, ISceneFeedback feedback) {
         super(context, feedback);
     }

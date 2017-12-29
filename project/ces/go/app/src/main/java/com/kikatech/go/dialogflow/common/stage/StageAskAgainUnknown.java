@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.common.SceneCommon;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -44,8 +45,7 @@ public class StageAskAgainUnknown extends SceneStage {
 
     @Override
     protected void action() {
-        final String PRE_UNKNOWN = "Please say again";
-        String uiText = PRE_UNKNOWN;
+        String uiText = SceneCommon.PRE_UNKNOWN;
         SceneUtil.UnknownIntentResult uir = SceneUtil.getRandomIntentUnknown(mSceneBase.getContext());
         TtsText tText = new TtsText(SceneUtil.ICON_COMMON, uiText);
         Bundle args = new Bundle();
@@ -54,7 +54,7 @@ public class StageAskAgainUnknown extends SceneStage {
         Pair<String, Integer>[] pairs = new Pair[uir.appendCommonString ? 2 : 1];
         pairs[0] = new Pair<>(uir.response, TtsSource.TTS_SPEAKER_1);
         if (uir.appendCommonString) {
-            pairs[1] = new Pair<>(PRE_UNKNOWN, TtsSource.TTS_SPEAKER_1);
+            pairs[1] = new Pair<>(SceneCommon.PRE_UNKNOWN, TtsSource.TTS_SPEAKER_1);
         }
 
         speak(pairs, args);

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.common.SceneCommon;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -38,8 +39,7 @@ public class StageStopSession extends SceneStage {
 
     @Override
     protected void action() {
-        final String PRE_UNKNOWN = "Canceling conversation";
-        String uiText = PRE_UNKNOWN;
+        String uiText = SceneCommon.PRE_UNKNOWN;
         String ttsText = SceneUtil.getIntentUnknown(mSceneBase.getContext());
         TtsText tText = new TtsText(SceneUtil.ICON_COMMON, uiText);
         Bundle args = new Bundle();
@@ -47,7 +47,7 @@ public class StageStopSession extends SceneStage {
 
         Pair<String, Integer>[] pairs = new Pair[2];
         pairs[0] = new Pair<>(ttsText, TtsSource.TTS_SPEAKER_1);
-        pairs[1] = new Pair<>(PRE_UNKNOWN, TtsSource.TTS_SPEAKER_1);
+        pairs[1] = new Pair<>(SceneCommon.PRE_UNKNOWN, TtsSource.TTS_SPEAKER_1);
 
         speak(pairs, args);
     }
