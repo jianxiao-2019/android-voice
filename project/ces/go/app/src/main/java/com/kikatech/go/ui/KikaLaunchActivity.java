@@ -32,7 +32,7 @@ public class KikaLaunchActivity extends BaseActivity {
             public void run() {
                 determinePageToGo();
             }
-        }, 1800);
+        }, 1200);
     }
 
     private void animate() {
