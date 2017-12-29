@@ -10,6 +10,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.notification.NotificationListenerUtil;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.OverlayUtil;
@@ -92,6 +93,7 @@ public class KikaPermissionsActivity extends BaseActivity {
         mBtnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DialogFlowForegroundService.processStart(KikaPermissionsActivity.this, DialogFlowForegroundService.class);
                 startAnotherActivity(KikaAlphaUiActivity.class, true);
             }
         });

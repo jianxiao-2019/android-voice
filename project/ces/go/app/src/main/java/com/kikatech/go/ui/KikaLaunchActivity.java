@@ -29,6 +29,8 @@ import org.greenrobot.eventbus.ThreadMode;
 public class KikaLaunchActivity extends BaseActivity {
     private static final String TAG = "KikaLaunchActivity";
 
+    private static final long TIME_OUT = 1200;
+
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -59,7 +61,7 @@ public class KikaLaunchActivity extends BaseActivity {
     }
 
 
-    private CountingTimer mTimeoutTimer = new CountingTimer(1200, new CountingTimer.ICountingListener() {
+    private CountingTimer mTimeoutTimer = new CountingTimer(TIME_OUT, new CountingTimer.ICountingListener() {
         @Override
         public void onTimeTickStart() {
         }
@@ -70,12 +72,12 @@ public class KikaLaunchActivity extends BaseActivity {
 
         @Override
         public void onTimeTickEnd() {
-            determinePageToGo();
+            startAnotherActivity(KikaAlphaUiActivity.class, true);
         }
 
         @Override
         public void onInterrupted(long stopMillis) {
-            determinePageToGo();
+            startAnotherActivity(KikaAlphaUiActivity.class, true);
         }
     });
 
@@ -85,9 +87,7 @@ public class KikaLaunchActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_launch);
         animate();
-        registerReceivers();
-        DialogFlowForegroundService.processStart(KikaLaunchActivity.this, DialogFlowForegroundService.class);
-        mTimeoutTimer.start();
+        determinePageToGo();
     }
 
     @Override
@@ -123,9 +123,16 @@ public class KikaLaunchActivity extends BaseActivity {
                 || !NotificationListenerUtil.isPermissionNLEnabled(context)
                 || (DeviceUtil.overM() && !OverlayUtil.isPermissionOverlayEnabled(context))
                 || !PermissionUtil.hasAllKikaPermissions(context)) {
-            startAnotherActivity(KikaPermissionsActivity.class, true);
+            AsyncThread.getIns().executeDelay(new Runnable() {
+                @Override
+                public void run() {
+                    startAnotherActivity(KikaPermissionsActivity.class, true);
+                }
+            }, TIME_OUT);
         } else {
-            startAnotherActivity(KikaAlphaUiActivity.class, true);
+            registerReceivers();
+            DialogFlowForegroundService.processStart(KikaLaunchActivity.this, DialogFlowForegroundService.class);
+            mTimeoutTimer.start();
         }
     }
 }
