@@ -160,6 +160,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 }
                 String text = event.getExtras().getString(ToDFServiceEvent.PARAM_TEXT);
                 pauseAsr();
+                mDialogFlowService.cancelAsrAlignment();
                 mDialogFlowService.talk(text);
                 break;
             case ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP:
