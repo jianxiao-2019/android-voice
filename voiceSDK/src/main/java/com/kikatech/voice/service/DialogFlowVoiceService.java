@@ -138,7 +138,7 @@ public abstract class DialogFlowVoiceService {
 
         @Override
         public void onCreated() {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "onCreated, mVoiceService:" + mVoiceService);
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
             if (mVoiceService != null) {
                 mVoiceService.start();
             }
@@ -146,36 +146,38 @@ public abstract class DialogFlowVoiceService {
             mServiceCallback.onInitComplete();
             mServiceCallback.onAsrConfigChange(mAsrConfiguration);
             mServiceCallback.onRecorderSourceUpdate();
+            mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED);
         }
 
         @Override
         public void onStartListening() {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "onStartListening");
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceState] onStartListening");
         }
 
         @Override
         public void onStopListening() {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "onStopListening");
+            if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceState] onStopListening");
         }
 
         @Override
         public void onDestroyed() {
             if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "onDestroyed");
+                LogUtil.log(TAG, "[VoiceState] onDestroyed");
             }
         }
 
         @Override
         public void onError(int reason) {
             if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "onError : " + reason);
+                LogUtil.log(TAG, "[VoiceState] onError : " + reason);
             }
+            mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT);
         }
 
         @Override
         public void onVadBos() {
             if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "onVadBos");
+                LogUtil.log(TAG, "[VoiceState] onVadBos");
             }
             mServiceCallback.onVadBos();
         }
@@ -183,8 +185,10 @@ public abstract class DialogFlowVoiceService {
         @Override
         public void onConnectionClosed() {
             if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "onConnectionClosed");
+                LogUtil.log(TAG, "[VoiceState] onConnectionClosed");
             }
+
+            mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED);
         }
     };
 }

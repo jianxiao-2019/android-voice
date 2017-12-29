@@ -20,6 +20,10 @@ public interface IDialogFlowService {
 
     interface IServiceCallback {
 
+        byte CONNECTION_STATUS_OPENED = 1;
+        byte CONNECTION_STATUS_CLOSED = 2;
+        byte CONNECTION_STATUS_ERR_DISCONNECT = 3;
+
         void onInitComplete();
 
         void onWakeUp();
@@ -51,6 +55,8 @@ public interface IDialogFlowService {
         void onAsrConfigChange(AsrConfiguration asrConfig);
 
         void onRecorderSourceUpdate();
+
+        void onConnectionStatusChange(byte status);
     }
 
     interface IAgentQueryStatus {
