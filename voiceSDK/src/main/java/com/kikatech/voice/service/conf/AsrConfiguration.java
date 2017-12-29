@@ -28,11 +28,12 @@ public class AsrConfiguration {
     }
 
     public void copyConfig(AsrConfiguration conf) {
-        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled, conf.punctuationEnabled, conf.vprEnabled, conf.eosPackets);
+        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled,
+                conf.punctuationEnabled, conf.vprEnabled, conf.eosPackets);
     }
 
     private void setConfig(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
-                            boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
+                           boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
         this.spellingEnabled = spellingEnabled;
         this.speechMode = speechMode;
         this.alterEnabled = alterEnabled;
@@ -40,6 +41,16 @@ public class AsrConfiguration {
         this.punctuationEnabled = punctuationEnabled;
         this.vprEnabled = vprEnabled;
         this.eosPackets = eosPackets;
+    }
+
+    private boolean sameValue(AsrConfiguration asrConfig) {
+        return speechMode == asrConfig.speechMode &&
+                alterEnabled == asrConfig.alterEnabled &&
+                emojiEnabled == asrConfig.emojiEnabled &&
+                punctuationEnabled == asrConfig.punctuationEnabled &&
+                spellingEnabled == asrConfig.spellingEnabled &&
+                vprEnabled == asrConfig.vprEnabled &&
+                eosPackets == asrConfig.eosPackets;
     }
 
     public void setSpeechMode(SpeechMode speechMode) {
@@ -110,13 +121,6 @@ public class AsrConfiguration {
             copyConfig(asrConfig);
             return true;
         }
-    }
-
-    private boolean sameValue(AsrConfiguration asrConfig) {
-        return speechMode == asrConfig.speechMode &&
-                alterEnabled == asrConfig.alterEnabled &&
-                emojiEnabled == asrConfig.emojiEnabled &&
-                punctuationEnabled == asrConfig.punctuationEnabled;
     }
 
     public static class Builder {
