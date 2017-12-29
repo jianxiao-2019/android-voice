@@ -23,7 +23,7 @@ it's the alpha version now."</string>
 
     <string name="ui_ask_address_again">"Please say again"</string>
     <string-array name="tts_ask_address_again">
-        <item>"Sorry, I couldn't find it. Please say again."</item>
+        <item>"I couldn't find it. Please say again."</item>
         <item>"Please say the destination again."</item>
         <item>"I couldn't find it , try again please?"</item>
     </string-array>
@@ -57,7 +57,7 @@ it's the alpha version now."</string>
 
     <string name="ui_contact_not_found">"Please say again"</string>
     <string-array name="tts_contact_not_found">
-        <item>"Sorry, I couldn't find the contact. Please say again."</item>
+        <item>"I couldn't find the contact. Please say again."</item>
     </string-array>
 
     <string name="ui_ask_msg">"What's the message?"</string>
@@ -126,9 +126,9 @@ it's the alpha version now."</string>
         <item>"%s is calling. Answer, reject or ignore."</item>
     </string-array>
 
-    <string name="tts_response_not_get">"Sorry, I didn't get what you say."</string><!-- previous tts content -->
+    <string name="tts_response_not_get">"I didn't get what you say."</string><!-- previous tts content -->
     <string-array name="tts_intent_unknown">
-        <item>"Sorry, I didn't catch you."</item>
+        <item>"I didn't catch you."</item>
         <item>"I am good at messaging and navigation while driving, how can i help you?"</item>
         <item>"Sorry, i am not sure i understand. You can say navigate to somewhere, call or message someone."</item>
         <item>"Hey, I am not like Alexa, i am professional at hands free navigation and messaging. What would you like to do?"</item>
