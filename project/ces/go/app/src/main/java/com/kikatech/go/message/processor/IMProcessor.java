@@ -43,6 +43,14 @@ public abstract class IMProcessor extends AccessibilityProcessor {
     }
 
     @Override
+    public void onStageTimeout() {
+        LogUtil.logw(TAG, "onStageTimeout, stage:" + mStage);
+        if(isRunning()) {
+            stop();
+        }
+    }
+
+    @Override
     public void start() {
         setRunning(true);
         new CountDownTimer(TIMEOUT, 1000) {

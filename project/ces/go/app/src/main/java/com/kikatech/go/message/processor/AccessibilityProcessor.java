@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.KikaGoActivity;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 
@@ -22,6 +23,8 @@ public abstract class AccessibilityProcessor {
     protected boolean mRunning = false;
     protected String mStage;
 
+    private static final int STAGE_TIMEOUT = 2500;
+
     public AccessibilityProcessor(Context context) {
         mContext = context;
     }
@@ -30,18 +33,30 @@ public abstract class AccessibilityProcessor {
     abstract public void stop();
     abstract public boolean onSceneShown(Scene scene);
 
-    protected void setRunning(boolean running) {
+    protected synchronized void setRunning(boolean running) {
         mRunning = running;
     }
 
-    public boolean isRunning() {
+    public synchronized boolean isRunning() {
         return mRunning;
     }
 
     protected void updateStage(String stage) {
         LogUtil.logw(TAG, "Update Processing Stage: " + stage);
         mStage = stage;
+
+        BackgroundThread.getHandler().removeCallbacks(timeOutTask);
+        BackgroundThread.postDelayed(timeOutTask, STAGE_TIMEOUT);
     }
+
+    private Runnable timeOutTask = new Runnable() {
+        @Override
+        public void run() {
+            onStageTimeout();
+        }
+    };
+
+    abstract void onStageTimeout();
 
     protected String getStage() {
         return mStage;

@@ -30,6 +30,13 @@ public class BackgroundThread extends HandlerThread
         }
     }
 
+    public static boolean postDelayed(Runnable r, long delayMillis) {
+        synchronized (BackgroundThread.class) {
+            ensureThreadLocked();
+            return sHandler.postDelayed(r, delayMillis);
+        }
+    }
+
     public static Handler getHandler() {
         synchronized(BackgroundThread.class) {
             ensureThreadLocked();
