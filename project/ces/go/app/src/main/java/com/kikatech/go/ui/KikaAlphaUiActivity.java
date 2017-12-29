@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Toast;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
@@ -19,7 +18,6 @@ import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.GoLayout;
@@ -213,13 +211,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             CustomConfig.removeAllCustomConfigFiles();
         }
 
-        if (LogUtil.DEBUG) {
-            String sen = CustomConfig.getSnowboySensitivity();
-            int timeout = CustomConfig.getKikaTtsServerTimeout();
-            String msg = "[config] Sensitivity: " + sen + " , Timeout: " + timeout + " ms";
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-            LogUtil.log(TAG, msg);
-        }
+//        if (LogUtil.DEBUG) {
+//            String sen = CustomConfig.getSnowboySensitivity();
+//            int timeout = CustomConfig.getKikaTtsServerTimeout();
+//            String msg = "[config] Sensitivity: " + sen + " , Timeout: " + timeout + " ms";
+//            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+//            LogUtil.log(TAG, msg);
+//        }
     }
 
     @Override
