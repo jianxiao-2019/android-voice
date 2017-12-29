@@ -57,6 +57,7 @@ public class AsrConfigUtil {
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
+                asrConf.setEosPackets(3);
                 break;
             case ASR_MODE_CONVERSATION:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.CONVERSATION);
@@ -64,6 +65,7 @@ public class AsrConfigUtil {
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 asrConf.setSpellingEnabled(false);
+                asrConf.setEosPackets(4);
                 break;
             case ASR_MODE_CONVERSATION_CMD_ALTER:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
@@ -71,6 +73,7 @@ public class AsrConfigUtil {
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
+                asrConf.setEosPackets(2);
                 break;
             case ASR_MODE_CONVERSATION_ALTER:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
@@ -78,6 +81,7 @@ public class AsrConfigUtil {
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 asrConf.setSpellingEnabled(false);
+                asrConf.setEosPackets(2);
                 break;
             case ASR_MODE_SHORT_COMMAND:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
@@ -85,6 +89,7 @@ public class AsrConfigUtil {
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
+                asrConf.setEosPackets(2);
                 break;
             case ASR_MODE_SHORT_COMMAND_SPELLING:
                 asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
@@ -92,6 +97,7 @@ public class AsrConfigUtil {
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(true);
+                asrConf.setEosPackets(2);
                 break;
         }
 
