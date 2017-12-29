@@ -183,7 +183,8 @@
                 android:layout_height="@dimen/drawer_item_area_height"
                 android:background="@drawable/selector_bg_drawer_item"
                 android:gravity="center_vertical"
-                android:paddingLeft="35dp">
+                android:paddingLeft="35dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -204,7 +205,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/drawer_underline_height"
-                android:background="@color/drawer_underline"/>
+                android:background="@color/drawer_underline"
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:id="@+id/drawer_item_debug"
