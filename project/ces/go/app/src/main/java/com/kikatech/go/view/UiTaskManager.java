@@ -5,12 +5,15 @@ import android.text.TextUtils;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.model.ContactOptionList;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.model.UserMsg;
+import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
+import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
@@ -52,6 +55,7 @@ public class UiTaskManager {
     private GoLayout mLayout;
     private IUiManagerFeedback mFeedback;
     private Queue<Task> mTaskQueue = new LinkedList<>();
+    private String wakeUpFrom;
 
 
     public UiTaskManager(GoLayout layout, IUiManagerFeedback feedback) {
@@ -65,7 +69,19 @@ public class UiTaskManager {
                 }
                 switch (mode) {
                     case AWAKE:
-                        displayOptions(mDefaultOptionList);
+                        if (!TextUtils.isEmpty(wakeUpFrom)) {
+                            switch (wakeUpFrom) {
+                                case SceneReplyIM.SCENE:
+                                case SceneReplySms.SCENE:
+                                case SceneIncoming.SCENE:
+                                    break;
+                                default:
+                                    displayOptions(mDefaultOptionList);
+                                    break;
+                            }
+                        } else {
+                            displayOptions(mDefaultOptionList);
+                        }
                         unlock(true);
                         break;
                     case SLEEP:
@@ -115,7 +131,8 @@ public class UiTaskManager {
     }
 
 
-    public synchronized void dispatchWakeUp() {
+    public synchronized void dispatchWakeUp(String wakeUpFrom) {
+        this.wakeUpFrom = wakeUpFrom;
         wakeUp();
     }
 
@@ -257,6 +274,7 @@ public class UiTaskManager {
         mTaskQueue.clear();
         mLayout.clear();
         mLayout = null;
+        wakeUpFrom = null;
     }
 
     private boolean isLayoutPerformTask() {

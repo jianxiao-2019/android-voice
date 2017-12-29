@@ -28,6 +28,7 @@ public class DFServiceEvent extends BaseDFServiceEvent {
     public static final String ACTION_ON_VOICE_SRC_CHANGE = "action_on_voice_source_change";
     public static final String ACTION_ON_CONNECTION_STATUS_CHANGE = "action_on_connection_status_change";
 
+    public static final String PARAM_WAKE_UP_FROM = "param_wake_up_from";
     public static final String PARAM_EXTRAS = "param_extras";
     public static final String PARAM_TEXT = "param_text";
     public static final String PARAM_IS_FINISHED = "param_is_finished";

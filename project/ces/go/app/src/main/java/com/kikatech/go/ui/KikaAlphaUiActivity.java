@@ -72,7 +72,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
                 break;
             case DFServiceEvent.ACTION_ON_WAKE_UP:
-                mUiManager.dispatchWakeUp();
+                String wakeUpFrom = event.getExtras().getString(DFServiceEvent.PARAM_WAKE_UP_FROM);
+                mUiManager.dispatchWakeUp(wakeUpFrom);
                 break;
             case DFServiceEvent.ACTION_ON_SLEEP:
                 mUiManager.dispatchSleep();
@@ -141,7 +142,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 DFServiceStatus serviceStatus = (DFServiceStatus) event.getExtras().getSerializable(DFServiceEvent.PARAM_SERVICE_STATUS);
                 if (serviceStatus != null && serviceStatus.isInit()) {
                     if (serviceStatus.isAwake()) {
-                        mUiManager.dispatchWakeUp();
+                        mUiManager.dispatchWakeUp(null);
                     } else {
                         mUiManager.dispatchSleep();
                     }

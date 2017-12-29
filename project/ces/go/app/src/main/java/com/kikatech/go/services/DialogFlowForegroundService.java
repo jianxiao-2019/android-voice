@@ -389,6 +389,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         mDFServiceStatus.setAwake(true);
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
                         DFServiceEvent event = new DFServiceEvent(action);
+                        event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, scene);
                         sendDFServiceEvent(event);
                         resumeAsr();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
