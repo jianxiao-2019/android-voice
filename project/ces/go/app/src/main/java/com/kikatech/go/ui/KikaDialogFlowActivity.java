@@ -154,6 +154,11 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     public void onRecorderSourceUpdate() {
 
                     }
+
+                    @Override
+                    public void onConnectionStatusChange(byte status) {
+
+                    }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {

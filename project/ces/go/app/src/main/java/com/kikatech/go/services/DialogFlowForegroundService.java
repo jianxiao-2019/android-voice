@@ -622,6 +622,29 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         }
                         LogOnViewUtil.getIns().updateVoiceSourceInfo(voiceSource);
                     }
+
+                    @Override
+                    public void onConnectionStatusChange(byte status) {
+                        if (LogUtil.DEBUG) LogUtil.log(TAG, "onConnectionStatusChange:" + status);
+                        switch (status) {
+                            case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
+                                if (LogUtil.DEBUG)
+                                    LogUtil.log(TAG, "CONNECTION_STATUS_OPENED");
+                                break;
+                            case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
+                                if (LogUtil.DEBUG)
+                                    LogUtil.log(TAG, "CONNECTION_STATUS_CLOSED");
+                                break;
+                            case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
+                                if (LogUtil.DEBUG)
+                                    LogUtil.log(TAG, "CONNECTION_STATUS_ERR_DISCONNECT");
+                                break;
+                            default:
+                                if (LogUtil.DEBUG)
+                                    LogUtil.log(TAG, "CONNECTION_STATUS_UNKNOWN");
+                                break;
+                        }
+                    }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart() {
