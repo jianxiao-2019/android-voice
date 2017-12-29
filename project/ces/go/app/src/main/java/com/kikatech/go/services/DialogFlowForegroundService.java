@@ -167,7 +167,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, String.format("action: %s", action));
                 }
-                mDialogFlowService.wakeUp();
+                mDialogFlowService.wakeUp("main_click");
                 break;
             case ToDFServiceEvent.ACTION_PING_VOICE_SOURCE:
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
@@ -382,9 +382,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onWakeUp() {
+                    public void onWakeUp(String scene) {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "onWakeUp");
+                            LogUtil.log(TAG, "onWakeUp, scene:" + scene);
                         }
                         mDFServiceStatus.setAwake(true);
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
@@ -773,7 +773,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     @Override
                     public void onGMapClicked() {
                         if (mDialogFlowService != null) {
-                            mDialogFlowService.wakeUp();
+                            mDialogFlowService.wakeUp("floating");
                         }
                     }
                 })

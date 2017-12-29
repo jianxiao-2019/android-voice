@@ -48,7 +48,7 @@ public class IMSceneManager extends BaseSceneManager {
                     long t = System.currentTimeMillis();
                     mReceivedSmsList.put(t, imObject);
 
-                    mService.wakeUp();
+                    mService.wakeUp(SceneReplyIM.SCENE);
                     mService.resetContexts();
                     mService.talk(String.format(KIKA_PROCESS_RECEIVED_IM, t));
                 }

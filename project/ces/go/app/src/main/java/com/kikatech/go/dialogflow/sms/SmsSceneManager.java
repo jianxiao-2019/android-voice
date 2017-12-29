@@ -44,7 +44,7 @@ public class SmsSceneManager extends BaseSceneManager {
                     long t = System.currentTimeMillis();
                     mReceivedSmsList.put(t, smsObject);
 
-                    mService.wakeUp();
+                    mService.wakeUp(SceneReplySms.SCENE);
                     mService.resetContexts();
                     mService.talk(String.format(KIKA_PROCESS_RECEIVED_SMS, t));
                 }

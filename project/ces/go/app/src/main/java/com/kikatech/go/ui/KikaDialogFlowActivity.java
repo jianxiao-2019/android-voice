@@ -84,7 +84,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onWakeUp() {
+                    public void onWakeUp(String scene) {
                     }
 
                     @Override
