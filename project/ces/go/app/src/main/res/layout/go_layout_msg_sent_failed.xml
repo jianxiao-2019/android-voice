@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="SpUsage">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="220dp"
+        android:contentDescription="@string/default_img_content_description"/>
+
+    <ImageView
+        android:id="@+id/msg_sent_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="68dp"
+        android:contentDescription="@string/default_img_content_description"
+        android:src="@drawable/kika_ic_errormsg"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/msg_sent_text"
+        android:src="@drawable/kika_ic_msg"/>
+
+    <TextView
+        android:id="@+id/msg_sent_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:text="Failed!"
+        android:textColor="#8e94a9"
+        android:textSize="@dimen/go_layout_msg_sent_text_size"/>
+
+</RelativeLayout>

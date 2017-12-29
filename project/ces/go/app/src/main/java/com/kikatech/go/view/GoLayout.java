@@ -136,6 +136,7 @@ public class GoLayout extends FrameLayout {
     private GoTextView mUsrMsgContent;
 
     private View mMsgSentLayout;
+    private View mMsgSentFailedLayout;
 
     private View mSleepLayout;
 
@@ -210,6 +211,8 @@ public class GoLayout extends FrameLayout {
         mUsrMsgContent = (GoTextView) findViewById(R.id.go_layout_usr_msg_content);
 
         mMsgSentLayout = findViewById(R.id.go_layout_msg_sent);
+
+        mMsgSentFailedLayout = findViewById(R.id.go_layout_msg_sent_failed);
 
         mSleepLayout = findViewById(R.id.go_layout_sleep);
 
@@ -743,7 +746,7 @@ public class GoLayout extends FrameLayout {
 
         lock();
 
-        adjustComponentsViewVisibility(mMsgSentLayout);
+        adjustComponentsViewVisibility(success ? mMsgSentLayout : mMsgSentFailedLayout);
 
         onStatusChanged(ViewStatus.TTS);
     }
@@ -756,6 +759,7 @@ public class GoLayout extends FrameLayout {
         mUsrInfoLayout.setVisibility(GONE);
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
+        mMsgSentFailedLayout.setVisibility(GONE);
         if (componentsToShow != null) {
             componentsToShow.setVisibility(VISIBLE);
         }

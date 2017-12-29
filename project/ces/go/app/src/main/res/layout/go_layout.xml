@@ -78,6 +78,14 @@
                 android:visibility="gone"/>
 
             <include
+                android:id="@+id/go_layout_msg_sent_failed"
+                layout="@layout/go_layout_msg_sent_failed"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/go_layout_content_padding_left_right"
+                android:visibility="gone"/>
+
+            <include
                 android:id="@+id/go_layout_sleep"
                 layout="@layout/go_layout_sleep"
                 android:layout_width="match_parent"
