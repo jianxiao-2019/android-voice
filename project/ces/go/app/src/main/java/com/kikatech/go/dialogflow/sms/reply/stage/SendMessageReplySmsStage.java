@@ -36,6 +36,7 @@ public class SendMessageReplySmsStage extends BaseReplySmsStage {
         }
         Bundle args = new Bundle();
         args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_DISPLAY_MSG_SENT);
+        args.putBoolean(SceneUtil.EXTRA_SEND_SUCCESS, true);
         args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_succeed);
         send(args);
         SmsUtil.sendSms(mSceneBase.getContext(), msg.getPhoneNumber(), msg.getMessageBody(true));

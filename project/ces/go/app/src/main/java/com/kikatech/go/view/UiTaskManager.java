@@ -175,7 +175,8 @@ public class UiTaskManager {
                         if (alertRes > 0) {
                             playAlert(alertRes);
                         }
-                        displayMsgSent(extras.getBoolean(SceneUtil.EXTRA_SEND_SUCCESS));
+                        boolean isSentSuccess = extras.getBoolean(SceneUtil.EXTRA_SEND_SUCCESS, true);
+                        displayMsgSent(isSentSuccess);
                         break;
                     case SceneUtil.EVENT_OUTGOING_CALL:
                         onStatusChanged(GoLayout.ViewStatus.ANALYZE);
