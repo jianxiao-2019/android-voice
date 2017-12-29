@@ -21,7 +21,6 @@ import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.AsyncThread;
-import com.kikatech.voice.util.EmojiUtil;
 import com.kikatech.voice.util.log.LogUtil;
 
 
@@ -29,23 +28,15 @@ import com.kikatech.voice.util.log.LogUtil;
  * Created by bradchang on 2017/11/7.
  */
 
-public class DialogFlowService implements
-        IDialogFlowService,
-        VoiceService.VoiceActiveStateListener,
-        VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener {
+public class DialogFlowService extends DialogFlowVoiceService implements IDialogFlowService {
 
     private static final String TAG = "DialogFlowService";
 
-    private Context mContext;
 
-    private final IServiceCallback mCallback;
     private final IAgentQueryStatus mQueryStatusCallback;
 
     private DialogFlow mDialogFlow;
     private boolean mQueryAnyWords = false;
-
-    private VoiceService mVoiceService;
-    private final AsrConfiguration mAsrConfiguration = new AsrConfiguration.Builder().build();
 
     private SceneManager mSceneManager;
 
@@ -54,8 +45,8 @@ public class DialogFlowService implements
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf,
                               @NonNull IServiceCallback callback,
                               @NonNull IAgentQueryStatus queryStatus) {
-        mContext = ctx;
-        mCallback = callback;
+        super(ctx, callback);
+
         mQueryStatusCallback = queryStatus;
         mSceneManager = new SceneManager(mSceneCallback, mSceneQueryWordsStatusCallback);
         initDialogFlow(conf);
@@ -66,10 +57,6 @@ public class DialogFlowService implements
         Message.register(Message.MSG_TYPE_ALTER, EditTextMessage.class);
         Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
         Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
-
-        callback.onInitComplete();
-        callback.onAsrConfigChange(mAsrConfiguration);
-        callback.onRecorderSourceUpdate();
     }
 
     @Override
@@ -87,21 +74,6 @@ public class DialogFlowService implements
         mDialogFlow.setObserver(mSceneManager);
         mDialogFlow.resetContexts();
         if (LogUtil.DEBUG) LogUtil.log(TAG, "idle DialogFlow ... Done");
-    }
-
-    private void initVoiceService(@NonNull VoiceConfiguration conf) {
-        if(mVoiceService != null) {
-            mVoiceService.destroy();
-            mVoiceService = null;
-        }
-        AsrConfiguration asrConfig = conf.getConnectionConfiguration().getAsrConfiguration();
-        mAsrConfiguration.copyConfig(asrConfig);
-        mVoiceService = VoiceService.getService(mContext, conf);
-        mVoiceService.setVoiceActiveStateListener(this);
-        mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.setVoiceStateChangedListener(this);
-        mVoiceService.create();
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "idle VoiceService ... Done");
     }
 
     private void initTts(@NonNull VoiceConfiguration conf) {
@@ -243,8 +215,8 @@ public class DialogFlowService implements
         }
         if (mVoiceService != null) {
             mVoiceService.pauseAsr();
-            if (mCallback != null) {
-                mCallback.onASRPause();
+            if (mServiceCallback != null) {
+                mServiceCallback.onASRPause();
             }
         }
     }
@@ -253,8 +225,8 @@ public class DialogFlowService implements
     public void resumeAsr(int bosDuration) {
         if (mVoiceService != null) {
             mVoiceService.resumeAsr(bosDuration);
-            if (mCallback != null) {
-                mCallback.onASRResume();
+            if (mServiceCallback != null) {
+                mServiceCallback.onASRResume();
             }
         }
     }
@@ -266,8 +238,8 @@ public class DialogFlowService implements
         }
         if (mVoiceService != null) {
             mVoiceService.resumeAsr(startBosNow);
-            if (mCallback != null) {
-                mCallback.onASRResume();
+            if (mServiceCallback != null) {
+                mServiceCallback.onASRResume();
             }
         }
     }
@@ -291,114 +263,10 @@ public class DialogFlowService implements
         initVoiceService(config);
         // Voice is re-initialized, go back to the
         resetContexts();
-        if (mCallback != null) {
-            mCallback.onRecorderSourceUpdate();
+        if (mServiceCallback != null) {
+            mServiceCallback.onRecorderSourceUpdate();
             // Notify that the service is now sleeping
-            mCallback.onSleep();
-        }
-    }
-
-    @Override
-    public void onWakeUp() {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "onWakeUp");
-        }
-        if (mCallback != null) {
-            mCallback.onWakeUp();
-        }
-    }
-
-    @Override
-    public void onSleep() {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "onSleep");
-        }
-        if (mCallback != null) {
-            mCallback.onSleep();
-        }
-        if (mSceneManager != null) {
-            mSceneManager.exitCurrentScene();
-        }
-    }
-
-    @Override
-    public void onRecognitionResult(Message message) {
-        if (LogUtil.DEBUG && !(message instanceof IntermediateMessage)) {
-            LogUtil.logd(TAG, "onMessage message = " + message);
-        }
-
-        boolean queryDialogFlow = false;
-        String query = "";
-        String[] nBestQuery = null;
-        String emojiJson = "";
-
-        if (message instanceof IntermediateMessage) {
-            IntermediateMessage intermediateMessage = (IntermediateMessage) message;
-            query = intermediateMessage.text;
-        } else if (message instanceof TextMessage) {
-            TextMessage textMessage = (TextMessage) message;
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
-            }
-
-            query = textMessage.text[0];
-            nBestQuery = textMessage.text;
-            queryDialogFlow = true;
-        } else if (message instanceof EditTextMessage) {
-            String alter = ((EditTextMessage) message).altered;
-            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
-
-            query = alter;
-            queryDialogFlow = true;
-        } else if (message instanceof EmojiRecommendMessage) {
-            EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
-            emojiJson = EmojiUtil.composeJsonString(emoji.emoji, emoji.descriptionText);
-            if (LogUtil.DEBUG) LogUtil.logd(TAG, "EmojiRecommendMessage = " + emojiJson);
-        }
-
-        if (!TextUtils.isEmpty(query)) {
-            mCallback.onASRResult(query, emojiJson, queryDialogFlow);
-            if (queryDialogFlow && mDialogFlow != null) {
-                mDialogFlow.talk(query, nBestQuery, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
-            }
-        } else if (!TextUtils.isEmpty(emojiJson)) {
-            mDialogFlow.talk(emojiJson, nBestQuery, QUERY_TYPE_EMOJI, mQueryStatusCallback);
-        }
-    }
-
-    @Override
-    public void onCreated() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "onCreated, mVoiceService:" + mVoiceService);
-        if (mVoiceService != null) {
-            mVoiceService.start();
-        }
-    }
-
-    @Override
-    public void onStartListening() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "onStartListening");
-    }
-
-    @Override
-    public void onStopListening() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "onStopListening");
-    }
-
-    @Override
-    public void onDestroyed() {
-    }
-
-    @Override
-    public void onError(int reason) {
-    }
-
-    @Override
-    public void onVadBos() {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "onVadBos");
-        }
-        if (mCallback != null) {
-            mCallback.onVadBos();
+            mServiceCallback.onSleep();
         }
     }
 
@@ -409,38 +277,57 @@ public class DialogFlowService implements
     private final ISceneFeedback mSceneFeedback = new ISceneFeedback() {
         @Override
         public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, ISceneStageFeedback feedback) {
-            mCallback.onTextPairs(pairs, extras);
+            mServiceCallback.onTextPairs(pairs, extras);
             tts(pairs, feedback);
         }
 
         @Override
         public void onText(String text, Bundle extras, ISceneStageFeedback feedback) {
-            mCallback.onText(text, extras);
+            mServiceCallback.onText(text, extras);
             tts(text, feedback);
         }
 
         @Override
         public void onStagePrepared(String scene, String action, SceneStage sceneStage) {
-            mCallback.onStagePrepared(scene, action, sceneStage);
+            mServiceCallback.onStagePrepared(scene, action, sceneStage);
         }
 
         @Override
         public void onStageActionStart(boolean supportAsrInterrupted) {
-            mCallback.onStageActionStart(supportAsrInterrupted);
+            mServiceCallback.onStageActionStart(supportAsrInterrupted);
         }
 
         @Override
         public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume, Integer overrideAsrBos) {
-            mCallback.onStageActionDone(isInterrupted, delayAsrResume, overrideAsrBos);
+            mServiceCallback.onStageActionDone(isInterrupted, delayAsrResume, overrideAsrBos);
         }
 
         @Override
         public void onStageEvent(Bundle extras) {
-            mCallback.onStageEvent(extras);
+            mServiceCallback.onStageEvent(extras);
         }
     };
 
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
+
+    @Override
+    void onVoiceSleep() {
+        if (mSceneManager != null) {
+            mSceneManager.exitCurrentScene();
+        }
+    }
+
+    @Override
+    void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery) {
+        if (!TextUtils.isEmpty(query)) {
+            mServiceCallback.onASRResult(query, emojiJson, queryDialogFlow);
+            if (queryDialogFlow && mDialogFlow != null) {
+                mDialogFlow.talk(query, nBestQuery, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
+            }
+        } else if (!TextUtils.isEmpty(emojiJson)) {
+            mDialogFlow.talk(emojiJson, nBestQuery, QUERY_TYPE_EMOJI, mQueryStatusCallback);
+        }
+    }
 
     private final class TtsStateDispatchListener implements TtsSource.TtsStateChangedListener {
         private ISceneStageFeedback listener;
@@ -508,16 +395,7 @@ public class DialogFlowService implements
         }
     }
 
-    private void updateAsrConfig(AsrConfiguration asrConfig) {
-        if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
-            mVoiceService.updateAsrSettings(mAsrConfiguration);
-            if (LogUtil.DEBUG) {
-                mCallback.onAsrConfigChange(mAsrConfiguration);
-            }
-        }
-    }
-
-    private SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
+    private final SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
         @Override
         public void onSceneEnter(String scene) {
         }
@@ -534,7 +412,7 @@ public class DialogFlowService implements
                 mDialogFlow.resetContexts();
                 sleep();
             }
-            mCallback.onSceneExit(proactive);
+            mServiceCallback.onSceneExit(proactive);
         }
 
         @Override
@@ -543,7 +421,7 @@ public class DialogFlowService implements
         }
     };
 
-    private SceneManager.SceneQueryWordsStatus mSceneQueryWordsStatusCallback = new SceneManager.SceneQueryWordsStatus() {
+    private final SceneManager.SceneQueryWordsStatus mSceneQueryWordsStatusCallback = new SceneManager.SceneQueryWordsStatus() {
         @Override
         public void onQueryAnyWordsStatusChange(boolean queryAnyWords) {
             mQueryAnyWords = queryAnyWords;

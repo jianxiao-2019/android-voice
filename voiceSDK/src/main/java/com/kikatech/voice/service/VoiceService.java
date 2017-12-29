@@ -25,7 +25,9 @@ import java.util.Arrays;
 
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
-    public static final int REASON_NOT_CREATED = 1;
+    public static final int ERR_REASON_NOT_CREATED = 1;
+    public static final int ERR_CONNECTION_ERROR = 2;
+
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
 
     private static final int HEARTBEAT_DURATION = 10 * 1000;
@@ -73,6 +75,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         void onError(int reason);
 
         void onVadBos();
+
+        void onConnectionClosed();
     }
 
     public interface VoiceActiveStateListener {
@@ -112,7 +116,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public void start() {
         Logger.d("VoiceService start mWebService.isConnecting() = " + mWebService.isConnecting());
         if (!mWebService.isConnecting()) {
-            mVoiceStateChangedListener.onError(REASON_NOT_CREATED);
+            mVoiceStateChangedListener.onError(ERR_REASON_NOT_CREATED);
             return;
         }
 
@@ -259,7 +263,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
         @Override
         public void onOpen() {
-            Logger.d("mWebSocketListener onOpen mMainThreadHandler = " + mMainThreadHandler);
+            Logger.d("[WebSocketListener] onOpen mMainThreadHandler = " + mMainThreadHandler);
             if (mMainThreadHandler != null) {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
@@ -274,6 +278,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         @Override
         public void onMessage(final Message message) {
+            Logger.d("[WebSocketListener] onMessage:" + message);
             cleanVadBosTimer();
             if (mMainThreadHandler != null) {
                 mMainThreadHandler.post(new Runnable() {
@@ -289,10 +294,32 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         @Override
         public void onWebSocketClosed() {
+            Logger.d("[WebSocketListener] onWebSocketClosed");
+            if (mMainThreadHandler != null) {
+                mMainThreadHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mVoiceStateChangedListener != null) {
+                            mVoiceStateChangedListener.onConnectionClosed();
+                        }
+                    }
+                });
+            }
         }
 
         @Override
         public void onWebSocketError() {
+            Logger.d("[WebSocketListener] onWebSocketError");
+            if (mMainThreadHandler != null) {
+                mMainThreadHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mVoiceStateChangedListener != null) {
+                            mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
+                        }
+                    }
+                });
+            }
         }
     };
 

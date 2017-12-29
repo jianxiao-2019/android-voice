@@ -23,17 +23,17 @@ public class BackgroundThread extends HandlerThread {
         }
     }
 
-    public static Handler getHandler() {
-        synchronized (BackgroundThread.class) {
-            ensureThreadLocked();
-            return sHandler;
-        }
-    }
-
     public static void post(final Runnable runnable) {
         synchronized (BackgroundThread.class) {
             ensureThreadLocked();
             sHandler.post(runnable);
+        }
+    }
+
+    public static boolean postDelayed(Runnable r, long delayMillis) {
+        synchronized (BackgroundThread.class) {
+            ensureThreadLocked();
+            return sHandler.postDelayed(r, delayMillis);
         }
     }
 }
