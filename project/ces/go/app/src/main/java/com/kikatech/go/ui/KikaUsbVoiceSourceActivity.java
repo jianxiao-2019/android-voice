@@ -45,7 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.kikatech.voice.service.VoiceService.REASON_NOT_CREATED;
+import static com.kikatech.voice.service.VoiceService.ERR_REASON_NOT_CREATED;
 
 /**
  * Created by brad_chang on 2017/12/19.
@@ -517,7 +517,7 @@ public class KikaUsbVoiceSourceActivity extends BaseActivity implements VoiceSer
 
     @Override
     public void onError(int reason) {
-        if (reason == REASON_NOT_CREATED) {
+        if (reason == ERR_REASON_NOT_CREATED) {
             if (mTextView != null) {
                 mTextView.setText("Select an audio source first.");
             }
@@ -526,6 +526,11 @@ public class KikaUsbVoiceSourceActivity extends BaseActivity implements VoiceSer
 
     @Override
     public void onVadBos() {
+
+    }
+
+    @Override
+    public void onConnectionClosed() {
 
     }
 

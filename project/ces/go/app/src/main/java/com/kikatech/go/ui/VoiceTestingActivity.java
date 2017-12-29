@@ -301,6 +301,11 @@ public class VoiceTestingActivity extends BaseActivity
     }
 
     @Override
+    public void onConnectionClosed() {
+        Logger.d("VoiceTestingActivity onConnectionClosed");
+    }
+
+    @Override
     public void onTtsStart() {
         Logger.d("Tts onTtsStart");
     }
