@@ -40,6 +40,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private GoLayout mGoLayout;
     private UiTaskManager mUiManager;
     private View mBtnOpenDrawer;
+    private View mIconConnectionStatus;
 
 
     /**
@@ -128,11 +129,11 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 connectionStatus = event.getExtras().getByte(DFServiceEvent.PARAM_CONNECTION_STATUS);
                 switch (connectionStatus) {
                     case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
-                        mUiManager.dispatchConnectionStatusChanged(true);
+                        onConnectionStatusChanged(true);
                         break;
                     case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
                     case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
-                        mUiManager.dispatchConnectionStatusChanged(false);
+                        onConnectionStatusChanged(false);
                         break;
                 }
                 break;
@@ -147,11 +148,11 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                     connectionStatus = serviceStatus.getConnectionStatus();
                     switch (connectionStatus) {
                         case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
-                            mUiManager.dispatchConnectionStatusChanged(true);
+                            onConnectionStatusChanged(true);
                             break;
                         case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
                         case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
-                            mUiManager.dispatchConnectionStatusChanged(false);
+                            onConnectionStatusChanged(false);
                             break;
                     }
                 }
@@ -245,10 +246,18 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private void bindView() {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
         mBtnOpenDrawer = findViewById(R.id.go_layout_btn_open_drawer);
+        mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
+
         mBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openDrawer();
+            }
+        });
+        mIconConnectionStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showToast("Network disconnection");
             }
         });
     }
@@ -267,6 +276,10 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         }
     }
 
+    private void onConnectionStatusChanged(boolean connected) {
+        mIconConnectionStatus.setVisibility(connected ? View.GONE : View.VISIBLE);
+        mUiManager.dispatchConnectionStatusChanged(connected);
+    }
 
     @Override
     protected DrawerLayout getDrawerLayout() {

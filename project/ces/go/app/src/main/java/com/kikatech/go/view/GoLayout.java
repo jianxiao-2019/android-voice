@@ -104,8 +104,6 @@ public class GoLayout extends FrameLayout {
 
     private View mTouchWakeUpPanel;
 
-    private View mIcConnectionStatus;
-
     private View mSpeakLayout;
     private ImageView mSpeakViewIcon;
     private GoTextView mSpeakViewText;
@@ -179,8 +177,6 @@ public class GoLayout extends FrameLayout {
         mLayoutInflater.inflate(R.layout.go_layout, this);
 
         mTouchWakeUpPanel = findViewById(R.id.go_layout_touch_wake_up_panel);
-
-        mIcConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
         mSpeakViewIcon = (ImageView) findViewById(R.id.go_layout_speak_icon);
@@ -389,7 +385,6 @@ public class GoLayout extends FrameLayout {
     }
 
     public synchronized void onConnectionStatusChanged(boolean connected) {
-        mIcConnectionStatus.setVisibility(connected ? GONE : VISIBLE);
         if (!connected) {
             disableTouchWakeUpPanel();
         } else {

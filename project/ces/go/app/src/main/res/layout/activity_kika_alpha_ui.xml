@@ -21,6 +21,15 @@
             android:layout_marginLeft="19dp"
             android:layout_marginTop="19dp"
             android:src="@drawable/kika_settings_ic_drawer"/>
+
+        <ImageView
+            android:id="@+id/go_layout_ic_connection_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="19dp"
+            android:layout_marginTop="19dp"
+            android:src="@drawable/kika_settings_ic_no_wifi"/>
     </RelativeLayout>
 
     <include
