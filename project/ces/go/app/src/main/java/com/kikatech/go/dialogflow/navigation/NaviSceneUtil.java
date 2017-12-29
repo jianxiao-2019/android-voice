@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.go.util.StringUtil;
 
 import java.util.ArrayList;
 
@@ -33,7 +32,6 @@ public class NaviSceneUtil {
         if (!TextUtils.isEmpty(destination)) {
             try {
                 destination = destination.substring(1, destination.length() - 1);
-                destination = StringUtil.upperCaseFirstWord(destination);
             } catch (Exception ignore) {
             }
         }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import com.kikatech.go.R;
+import com.kikatech.go.util.StringUtil;
 
 import java.util.Random;
 
@@ -50,7 +51,7 @@ public class SceneUtil {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_confirm_address);
         String[] ttsArray = resource.getStringArray(R.array.tts_confirm_address);
-        return new String[]{tryFormat(ui, address), tryFormat(getStringFromArray(ttsArray), address)};
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(address)), tryFormat(getStringFromArray(ttsArray), address)};
     }
 
     public static String[] getAskAddressAgain(Context context) {
@@ -92,7 +93,7 @@ public class SceneUtil {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_confirm_contact);
         String[] ttsArray = resource.getStringArray(R.array.tts_confirm_contact);
-        return new String[]{tryFormat(ui, contact), tryFormat(getStringFromArray(ttsArray), contact)};
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(contact)), tryFormat(getStringFromArray(ttsArray), contact)};
     }
 
     public static String[] getContactNotFound(Context context) {
@@ -113,7 +114,7 @@ public class SceneUtil {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_confirm_msg);
         String[] ttsArray = resource.getStringArray(R.array.tts_confirm_msg);
-        return new String[]{tryFormat(ui, msg), tryFormat(getStringFromArray(ttsArray), msg)};
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(msg)), tryFormat(getStringFromArray(ttsArray), msg)};
     }
 
     public static String[] getConfirmMsgOptions(Context context) {
@@ -133,7 +134,7 @@ public class SceneUtil {
         String ui = resource.getString(R.string.ui_read_msg_directly);
         String[] ttsPart1 = resource.getStringArray(R.array.tts_read_msg_directly_1);
         String[] ttsPart2 = resource.getStringArray(R.array.tts_read_msg_directly_2);
-        return new String[]{tryFormat(ui, msgContent),
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(msgContent)),
                 tryFormat(getStringFromArray(ttsPart1), userName),
                 tryFormat(getStringFromArray(ttsPart2), msgContent)};
     }
@@ -156,7 +157,7 @@ public class SceneUtil {
         String ui = resource.getString(R.string.ui_read_msg);
         String[] ttsPart1 = resource.getStringArray(R.array.tts_read_msg_1);
         String[] ttsPart2 = resource.getStringArray(R.array.tts_read_msg_2);
-        return new String[]{tryFormat(ui, msgContent),
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(msgContent)),
                 tryFormat(getStringFromArray(ttsPart1), userName),
                 tryFormat(getStringFromArray(ttsPart2), msgContent)};
     }
@@ -179,7 +180,7 @@ public class SceneUtil {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_call_contact);
         String[] ttsArray = resource.getStringArray(R.array.tts_call_contact);
-        return new String[]{tryFormat(ui, contact), tryFormat(getStringFromArray(ttsArray), contact)};
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(contact)), tryFormat(getStringFromArray(ttsArray), contact)};
     }
 
     public static String[] getCallNumber(Context context) {
@@ -193,7 +194,7 @@ public class SceneUtil {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_ask_action_for_incoming);
         String[] ttsArray = resource.getStringArray(R.array.tts_ask_action_for_incoming);
-        return new String[]{tryFormat(ui, caller), tryFormat(getStringFromArray(ttsArray), caller)};
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(caller)), tryFormat(getStringFromArray(ttsArray), caller)};
     }
 
     public static String getResponseNotGet(Context context) {
