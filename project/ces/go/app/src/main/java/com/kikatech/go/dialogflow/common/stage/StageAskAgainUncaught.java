@@ -47,31 +47,24 @@ public class StageAskAgainUncaught extends SceneStage {
     @Override
     protected void action() {
         if (LogUtil.DEBUG) {
-            LogUtil.log("StageAskAgainUncaught", "isDefaultUncaught:" + isDefaultUncaught);
+            LogUtil.log(TAG, "isDefaultUncaught:" + isDefaultUncaught);
         }
 
-        String uiText = isDefaultUncaught ? SceneCommon.PRE_UNKNOWN : SceneCommon.PRE_UNCAUGHT;
-        String ttsText = SceneUtil.getResponseNotGet(mSceneBase.getContext());
-
-        Pair<String, Integer>[] pairs = new Pair[isDefaultUncaught ? 1:2];
-        pairs[0] = new Pair<>(ttsText, TtsSource.TTS_SPEAKER_1);
-        if(!isDefaultUncaught) {
-            pairs[1] = new Pair<>(uiText, TtsSource.TTS_SPEAKER_1);
-        }
-
-        TtsText tText = new TtsText(SceneUtil.ICON_COMMON, uiText);
-        Bundle args = new Bundle();
-        args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
-
-        speak(pairs, args);
-    }
-
-    @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
         if(isDefaultUncaught) {
             exitScene();
         } else {
-            super.onStageActionDone(isInterrupted, delayAsrResume);
+            String uiText = SceneCommon.PRE_UNCAUGHT;
+            String ttsText = SceneUtil.getResponseNotGet(mSceneBase.getContext());
+
+            Pair<String, Integer>[] pairs = new Pair[2];
+            pairs[0] = new Pair<>(ttsText, TtsSource.TTS_SPEAKER_1);
+            pairs[1] = new Pair<>(uiText, TtsSource.TTS_SPEAKER_1);
+
+            TtsText tText = new TtsText(SceneUtil.ICON_COMMON, uiText);
+            Bundle args = new Bundle();
+            args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
+
+            speak(pairs, args);
         }
     }
 }
