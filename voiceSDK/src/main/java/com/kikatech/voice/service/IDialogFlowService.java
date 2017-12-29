@@ -89,6 +89,8 @@ public interface IDialogFlowService {
 
     void resumeAsr(boolean startBosNow);
 
+    void cancelAsrAlignment();
+
     void quitService();
 
     void updateRecorderSource(VoiceConfiguration config);
