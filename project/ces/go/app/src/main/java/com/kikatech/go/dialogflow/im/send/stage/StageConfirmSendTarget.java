@@ -65,6 +65,7 @@ public class StageConfirmSendTarget extends BaseSendIMStage {
         String[] uiAndTtsText = SceneUtil.getConfirmContact(context, imc.getSendTarget());
         if (uiAndTtsText.length > 0) {
             String[] options = SceneUtil.getOptionsCommon(context);
+            requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             ContactOptionList contactOptionList = new ContactOptionList(OptionList.REQUEST_TYPE_TEXT);

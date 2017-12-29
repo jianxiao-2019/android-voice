@@ -74,6 +74,7 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
         if (uiAndTtsText.length > 0) {
             Bundle args = new Bundle();
             String[] options = SceneUtil.getOptionsCommon(context);
+            requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);

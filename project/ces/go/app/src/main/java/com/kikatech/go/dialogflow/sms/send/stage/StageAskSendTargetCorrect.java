@@ -85,6 +85,7 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
         String[] uiAndTtsText = SceneUtil.getConfirmContact(context, mCurrentName);
         if (uiAndTtsText.length > 0) {
             String[] options = SceneUtil.getOptionsCommon(context);
+            requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             ContactOptionList contactOptionList = new ContactOptionList(OptionList.REQUEST_TYPE_TEXT);
