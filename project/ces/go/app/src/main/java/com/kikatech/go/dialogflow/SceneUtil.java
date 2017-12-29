@@ -37,6 +37,7 @@ public class SceneUtil {
     public static final String EXTRA_TTS_TEXT = "extra_tts_text";
     public static final String EXTRA_USR_INFO = "extra_usr_info";
     public static final String EXTRA_USR_MSG = "extra_usr_msg";
+    public static final String EXTRA_SEND_SUCCESS = "extra_send_success";
 
     static int sPrevUnknownResponseIdx = -1;
 

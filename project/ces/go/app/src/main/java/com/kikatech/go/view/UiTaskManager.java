@@ -175,7 +175,7 @@ public class UiTaskManager {
                         if (alertRes > 0) {
                             playAlert(alertRes);
                         }
-                        displayMsgSent();
+                        displayMsgSent(extras.getBoolean(SceneUtil.EXTRA_SEND_SUCCESS));
                         break;
                     case SceneUtil.EVENT_OUTGOING_CALL:
                         onStatusChanged(GoLayout.ViewStatus.ANALYZE);
@@ -426,7 +426,7 @@ public class UiTaskManager {
         });
     }
 
-    private void displayMsgSent() {
+    private void displayMsgSent(final boolean success) {
         final GoLayout layout = mLayout;
         if (layout == null) {
             return;
@@ -434,7 +434,7 @@ public class UiTaskManager {
         layout.post(new Runnable() {
             @Override
             public void run() {
-                layout.displayMsgSent();
+                layout.displayMsgSent(success);
             }
         });
     }

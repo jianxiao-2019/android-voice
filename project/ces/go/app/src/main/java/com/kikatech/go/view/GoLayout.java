@@ -732,7 +732,7 @@ public class GoLayout extends FrameLayout {
         onStatusChanged(ViewStatus.TTS);
     }
 
-    public synchronized void displayMsgSent() {
+    public synchronized void displayMsgSent(boolean success) {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "displayMsgSent");
         }

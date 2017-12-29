@@ -33,7 +33,7 @@ public abstract class IMProcessor extends AccessibilityProcessor {
     public interface IIMProcessorFlow {
         void onStart();
 
-        void onStop();
+        void onStop(boolean success);
     }
 
     private IIMProcessorFlow mIIMProcessorFlow;
@@ -102,7 +102,7 @@ public abstract class IMProcessor extends AccessibilityProcessor {
         }
 
         if(mIIMProcessorFlow != null) {
-            mIIMProcessorFlow.onStop();
+            mIIMProcessorFlow.onStop(ProcessingStage.IMProcessStage.STAGE_DONE.equals(stage));
         }
     }
 

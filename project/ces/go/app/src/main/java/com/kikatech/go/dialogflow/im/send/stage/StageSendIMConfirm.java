@@ -69,7 +69,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                         }
 
                         @Override
-                        public void onStop() {
+                        public void onStop(boolean success) {
                             if (LogUtil.DEBUG) LogUtil.log(TAG, "End ...");
                             AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
                             boolean succeed = IntentUtil.openKikaGo(ctx);
@@ -78,6 +78,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                                 Bundle args = new Bundle();
                                 args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_DISPLAY_MSG_SENT);
                                 args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_succeed);
+                                args.putBoolean(SceneUtil.EXTRA_SEND_SUCCESS, success);
                                 send(args);
                                 uiHandler.postDelayed(new Runnable() {
                                     @Override
