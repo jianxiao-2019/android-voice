@@ -69,10 +69,6 @@ it's the alpha version now."</string>
     <string-array name="tts_confirm_msg">
         <item>""%s" is it correct?"</item>
     </string-array>
-    <string-array name="options_confirm_msg">
-        <item>"Yes"</item>
-        <item>"No"</item>
-    </string-array>
 
     <string name="ui_ask_emoji">"%s"</string>
     <!-- options_common -->

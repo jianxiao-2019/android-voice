@@ -117,11 +117,6 @@ public class SceneUtil {
         return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(msg)), tryFormat(getStringFromArray(ttsArray), msg)};
     }
 
-    public static String[] getConfirmMsgOptions(Context context) {
-        Resources resource = context.getResources();
-        return resource.getStringArray(R.array.options_confirm_msg);
-    }
-
     public static String[] getAskEmoji(Context context, String emoji) {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_ask_emoji);
