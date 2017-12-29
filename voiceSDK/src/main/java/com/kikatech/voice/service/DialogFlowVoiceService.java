@@ -68,7 +68,7 @@ public abstract class DialogFlowVoiceService {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "onWakeUp");
             }
-            mServiceCallback.onWakeUp();
+            onVoiceWakeUp();
         }
 
         @Override
@@ -76,12 +76,13 @@ public abstract class DialogFlowVoiceService {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "onSleep");
             }
-            mServiceCallback.onSleep();
             onVoiceSleep();
         }
     };
 
     abstract void onVoiceSleep();
+
+    abstract void onVoiceWakeUp();
 
     private final VoiceService.VoiceRecognitionListener mVoiceRecognitionListener = new VoiceService.VoiceRecognitionListener() {
         @Override

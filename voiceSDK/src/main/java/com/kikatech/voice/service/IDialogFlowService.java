@@ -26,7 +26,7 @@ public interface IDialogFlowService {
 
         void onInitComplete();
 
-        void onWakeUp();
+        void onWakeUp(String scene);
 
         void onSleep();
 
@@ -73,7 +73,7 @@ public interface IDialogFlowService {
 
     ISceneFeedback getTtsFeedback();
 
-    void wakeUp();
+    void wakeUp(String wakeupFrom);
 
     void sleep();
 

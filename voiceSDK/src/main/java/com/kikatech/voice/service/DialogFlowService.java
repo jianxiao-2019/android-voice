@@ -32,6 +32,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     private DialogFlow mDialogFlow;
     private boolean mQueryAnyWords = false;
+    private String mWakeupFrom = "";
 
     private SceneManager mSceneManager;
 
@@ -163,10 +164,11 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     @Override
-    public void wakeUp() {
+    public void wakeUp(String wakeupFrom) {
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "wakeUp");
+            LogUtil.log(TAG, "wakeupFrom " + wakeupFrom);
         }
+        mWakeupFrom = wakeupFrom;
         if (mVoiceService != null) {
             mVoiceService.wakeUp();
         }
@@ -177,6 +179,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "sleep");
         }
+        mWakeupFrom = "";
         if (mVoiceService != null) {
             mVoiceService.sleep();
         }
@@ -313,9 +316,15 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     @Override
     void onVoiceSleep() {
+        mServiceCallback.onSleep();
         if (mSceneManager != null) {
             mSceneManager.exitCurrentScene();
         }
+    }
+
+    @Override
+    void onVoiceWakeUp() {
+        mServiceCallback.onWakeUp(mWakeupFrom);
     }
 
     @Override
