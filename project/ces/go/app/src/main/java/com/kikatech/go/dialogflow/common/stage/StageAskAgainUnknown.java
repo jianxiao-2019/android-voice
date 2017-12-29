@@ -45,7 +45,7 @@ public class StageAskAgainUnknown extends SceneStage {
 
     @Override
     protected void action() {
-        String uiText = SceneCommon.PRE_UNKNOWN;
+        String uiText = SceneCommon.PRE_UNCAUGHT;
         SceneUtil.UnknownIntentResult uir = SceneUtil.getRandomIntentUnknown(mSceneBase.getContext());
         TtsText tText = new TtsText(SceneUtil.ICON_COMMON, uiText);
         Bundle args = new Bundle();
@@ -54,7 +54,7 @@ public class StageAskAgainUnknown extends SceneStage {
         Pair<String, Integer>[] pairs = new Pair[uir.appendCommonString ? 2 : 1];
         pairs[0] = new Pair<>(uir.response, TtsSource.TTS_SPEAKER_1);
         if (uir.appendCommonString) {
-            pairs[1] = new Pair<>(SceneCommon.PRE_UNKNOWN, TtsSource.TTS_SPEAKER_1);
+            pairs[1] = new Pair<>(uiText, TtsSource.TTS_SPEAKER_1);
         }
 
         speak(pairs, args);

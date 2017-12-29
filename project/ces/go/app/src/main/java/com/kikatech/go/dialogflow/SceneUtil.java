@@ -213,9 +213,10 @@ public class SceneUtil {
         Resources resource = context.getResources();
         UnknownIntentResult uir = new UnknownIntentResult();
         String[] ttsArray = resource.getStringArray(R.array.tts_intent_unknown);
-        sPrevUnknownResponseIdx = getRandomIndex(ttsArray.length, sPrevUnknownResponseIdx);
-        uir.response = ttsArray[sPrevUnknownResponseIdx];
-        uir.appendCommonString = sPrevUnknownResponseIdx == 0;
+        // Remove random response for CES demo
+        //sPrevUnknownResponseIdx = getRandomIndex(ttsArray.length, sPrevUnknownResponseIdx);
+        uir.response = ttsArray[0];
+        uir.appendCommonString = true;//sPrevUnknownResponseIdx == 0;
         return uir;
     }
 
