@@ -102,6 +102,7 @@ public class IMContent extends EmojiMessage {
 
     public boolean isExplicitTarget(Context ctx) {
         if (imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
+            targetPhotoUri = null;
             ContactManager.MatchedContact mc = ContactManager.getIns().findContact(ctx, targetName);
             if (mc != null) {
                 switch (mc.matchedType) {
