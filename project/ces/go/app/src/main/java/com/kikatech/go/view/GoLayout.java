@@ -33,7 +33,6 @@ import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.view.widget.GoTextView;
@@ -103,6 +102,8 @@ public class GoLayout extends FrameLayout {
 
     private LayoutInflater mLayoutInflater;
 
+    private View mTouchWakeUpPanel;
+
     private View mSpeakLayout;
     private ImageView mSpeakViewIcon;
     private GoTextView mSpeakViewText;
@@ -143,9 +144,6 @@ public class GoLayout extends FrameLayout {
     private GlideDrawableImageViewTarget mRepeatTarget;
     private GlideDrawableImageViewTarget mNonRepeatTarget;
 
-//    private TextView mDebugVersionView;
-//    private TextView mDebugLogView;
-
 
     public GoLayout(Context context) {
         this(context, null);
@@ -170,12 +168,15 @@ public class GoLayout extends FrameLayout {
             return;
         }
         bindView();
+        bindListener();
         sleep();
     }
 
     private void bindView() {
         mLayoutInflater = LayoutInflater.from(getContext());
-        mLayoutInflater.inflate(LogOnViewUtil.ENABLE_LOG_VIEW ? R.layout.go_layout_debug : R.layout.go_layout, this);
+        mLayoutInflater.inflate(R.layout.go_layout, this);
+
+        mTouchWakeUpPanel = findViewById(R.id.go_layout_touch_wake_up_panel);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
         mSpeakViewIcon = (ImageView) findViewById(R.id.go_layout_speak_icon);
@@ -216,24 +217,37 @@ public class GoLayout extends FrameLayout {
         mStatusAnimationView = (ImageView) findViewById(R.id.go_layout_status_img);
         mRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, -1);
         mNonRepeatTarget = new GlideDrawableImageViewTarget(mStatusAnimationView, 1);
-
-//        if (LogOnViewUtil.ENABLE_LOG_VIEW) {
-//            mDebugVersionView = (TextView) findViewById(R.id.go_layout_debug_version);
-//            mDebugLogView = (TextView) findViewById(R.id.go_layout_debug_log);
-//            mDebugVersionView.setText(BuildConfig.VERSION_NAME);
-//
-//            LogOnViewUtil.getIns().configViews(mDebugLogView)
-//
-//            mDebugLogView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(mDebugLogView.getContext(), KikaDebugLogActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    mDebugLogView.getContext().startActivity(intent);
-//                }
-//            });
-//        }
     }
+
+    private void bindListener() {
+        mTouchWakeUpPanel.setOnTouchListener(new FlexibleOnTouchListener(100, new FlexibleOnTouchListener.ITouchListener() {
+            @Override
+            public void onLongPress(View view, MotionEvent event) {
+            }
+
+            @Override
+            public void onShortPress(View view, MotionEvent event) {
+            }
+
+            @Override
+            public void onClick(View view, MotionEvent event) {
+                DialogFlowForegroundService.processDialogFlowWakeUp();
+            }
+
+            @Override
+            public void onDown(View view, MotionEvent event) {
+            }
+
+            @Override
+            public void onMove(View view, MotionEvent event, long timeSpentFromStart) {
+            }
+
+            @Override
+            public void onUp(View view, MotionEvent event, long timeSpentFromStart) {
+            }
+        }));
+    }
+
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -332,32 +346,7 @@ public class GoLayout extends FrameLayout {
         onModeChanged(targetMode);
         adjustComponentsViewVisibility(null);
         mSleepLayout.setVisibility(VISIBLE);
-        setOnTouchListener(new FlexibleOnTouchListener(100, new FlexibleOnTouchListener.ITouchListener() {
-            @Override
-            public void onLongPress(View view, MotionEvent event) {
-            }
-
-            @Override
-            public void onShortPress(View view, MotionEvent event) {
-            }
-
-            @Override
-            public void onClick(View view, MotionEvent event) {
-                DialogFlowForegroundService.processDialogFlowWakeUp();
-            }
-
-            @Override
-            public void onDown(View view, MotionEvent event) {
-            }
-
-            @Override
-            public void onMove(View view, MotionEvent event, long timeSpentFromStart) {
-            }
-
-            @Override
-            public void onUp(View view, MotionEvent event, long timeSpentFromStart) {
-            }
-        }));
+        mTouchWakeUpPanel.setVisibility(VISIBLE);
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }
@@ -366,6 +355,7 @@ public class GoLayout extends FrameLayout {
     public void wakeUp() {
         DisplayMode targetMode = DisplayMode.AWAKE;
         onModeChanged(targetMode);
+        mTouchWakeUpPanel.setVisibility(GONE);
         mSleepLayout.setVisibility(GONE);
         adjustComponentsViewVisibility(null);
         setOnTouchListener(null);
