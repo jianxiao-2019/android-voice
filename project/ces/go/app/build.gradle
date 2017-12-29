@@ -8,8 +8,8 @@ android {
         applicationId "com.kikatech.go"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20171228
-        versionName "1.1.03_20171228_v2"
+        versionCode 20171229
+        versionName "1.1.03_20171229_v1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
