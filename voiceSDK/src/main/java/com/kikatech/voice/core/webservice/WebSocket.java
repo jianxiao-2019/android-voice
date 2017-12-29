@@ -29,7 +29,8 @@ public class WebSocket {
     private static final String VERSION = "3";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
-    private static final int MAX_RECONNECT_TIME = 3;
+    private static final int MAX_RECONNECT_TIME = 10;
+    private static final int RECONNECT_INTERVAL = 1000;
 
     private VoiceWebSocketClient mClient;
     private OnWebSocketListener mListener;
@@ -114,10 +115,31 @@ public class WebSocket {
         });
     }
 
+    private Runnable mReconnectRunnable = null;
+    private class ReconnectRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            mReconnectTimes++;
+            Logger.d("reconnect thread = " + Thread.currentThread().getName() + " mReconnectTimes = " + mReconnectTimes);
+            try {
+                Thread.sleep(RECONNECT_INTERVAL);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Logger.d("reconnect thread = " + Thread.currentThread().getName() + " RECONNECT_INTERVAL = " + RECONNECT_INTERVAL);
+            mReconnectRunnable = null;
+            connect(mConf);
+        }
+    }
+
     private boolean reconnect() {
         if (mReconnectTimes < MAX_RECONNECT_TIME && !mReleased.get()) {
-            mReconnectTimes++;
-            connect(mConf);
+            Logger.d("reconnect thread = " + Thread.currentThread().getName() + " mReconnectRunnable = " + mReconnectRunnable);
+            if (mReconnectRunnable == null) {
+                mReconnectRunnable = new ReconnectRunnable();
+                mExecutor.execute(mReconnectRunnable);
+            }
             return true;
         }
         return false;
@@ -256,7 +278,7 @@ public class WebSocket {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            Logger.i("VoiceWebSocketClient onClose code = [" + code + "]");
+            Logger.i("VoiceWebSocketClient reconnect onClose code = [" + code + "] Thread = " + Thread.currentThread().getName());
             mOpened = false;
             if (!reconnect()) {
                 if (mListener != null) {
@@ -267,7 +289,7 @@ public class WebSocket {
 
         @Override
         public void onError(Exception ex) {
-            Logger.w("VoiceWebSocketClient onError ex = " + ex);
+            Logger.w("VoiceWebSocketClient reconnect onError ex = " + ex + " Thread = " + Thread.currentThread().getName());
             ex.printStackTrace();
             mOpened = false;
             if (!reconnect()) {

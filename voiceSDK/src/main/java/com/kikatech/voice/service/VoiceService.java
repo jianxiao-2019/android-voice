@@ -105,7 +105,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         mMainThreadHandler = new Handler();
         mTimerHandler = new TimerHandler();
-        mTimerHandler.sendEmptyMessageDelayed(MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
 
         mWebService = WebSocket.openConnection(mWebSocketListener);
         mWebService.connect(mConf.getConnectionConfiguration());
@@ -271,6 +270,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                         if (mVoiceStateChangedListener != null) {
                             mVoiceStateChangedListener.onCreated();
                         }
+                        if (mTimerHandler != null) {
+                            mTimerHandler.removeMessages(MSG_SEND_HEARTBEAT);
+                            mTimerHandler.sendEmptyMessageDelayed(
+                                    MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
+                        }
                     }
                 });
             }
@@ -302,6 +306,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                         if (mVoiceStateChangedListener != null) {
                             mVoiceStateChangedListener.onConnectionClosed();
                         }
+                        if (mTimerHandler != null) {
+                            mTimerHandler.removeMessages(MSG_SEND_HEARTBEAT);
+                        }
                     }
                 });
             }
@@ -316,6 +323,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                     public void run() {
                         if (mVoiceStateChangedListener != null) {
                             mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
+                        }
+                        if (mTimerHandler != null) {
+                            mTimerHandler.removeMessages(MSG_SEND_HEARTBEAT);
                         }
                     }
                 });
@@ -363,11 +373,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 }
                 return;
             } else if (msg.what == MSG_SEND_HEARTBEAT) {
+                if (mTimerHandler != null && mWebService != null && mWebService.isConnecting()) {
+                    mTimerHandler.sendEmptyMessageDelayed(MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
+                }
                 if (mWebService != null) {
                     mWebService.sendCommand("HEART-BEAT", "");
-                }
-                if (mTimerHandler != null) {
-                    mTimerHandler.sendEmptyMessageDelayed(MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
                 }
                 return;
             }
