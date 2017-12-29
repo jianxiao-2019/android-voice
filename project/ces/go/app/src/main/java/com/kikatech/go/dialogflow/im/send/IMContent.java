@@ -20,6 +20,7 @@ public class IMContent extends EmojiMessage {
 
     private String parsedIMApp = "";
     private String targetName[];
+    private String targetPhotoUri;
     private boolean explicitTarget = false;
     private String imAppPkgName = "";
 
@@ -89,10 +90,14 @@ public class IMContent extends EmojiMessage {
     }
 
     public String getSendTargetAvatar() {
-        String name = getSendTarget();
-        AppInfo appInfo = getAppInfo();
-        String appName = appInfo != null ? appInfo.getAppName() : null;
-        return !TextUtils.isEmpty(name) && !TextUtils.isEmpty(appName) ? FileUtil.getImAvatarFilePath(appName, name) : null;
+        if (imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
+            return targetPhotoUri;
+        } else {
+            String name = getSendTarget();
+            AppInfo appInfo = getAppInfo();
+            String appName = appInfo != null ? appInfo.getAppName() : null;
+            return !TextUtils.isEmpty(name) && !TextUtils.isEmpty(appName) ? FileUtil.getImAvatarFilePath(appName, name) : null;
+        }
     }
 
     public boolean isExplicitTarget(Context ctx) {
@@ -114,6 +119,7 @@ public class IMContent extends EmojiMessage {
                         targetName = new String[]{mc.displayName};
                         break;
                 }
+                targetPhotoUri = mc.photoUri;
             }
         }
         return explicitTarget;
