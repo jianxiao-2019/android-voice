@@ -24,6 +24,7 @@ import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.common.CommonSceneManager;
 import com.kikatech.go.dialogflow.gotomain.GotoMainSceneManager;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
+import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
@@ -94,7 +95,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     };
 
-    private boolean asrActive;
+    private DFServiceStatus mDFServiceStatus = new DFServiceStatus();
 
     private static boolean isAppForeground = true;
 
@@ -122,7 +123,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         if (TextUtils.isEmpty(action)) {
             return;
         }
+        DFServiceEvent serviceEvent;
         switch (action) {
+            case ToDFServiceEvent.ACTION_PING_SERVICE_STATUS:
+                serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS);
+                serviceEvent.putExtra(DFServiceEvent.PARAM_SERVICE_STATUS, mDFServiceStatus);
+                sendDFServiceEvent(serviceEvent);
+                break;
             case ToDFServiceEvent.ACTION_ON_APP_FOREGROUND:
                 mManager.hideAllItems();
                 break;
@@ -162,7 +169,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 mDialogFlowService.wakeUp();
                 break;
             case ToDFServiceEvent.ACTION_PING_VOICE_SOURCE:
-                DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
+                serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
                 serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mAudioSource == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
                 sendDFServiceEvent(serviceEvent);
                 if (LogUtil.DEBUG) {
@@ -364,6 +371,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onInitComplete");
                         }
+                        mDFServiceStatus.setInit(true);
                         String action = DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
@@ -377,6 +385,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onWakeUp");
                         }
+                        mDFServiceStatus.setAwake(true);
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
@@ -392,6 +401,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSleep");
                         }
+                        mDFServiceStatus.setAwake(false);
                         String action = DFServiceEvent.ACTION_ON_SLEEP;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
@@ -438,7 +448,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("speechText: %1$s, emoji: %2%s, isFinished: %3$s", speechText, emojiUnicode, isFinished));
                         }
-                        if (!asrActive) {
+                        if (!mDFServiceStatus.isAsrEnabled()) {
                             return;
                         } else if (isFinished) {
                             pauseAsr();
@@ -485,7 +495,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         StringBuilder builder = new StringBuilder();
                         if (pairs != null && pairs.length > 0) {
                             for (Pair<String, Integer> pair : pairs) {
-                                if(pair != null) {
+                                if (pair != null) {
                                     builder.append(pair.first);
                                 }
                             }
@@ -625,7 +635,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onConnectionStatusChange(byte status) {
-                        if (LogUtil.DEBUG) LogUtil.log(TAG, "onConnectionStatusChange:" + status);
+                        mDFServiceStatus.setConnectionStatus(status);
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onConnectionStatusChange:" + status);
+                        }
                         switch (status) {
                             case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
                                 if (LogUtil.DEBUG)
@@ -644,6 +657,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                                     LogUtil.log(TAG, "CONNECTION_STATUS_UNKNOWN");
                                 break;
                         }
+                        DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_CONNECTION_STATUS_CHANGE);
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_CONNECTION_STATUS, status);
+                        sendDFServiceEvent(serviceEvent);
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
@@ -706,8 +722,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private synchronized void pauseAsr() {
-        if (asrActive) {
-            asrActive = false;
+        if (mDFServiceStatus.isAsrEnabled()) {
+            mDFServiceStatus.setAsrEnabled(false);
             mDialogFlowService.pauseAsr();
         }
     }
@@ -717,16 +733,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private synchronized void resumeAsr(int bosDuration) {
-        if (!asrActive) {
+        if (!mDFServiceStatus.isAsrEnabled()) {
             mDialogFlowService.resumeAsr(bosDuration);
-            asrActive = true;
+            mDFServiceStatus.setAsrEnabled(true);
         }
     }
 
     private synchronized void resumeAsr(boolean startBosNow) {
-        if (!asrActive) {
+        if (!mDFServiceStatus.isAsrEnabled()) {
             mDialogFlowService.resumeAsr(startBosNow);
-            asrActive = true;
+            mDFServiceStatus.setAsrEnabled(true);
         }
     }
 
@@ -791,6 +807,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mManager.updateConfiguration(newConfig);
+    }
+
+
+    public synchronized static void processPingDialogFlowStatus() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_PING_SERVICE_STATUS);
+        sendToDFServiceEvent(event);
     }
 
     public synchronized static void processOnAppForeground() {

@@ -6,7 +6,8 @@ package com.kikatech.go.eventbus;
  * @author SkeeterWang Created on 2017/12/1.
  */
 
-public class DFServiceEvent extends BaseDFServiceEvent{
+public class DFServiceEvent extends BaseDFServiceEvent {
+    public static final String ACTION_ON_PING_SERVICE_STATUS = "action_on_ping_service_status";
     public static final String ACTION_EXIT_APP = "action_exit_app";
     public static final String ACTION_ON_WAKE_UP = "action_on_wake_up";
     public static final String ACTION_ON_SLEEP = "action_on_sleep";
@@ -25,6 +26,7 @@ public class DFServiceEvent extends BaseDFServiceEvent{
     public static final String ACTION_ON_AGENT_QUERY_ERROR = "action_on_agent_query_error";
     public static final String ACTION_ON_ASR_CONFIG = "action_on_asr_config";
     public static final String ACTION_ON_VOICE_SRC_CHANGE = "action_on_voice_source_change";
+    public static final String ACTION_ON_CONNECTION_STATUS_CHANGE = "action_on_connection_status_change";
 
     public static final String PARAM_EXTRAS = "param_extras";
     public static final String PARAM_TEXT = "param_text";
@@ -35,6 +37,8 @@ public class DFServiceEvent extends BaseDFServiceEvent{
     public static final String PARAM_BOS_DURATION = "param_bos_duration";
     public static final String PARAM_IS_INTERRUPTED = "param_is_interrupted";
     public static final String PARAM_IS_PROACTIVE = "param_is_proactive";
+    public static final String PARAM_CONNECTION_STATUS = "param_connection_status";
+    public static final String PARAM_SERVICE_STATUS = "param_service_status";
 
     public static final String PARAM_DBG_INTENT_ACTION = "param_dbg_intent_action";
     public static final String PARAM_DBG_INTENT_PARMS = "param_dbg_intent_parms";

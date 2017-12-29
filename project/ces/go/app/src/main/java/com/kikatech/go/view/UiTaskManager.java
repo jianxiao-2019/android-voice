@@ -123,6 +123,10 @@ public class UiTaskManager {
         sleep();
     }
 
+    public synchronized void dispatchConnectionStatusChanged(boolean connected) {
+        onConnectionStatusChanged(connected);
+    }
+
     public synchronized void dispatchAsrStart() {
         onStatusChanged(GoLayout.ViewStatus.ANALYZE);
         playAlert(R.raw.alert_stop);
@@ -282,6 +286,7 @@ public class UiTaskManager {
         layout.post(new Runnable() {
             @Override
             public void run() {
+                layout.disableTouchWakeUpPanel();
                 layout.wakeUp();
             }
         });
@@ -296,6 +301,20 @@ public class UiTaskManager {
             @Override
             public void run() {
                 layout.sleep();
+                layout.enableTouchWakeUpPanel();
+            }
+        });
+    }
+
+    private void onConnectionStatusChanged(final boolean connected) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.onConnectionStatusChanged(connected);
             }
         });
     }

@@ -37,6 +37,10 @@ class BaseDFServiceEvent {
         extras.putBundle(key, value);
     }
 
+    public void putExtra(String key, byte value) {
+        extras.putByte(key, value);
+    }
+
     public void putExtra(String key, Serializable value) {
         extras.putSerializable(key, value);
     }

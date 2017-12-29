@@ -104,6 +104,8 @@ public class GoLayout extends FrameLayout {
 
     private View mTouchWakeUpPanel;
 
+    private View mIcConnectionStatus;
+
     private View mSpeakLayout;
     private ImageView mSpeakViewIcon;
     private GoTextView mSpeakViewText;
@@ -177,6 +179,8 @@ public class GoLayout extends FrameLayout {
         mLayoutInflater.inflate(R.layout.go_layout, this);
 
         mTouchWakeUpPanel = findViewById(R.id.go_layout_touch_wake_up_panel);
+
+        mIcConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
 
         mSpeakLayout = findViewById(R.id.go_layout_speak);
         mSpeakViewIcon = (ImageView) findViewById(R.id.go_layout_speak_icon);
@@ -346,7 +350,6 @@ public class GoLayout extends FrameLayout {
         onModeChanged(targetMode);
         adjustComponentsViewVisibility(null);
         mSleepLayout.setVisibility(VISIBLE);
-        mTouchWakeUpPanel.setVisibility(VISIBLE);
         if (mModeChangedListener != null) {
             mModeChangedListener.onChanged(targetMode);
         }
@@ -355,7 +358,6 @@ public class GoLayout extends FrameLayout {
     public void wakeUp() {
         DisplayMode targetMode = DisplayMode.AWAKE;
         onModeChanged(targetMode);
-        mTouchWakeUpPanel.setVisibility(GONE);
         mSleepLayout.setVisibility(GONE);
         adjustComponentsViewVisibility(null);
         setOnTouchListener(null);
@@ -378,6 +380,28 @@ public class GoLayout extends FrameLayout {
         });
     }
 
+    public synchronized void enableTouchWakeUpPanel() {
+        mTouchWakeUpPanel.setVisibility(VISIBLE);
+    }
+
+    public synchronized void disableTouchWakeUpPanel() {
+        mTouchWakeUpPanel.setVisibility(GONE);
+    }
+
+    public synchronized void onConnectionStatusChanged(boolean connected) {
+        mIcConnectionStatus.setVisibility(connected ? GONE : VISIBLE);
+        if (!connected) {
+            disableTouchWakeUpPanel();
+        } else {
+            switch (mCurrentMode) {
+                case AWAKE:
+                    break;
+                case SLEEP:
+                    enableTouchWakeUpPanel();
+                    break;
+            }
+        }
+    }
 
     /**
      * display content spoken by tts service

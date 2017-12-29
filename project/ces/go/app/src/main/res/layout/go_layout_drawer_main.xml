@@ -159,7 +159,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/selector_settings_ic_tip"/>
+                    android:src="@drawable/selector_settings_ic_voice"/>
 
                 <TextView
                     android:layout_width="wrap_content"

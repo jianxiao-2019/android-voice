@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
@@ -24,6 +25,7 @@ import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.util.CustomConfig;
 import com.kikatech.voice.util.contact.ContactManager;
 
@@ -63,12 +65,12 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         SceneStage stage;
         boolean isFinished, isInterrupted;
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
+        byte connectionStatus;
         switch (action) {
             case DFServiceEvent.ACTION_EXIT_APP:
                 finishAffinity();
                 break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
-                initUiTaskManager();
                 break;
             case DFServiceEvent.ACTION_ON_WAKE_UP:
                 mUiManager.dispatchWakeUp();
@@ -124,6 +126,38 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 break;
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
                 break;
+            case DFServiceEvent.ACTION_ON_CONNECTION_STATUS_CHANGE:
+                connectionStatus = event.getExtras().getByte(DFServiceEvent.PARAM_CONNECTION_STATUS);
+                switch (connectionStatus) {
+                    case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
+                        mUiManager.dispatchConnectionStatusChanged(true);
+                        break;
+                    case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
+                    case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
+                        mUiManager.dispatchConnectionStatusChanged(false);
+                        break;
+                }
+                break;
+            case DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS:
+                DFServiceStatus serviceStatus = (DFServiceStatus) event.getExtras().getSerializable(DFServiceEvent.PARAM_SERVICE_STATUS);
+                if (serviceStatus != null && serviceStatus.isInit()) {
+                    if (serviceStatus.isAwake()) {
+                        mUiManager.dispatchWakeUp();
+                    } else {
+                        mUiManager.dispatchSleep();
+                    }
+                    connectionStatus = serviceStatus.getConnectionStatus();
+                    switch (connectionStatus) {
+                        case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
+                            mUiManager.dispatchConnectionStatusChanged(true);
+                            break;
+                        case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
+                        case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
+                            mUiManager.dispatchConnectionStatusChanged(false);
+                            break;
+                    }
+                }
+                break;
         }
     }
 
@@ -172,7 +206,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         ContactManager.getIns().init(this);
         LocationMgr.init(this);
         registerReceivers();
-        DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+        initUiTaskManager();
+        DialogFlowForegroundService.processPingDialogFlowStatus();
 
         if (GlobalPref.getIns().isFirstLaunch()) {
             CustomConfig.removeAllCustomConfigFiles();
@@ -201,7 +236,9 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
     @Override
     protected void onDestroy() {
-        if (mUiManager != null) mUiManager.release();
+        if (mUiManager != null) {
+            mUiManager.release();
+        }
         unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
         super.onDestroy();
@@ -231,6 +268,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         } catch (Exception ignore) {
         }
     }
+
 
     @Override
     protected DrawerLayout getDrawerLayout() {
