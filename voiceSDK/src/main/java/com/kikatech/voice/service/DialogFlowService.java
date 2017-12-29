@@ -292,6 +292,14 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         public void onStageEvent(Bundle extras) {
             mServiceCallback.onStageEvent(extras);
         }
+
+        @Override
+        public void onStageRequestAsrAlignment(String[] alignment) {
+            if (mVoiceService != null) {
+                mVoiceService.sendAlignment(alignment);
+            }
+        }
+
     };
 
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();

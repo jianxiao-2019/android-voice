@@ -19,4 +19,6 @@ public interface ISceneFeedback {
     void onStageActionDone(boolean isInterrupted, boolean delayAsrResume, Integer overrideAsrBos);
 
     void onStageEvent(Bundle extras);
+
+    void onStageRequestAsrAlignment(String[] alignment);
 }
