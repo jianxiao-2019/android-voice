@@ -18,6 +18,7 @@ import com.kikatech.go.util.PackageManagerUtil;
 /**
  * @author SkeeterWang Created on 2017/8/10.
  */
+
 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class IMWhatsApp extends BaseIMObject {
     private static final String TAG = "IMWhatsApp";
@@ -49,6 +50,9 @@ public class IMWhatsApp extends BaseIMObject {
         if (DeviceUtil.overN()) {
             if (textLines != null && textLines.length > 0) // match case 3
             {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "parsing android 7.0, case 3");
+                }
                 String latestMsg = textLines[textLines.length - 1].toString();
                 if (!TextUtils.isEmpty(latestMsg)) {
                     if (!TextUtils.isEmpty(title)) {
@@ -75,6 +79,9 @@ public class IMWhatsApp extends BaseIMObject {
                 }
             } else if (message != null) // match case 2
             {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "parsing android 7.0, case 2");
+                }
                 /** syntax
                  * key: sender, value:
                  * key: text, value: Gh
@@ -116,6 +123,9 @@ public class IMWhatsApp extends BaseIMObject {
                 resultAction = ResultAction.SHOW_BUBBLE;
             } else // match case 1
             {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "parsing android 7.0, case 1");
+                }
                 if (TextUtils.isEmpty(tag)) {
                     groupName = null;
                     userName = title;
