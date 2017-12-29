@@ -14,11 +14,6 @@ import com.kikatech.voice.core.dialogflow.scene.SceneManager;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSource;
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
-import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
-import com.kikatech.voice.core.webservice.message.IntermediateMessage;
-import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.log.LogUtil;
@@ -52,11 +47,6 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         initDialogFlow(conf);
         initVoiceService(conf);
         initTts(conf);
-
-        Message.register(Message.MSG_TYPE_INTERMEDIATE, IntermediateMessage.class);
-        Message.register(Message.MSG_TYPE_ALTER, EditTextMessage.class);
-        Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
-        Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
     }
 
     @Override
@@ -246,16 +236,12 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     @Override
     public void quitService() {
-        if (mVoiceService != null) {
-            mVoiceService.stop();
-            mVoiceService.destroy();
-        }
+        quitVoiceService();
+
         if (mTtsSource != null) {
             mTtsSource.close();
             mTtsSource = null;
         }
-
-        Message.unregisterAll();
     }
 
     @Override
