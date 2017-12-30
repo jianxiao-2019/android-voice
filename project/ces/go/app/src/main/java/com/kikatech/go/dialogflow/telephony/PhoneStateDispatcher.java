@@ -50,8 +50,16 @@ public class PhoneStateDispatcher extends BroadcastReceiver {
                 }
                 break;
             case PhoneStateReceiver.Actions.ACTION_OUTGOING_CALL:
+                resetState();
+                if (mListener != null) {
+                    mListener.onOutgoingCallRinging();
+                }
+                break;
             case PhoneStateReceiver.Actions.ACTION_OUTGOING_CALL_IDLE:
                 resetState();
+                if (mListener != null) {
+                    mListener.onOutgoingCallEnded();
+                }
                 break;
         }
     }
@@ -91,5 +99,9 @@ public class PhoneStateDispatcher extends BroadcastReceiver {
         void onInComingCallRinging(String phoneNumber);
 
         void onInComingCallEnded();
+
+        void onOutgoingCallRinging();
+
+        void onOutgoingCallEnded();
     }
 }

@@ -7,7 +7,7 @@ import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneActions;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
-import com.kikatech.voice.service.DialogFlowService;
+import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.voice.service.IDialogFlowService;
 
 /**
@@ -51,6 +51,16 @@ public class TelephonySceneManager extends BaseSceneManager {
         public void onInComingCallEnded() {
             mService.sleep();
             mService.resetContexts();
+        }
+
+        @Override
+        public void onOutgoingCallRinging() {
+            TelephonyServiceManager.getIns().turnOnSpeaker(mContext);
+        }
+
+        @Override
+        public void onOutgoingCallEnded() {
+
         }
     };
 }
