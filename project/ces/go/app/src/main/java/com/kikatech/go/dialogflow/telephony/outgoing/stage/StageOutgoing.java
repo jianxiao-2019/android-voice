@@ -18,7 +18,6 @@ import com.kikatech.voice.util.contact.ContactManager;
  */
 
 public class StageOutgoing extends BaseSceneStage {
-    private static final String TAG = "StageOutgoing";
 
     public StageOutgoing(SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);

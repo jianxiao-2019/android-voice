@@ -10,6 +10,7 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -22,7 +23,6 @@ import java.util.List;
  * @author SkeeterWang Created on 2017/11/14.
  */
 public class StageConfirmNumber extends StageOutgoing {
-    private static final String TAG = "StageConfirmNumber";
 
     private ContactManager.PhoneBookContact mContact;
     private List<String> mOptions;
@@ -31,6 +31,7 @@ public class StageConfirmNumber extends StageOutgoing {
         super(scene, feedback);
         mContact = contact;
         mOptions = new ArrayList<>();
+        overrideUncaughtAction = true;
     }
 
     @Override
@@ -44,21 +45,24 @@ public class StageConfirmNumber extends StageOutgoing {
             switch (action) {
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
                     return getNextStage(parseOrdinal(extra));
-//                case SceneActions.ACTION_OUTGOING_CHANGE:
-//                    String target = extra.getString("name", "");
-//                    if (TextUtils.isEmpty(target)) {
-//                        return this;
-//                    } else {
-//                        for (int i = 0; i < mContact.phoneNumbers.size(); i++) {
-//                            ContactManager.NumberType nt = mContact.phoneNumbers.get(i);
-//                            if (target.contains(nt.type.toLowerCase())) {
-//                                return getNextStage(String.valueOf(i + 1));
-//                            }
-//                        }
-//                    }
-//                    return this;
                 case SceneActions.ACTION_OUTGOING_CANCEL:
                     return new StageCancel(mSceneBase, mFeedback);
+                case Intent.ACTION_UNKNOWN:
+                    String[] nBest = Intent.parseUserInputNBest(extra);
+                    if (nBest != null && nBest.length > 0) {
+                        for (String target : nBest) {
+                            for (int i = 0; i < mContact.phoneNumbers.size(); i++) {
+                                ContactManager.NumberType nt = mContact.phoneNumbers.get(i);
+                                if (target.toLowerCase().contains(nt.type.toLowerCase())) {
+                                    if (LogUtil.DEBUG) {
+                                        LogUtil.log(TAG, "Hit " + target);
+                                    }
+                                    return getNextStage(String.valueOf(i + 1));
+                                }
+                            }
+                        }
+                    }
+                    return this;
                 default:
                     return this;
             }
@@ -115,27 +119,6 @@ public class StageConfirmNumber extends StageOutgoing {
             LogUtil.logv(TAG, speech);
         }
         speak(speech, extras);
-    }
-
-    private String parseOrdinalFromPhonePlace(Bundle param) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, param.toString());
-            LogUtil.log(TAG, "mOptions count:" + mOptions.size());
-        }
-        String option = param.getString("name", null);
-        mOptions.clear();
-        if (!TextUtils.isEmpty(option)) {
-            option = option.replace("\"", "");
-            LogUtil.log(TAG, "option:" + option);
-            for (int i = 0; i < mOptions.size(); i++) {
-                LogUtil.log(TAG, "option " + i + " : " + mOptions.get(i));
-                if (mOptions.get(i).toLowerCase().equals(option)) {
-                    LogUtil.log(TAG, "return:" + String.valueOf(i + 1));
-                    return String.valueOf(i + 1);
-                }
-            }
-        }
-        return null;
     }
 
     private String parseOrdinal(Bundle param) {
