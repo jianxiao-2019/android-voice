@@ -240,7 +240,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     @Override
     public void cancelAsrAlignment() {
         if (mVoiceService != null) {
-            mVoiceService.sendAlignment(new String[]{});
+            mVoiceService.sendAlignment(new String[]{""});
         }
     }
 
