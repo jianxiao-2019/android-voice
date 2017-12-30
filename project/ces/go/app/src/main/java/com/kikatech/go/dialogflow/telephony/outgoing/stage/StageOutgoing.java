@@ -25,7 +25,8 @@ public class StageOutgoing extends BaseSceneStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    @AsrConfigUtil.ASRMode
+    protected int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_SHORT_COMMAND;
     }
 
@@ -33,9 +34,9 @@ public class StageOutgoing extends BaseSceneStage {
     public SceneStage next(String action, Bundle extra) {
         if (!TextUtils.isEmpty(action)) {
             switch (action) {
+//                case Intent.ACTION_USER_INPUT:
                 case SceneActions.ACTION_OUTGOING_NUMBERS:
                 case SceneActions.ACTION_OUTGOING_START:
-                //case SceneActions.ACTION_OUTGOING_CHANGE:
                 case SceneActions.ACTION_OUTGOING_YES:
                     return getCheckContactStage(action, extra);
                 case SceneActions.ACTION_OUTGOING_NO:
@@ -55,7 +56,9 @@ public class StageOutgoing extends BaseSceneStage {
     }
 
     private SceneStage getCheckContactStage(String action, Bundle extra) {
-        boolean isStartStage = SceneActions.ACTION_OUTGOING_START.equals(action);
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "getCheckContactStage: action: " + action);
+        }
         boolean hasQueried = false;
         ContactManager.MatchedContact matchedContact = null;
 
@@ -67,7 +70,7 @@ public class StageOutgoing extends BaseSceneStage {
         }
         if (!TextUtils.isEmpty(targetName)) {
             if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "try parsing from api.ai result");
+                LogUtil.logd(TAG, "try parsing from api.ai result");
             }
             matchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), targetName);
             hasQueried = true;
@@ -78,7 +81,7 @@ public class StageOutgoing extends BaseSceneStage {
             String[] nBestInput = extra != null ? Intent.parseUserInputNBest(extra) : null;
             if (nBestInput != null && nBestInput.length != 0) {
                 if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "try parsing from asr n-best");
+                    LogUtil.logd(TAG, "try parsing from asr n-best");
                 }
                 matchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), nBestInput);
                 hasQueried = true;
@@ -90,7 +93,7 @@ public class StageOutgoing extends BaseSceneStage {
         if (next != null) {
             return next;
         } else {
-            return !isStartStage && hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
+            return hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
         }
     }
 

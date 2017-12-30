@@ -24,7 +24,8 @@ public class StageAskName extends StageOutgoing {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    @AsrConfigUtil.ASRMode
+    protected int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_SHORT_COMMAND_SPELLING;
     }
 
@@ -32,6 +33,8 @@ public class StageAskName extends StageOutgoing {
     public SceneStage next(String action, Bundle extra) {
         setQueryAnyWords(false);
         if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action + ", extra:" + extra);
+
+        boolean hasQueried = false;
 
         String[] nBestInput = Intent.parseUserInputNBest(extra);
         ContactManager.MatchedContact matchedContact = null;
@@ -43,6 +46,7 @@ public class StageAskName extends StageOutgoing {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "matchedContact:" + matchedContact);
             }
+            hasQueried = true;
         }
         StageOutgoing nextStage = getMatchedContactStage(matchedContact);
         if (nextStage != null) {
@@ -51,7 +55,7 @@ public class StageAskName extends StageOutgoing {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "Cannot find matched contact, ask the calling target again");
             }
-            return new StageAskName(mSceneBase, mFeedback);
+            return hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
         }
     }
 

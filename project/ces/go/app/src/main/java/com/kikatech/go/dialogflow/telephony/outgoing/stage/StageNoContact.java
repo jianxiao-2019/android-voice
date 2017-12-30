@@ -3,19 +3,61 @@ package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
+import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
+import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.util.contact.ContactManager;
 
 /**
  * Created by tianli on 17-11-11.
  */
 
 public class StageNoContact extends StageOutgoing {
+    private static final String TAG = "StageNoContact";
 
     StageNoContact(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
+    }
+
+    @Override
+    @AsrConfigUtil.ASRMode
+    protected int getAsrMode() {
+        return AsrConfigUtil.ASR_MODE_SHORT_COMMAND_SPELLING;
+    }
+
+    @Override
+    public SceneStage next(String action, Bundle extra) {
+        setQueryAnyWords(false);
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "action:" + action + ", extra:" + extra);
+
+        boolean hasQueried = false;
+
+        String[] nBestInput = Intent.parseUserInputNBest(extra);
+        ContactManager.MatchedContact matchedContact = null;
+        if (nBestInput != null && nBestInput.length != 0) {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "try parsing from asr n-best");
+            }
+            matchedContact = ContactManager.getIns().findContact(mSceneBase.getContext(), nBestInput);
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "matchedContact:" + matchedContact);
+            }
+            hasQueried = true;
+        }
+        StageOutgoing nextStage = getMatchedContactStage(matchedContact);
+        if (nextStage != null) {
+            return nextStage;
+        } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "Cannot find matched contact, ask the calling target again");
+            }
+            return hasQueried ? new StageNoContact(mSceneBase, mFeedback) : new StageAskName(mSceneBase, mFeedback);
+        }
     }
 
     @Override
@@ -26,6 +68,7 @@ public class StageNoContact extends StageOutgoing {
 
     @Override
     public void action() {
+        setQueryAnyWords(true);
         String[] uiAndTtsText = SceneUtil.getContactNotFound(mSceneBase.getContext());
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
