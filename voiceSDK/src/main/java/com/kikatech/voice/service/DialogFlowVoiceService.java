@@ -61,7 +61,7 @@ public abstract class DialogFlowVoiceService {
             }
         }
     }
-    
+
     private final VoiceService.VoiceActiveStateListener mVoiceActiveStateListener = new VoiceService.VoiceActiveStateListener() {
         @Override
         public void onWakeUp() {
@@ -87,6 +87,10 @@ public abstract class DialogFlowVoiceService {
     private final VoiceService.VoiceRecognitionListener mVoiceRecognitionListener = new VoiceService.VoiceRecognitionListener() {
         @Override
         public void onRecognitionResult(Message message) {
+            performOnRecognitionResult(message);
+        }
+
+        private void performOnRecognitionResult(Message message) {
             if (LogUtil.DEBUG && !(message instanceof IntermediateMessage)) {
                 LogUtil.logd(TAG, "onMessage message = " + message);
             }
@@ -139,7 +143,9 @@ public abstract class DialogFlowVoiceService {
 
         @Override
         public void onCreated() {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
+            }
             if (mVoiceService != null) {
                 mVoiceService.start();
             }
