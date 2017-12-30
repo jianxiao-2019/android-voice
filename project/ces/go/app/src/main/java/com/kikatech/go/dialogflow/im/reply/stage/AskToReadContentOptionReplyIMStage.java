@@ -56,7 +56,7 @@ public class AskToReadContentOptionReplyIMStage extends BaseReplyIMStage {
             optionList.setTitle(uiText);
             optionList.setIconRes(SceneUtil.ICON_MSG);
             for (String option : options) {
-                optionList.add(new Option(option, null));
+                optionList.add(new Option(option));
             }
             Bundle args = new Bundle();
             args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);

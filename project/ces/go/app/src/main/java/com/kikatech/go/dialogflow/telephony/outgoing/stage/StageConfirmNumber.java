@@ -102,9 +102,9 @@ public class StageConfirmNumber extends StageOutgoing {
                     int iteratorSize = mContact.phoneNumbers.size() > 2 ? 2 : mContact.phoneNumbers.size();
                     for (int i = 0; i < iteratorSize; i++) {
                         ContactManager.NumberType nt = mContact.phoneNumbers.get(i);
-                        String o = nt.getTypeOrNumber();
-                        optionList.add(new Option(o, SceneActions.ACTION_OUTGOING_NUMBERS));
-                        mOptions.add(o);
+                        String option = nt.getTypeOrNumber();
+                        optionList.add(new Option(option));
+                        mOptions.add(option);
                     }
                     extras.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
                     speech = optionList.getTextToSpeak(ttsText);

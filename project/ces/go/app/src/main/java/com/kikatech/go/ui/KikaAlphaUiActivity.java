@@ -176,7 +176,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                         mUiManager.dispatchSpeechTask(textToSend);
                         break;
                     case OptionList.REQUEST_TYPE_TEXT:
-                        textToSend = option.getDisplayText();
+                        textToSend = option.getActionText();
                         DialogFlowForegroundService.processDialogFlowTalk(textToSend);
                         mUiManager.dispatchSpeechTask(textToSend);
                         break;

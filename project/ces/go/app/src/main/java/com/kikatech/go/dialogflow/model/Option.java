@@ -1,7 +1,6 @@
 package com.kikatech.go.dialogflow.model;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 /**
  * @author SkeeterWang Created on 2017/11/16.
@@ -9,19 +8,23 @@ import android.os.Parcelable;
 
 public class Option extends UiModel {
     private String displayText;
-    private String nextSceneAction;
+    private String actionText;
 
-    public Option(String displayText, String nextSceneAction) {
+    public Option(String displayText) {
+        this(displayText, displayText);
+    }
+
+    public Option(String displayText, String actionText) {
         this.displayText = displayText;
-        this.nextSceneAction = nextSceneAction;
+        this.actionText = actionText;
     }
 
     public String getDisplayText() {
         return displayText;
     }
 
-    public String getNextSceneAction() {
-        return nextSceneAction;
+    public String getActionText() {
+        return actionText;
     }
 
 
@@ -40,12 +43,10 @@ public class Option extends UiModel {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(displayText);
-        dest.writeString(nextSceneAction);
     }
 
     protected Option(Parcel in) {
         displayText = in.readString();
-        nextSceneAction = in.readString();
     }
 
     public static final Creator<Option> CREATOR = new Creator<Option>() {

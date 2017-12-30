@@ -125,7 +125,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
                     String number = numbers.get(i).number;
                     String type = numbers.get(i).type;
                     LogUtil.log(TAG, "action, number:" + number + ", type:" + type);
-                    optionList.add(new Option(type, null));
+                    optionList.add(new Option(type));
                 }
                 args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
                 String speech = optionList.getTextToSpeak(ttsText);

@@ -94,7 +94,7 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
             contactOptionList.setAppInfo(AppInfo.SMS);
             contactOptionList.setIconRes(SceneUtil.ICON_MSG);
             for (String option : options) {
-                contactOptionList.add(new Option(option, null));
+                contactOptionList.add(new Option(option));
             }
             Bundle args = new Bundle();
             args.putParcelable(SceneUtil.EXTRA_CONTACT_OPTIONS_LIST, contactOptionList);
