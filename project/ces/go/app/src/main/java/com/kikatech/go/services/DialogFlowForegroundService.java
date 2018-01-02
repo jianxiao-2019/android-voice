@@ -189,6 +189,21 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                 }
                 break;
+            case ToDFServiceEvent.ACTION_INVERT_WAKE_UP_DETECTOR_ABILITY:
+                if (mDialogFlowService != null && !mDFServiceStatus.isAwake()) {
+                    if (mDialogFlowService.isWakeUpDetectorEnabled()) {
+                        mDialogFlowService.setWakeUpDetectorEnable(false);
+                        serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_WAKE_UP_ABILITY_CHANGE);
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_IS_WAKE_UP_ENABLED, false);
+                        sendDFServiceEvent(serviceEvent);
+                    } else {
+                        mDialogFlowService.setWakeUpDetectorEnable(true);
+                        serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_WAKE_UP_ABILITY_CHANGE);
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_IS_WAKE_UP_ENABLED, true);
+                        sendDFServiceEvent(serviceEvent);
+                    }
+                }
+                break;
         }
     }
 
@@ -938,6 +953,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processPingVoiceSource() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_PING_VOICE_SOURCE);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processInvertWakeUpDetectorAbility() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_INVERT_WAKE_UP_DETECTOR_ABILITY);
         sendToDFServiceEvent(event);
     }
 

@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
@@ -18,6 +20,8 @@ import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
+import com.kikatech.go.util.BluetoothUtil;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.GoLayout;
@@ -39,7 +43,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
     private GoLayout mGoLayout;
     private UiTaskManager mUiManager;
-    private View mBtnOpenDrawer;
+    private ImageView mBtnOpenDrawer;
     private View mIconConnectionStatus;
 
 
@@ -159,6 +163,10 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                     }
                 }
                 break;
+            case DFServiceEvent.ACTION_ON_WAKE_UP_ABILITY_CHANGE:
+                boolean isEnabled = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_WAKE_UP_ENABLED);
+                mBtnOpenDrawer.setImageResource(isEnabled ? R.drawable.kika_settings_ic_drawer : R.drawable.kika_settings_ic_drawer_open);
+                break;
         }
     }
 
@@ -214,6 +222,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             CustomConfig.removeAllCustomConfigFiles();
         }
 
+
 //        if (LogUtil.DEBUG) {
 //            String sen = CustomConfig.getSnowboySensitivity();
 //            int timeout = CustomConfig.getKikaTtsServerTimeout();
@@ -245,9 +254,30 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         super.onDestroy();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event != null && BluetoothUtil.isTargetDeviceEvent(event)) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, String.format("KeyEvent: %s", event.toString()));
+            }
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_VOLUME_DOWN:
+                        DialogFlowForegroundService.processInvertWakeUpDetectorAbility();
+                        return true;
+                    case KeyEvent.KEYCODE_VOLUME_UP:
+                        return true;
+                    default:
+                        return super.onKeyDown(keyCode, event);
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     private void bindView() {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
-        mBtnOpenDrawer = findViewById(R.id.go_layout_btn_open_drawer);
+        mBtnOpenDrawer = (ImageView) findViewById(R.id.go_layout_btn_open_drawer);
         mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
 
         mBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
