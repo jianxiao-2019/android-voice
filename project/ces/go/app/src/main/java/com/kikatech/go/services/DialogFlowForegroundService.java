@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.kikatech.go.R;
@@ -878,14 +879,21 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         openIntent.setAction(Commands.OPEN_KIKA_GO);
         PendingIntent openPendingIntent = PendingIntent.getService(DialogFlowForegroundService.this, getServiceId(), openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Intent closeIntent = new Intent(DialogFlowForegroundService.this, DialogFlowForegroundService.class);
+        closeIntent.setAction(Commands.STOP_FOREGROUND);
+        PendingIntent closePendingIntent = PendingIntent.getService(DialogFlowForegroundService.this, getServiceId(), closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_dialogflow_foreground_service);// set your custom layout
+
+        contentView.setOnClickPendingIntent(R.id.notification_btn_close, closePendingIntent);
+
         return new NotificationCompat.Builder(DialogFlowForegroundService.this)
+                .setContent(contentView)
+                .setCustomBigContentView(contentView)
                 .setSmallIcon(R.mipmap.app_icon)
                 .setLargeIcon(ImageUtil.safeDecodeFile(getResources(), R.mipmap.app_icon))
-                .setContentTitle("KikaGo is running in the background")
-                .setContentText("Tap to open KikaGo")
                 .setContentIntent(openPendingIntent)
                 .setAutoCancel(true)
-                // .setColor( appCtx.getResources().getColor( R.color.gela_green ) )
                 .build();
     }
 
