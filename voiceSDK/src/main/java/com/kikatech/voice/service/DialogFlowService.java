@@ -90,6 +90,11 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         }
     }
 
+    @Override
+    public boolean isWakeUpDetectorEnabled() {
+        return mVoiceService != null && mVoiceService.isWakeUpDetectorEnabled();
+    }
+
     private void tts(Pair<String, Integer>[] pairs, ISceneStageFeedback listener) {
         if (mTtsSource == null) {
             return;

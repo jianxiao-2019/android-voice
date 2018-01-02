@@ -195,4 +195,9 @@ public class SnowBoyDetector extends WakeUpDetector {
         if (LogUtil.DEBUG) LogUtil.log(TAG, "enableDetector: " + enable);
         mEnableDetection = enable;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return mEnableDetection;
+    }
 }

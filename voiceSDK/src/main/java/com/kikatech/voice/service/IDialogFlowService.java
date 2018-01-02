@@ -98,4 +98,6 @@ public interface IDialogFlowService {
     void updateTtsSource(VoiceConfiguration config);
 
     void setWakeUpDetectorEnable(boolean enable);
+
+    boolean isWakeUpDetectorEnabled();
 }
