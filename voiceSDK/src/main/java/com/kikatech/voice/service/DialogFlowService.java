@@ -85,7 +85,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     @Override
     public void setWakeUpDetectorEnable(boolean enable) {
-        if(mVoiceService != null) {
+        if (mVoiceService != null) {
             mVoiceService.setWakeUpDetectorEnable(enable);
         }
     }
@@ -193,11 +193,11 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     @Override
-    public void talk(String words) {
+    public void talk(String words, boolean proactive) {
         stopTts(true);
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
-            mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
+            mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, proactive, mQueryStatusCallback);
         }
     }
 
@@ -339,10 +339,10 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         if (!TextUtils.isEmpty(query)) {
             mServiceCallback.onASRResult(query, emojiJson, queryDialogFlow);
             if (queryDialogFlow && mDialogFlow != null) {
-                mDialogFlow.talk(query, nBestQuery, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, mQueryStatusCallback);
+                mDialogFlow.talk(query, nBestQuery, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, true, mQueryStatusCallback);
             }
         } else if (!TextUtils.isEmpty(emojiJson)) {
-            mDialogFlow.talk(emojiJson, nBestQuery, QUERY_TYPE_EMOJI, mQueryStatusCallback);
+            mDialogFlow.talk(emojiJson, nBestQuery, QUERY_TYPE_EMOJI, true, mQueryStatusCallback);
         }
     }
 

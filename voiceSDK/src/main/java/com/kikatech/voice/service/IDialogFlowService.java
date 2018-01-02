@@ -60,7 +60,7 @@ public interface IDialogFlowService {
     }
 
     interface IAgentQueryStatus {
-        void onStart();
+        void onStart(boolean proactive);
 
         void onComplete(String[] dbgMsg);
 
@@ -79,7 +79,7 @@ public interface IDialogFlowService {
 
     void resetContexts();
 
-    void talk(final String words);
+    void talk(final String words, boolean proactive);
 
     void talkUncaught();
 

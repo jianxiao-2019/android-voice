@@ -34,16 +34,16 @@ public class DialogFlow {
         }
     }
 
-    public void talk(final String words, final String[] nBestWords, byte queryType, final IDialogFlowService.IAgentQueryStatus callback) {
-        talk(words, nBestWords, null, queryType, callback);
+    public void talk(final String words, final String[] nBestWords, byte queryType, boolean proactive, final IDialogFlowService.IAgentQueryStatus callback) {
+        talk(words, nBestWords, null, queryType, proactive, callback);
     }
 
-    public void talk(final String words, final String[] nBestWords, final Map<String, List<String>> entities, final byte queryType, final IDialogFlowService.IAgentQueryStatus callback) {
+    public void talk(final String words, final String[] nBestWords, final Map<String, List<String>> entities, final byte queryType, final boolean proactive, final IDialogFlowService.IAgentQueryStatus callback) {
         if (!TextUtils.isEmpty(words)) {
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (callback != null) callback.onStart();
+                    if (callback != null) callback.onStart(proactive);
                     Intent intent = null;
                     try {
                         intent = mAgent.query(words, nBestWords, entities, queryType);
