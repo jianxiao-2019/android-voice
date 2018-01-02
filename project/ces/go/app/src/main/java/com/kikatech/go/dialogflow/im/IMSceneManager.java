@@ -15,6 +15,8 @@ import com.kikatech.go.message.im.IMManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.service.IDialogFlowService;
 
+import java.util.Locale;
+
 /**
  * Created by brad_chang on 2017/11/23.
  */
@@ -50,7 +52,7 @@ public class IMSceneManager extends BaseSceneManager {
 
                     mService.wakeUp(SceneReplyIM.SCENE);
                     mService.resetContexts();
-                    mService.talk(String.format(KIKA_PROCESS_RECEIVED_IM, t));
+                    mService.talk(String.format(Locale.ENGLISH, KIKA_PROCESS_RECEIVED_IM, t), false);
                 }
             }
         };

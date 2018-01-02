@@ -163,7 +163,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 String text = event.getExtras().getString(ToDFServiceEvent.PARAM_TEXT);
                 pauseAsr();
                 mDialogFlowService.cancelAsrAlignment();
-                mDialogFlowService.talk(text);
+                mDialogFlowService.talk(text, true);
                 break;
             case ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP:
                 if (LogUtil.DEBUG) {
@@ -686,11 +686,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
-                    public void onStart() {
+                    public void onStart(boolean proactive) {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
                         pauseAsr();
                         String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_START;
                         DFServiceEvent event = new DFServiceEvent(action);
+                        event.putExtra(DFServiceEvent.PARAM_IS_PROACTIVE, proactive);
                         sendDFServiceEvent(event);
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             mDbgLogAPIQueryUITime = System.currentTimeMillis();

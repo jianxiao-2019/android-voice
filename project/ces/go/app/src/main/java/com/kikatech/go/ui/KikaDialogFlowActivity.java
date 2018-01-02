@@ -161,7 +161,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
-                    public void onStart() {
+                    public void onStart(boolean proactive) {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onStart");
                     }
 
@@ -251,7 +251,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
     private void query() {
         String words = mWordsInput.getText().toString();
         if (!TextUtils.isEmpty(words)) {
-            mDialogFlowService.talk(words);
+            mDialogFlowService.talk(words, true);
         }
     }
 

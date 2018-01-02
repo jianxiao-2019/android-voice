@@ -3,7 +3,9 @@ package com.kikatech.go.dialogflow.sms.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.AsrConfigUtil;
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.dialogflow.sms.reply.SceneActions;
@@ -24,7 +26,8 @@ public class StageReplySmsIdle extends BaseReplySmsStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    protected @AsrConfigUtil.ASRMode
+    int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_COMMAND;
     }
 
@@ -48,13 +51,19 @@ public class StageReplySmsIdle extends BaseReplySmsStage {
 
             updateSmsContent(sms);
 
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_RECEIVE_MSG);
+            args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_notification);
+
             switch (getReplyMsgSetting()) {
                 case UserSettings.SETTING_REPLY_MSG_ASK_USER:
                     if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_MSG_READ");
+                    send(args);
                     // 3.1
                     return new AskToReadMsgAskStage(mSceneBase, mFeedback);
                 case UserSettings.SETTING_REPLY_MSG_READ:
                     if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_MSG_ASK_USER");
+                    send(args);
                     // 3.2
                     return new AskToReplySmsReadStage(mSceneBase, mFeedback);
                 default:

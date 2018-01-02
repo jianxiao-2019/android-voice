@@ -3,7 +3,9 @@ package com.kikatech.go.dialogflow.im.reply.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.AsrConfigUtil;
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
@@ -23,7 +25,8 @@ public class ReplyIMStageIdle extends BaseReplyIMStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    protected @AsrConfigUtil.ASRMode
+    int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_COMMAND;
     }
 
@@ -47,13 +50,19 @@ public class ReplyIMStageIdle extends BaseReplyIMStage {
 
             updateIMContent(imo);
 
+            Bundle args = new Bundle();
+            args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_RECEIVE_MSG);
+            args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_notification);
+
             switch (getReplyImSetting()) {
                 case UserSettings.SETTING_REPLY_MSG_ASK_USER:
                     if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_MSG_READ");
+                    send(args);
                     // 7.1
                     return new AskToReadContentReplyIMStage(mSceneBase, mFeedback);
                 case UserSettings.SETTING_REPLY_MSG_READ:
                     if (LogUtil.DEBUG) LogUtil.log(TAG, "SETTING_REPLY_MSG_ASK_USER");
+                    send(args);
                     // 7.2
                     return new ReadContentAndAskToReplyImReplyIMStage(mSceneBase, mFeedback);
                 case UserSettings.SETTING_REPLY_MSG_IGNORE:

@@ -77,7 +77,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                             if (succeed) {
                                 Bundle args = new Bundle();
                                 args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_DISPLAY_MSG_SENT);
-                                args.putInt(SceneUtil.EXTRA_ALERT, R.raw.alert_succeed);
+                                args.putInt(SceneUtil.EXTRA_ALERT, success ? R.raw.alert_succeed : R.raw.alert_error);
                                 args.putBoolean(SceneUtil.EXTRA_SEND_SUCCESS, success);
                                 send(args);
                                 uiHandler.postDelayed(new Runnable() {

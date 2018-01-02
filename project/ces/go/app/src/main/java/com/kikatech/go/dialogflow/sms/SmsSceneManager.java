@@ -15,6 +15,8 @@ import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.service.IDialogFlowService;
 
+import java.util.Locale;
+
 /**
  * Created by brad_chang on 2017/11/15.
  */
@@ -46,7 +48,7 @@ public class SmsSceneManager extends BaseSceneManager {
 
                     mService.wakeUp(SceneReplySms.SCENE);
                     mService.resetContexts();
-                    mService.talk(String.format(KIKA_PROCESS_RECEIVED_SMS, t));
+                    mService.talk(String.format(Locale.ENGLISH, KIKA_PROCESS_RECEIVED_SMS, t), false);
                 }
             }
         };

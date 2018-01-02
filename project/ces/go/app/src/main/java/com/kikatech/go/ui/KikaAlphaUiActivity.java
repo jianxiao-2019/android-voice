@@ -62,7 +62,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         Bundle extras;
         String text, scene, sceneAction;
         SceneStage stage;
-        boolean isFinished, isInterrupted;
+        boolean isFinished, isInterrupted, proactive;
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
         byte connectionStatus;
         switch (action) {
@@ -112,11 +112,12 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 mUiManager.dispatchEventTask(extras);
                 break;
             case DFServiceEvent.ACTION_ON_SCENE_EXIT:
-                boolean proactive = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_PROACTIVE);
+                proactive = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_PROACTIVE);
                 mUiManager.onSceneExit(proactive);
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_START:
-                mUiManager.dispatchAsrStart();
+                proactive = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_PROACTIVE);
+                mUiManager.dispatchAgentQueryStart(proactive);
                 break;
             case DFServiceEvent.ACTION_ON_AGENT_QUERY_COMPLETE:
                 break;

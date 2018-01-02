@@ -15,6 +15,7 @@ import java.util.Random;
 public class SceneUtil {
     private static final String TAG = "SceneUtil";
 
+    public static final String EVENT_RECEIVE_MSG = "event_receive_msg";
     public static final String EVENT_DISPLAY_MSG_SENT = "event_display_msg_sent";
     public static final String EVENT_OUTGOING_CALL = "event_outgoing_call";
 

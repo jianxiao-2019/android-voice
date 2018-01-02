@@ -69,11 +69,13 @@ public class UiTaskManager {
                 }
                 switch (mode) {
                     case AWAKE:
+                        boolean alert = true;
                         if (!TextUtils.isEmpty(wakeUpFrom)) {
                             switch (wakeUpFrom) {
                                 case SceneReplyIM.SCENE:
                                 case SceneReplySms.SCENE:
                                 case SceneIncoming.SCENE:
+                                    alert = false;
                                     break;
                                 default:
                                     displayOptions(mDefaultOptionList);
@@ -82,7 +84,7 @@ public class UiTaskManager {
                         } else {
                             displayOptions(mDefaultOptionList);
                         }
-                        unlock(true);
+                        unlock(alert);
                         break;
                     case SLEEP:
                         break;
@@ -144,9 +146,11 @@ public class UiTaskManager {
         onConnectionStatusChanged(connected);
     }
 
-    public synchronized void dispatchAsrStart() {
-        onStatusChanged(GoLayout.ViewStatus.ANALYZE);
-        playAlert(R.raw.alert_stop);
+    public synchronized void dispatchAgentQueryStart(boolean proactive) {
+        if (proactive) {
+            onStatusChanged(GoLayout.ViewStatus.ANALYZE);
+            playAlert(R.raw.alert_stop);
+        }
     }
 
     public synchronized void dispatchTtsTask(String text, Bundle extras) {
@@ -194,6 +198,11 @@ public class UiTaskManager {
                         }
                         boolean isSentSuccess = extras.getBoolean(SceneUtil.EXTRA_SEND_SUCCESS, true);
                         displayMsgSent(isSentSuccess);
+                        break;
+                    case SceneUtil.EVENT_RECEIVE_MSG:
+                        if (alertRes > 0) {
+                            playAlert(alertRes);
+                        }
                         break;
                     case SceneUtil.EVENT_OUTGOING_CALL:
                         onStatusChanged(GoLayout.ViewStatus.ANALYZE);

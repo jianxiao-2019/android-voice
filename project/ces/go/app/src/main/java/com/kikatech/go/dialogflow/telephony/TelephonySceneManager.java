@@ -44,7 +44,7 @@ public class TelephonySceneManager extends BaseSceneManager {
             mService.wakeUp(SceneIncoming.SCENE);
             mService.resetContexts();
             String incoming = String.format(SceneActions.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
-            mService.talk(incoming);
+            mService.talk(incoming, false);
         }
 
         @Override
