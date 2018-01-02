@@ -3,8 +3,10 @@ package com.kikatech.go.services;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -190,6 +192,48 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            performOnReceive(context, intent);
+        }
+
+        private void performOnReceive(Context context, Intent intent) {
+            if (intent == null) {
+                return;
+            }
+            String action = intent.getAction();
+            if (TextUtils.isEmpty(action)) {
+                return;
+            }
+            switch (action) {
+                case Intent.ACTION_SCREEN_OFF:
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, "onScreenOff");
+                    }
+                    if (mDialogFlowService != null && mDFServiceStatus.isInit()) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "disable WakeUp Detector");
+                        }
+                        mDialogFlowService.sleep();
+                        mDialogFlowService.setWakeUpDetectorEnable(false);
+                    }
+                    break;
+                case Intent.ACTION_USER_PRESENT:
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, "onScreenUnlock");
+                    }
+                    if (mDialogFlowService != null && mDFServiceStatus.isInit()) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logv(TAG, "enable WakeUp Detector");
+                        }
+                        mDialogFlowService.setWakeUpDetectorEnable(true);
+                    }
+                    break;
+            }
+        }
+    };
+
 
     @Override
     protected void onStartForeground() {
@@ -236,7 +280,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private void updateVoiceSource() {
         if (mDialogFlowService != null) {
-            if(LogUtil.DEBUG) {
+            if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "sAudioSource:" + sAudioSource);
             }
             VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, sAudioSource);
@@ -776,6 +820,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private void registerReceiver() {
         unregisterReceiver();
         try {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_USER_PRESENT);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            registerReceiver(mReceiver, filter);
             EventBus.getDefault().register(this);
         } catch (Exception ignore) {
         }
@@ -783,6 +831,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private void unregisterReceiver() {
         try {
+            unregisterReceiver(mReceiver);
             EventBus.getDefault().unregister(this);
         } catch (Exception ignore) {
         }
