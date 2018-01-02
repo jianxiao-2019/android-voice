@@ -86,6 +86,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
 
     private static UsbAudioSource sAudioSource;
+    private static boolean sHandleUsbConnect = false;
+
     private long start_t;
     private Handler mMainHandler = new Handler(Looper.getMainLooper());
 
@@ -178,9 +180,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, "updateVoiceSource, sAudioSource:" + sAudioSource);
                 }
-                if(sHandleUsbConnect) {
-                    sHandleUsbConnect = false;
-                    setupDialogFlowService();
+                synchronized (this) {
+                    if (sHandleUsbConnect) {
+                        sHandleUsbConnect = false;
+                        setupDialogFlowService();
+                    }
                 }
                 break;
         }
@@ -247,7 +251,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         setupDialogFlowService();
     }
 
-    static boolean sHandleUsbConnect = false;
     IUsbAudioListener mUsbCallback = new IUsbAudioListener() {
 
         @Override
@@ -391,7 +394,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     @Override
                     public void onInitComplete() {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "onInitComplete, sHandleUsbConnect:" + sHandleUsbConnect);
+                            LogUtil.log(TAG, "onInitComplete");
                         }
                         mDFServiceStatus.setInit(true);
                         String action = DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT;
