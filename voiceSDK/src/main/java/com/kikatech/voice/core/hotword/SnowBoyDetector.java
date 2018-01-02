@@ -41,6 +41,8 @@ public class SnowBoyDetector extends WakeUpDetector {
     private short[] audioDataBuffer;
     private byte[] monoResultBuffer;
 
+    private boolean mEnableDetection = true;
+
     SnowBoyDetector(OnHotWordDetectListener listener) {
         super(listener);
         mListener = listener;
@@ -70,6 +72,9 @@ public class SnowBoyDetector extends WakeUpDetector {
     @Override
     protected synchronized void checkWakeUpCommand(byte[] data) {
         //if(LogUtil.DEBUG) LogUtil.log(TAG, "checkWakeUpCommand data len = " + data.length);
+        if (!mEnableDetection) {
+            return;
+        }
         if (mSnowboyDetect == null) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "Err, mSnowboyDetect is null");
             return;
@@ -183,5 +188,11 @@ public class SnowBoyDetector extends WakeUpDetector {
         if (monoResultBuffer != null) {
             monoResultBuffer = null;
         }
+    }
+
+    @Override
+    public synchronized void enableDetector(boolean enable) {
+        if (LogUtil.DEBUG) LogUtil.log(TAG, "enableDetector: " + enable);
+        mEnableDetection = enable;
     }
 }

@@ -96,4 +96,6 @@ public interface IDialogFlowService {
     void updateRecorderSource(VoiceConfiguration config);
 
     void updateTtsSource(VoiceConfiguration config);
+
+    void setWakeUpDetectorEnable(boolean enable);
 }

@@ -83,6 +83,13 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         initTts(conf);
     }
 
+    @Override
+    public void setWakeUpDetectorEnable(boolean enable) {
+        if(mVoiceService != null) {
+            mVoiceService.setWakeUpDetectorEnable(enable);
+        }
+    }
+
     private void tts(Pair<String, Integer>[] pairs, ISceneStageFeedback listener) {
         if (mTtsSource == null) {
             return;

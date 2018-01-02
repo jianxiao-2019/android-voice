@@ -374,4 +374,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             super.handleMessage(msg);
         }
     }
+
+    public void setWakeUpDetectorEnable(boolean enable) {
+        if(mWakeUpDetector != null){
+            mWakeUpDetector.enableDetector(enable);
+        }
+    }
 }

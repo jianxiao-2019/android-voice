@@ -70,4 +70,6 @@ public abstract class WakeUpDetector {
     public abstract void wakeUp();
 
     public abstract void close();
+
+    public abstract void enableDetector(boolean enable);
 }
