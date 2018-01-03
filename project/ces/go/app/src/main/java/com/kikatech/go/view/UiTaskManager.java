@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.ces.demo.wakeup.SceneWakeUp;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.model.ContactOptionList;
 import com.kikatech.go.dialogflow.model.Option;
@@ -72,6 +73,7 @@ public class UiTaskManager {
                         boolean alert = true;
                         if (!TextUtils.isEmpty(wakeUpFrom)) {
                             switch (wakeUpFrom) {
+                                case SceneWakeUp.SCENE:
                                 case SceneReplyIM.SCENE:
                                 case SceneReplySms.SCENE:
                                 case SceneIncoming.SCENE:

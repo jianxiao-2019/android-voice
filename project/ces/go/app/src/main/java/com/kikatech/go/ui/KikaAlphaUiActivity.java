@@ -266,6 +266,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                         DialogFlowForegroundService.processInvertWakeUpDetectorAbility();
                         return true;
                     case KeyEvent.KEYCODE_VOLUME_UP:
+                        DialogFlowForegroundService.processSwitchWakeUpScene();
                         return true;
                     default:
                         return super.onKeyDown(keyCode, event);

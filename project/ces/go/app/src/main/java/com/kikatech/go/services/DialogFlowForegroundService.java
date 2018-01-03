@@ -24,14 +24,20 @@ import android.widget.Toast;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
+import com.kikatech.go.dialogflow.ces.demo.wakeup.SceneWakeUp;
+import com.kikatech.go.dialogflow.ces.demo.wakeup.WakeUpSceneAction;
+import com.kikatech.go.dialogflow.ces.demo.wakeup.WakeUpSceneManager;
 import com.kikatech.go.dialogflow.common.CommonSceneManager;
 import com.kikatech.go.dialogflow.gotomain.GotoMainSceneManager;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
+import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
+import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.services.view.FloatingUiManager;
@@ -104,6 +110,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private DFServiceStatus mDFServiceStatus = new DFServiceStatus();
 
     private static boolean isAppForeground = true;
+
+    private boolean wakeUpInFunnyMode = false;
 
     private boolean mDbgLogFirstAsrResult = false;
     private boolean mIsAsrFinished = false;
@@ -202,6 +210,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         serviceEvent.putExtra(DFServiceEvent.PARAM_IS_WAKE_UP_ENABLED, true);
                         sendDFServiceEvent(serviceEvent);
                     }
+                }
+                break;
+            case ToDFServiceEvent.ACTION_SWITCH_WAKE_UP_SCENE:
+                if (mDialogFlowService != null && !mDFServiceStatus.isAwake()) {
+                    wakeUpInFunnyMode = !wakeUpInFunnyMode;
                 }
                 break;
         }
@@ -471,10 +484,25 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         }
                         mDFServiceStatus.setAwake(true);
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
-                        DFServiceEvent event = new DFServiceEvent(action);
-                        event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, scene);
-                        sendDFServiceEvent(event);
-                        resumeAsr();
+                        boolean shouldBreakWakeUpFunny = SceneReplyIM.SCENE.equals(scene) || SceneReplySms.SCENE.equals(scene) || SceneIncoming.SCENE.equals(scene);
+                        if (wakeUpInFunnyMode && !shouldBreakWakeUpFunny) {
+                            DFServiceEvent event = new DFServiceEvent(action);
+                            event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, SceneWakeUp.SCENE);
+                            sendDFServiceEvent(event);
+                            pauseAsr();
+                            AsyncThread.getIns().executeDelay(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mDialogFlowService.onLocalIntent(SceneWakeUp.SCENE, WakeUpSceneAction.ACTION_WAKE_UP_FUNNY);
+                                }
+                            }, 500);
+                        } else {
+                            wakeUpInFunnyMode = false;
+                            DFServiceEvent event = new DFServiceEvent(action);
+                            event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, scene);
+                            sendDFServiceEvent(event);
+                            resumeAsr();
+                        }
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Hi Kika Wake Up");
                             LogOnViewUtil.getIns().addLog("ASR listening");
@@ -801,6 +829,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mSceneManagers.add(new IMSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new CommonSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new GotoMainSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new WakeUpSceneManager(this, mDialogFlowService));
     }
 
     private void sendDFServiceEvent(DFServiceEvent event) {
@@ -958,6 +987,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processInvertWakeUpDetectorAbility() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_INVERT_WAKE_UP_DETECTOR_ABILITY);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processSwitchWakeUpScene() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_SWITCH_WAKE_UP_SCENE);
         sendToDFServiceEvent(event);
     }
 
