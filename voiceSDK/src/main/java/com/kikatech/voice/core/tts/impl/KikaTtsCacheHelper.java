@@ -23,7 +23,7 @@ import java.util.List;
  * Created by brad_chang on 2017/12/15.
  */
 
-class KikaTtsCacheHelper {
+public class KikaTtsCacheHelper {
 
     private static final String TAG = "KikaTtsSourceCache";
 
@@ -117,11 +117,11 @@ class KikaTtsCacheHelper {
         }
     }
 
-    static class TaskInfo {
+    public static class TaskInfo {
         String downloadUrl;
         final CacheInfo cacheInfo;
 
-        TaskInfo(String ttsUrl, String jsonString) {
+        public TaskInfo(String ttsUrl, String jsonString) {
             cacheInfo = new CacheInfo(jsonString);
 
             JSONArray jourl;
