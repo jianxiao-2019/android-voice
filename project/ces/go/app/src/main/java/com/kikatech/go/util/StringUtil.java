@@ -21,6 +21,21 @@ public class StringUtil {
                 || (!TextUtils.isEmpty(string1) && string1.equals(string2));
     }
 
+    public static boolean equals(CharSequence string1, CharSequence string2) {
+        return (TextUtils.isEmpty(string1) && TextUtils.isEmpty(string2))
+                || (!TextUtils.isEmpty(string1) && string1.toString().equals(string2));
+    }
+
+    public static boolean equalsIgnoreCase(String string1, String string2) {
+        return (TextUtils.isEmpty(string1) && TextUtils.isEmpty(string2))
+                || (!TextUtils.isEmpty(string1) && string1.equalsIgnoreCase(string2));
+    }
+
+    public static boolean equalsIgnoreCase(CharSequence string1, CharSequence string2) {
+        return (TextUtils.isEmpty(string1) && TextUtils.isEmpty(string2))
+                || (!TextUtils.isEmpty(string1) && string1.toString().equalsIgnoreCase(string2.toString()));
+    }
+
     public static <T> String join(List<T> list, String cement) {
         StringBuilder builder = new StringBuilder();
 

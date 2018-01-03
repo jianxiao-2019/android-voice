@@ -6,7 +6,9 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kikatech.go.accessibility.AccessibilityUtils;
+import com.kikatech.go.util.StringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +34,7 @@ public class Scene {
     }
 
     protected AccessibilityNodeInfo findNodeByText(AccessibilityNodeInfo parentNode, String text) {
-        List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByText(text);
+        List<AccessibilityNodeInfo> results = findNodesByText(parentNode, text);
         if (results.size() > 0) {
             return results.get(0);
         }
@@ -40,13 +42,26 @@ public class Scene {
     }
 
     protected List<AccessibilityNodeInfo> findNodesByText(AccessibilityNodeInfo parentNode, String text) {
-        return parentNode.findAccessibilityNodeInfosByText(text);
+        List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByText(text);
+        if (results.size() == 0) {
+            List<AccessibilityNodeInfo> allNodes = getAllNodes(parentNode);
+            results = new ArrayList<>();
+            for (AccessibilityNodeInfo nodeInfo : allNodes) {
+                if (StringUtil.equalsIgnoreCase(nodeInfo.getText(), text) ||
+                    StringUtil.equalsIgnoreCase(nodeInfo.getContentDescription(), text)) {
+                    results.add(nodeInfo);
+                }
+            }
+        }
+        return results;
     }
 
     protected AccessibilityNodeInfo findNodeByTextAndClass(AccessibilityNodeInfo parentNode, String text, String className) {
-        List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByText(text);
+        List<AccessibilityNodeInfo> results = getAllNodes(parentNode);
         for (AccessibilityNodeInfo nodeInfo : results) {
-            if (className.equals(nodeInfo.getClassName())) {
+            if (StringUtil.equals(nodeInfo.getClassName(), className) &&
+                    (StringUtil.equalsIgnoreCase(nodeInfo.getText(), text) ||
+                     StringUtil.equalsIgnoreCase(nodeInfo.getContentDescription(), text))) {
                 return nodeInfo;
             }
         }
@@ -54,13 +69,52 @@ public class Scene {
     }
 
     protected AccessibilityNodeInfo findNodeByTextAndId(AccessibilityNodeInfo parentNode, String text, String viewId) {
+        if (text == null) {
+            return null;
+        }
         List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByViewId(viewId);
         for (AccessibilityNodeInfo nodeInfo : results) {
-            if (text != null && text.equalsIgnoreCase(nodeInfo.getText().toString())) {
+            if (StringUtil.equalsIgnoreCase(nodeInfo.getText().toString(), text) ||
+                StringUtil.equalsIgnoreCase(nodeInfo.getContentDescription(), text)) {
                 return nodeInfo;
             }
         }
         return null;
+    }
+
+    protected AccessibilityNodeInfo findNodeByContentDescription(AccessibilityNodeInfo parentNode, String description) {
+        List<AccessibilityNodeInfo> results = getAllNodes(parentNode);
+        for(AccessibilityNodeInfo node : results) {
+            CharSequence contentDescription = node.getContentDescription();
+            if(contentDescription != null && StringUtil.equals(contentDescription.toString(), description)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    protected AccessibilityNodeInfo findNodeByClass(AccessibilityNodeInfo parentNode, String className) {
+        List<AccessibilityNodeInfo> results = getAllNodes(parentNode);
+        for(AccessibilityNodeInfo node : results) {
+            if(node != null && StringUtil.equals(node.getClassName(), className)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    protected List<AccessibilityNodeInfo> getAllNodes(AccessibilityNodeInfo parentNode) {
+        List<AccessibilityNodeInfo> allNodes = new ArrayList<>();
+        for(int i = 0; i < parentNode.getChildCount(); i++) {
+            AccessibilityNodeInfo node = parentNode.getChild(i);
+            if(node != null) {
+                if(node.getChildCount() > 0) {
+                    allNodes.addAll(getAllNodes(node));
+                }
+                allNodes.add(node);
+            }
+        }
+        return allNodes;
     }
 
     protected void clickView(AccessibilityNodeInfo nodeInfo) {
