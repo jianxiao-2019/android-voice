@@ -116,6 +116,7 @@ public class WebSocket {
     }
 
     private Runnable mReconnectRunnable = null;
+
     private class ReconnectRunnable implements Runnable {
 
         @Override
@@ -261,7 +262,7 @@ public class WebSocket {
         public void onOpen(ServerHandshake handshakeData) {
             Logger.i("VoiceWebSocketClient onOpen mListener = " + mListener);
             mOpened = true;
-            if (mListener != null && mReconnectTimes == 0) {
+            if (mListener != null) {
                 mListener.onOpen();
             }
             mReconnectTimes = 0;
@@ -280,10 +281,9 @@ public class WebSocket {
         public void onClose(int code, String reason, boolean remote) {
             Logger.i("VoiceWebSocketClient reconnect onClose code = [" + code + "] Thread = " + Thread.currentThread().getName());
             mOpened = false;
-            if (!reconnect()) {
-                if (mListener != null) {
-                    mListener.onWebSocketClosed();
-                }
+            reconnect();
+            if (mListener != null) {
+                mListener.onWebSocketClosed();
             }
         }
 
@@ -292,12 +292,10 @@ public class WebSocket {
             Logger.w("VoiceWebSocketClient reconnect onError ex = " + ex + " Thread = " + Thread.currentThread().getName());
             ex.printStackTrace();
             mOpened = false;
-            if (!reconnect()) {
-                if (mListener != null) {
-                    mListener.onWebSocketError();
-                }
+            reconnect();
+            if (mListener != null) {
+                mListener.onWebSocketError();
             }
         }
     }
-
 }
