@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import com.kikatech.voice.core.dialogflow.DialogFlow;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.ISceneStageFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -203,6 +204,13 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
             if (LogUtil.DEBUG) LogUtil.log(TAG, "talk : " + words);
             mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, proactive, mQueryStatusCallback);
+        }
+    }
+
+    @Override
+    public void onLocalIntent(String scene, String action) {
+        if (mSceneManager != null) {
+            mSceneManager.onIntent(new Intent(scene, action));
         }
     }
 

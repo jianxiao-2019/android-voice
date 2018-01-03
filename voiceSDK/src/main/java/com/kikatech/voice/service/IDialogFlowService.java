@@ -81,6 +81,8 @@ public interface IDialogFlowService {
 
     void talk(final String words, boolean proactive);
 
+    void onLocalIntent(final String scene, final String action);
+
     void talkUncaught();
 
     void pauseAsr();
