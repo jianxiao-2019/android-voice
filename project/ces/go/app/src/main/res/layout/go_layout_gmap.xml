@@ -13,8 +13,8 @@
 
     <ImageView
         android:id="@+id/gmap_status_wrapper"
-        android:layout_width="61.3dp"
-        android:layout_height="61.3dp"
+        android:layout_width="61.6dp"
+        android:layout_height="61.6dp"
         android:src="@drawable/gmap_kika_vui_cover"
         android:visibility="gone"/>
 
