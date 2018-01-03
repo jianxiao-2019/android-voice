@@ -53,7 +53,7 @@ public class StageWakeUpFunny extends BaseSceneStage {
     protected void action() {
 //        Context context = mSceneBase.getContext();
 //        String[] uiAndTtsText = SceneUtil.getAskEmoji(context, getSmsContent().getEmojiUnicode());
-        final String tmp = "Hey, sis. Someone's calling you. Time to wakeup.";
+        final String tmp = "Hey, sis! Someone is calling you. Time to wake up!";
         String[] uiAndTtsText = new String[]{tmp, tmp};
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];

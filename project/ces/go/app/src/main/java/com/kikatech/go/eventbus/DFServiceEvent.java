@@ -28,6 +28,7 @@ public class DFServiceEvent extends BaseDFServiceEvent {
     public static final String ACTION_ON_VOICE_SRC_CHANGE = "action_on_voice_source_change";
     public static final String ACTION_ON_CONNECTION_STATUS_CHANGE = "action_on_connection_status_change";
     public static final String ACTION_ON_WAKE_UP_ABILITY_CHANGE = "action_on_wake_up_ability_change";
+    public static final String ACTION_ON_WAKE_UP_MODE_CHANGE = "action_on_wake_up_mode_change";
 
     public static final String PARAM_WAKE_UP_FROM = "param_wake_up_from";
     public static final String PARAM_EXTRAS = "param_extras";
@@ -42,6 +43,7 @@ public class DFServiceEvent extends BaseDFServiceEvent {
     public static final String PARAM_CONNECTION_STATUS = "param_connection_status";
     public static final String PARAM_SERVICE_STATUS = "param_service_status";
     public static final String PARAM_IS_WAKE_UP_ENABLED = "param_is_wake_up_enabled";
+    public static final String PARAM_IS_WAKE_UP_IN_FUNNY_MODE = "param_is_wake_up_in_funny_bode";
 
     public static final String PARAM_DBG_INTENT_ACTION = "param_dbg_intent_action";
     public static final String PARAM_DBG_INTENT_PARMS = "param_dbg_intent_parms";

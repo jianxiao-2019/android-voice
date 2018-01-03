@@ -167,6 +167,11 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 boolean isEnabled = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_WAKE_UP_ENABLED);
                 mBtnOpenDrawer.setImageResource(isEnabled ? R.drawable.kika_settings_ic_drawer : R.drawable.kika_settings_ic_drawer_open);
                 break;
+            case DFServiceEvent.ACTION_ON_WAKE_UP_MODE_CHANGE:
+                boolean isWakeUpInFunnyMode = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_WAKE_UP_IN_FUNNY_MODE);
+                if (mGoLayout != null) {
+                    mGoLayout.setSleepLayoutIconRes(isWakeUpInFunnyMode ? R.drawable.kika_ic_trigger_switch : R.drawable.kika_ic_trigger);
+                }
         }
     }
 

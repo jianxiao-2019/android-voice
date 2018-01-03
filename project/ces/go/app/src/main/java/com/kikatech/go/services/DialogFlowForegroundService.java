@@ -215,6 +215,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             case ToDFServiceEvent.ACTION_SWITCH_WAKE_UP_SCENE:
                 if (mDialogFlowService != null && !mDFServiceStatus.isAwake()) {
                     wakeUpInFunnyMode = !wakeUpInFunnyMode;
+                    serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_WAKE_UP_MODE_CHANGE);
+                    serviceEvent.putExtra(DFServiceEvent.PARAM_IS_WAKE_UP_IN_FUNNY_MODE, wakeUpInFunnyMode);
+                    sendDFServiceEvent(serviceEvent);
                 }
                 break;
         }

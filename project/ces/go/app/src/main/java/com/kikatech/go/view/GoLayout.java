@@ -344,6 +344,10 @@ public class GoLayout extends FrameLayout {
     }
 
 
+    public void setSleepLayoutIconRes(int iconRes) { // TODO: for ces demo requirement, remove later
+        ((ImageView) findViewById(R.id.sleep_view_icon)).setImageResource(iconRes);
+    }
+
     public void sleep() {
         DisplayMode targetMode = DisplayMode.SLEEP;
         onModeChanged(targetMode);
