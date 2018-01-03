@@ -37,6 +37,8 @@ import java.util.List;
 public class FloatingUiManager {
     private static final String TAG = "FloatingUiManager";
 
+    private static final int GMAP_MARGIN_DP = 14;
+
     private int DEVICE_WIDTH;
     private int DEVICE_HEIGHT;
 
@@ -57,6 +59,8 @@ public class FloatingUiManager {
     private List<WindowFloatingButton> mButtonList = new ArrayList<>();
 
     private boolean isTipViewShown;
+
+    private int mGravity = Gravity.LEFT;
 
 
     private FlexibleOnTouchListener onGMapTouchListener = new FlexibleOnTouchListener(100, new FlexibleOnTouchListener.ITouchListener() {
@@ -123,7 +127,18 @@ public class FloatingUiManager {
                 enteredBtn.onLeaved();
             }
             mItemGMap.setAlpha(1.0f);
-            mContainer.moveItem(mItemGMap, viewOriginalXY[0], viewOriginalXY[1]);
+            int gmapX;
+            int gmapY = ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP);
+            if (mItemGMap.getViewX() > getDeviceWidthByOrientation() / 2) {
+                mGravity = Gravity.LEFT;
+                int deviceWidth = getDeviceWidthByOrientation();
+                int itemWidth = mItemGMap.getMeasuredWidth();
+                gmapX = deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP);
+            } else {
+                mGravity = Gravity.RIGHT;
+                gmapX = ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP);
+            }
+            mContainer.moveItem(mItemGMap, gmapX, gmapY);
             hideButtons();
             mItemTip.setViewVisibility(View.VISIBLE);
             mItemMsg.setViewVisibility(View.VISIBLE);
@@ -297,8 +312,8 @@ public class FloatingUiManager {
         int itemWidth = mItemGMap.getMeasuredWidth();
 
         mItemGMap.setGravity(Gravity.TOP | Gravity.LEFT);
-        mItemGMap.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 14));
-        mItemGMap.setViewY(ResolutionUtil.dp2px(mContext, 14));
+        mItemGMap.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP));
+        mItemGMap.setViewY(ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP));
         mContainer.addItem(mItemGMap);
 
         isTipViewShown = false;
@@ -321,10 +336,11 @@ public class FloatingUiManager {
         int deviceWidth = getDeviceWidthByOrientation();
         int itemWidth = mItemTip.getMeasuredWidth();
 
-        mItemTip.setGravity(Gravity.TOP | Gravity.LEFT);
+        mItemTip.setGravity(Gravity.TOP | mGravity);
         mItemTip.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
         mItemTip.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
         mItemTip.setAnimation(android.R.style.Animation_Toast);
+        mItemTip.updateBackgroundRes(mGravity);
 
         mContainer.addItem(mItemTip);
 
@@ -346,10 +362,11 @@ public class FloatingUiManager {
             LogUtil.log(TAG, String.format("deviceWidth: %1$s, itemWidth: %2$s", deviceWidth, itemWidth));
         }
 
-        mItemMsg.setGravity(Gravity.TOP | Gravity.LEFT);
+        mItemMsg.setGravity(Gravity.TOP | mGravity);
         mItemMsg.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
         mItemMsg.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
         mItemMsg.setAnimation(android.R.style.Animation_Toast);
+        mItemMsg.updateBackgroundRes(mGravity);
 
         mContainer.addItem(mItemMsg);
 

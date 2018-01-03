@@ -1,8 +1,11 @@
 package com.kikatech.go.services.view.item;
 
 import android.graphics.PixelFormat;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.kikatech.go.R;
 
 /**
  * @author SkeeterWang Created on 2017/12/18.
@@ -27,5 +30,16 @@ public class ItemTip extends WindowFloatingItem {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
         );
+    }
+
+    public void updateBackgroundRes(int gravity) {
+        switch (gravity) {
+            case Gravity.LEFT:
+                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_2line);
+                break;
+            case Gravity.RIGHT:
+                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_2line_left);
+                break;
+        }
     }
 }

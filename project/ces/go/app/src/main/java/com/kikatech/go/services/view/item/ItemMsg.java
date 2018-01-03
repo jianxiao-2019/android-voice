@@ -1,6 +1,7 @@
 package com.kikatech.go.services.view.item;
 
 import android.graphics.PixelFormat;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -50,5 +51,16 @@ public class ItemMsg extends WindowFloatingItem {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
         );
+    }
+
+    public void updateBackgroundRes(int gravity) {
+        switch (gravity) {
+            case Gravity.LEFT:
+                mMsgViewText.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
+                break;
+            case Gravity.RIGHT:
+                mMsgViewText.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
+                break;
+        }
     }
 }
