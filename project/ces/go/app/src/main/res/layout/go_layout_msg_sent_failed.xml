@@ -34,9 +34,10 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginTop="4dp"
+        android:layout_toLeftOf="@+id/msg_sent_bg"
         android:fontFamily="sans-serif-medium"
-        android:gravity="center"
-        android:text="Failed!"
+        android:gravity="left"
+        android:text="Contact not found!"
         android:textColor="#8e94a9"
         android:textSize="@dimen/go_layout_msg_sent_text_size"/>
 
