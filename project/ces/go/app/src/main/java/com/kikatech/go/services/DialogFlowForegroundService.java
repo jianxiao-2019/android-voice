@@ -220,6 +220,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     sendDFServiceEvent(serviceEvent);
                 }
                 break;
+            case ToDFServiceEvent.ACTION_BLUETOOTH_EVENT:
+                if(mDialogFlowService != null) {
+                    if(!mDFServiceStatus.isAwake()) {
+                        mDialogFlowService.wakeUp("bluetooth_event");
+                    } else {
+                        mDialogFlowService.forceArsResult();
+                    }
+                }
+                break;
         }
     }
 
@@ -537,6 +546,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onASRPause() {
+                        mDFServiceStatus.setAsrEnabled(false);
                         String action = DFServiceEvent.ACTION_ON_ASR_PAUSE;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
@@ -549,6 +559,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onASRResume() {
+                        mDFServiceStatus.setAsrEnabled(true);
                         String action = DFServiceEvent.ACTION_ON_ASR_RESUME;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
@@ -995,6 +1006,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processSwitchWakeUpScene() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_SWITCH_WAKE_UP_SCENE);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processBluetoothEvent() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_BLUETOOTH_EVENT);
         sendToDFServiceEvent(event);
     }
 

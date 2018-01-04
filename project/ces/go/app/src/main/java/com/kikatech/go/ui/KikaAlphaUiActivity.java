@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -261,20 +262,43 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event != null && BluetoothUtil.isTargetDeviceEvent(event)) {
-            if (LogUtil.DEBUG) {
-                LogUtil.logd(TAG, String.format("KeyEvent: %s", event.toString()));
-            }
-            if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                switch (keyCode) {
-                    case KeyEvent.KEYCODE_VOLUME_DOWN:
-                        DialogFlowForegroundService.processInvertWakeUpDetectorAbility();
+        if (event != null) {
+            InputDevice device = event.getDevice();
+            if (device != null) {
+                String deviceName = device.getName();
+                if (LogUtil.DEBUG) {
+                    LogUtil.logd(TAG, String.format("Device: %1$s, KeyEvent: %2$s", deviceName, event.toString()));
+                }
+                switch (deviceName) {
+                    case BluetoothUtil.Devices.DEVICE_KS:
+                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                            switch (keyCode) {
+                                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                                    DialogFlowForegroundService.processInvertWakeUpDetectorAbility();
+                                    return true;
+                                case KeyEvent.KEYCODE_VOLUME_UP:
+                                    DialogFlowForegroundService.processSwitchWakeUpScene();
+                                    return true;
+                                default:
+                                    return super.onKeyDown(keyCode, event);
+                            }
+                        }
+                        break;
+                    case BluetoothUtil.Devices.DEVICE_MEFOTO:
+                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                            switch (keyCode) {
+                                case KeyEvent.KEYCODE_VOLUME_UP:
+                                    DialogFlowForegroundService.processBluetoothEvent();
+                                    return true;
+                                default:
+                                    return true;
+                            }
+                        }
                         return true;
-                    case KeyEvent.KEYCODE_VOLUME_UP:
-                        DialogFlowForegroundService.processSwitchWakeUpScene();
-                        return true;
-                    default:
-                        return super.onKeyDown(keyCode, event);
+                }
+            } else {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logd(TAG, String.format("KeyEvent: %s", event.toString()));
                 }
             }
         }
