@@ -1,5 +1,6 @@
 package com.kikatech.go.ui;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -417,4 +418,12 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             updateDrawerContent(mDrawerMainFragment);
         }
     });
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "keyboard:" + newConfig.keyboard + ", hardKeyboardHidden:" + newConfig.hardKeyboardHidden + ", keyboardHidden:" + newConfig.keyboardHidden);
+        }
+    }
 }
