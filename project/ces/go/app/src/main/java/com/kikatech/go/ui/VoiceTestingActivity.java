@@ -44,7 +44,7 @@ public class VoiceTestingActivity extends BaseActivity
         implements VoiceService.VoiceRecognitionListener, VoiceService.VoiceStateChangedListener,
         TtsSource.TtsStateChangedListener, IUsbAudioListener {
 
-    private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v2/speech";
+    private static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev.kikakeyboard.com/v3/speech";
     private static final String SERVER_COMMAND_CONTENT = "CONTENT";
 
     private static final Locale[] LOCALE_LIST = new Locale[]{
