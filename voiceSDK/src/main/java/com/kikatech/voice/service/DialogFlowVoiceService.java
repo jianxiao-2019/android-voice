@@ -23,6 +23,8 @@ public abstract class DialogFlowVoiceService {
     final Context mContext;
     final IDialogFlowService.IServiceCallback mServiceCallback;
 
+    private IntermediateMessage mIntermediateMessage;
+
     private final AsrConfiguration mAsrConfiguration = new AsrConfiguration.Builder().build();
     VoiceService mVoiceService;
 
@@ -59,6 +61,16 @@ public abstract class DialogFlowVoiceService {
             if (LogUtil.DEBUG) {
                 mServiceCallback.onAsrConfigChange(mAsrConfiguration);
             }
+        }
+    }
+
+    void forceAsrResult() {
+        if (mIntermediateMessage != null) {
+            if (mVoiceService != null) {
+                mVoiceService.pauseAsr();
+            }
+            onAsrResult(mIntermediateMessage.text, null, true, null);
+            mIntermediateMessage = null;
         }
     }
 
@@ -103,21 +115,24 @@ public abstract class DialogFlowVoiceService {
             if (message instanceof IntermediateMessage) {
                 IntermediateMessage intermediateMessage = (IntermediateMessage) message;
                 query = intermediateMessage.text;
+                mIntermediateMessage = (IntermediateMessage) message;
             } else if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
                 }
-
                 query = textMessage.text[0];
                 nBestQuery = textMessage.text;
                 queryDialogFlow = true;
+                mIntermediateMessage = null;
             } else if (message instanceof EditTextMessage) {
                 String alter = ((EditTextMessage) message).altered;
-                if (LogUtil.DEBUG) LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
-
+                if (LogUtil.DEBUG) {
+                    LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
+                }
                 query = alter;
                 queryDialogFlow = true;
+                mIntermediateMessage = null;
             } else if (message instanceof EmojiRecommendMessage) {
                 EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
                 emojiJson = EmojiUtil.composeJsonString(emoji.emoji, emoji.descriptionText);

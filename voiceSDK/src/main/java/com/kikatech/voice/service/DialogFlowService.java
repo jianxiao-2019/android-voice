@@ -235,6 +235,11 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     @Override
+    public void forceArsResult() {
+        super.forceAsrResult();
+    }
+
+    @Override
     public void resumeAsr(int bosDuration) {
         if (mVoiceService != null) {
             mVoiceService.resumeAsr(bosDuration);
