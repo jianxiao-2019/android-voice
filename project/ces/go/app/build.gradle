@@ -9,7 +9,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 20180105
-        versionName "1.1.03_20180105_beta2_v1"
+        versionName "1.1.03_20180105_beta2_v2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
