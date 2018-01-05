@@ -5,6 +5,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.IMScene;
+import com.kikatech.go.util.LogUtil;
 
 /**
  * Created by tianli on 17-10-22.
@@ -12,9 +13,13 @@ import com.kikatech.go.accessibility.im.IMScene;
 
 public class WhatsAppScene extends IMScene {
 
+    private static final String TAG = WhatsAppScene.class.getName();
+
     private static final String VIEWID_BUTTON_SEARCH = "com.whatsapp:id/menuitem_search";
     private static final String VIEWID_EDITTEXT_SEARCH = "com.whatsapp:id/search_src_text";
     private static final String VIEWID_CONTACT_NAME = "com.whatsapp:id/contactpicker_row_name";
+    private static final String VIEWID_CONTACT_PHOTO = "com.whatsapp:id/contactpicker_row_photo";
+    private static final String VIEWID_CONTACT_SELECTOR = "com.whatsapp:id/contact_selector";
     private static final String VIEWID_BUTTON_SEND = "com.whatsapp:id/send";
     private static final String VIEWID_LAYOUT_INPUT_CHATROOM = "com.whatsapp:id/input_layout_content";
 
@@ -26,8 +31,10 @@ public class WhatsAppScene extends IMScene {
         waitForView(1500);
         AccessibilityNodeInfo userItem = findUserItem(userName);
         if (userItem == null) {
+            if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Cannot find WhatsApp user item");
             return false;
         }
+
         clickView(userItem.getParent());
         return true;
     }
@@ -42,7 +49,7 @@ public class WhatsAppScene extends IMScene {
         return true;
     }
 
-    public boolean isInChatroomPage() {
+    public boolean isInChatRoomPage() {
         return findNodeByViewId(mRootNodeInfo, VIEWID_LAYOUT_INPUT_CHATROOM) != null;
     }
 

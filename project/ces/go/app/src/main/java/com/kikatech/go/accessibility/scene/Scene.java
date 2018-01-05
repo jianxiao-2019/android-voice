@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kikatech.go.accessibility.AccessibilityUtils;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.List;
  */
 
 public class Scene {
+
+    private static final String TAG = "Access.Scene";
 
     protected AccessibilityEvent mEvent;
     protected AccessibilityNodeInfo mRootNodeInfo;
@@ -30,6 +33,7 @@ public class Scene {
         if (results.size() > 0) {
             return results.get(0);
         }
+        if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Could not findNodeByViewId: " + viewId);
         return null;
     }
 
@@ -38,6 +42,7 @@ public class Scene {
         if (results.size() > 0) {
             return results.get(0);
         }
+        if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Could not findNodeByText: " + text);
         return null;
     }
 
@@ -48,7 +53,7 @@ public class Scene {
             results = new ArrayList<>();
             for (AccessibilityNodeInfo nodeInfo : allNodes) {
                 if (StringUtil.equalsIgnoreCase(nodeInfo.getText(), text) ||
-                    StringUtil.equalsIgnoreCase(nodeInfo.getContentDescription(), text)) {
+                        StringUtil.equalsIgnoreCase(nodeInfo.getContentDescription(), text)) {
                     results.add(nodeInfo);
                 }
             }
@@ -57,14 +62,13 @@ public class Scene {
     }
 
     protected AccessibilityNodeInfo findNodeByTextAndClass(AccessibilityNodeInfo parentNode, String text, String className) {
-        List<AccessibilityNodeInfo> results = getAllNodes(parentNode);
+        List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByText(text);
         for (AccessibilityNodeInfo nodeInfo : results) {
-            if (StringUtil.equals(nodeInfo.getClassName(), className) &&
-                    (StringUtil.equalsIgnoreCase(nodeInfo.getText(), text) ||
-                     StringUtil.equalsIgnoreCase(nodeInfo.getContentDescription(), text))) {
+            if (StringUtil.equals(nodeInfo.getClassName(), className)) {
                 return nodeInfo;
             }
         }
+        if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Could not findNodeByTextAndClass: " + text + " | " + className);
         return null;
     }
 
@@ -74,11 +78,11 @@ public class Scene {
         }
         List<AccessibilityNodeInfo> results = parentNode.findAccessibilityNodeInfosByViewId(viewId);
         for (AccessibilityNodeInfo nodeInfo : results) {
-            if (StringUtil.equalsIgnoreCase(nodeInfo.getText().toString(), text) ||
-                StringUtil.equalsIgnoreCase(nodeInfo.getContentDescription(), text)) {
+            if (text.equalsIgnoreCase(nodeInfo.getText().toString())) {
                 return nodeInfo;
             }
         }
+        if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Could not findNodeByTextAndId: text:" + text + " | id:" + viewId);
         return null;
     }
 
@@ -90,6 +94,7 @@ public class Scene {
                 return node;
             }
         }
+        if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Could not findNodeByContentDescription: " + description);
         return null;
     }
 
@@ -100,6 +105,7 @@ public class Scene {
                 return node;
             }
         }
+        if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Could not findNodeByClass: " + className);
         return null;
     }
 
@@ -119,20 +125,38 @@ public class Scene {
 
     protected void clickView(AccessibilityNodeInfo nodeInfo) {
         if (nodeInfo == null) {
+            if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Cannot click null view");
             return;
         }
 
-        nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+        boolean clicked = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
         nodeInfo.recycle();
+        if (!clicked && LogUtil.DEBUG) LogUtil.logwtf(TAG, "Failed to click view");
+        return;
     }
 
     protected void longClickView(AccessibilityNodeInfo nodeInfo) {
         if (nodeInfo == null) {
+            if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Cannot long click null view");
             return;
         }
 
-        nodeInfo.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+        boolean longClicked = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
         nodeInfo.recycle();
+        if (!longClicked && LogUtil.DEBUG) LogUtil.logwtf(TAG, "Failed to long click view");
+        return;
+    }
+
+    protected void selectView(AccessibilityNodeInfo nodeInfo) {
+        if (nodeInfo == null) {
+            if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Cannot select null view");
+            return;
+        }
+
+        boolean selected = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SELECT);
+        nodeInfo.recycle();
+        if (!selected && LogUtil.DEBUG) LogUtil.logwtf(TAG, "Failed to select view");
+        return;
     }
 
     protected void fillUpEditText(AccessibilityNodeInfo nodeInfo, String text) {

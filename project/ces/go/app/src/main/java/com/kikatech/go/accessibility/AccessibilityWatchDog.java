@@ -4,6 +4,8 @@ import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.kikatech.go.util.LogUtil;
+
 public class AccessibilityWatchDog extends AccessibilityService {
 
     private static final String TAG = "AccessibilityWatchDog";
@@ -15,10 +17,12 @@ public class AccessibilityWatchDog extends AccessibilityService {
             AccessibilityNodeInfo rootNodeInfo = getRootInActiveWindow();
             if (rootNodeInfo != null) {
                 rootNodeInfo.refresh();
-            }
-            final AccessibilityEventDispatcher handler = dispatcher.dispatchAccessibilityEvent(event, rootNodeInfo);
-            if (handler != null) {
-                AccessibilityManager.getInstance().onScene(handler.mScene);
+                final AccessibilityEventDispatcher handler = dispatcher.dispatchAccessibilityEvent(event, rootNodeInfo);
+                if (handler != null) {
+                    AccessibilityManager.getInstance().onScene(handler.mScene);
+                }
+            } else {
+                if (LogUtil.DEBUG) LogUtil.logd(TAG, "Catch Accessibility event but got null root node");
             }
         }
     }

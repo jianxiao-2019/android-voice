@@ -58,7 +58,7 @@ public class WhatsAppProcessor extends IMProcessor {
                 return true;
             case ProcessingStage.IMProcessStage.STAGE_CLICK_SEND_BUTTON:
                 // click the send button in WhatsApp chatroom
-                if (!scene.isInChatroomPage()) {
+                if (!scene.isInChatRoomPage()) {
                     // wait for chatroom launched
                     return true;
                 }

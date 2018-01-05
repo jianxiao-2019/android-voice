@@ -9,7 +9,6 @@ import com.kikatech.go.accessibility.im.apps.WhatsAppScene;
 import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.accessibility.scene.SceneRecognition;
 import com.kikatech.go.util.AppConstants;
-import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by tianli on 17-10-22.
@@ -19,7 +18,6 @@ public class IMSceneRecognition extends SceneRecognition{
 
     @Override
     public Scene recognize(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo) {
-        Logger.d("--------------onAccessibilityEvent ----------------------- " + event.getPackageName());
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
                 event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
             // TODO: 17-10-22 识别当前页面是发送列表页面
