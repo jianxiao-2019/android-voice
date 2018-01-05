@@ -29,6 +29,7 @@
     <dimen name="go_layout_usr_msg_content_text_min_size">34dp</dimen>
 
     <dimen name="go_layout_msg_sent_text_size">52dp</dimen>
+    <dimen name="go_layout_msg_sent_failed_text_size">45dp</dimen>
 
     <dimen name="go_layout_status_bar_height">156dp</dimen>
 

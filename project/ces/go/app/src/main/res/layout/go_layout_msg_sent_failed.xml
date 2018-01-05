@@ -39,6 +39,6 @@
         android:gravity="left"
         android:text="Contact not found!"
         android:textColor="#8e94a9"
-        android:textSize="@dimen/go_layout_msg_sent_text_size"/>
+        android:textSize="@dimen/go_layout_msg_sent_failed_text_size"/>
 
 </RelativeLayout>
