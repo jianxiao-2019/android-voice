@@ -5,6 +5,7 @@ import android.content.Context;
 /**
  * @author SkeeterWang Created on 2017/10/30.
  */
+
 public abstract class BaseNavigationProvider {
     private static final String TAG = "BaseNavigationProvider";
 
@@ -40,6 +41,8 @@ public abstract class BaseNavigationProvider {
 
     public abstract int getDefaultZoomSize();
 
+    public abstract void showMap(Context context);
+
     public abstract void showMap(Context context, double latitude, double longitude, int zoom);
 
     public abstract void search(Context context, double latitude, double longitude, String keyword);
@@ -49,6 +52,8 @@ public abstract class BaseNavigationProvider {
     public abstract void startNavigation(Context context, String target, NavigationMode mode, NavigationAvoid... avoids);
 
     public abstract void startNavigation(Context context, double latitude, double longitude, NavigationMode mode, NavigationAvoid... avoids);
+
+    public abstract void stopNavigation(Context context);
 
     public abstract void stopNavigation(Context context, double latitude, double longitude);
 

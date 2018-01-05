@@ -31,9 +31,16 @@ public class NavigationManager {
     }
 
 
+    public void showMap(Context context) {
+        if (mNavigationProvider != null) {
+            mNavigationProvider.showMap(context);
+        }
+    }
+
     public void showMap(Context context, double latitude, double longitude) {
-        if (LogUtil.DEBUG)
+        if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "showMap, latitude: " + latitude + ", longitude: " + longitude);
+        }
 
         if (mNavigationProvider != null) {
             mNavigationProvider.showMap(context, latitude, longitude, mNavigationProvider.getDefaultZoomSize());
@@ -101,6 +108,12 @@ public class NavigationManager {
         }
     }
 
+
+    public void stopNavigation(final Context context) {
+        if (mNavigationProvider != null) {
+            mNavigationProvider.stopNavigation(context);
+        }
+    }
 
     public void stopNavigation(final Context context, final INavigationCallback callback) {
         if (mNavigationProvider != null) {

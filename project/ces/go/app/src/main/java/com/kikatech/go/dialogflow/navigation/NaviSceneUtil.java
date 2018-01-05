@@ -1,15 +1,14 @@
 package com.kikatech.go.dialogflow.navigation;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
+import com.kikatech.go.util.AsyncThread;
+import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 
 import java.util.ArrayList;
@@ -39,7 +38,9 @@ public class NaviSceneUtil {
     }
 
     public synchronized static void navigateToLocation(Context ctx, String loc) {
-        if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "navigateToLocation:" + loc);
+        if (LogUtil.DEBUG) {
+            LogUtil.log("NaviSceneUtil", "navigateToLocation:" + loc);
+        }
         ArrayList<BaseNavigationProvider.NavigationAvoid> avoidList = new ArrayList<>();
         final BaseNavigationProvider.NavigationAvoid[] avoids = avoidList.toArray(new BaseNavigationProvider.NavigationAvoid[0]);
         NavigationManager.getIns().startNavigation(ctx, loc, BaseNavigationProvider.NavigationMode.DRIVE, avoids);
@@ -49,43 +50,23 @@ public class NaviSceneUtil {
     /**
      * This is a workaround ...
      */
-    public synchronized static void stopNavigation(final Context ctx, final Class<?> targetClz) {
+    public synchronized static void stopNavigation(final Context ctx) {
         if (!sNavigating) {
             if (LogUtil.DEBUG) LogUtil.log("NaviSceneUtil", "Not navigating, ignore command");
             return;
         }
 
         if (LogUtil.DEBUG) {
-            LogUtil.log("NaviSceneUtil", "Start to stop navigation ..., targetClz:" + targetClz);
+            LogUtil.log("NaviSceneUtil", "Start to stop navigation ...");
         }
 
-        final Handler uiHandler = new Handler(Looper.getMainLooper());
-
-        uiHandler.post(new Runnable() {
+        sNavigating = false;
+        NavigationManager.getIns().stopNavigation(ctx);
+        AsyncThread.getIns().executeDelay(new Runnable() {
             @Override
             public void run() {
-                sNavigating = false;
-                NavigationManager.getIns().stopNavigation(ctx, new NavigationManager.INavigationCallback() {
-                    @Override
-                    public void onStop() {
-                        if (targetClz == null) {
-                            return;
-                        }
-                        uiHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    android.content.Intent intent = new android.content.Intent(ctx, targetClz);
-                                    intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                    pendingIntent.send();
-                                } catch (Exception ignore) {
-                                }
-                            }
-                        }, 3000);
-                    }
-                });
+                IntentUtil.openKikaGo(ctx);
             }
-        });
+        }, 3000);
     }
 }

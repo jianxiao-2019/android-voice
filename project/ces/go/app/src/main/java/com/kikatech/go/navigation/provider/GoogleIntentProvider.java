@@ -13,6 +13,7 @@ import java.util.Locale;
 /**
  * @author SkeeterWang Created on 2017/10/30.
  */
+
 public class GoogleIntentProvider extends BaseNavigationProvider {
     private static final String TAG = "GoogleIntentProvider";
 
@@ -24,6 +25,12 @@ public class GoogleIntentProvider extends BaseNavigationProvider {
     @Override
     public int getDefaultZoomSize() {
         return DEFAULT_ZOOM_SIZE;
+    }
+
+    @Override
+    public void showMap(Context context) {
+        Intent mapIntent = getShowMapIntent();
+        sendGoogleMapIntent(context, mapIntent);
     }
 
     @Override
@@ -54,6 +61,11 @@ public class GoogleIntentProvider extends BaseNavigationProvider {
     public void startNavigation(Context context, double latitude, double longitude, NavigationMode mode, NavigationAvoid... avoids) {
         Intent mapIntent = getNavigationIntent(latitude, longitude, mode, avoids);
         sendGoogleMapIntent(context, mapIntent);
+    }
+
+    @Override
+    public void stopNavigation(Context context) {
+        showMap(context);
     }
 
     @Override
@@ -91,6 +103,12 @@ public class GoogleIntentProvider extends BaseNavigationProvider {
 
 
     // google map intents
+
+    private Intent getShowMapIntent() {
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+        mapIntent.setPackage(PACKAGE_GOOGLE_MAP);
+        return mapIntent;
+    }
 
     private Intent getShowMapIntent(double latitude, double longitude, int zoom) {
         String GEO = String.format(Locale.ENGLISH, "geo:%f,%f?z=%d", latitude, longitude, zoom);
@@ -148,7 +166,7 @@ public class GoogleIntentProvider extends BaseNavigationProvider {
 
     private Intent getStreetViewIntent(double latitude, double longitude) {
         /*
-		// Uses a PanoID to show an image from Maroubra beach in Sydney, Australia
+        // Uses a PanoID to show an image from Maroubra beach in Sydney, Australia
 		Uri gmmIntentUri = Uri.parse( "google.streetview:panoid=Iaa2JyfIggYAAAQfCZU9KQ" );
 		Intent mapIntent = new Intent( Intent.ACTION_VIEW, gmmIntentUri );
 		mapIntent.setPackage( PACKAGE_GOOGLE_MAP );
