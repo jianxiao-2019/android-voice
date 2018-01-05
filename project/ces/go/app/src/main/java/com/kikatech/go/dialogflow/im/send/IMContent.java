@@ -7,6 +7,7 @@ import com.kikatech.go.dialogflow.EmojiMessage;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.AppInfo;
+import com.kikatech.go.util.CesDemoUtil;
 import com.kikatech.go.util.FileUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
@@ -101,26 +102,50 @@ public class IMContent extends EmojiMessage {
     }
 
     public boolean isExplicitTarget(Context ctx) {
-        if (imAppPkgName.equals(AppConstants.PACKAGE_WHATSAPP)) {
-            targetPhotoUri = null;
-            ContactManager.MatchedContact mc = ContactManager.getIns().findContact(ctx, targetName);
-            if (mc != null) {
-                switch (mc.matchedType) {
-                    case ContactManager.MatchedContact.MatchedType.FULL_MATCHED:
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("Find WhatsApp, fully matched contact: %s", mc.displayName));
+        if (!TextUtils.isEmpty(imAppPkgName)) {
+            switch (imAppPkgName) {
+                case AppConstants.PACKAGE_WHATSAPP:
+                    targetPhotoUri = null;
+                    ContactManager.MatchedContact mc = ContactManager.getIns().findContact(ctx, targetName);
+                    if (mc != null) {
+                        switch (mc.matchedType) {
+                            case ContactManager.MatchedContact.MatchedType.FULL_MATCHED:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.log(TAG, String.format("Find WhatsApp, fully matched contact: %s", mc.displayName));
+                                }
+                                explicitTarget = true;
+                                targetName = new String[]{mc.displayName};
+                                break;
+                            case ContactManager.MatchedContact.MatchedType.FUZZY_MATCHED:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.log(TAG, String.format("Find WhatsApp, fuzzy matched contact: %s", mc.displayName));
+                                }
+                                targetName = new String[]{mc.displayName};
+                                break;
                         }
-                        explicitTarget = true;
-                        targetName = new String[]{mc.displayName};
-                        break;
-                    case ContactManager.MatchedContact.MatchedType.FUZZY_MATCHED:
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("Find WhatsApp, fuzzy matched contact: %s", mc.displayName));
+                        targetPhotoUri = mc.photoUri;
+                    }
+                    break;
+                case AppConstants.PACKAGE_MESSENGER:
+                    CesDemoUtil.DemoMatchedContact dmc = CesDemoUtil.findMessengerContact(targetName);
+                    if (dmc != null) {
+                        switch (dmc.matchedType) {
+                            case CesDemoUtil.DemoMatchedContact.MatchedType.FULL_MATCHED:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.log(TAG, String.format("Find Messenger, fully matched contact: %s", dmc.matchedName));
+                                }
+                                explicitTarget = true;
+                                targetName = new String[]{dmc.matchedName};
+                                break;
+                            case CesDemoUtil.DemoMatchedContact.MatchedType.FUZZY_MATCHED:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.log(TAG, String.format("Find Messenger, fuzzy matched contact: %s", dmc.matchedName));
+                                }
+                                targetName = new String[]{dmc.matchedName};
+                                break;
                         }
-                        targetName = new String[]{mc.displayName};
-                        break;
-                }
-                targetPhotoUri = mc.photoUri;
+                    }
+                    break;
             }
         }
         return explicitTarget;
