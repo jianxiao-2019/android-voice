@@ -20,6 +20,7 @@ public class StageProcessStopIdle extends BaseSceneStage {
 
     private final static String ACTION_KEY = "stop";
     private final static String STOP_TARGET_NAVIGATE = "\"navigate\"";
+    private final static String STOP_TARGET_MUSIC = "\"music\"";
 
     public StageProcessStopIdle(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
@@ -27,17 +28,19 @@ public class StageProcessStopIdle extends BaseSceneStage {
 
     @Override
     public SceneStage next(String action, Bundle extra) {
-        if(SceneActions.STOP_ACTION.equals(action)) {
+        if (SceneActions.STOP_ACTION.equals(action)) {
             String target = extra.getString(ACTION_KEY, "");
-            if(LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "target:" + target);
+            if (LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "target:" + target);
 
-            if(STOP_TARGET_NAVIGATE.equals(target)) {
+            if (STOP_TARGET_NAVIGATE.equals(target)) {
                 return new StageStopNavigation(mSceneBase, mFeedback);
+            } else if (STOP_TARGET_MUSIC.equals(target)) {
+                return new StageStopMusic(mSceneBase, mFeedback);
             } else {
                 return new StageStop(mSceneBase, mFeedback);
             }
         } else {
-            if(LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "Unsupported action:" + action);
+            if (LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "Unsupported action:" + action);
         }
 
         return null;
@@ -49,6 +52,6 @@ public class StageProcessStopIdle extends BaseSceneStage {
 
     @Override
     public void action() {
-        if(LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "action");
+        if (LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "action");
     }
 }

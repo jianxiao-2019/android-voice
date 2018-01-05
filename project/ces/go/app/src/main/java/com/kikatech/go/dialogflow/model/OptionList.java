@@ -97,6 +97,7 @@ public class OptionList extends UiModel {
         optionList.add(new Option("Navigate to...", "Navigate"));
         optionList.add(new Option("Message to...", "Message"));
         optionList.add(new Option("Call...", "Make a call"));
+        optionList.add(new Option("Play music", "Music"));
         return optionList;
     }
 

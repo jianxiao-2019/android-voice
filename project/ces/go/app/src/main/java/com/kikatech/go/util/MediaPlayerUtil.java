@@ -104,6 +104,17 @@ public class MediaPlayerUtil {
         }
     }
 
+    public synchronized static void safeSetMediaPlayerSource(MediaPlayer mediaPlayer, String path) throws IOException {
+        if (mediaPlayer != null) {
+            try {
+                mediaPlayer.setDataSource(path);
+            } catch (IllegalStateException e) {
+                mediaPlayer.reset();
+                mediaPlayer.setDataSource(path);
+            }
+        }
+    }
+
     public interface IPlayStatusListener {
         void onStart();
 

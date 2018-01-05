@@ -81,7 +81,9 @@
                   android:configChanges="keyboardHidden|keyboard"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaUsbVoiceSourceActivity"
-            android:screenOrientation="portrait" />
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".ui.KikaMusicActivity"
+                  android:screenOrientation="portrait"/>
 
 
         <activity

@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow.apiai;
 import com.kikatech.go.dialogflow.gotomain.SceneGotoMain;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
+import com.kikatech.go.dialogflow.music.SceneMusic;
 import com.kikatech.go.dialogflow.navigation.SceneNavigation;
 import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
 import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
@@ -24,7 +25,8 @@ public enum SceneType {
     SEND_IM(SceneSendIM.SCENE),
     REPLY_IM(SceneReplyIM.SCENE),
     TELEPHONY_INCOMING(SceneIncoming.SCENE),
-    TELEPHONY_OUTGOING(SceneOutgoing.SCENE);
+    TELEPHONY_OUTGOING(SceneOutgoing.SCENE),
+    MUSIC(SceneMusic.SCENE);
 
     SceneType(String scene) {
         this.scene = scene;

@@ -75,4 +75,10 @@
         android:layout_height="wrap_content"
         android:text="USB KikaGO"/>
 
+    <Button
+        android:id="@+id/button_music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Music"/>
+
 </LinearLayout>

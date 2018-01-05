@@ -12,6 +12,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
+import com.kikatech.go.dialogflow.music.MusicSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
@@ -182,6 +183,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
         mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService, KikaDialogFlowActivity.class));
         mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new IMSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new MusicSceneManager(this, mDialogFlowService));
     }
 
     private void resetLogs() {

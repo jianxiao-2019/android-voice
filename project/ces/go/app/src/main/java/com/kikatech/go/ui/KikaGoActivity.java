@@ -15,7 +15,7 @@ import com.kikatech.voice.util.contact.ContactManager;
  * Created by tianli on 17-10-23.
  */
 
-public class KikaGoActivity extends Activity{
+public class KikaGoActivity extends Activity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,14 +35,13 @@ public class KikaGoActivity extends Activity{
             }
         });
 
-		findViewById( R.id.button_telephony ).setOnClickListener( new View.OnClickListener() {
-			@Override
-			public void onClick( View v )
-			{
-				Intent intent = new Intent(KikaGoActivity.this, TelephonyActivity.class);
-				startActivity(intent);
-			}
-		} );
+        findViewById(R.id.button_telephony).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, TelephonyActivity.class);
+                startActivity(intent);
+            }
+        });
 
         findViewById(R.id.button_notification_im).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,19 +61,17 @@ public class KikaGoActivity extends Activity{
             }
         });
 
-		findViewById( R.id.button_hotword ).setOnClickListener( new View.OnClickListener() {
-			@Override
-			public void onClick( View v )
-			{
-				if( !PermissionUtil.hasPermissions( KikaGoActivity.this, PermissionUtil.Permission.WRITE_EXTERNAL_STORAGE, PermissionUtil.Permission.RECORD_AUDIO ) ) {
-					PermissionUtil.checkPermission( KikaGoActivity.this, PermissionUtil.Permission.WRITE_EXTERNAL_STORAGE, PermissionUtil.Permission.RECORD_AUDIO );
-				}
-				else {
-					Intent intent = new Intent( KikaGoActivity.this, HotWordActivity.class );
-					startActivity( intent );
-				}
-			}
-		} );
+        findViewById(R.id.button_hotword).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!PermissionUtil.hasPermissions(KikaGoActivity.this, PermissionUtil.Permission.WRITE_EXTERNAL_STORAGE, PermissionUtil.Permission.RECORD_AUDIO)) {
+                    PermissionUtil.checkPermission(KikaGoActivity.this, PermissionUtil.Permission.WRITE_EXTERNAL_STORAGE, PermissionUtil.Permission.RECORD_AUDIO);
+                } else {
+                    Intent intent = new Intent(KikaGoActivity.this, HotWordActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
         findViewById(R.id.button_apiai).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,13 +82,13 @@ public class KikaGoActivity extends Activity{
             }
         });
 
-		findViewById(R.id.button_navigation).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(KikaGoActivity.this, KikaNavigationActivity.class);
-				startActivity(intent);
-			}
-		});
+        findViewById(R.id.button_navigation).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaNavigationActivity.class);
+                startActivity(intent);
+            }
+        });
 
         findViewById(R.id.button_voice).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +126,14 @@ public class KikaGoActivity extends Activity{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(KikaGoActivity.this, KikaUsbVoiceSourceActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.button_music).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(KikaGoActivity.this, KikaMusicActivity.class);
                 startActivity(intent);
             }
         });

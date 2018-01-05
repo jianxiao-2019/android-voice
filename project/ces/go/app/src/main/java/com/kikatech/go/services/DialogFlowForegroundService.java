@@ -32,6 +32,7 @@ import com.kikatech.go.dialogflow.gotomain.GotoMainSceneManager;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
+import com.kikatech.go.dialogflow.music.MusicSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
@@ -40,6 +41,7 @@ import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
+import com.kikatech.go.music.MusicManager;
 import com.kikatech.go.services.view.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.KikaLaunchActivity;
@@ -412,6 +414,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         if (LogOnViewUtil.ENABLE_LOG_FILE) {
             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Exit App, Goodbye !");
         }
+
+        MusicManager.getIns().stop();
 
         closeUsbAudio();
     }
@@ -844,6 +848,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mSceneManagers.add(new CommonSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new GotoMainSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new WakeUpSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new MusicSceneManager(this, mDialogFlowService));
     }
 
     private void sendDFServiceEvent(DFServiceEvent event) {
