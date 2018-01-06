@@ -9,6 +9,7 @@ import android.view.View;
 import com.kikatech.go.R;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.util.PermissionUtil;
+import com.kikatech.go.util.pollyGen.PollyPolly;
 import com.kikatech.voice.util.contact.ContactManager;
 
 /**
@@ -121,5 +122,7 @@ public class KikaGoActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+//        PollyPolly.startQuery();
     }
 }

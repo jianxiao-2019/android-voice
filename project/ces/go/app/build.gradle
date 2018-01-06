@@ -108,7 +108,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.kikatech.voice:voice:1.0.5.7'
 //    compile project(':voice')
-//    compile 'com.amazonaws:aws-android-sdk-polly:2.3.4'
+    compile 'com.amazonaws:aws-android-sdk-polly:2.3.4'
 }
 
 crashlytics {
