@@ -140,7 +140,7 @@ it's the alpha version now."</string>
     </string-array>
     <string-array name="options_ask_app">
         <item>"WhatsApp"</item>
-        <item>"Facebook"</item>
+        <item>"Messenger"</item>
         <item>"SMS"</item>
     </string-array>
 
