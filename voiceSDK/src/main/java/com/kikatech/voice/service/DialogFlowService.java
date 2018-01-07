@@ -168,6 +168,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     @Override
     public void resetContexts() {
         mQueryAnyWords = false;
+        cancelAsrAlignment();
         if (mDialogFlow != null) {
             mDialogFlow.resetContexts();
         }
@@ -442,6 +443,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
                 LogUtil.logv(TAG, "scene:" + scene + ", proactive:" + proactive);
             }
             mQueryAnyWords = false;
+            cancelAsrAlignment();
             stopTts(false);
             if (proactive) {
                 mDialogFlow.resetContexts();
