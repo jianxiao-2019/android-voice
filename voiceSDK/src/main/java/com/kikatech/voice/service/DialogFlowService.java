@@ -266,7 +266,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     @Override
     public void cancelAsrAlignment() {
         if (mVoiceService != null) {
-            mVoiceService.sendAlignment(new String[]{""});
+            mVoiceService.cancelAlignment();
         }
     }
 
@@ -333,6 +333,13 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         public void onStageRequestAsrAlignment(String[] alignment) {
             if (mVoiceService != null) {
                 mVoiceService.sendAlignment(alignment);
+            }
+        }
+
+        @Override
+        public void onStageCancelAsrAlignment() {
+            if (mVoiceService != null) {
+                mVoiceService.cancelAlignment();
             }
         }
 

@@ -21,4 +21,6 @@ public interface ISceneFeedback {
     void onStageEvent(Bundle extras);
 
     void onStageRequestAsrAlignment(String[] alignment);
+
+    void onStageCancelAsrAlignment();
 }

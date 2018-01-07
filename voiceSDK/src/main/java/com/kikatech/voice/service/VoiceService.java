@@ -251,6 +251,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
+    public void cancelAlignment() {
+        sendAlignment(new String[]{""});
+    }
+
     public void updateAsrSettings(AsrConfiguration conf) {
         if (mWebService != null) {
             Logger.d("updateAsrSettings conf = " + conf.toJsonString());

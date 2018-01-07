@@ -105,6 +105,12 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
         }
     }
 
+    protected void cancelAsrAlignment() {
+        if (mFeedback != null) {
+            mFeedback.onStageCancelAsrAlignment();
+        }
+    }
+
     @Override
     public void onStageActionStart() {
         if (mFeedback != null) {
