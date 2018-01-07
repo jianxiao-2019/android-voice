@@ -1,6 +1,7 @@
 package com.kikatech.voice.core.ns;
 
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.util.log.Logger;
 
 import java.util.Arrays;
 
@@ -12,6 +13,9 @@ import lib.android.anc.NoiseCancellation;
  */
 
 public class NoiseSuppression extends IDataPath {
+
+    public static final int CONTROL_ANGLE = 0;
+    public static final int CONTROL_NC = 1;
 
     public NoiseSuppression(IDataPath dataPath) {
         super(dataPath);
@@ -70,5 +74,10 @@ public class NoiseSuppression extends IDataPath {
         }
 
         return bytes;
+    }
+
+    public void setControl(int mode, int parameter) {
+        Logger.d("NoiseSuppression mode = " + mode + " parameter = " + parameter);
+        NoiseCancellation.SetControl(mode, parameter);
     }
 }
