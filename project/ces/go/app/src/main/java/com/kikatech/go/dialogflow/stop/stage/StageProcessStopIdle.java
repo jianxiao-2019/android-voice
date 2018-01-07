@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.BaseSceneStage;
-import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.dialogflow.stop.SceneActions;
-import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -31,6 +29,8 @@ public class StageProcessStopIdle extends BaseSceneStage {
         if (SceneActions.STOP_ACTION.equals(action)) {
             String target = extra.getString(ACTION_KEY, "");
             if (LogUtil.DEBUG) LogUtil.log("StageProcessStopIdle", "target:" + target);
+
+            setQueryAnyWords(false);
 
             if (STOP_TARGET_NAVIGATE.equals(target)) {
                 return new StageStopNavigation(mSceneBase, mFeedback);
