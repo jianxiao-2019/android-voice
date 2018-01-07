@@ -25,6 +25,7 @@ public class AskToReadContentOptionReplyIMStage extends BaseReplyIMStage {
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
                 return new ReadContentAndAskToReplyImReplyIMStage(mSceneBase, mFeedback);

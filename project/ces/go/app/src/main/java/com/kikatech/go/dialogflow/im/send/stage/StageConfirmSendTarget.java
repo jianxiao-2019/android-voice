@@ -34,6 +34,7 @@ public class StageConfirmSendTarget extends BaseSendIMStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         IMContent imc = getIMContent();
         // Check yes or no
         switch (action) {

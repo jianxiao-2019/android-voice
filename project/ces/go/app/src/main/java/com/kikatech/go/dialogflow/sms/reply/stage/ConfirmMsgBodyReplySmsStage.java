@@ -28,6 +28,7 @@ public class ConfirmMsgBodyReplySmsStage extends BaseReplySmsStage {
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         switch (action) {
             case Intent.ACTION_UNCAUGHT:
             case SceneActions.ACTION_REPLY_SMS_YES:

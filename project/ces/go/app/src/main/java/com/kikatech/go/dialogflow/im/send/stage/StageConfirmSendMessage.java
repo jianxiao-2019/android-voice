@@ -28,6 +28,7 @@ public class StageConfirmSendMessage extends BaseSendIMStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         switch (action) {
             case Intent.ACTION_UNCAUGHT:
             case SceneActions.ACTION_SEND_IM_YES:

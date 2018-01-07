@@ -25,6 +25,7 @@ public class StageAskAddEmoji extends BaseSendIMStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         switch (action) {
             case SceneActions.ACTION_SEND_IM_YES:
                 getIMContent().setSendWithEmoji(true);

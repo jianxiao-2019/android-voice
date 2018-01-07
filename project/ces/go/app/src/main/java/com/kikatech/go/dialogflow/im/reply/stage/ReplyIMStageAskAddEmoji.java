@@ -24,6 +24,7 @@ public class ReplyIMStageAskAddEmoji extends BaseReplyIMStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         switch (action) {
             case SceneActions.ACTION_REPLY_IM_YES:
                 getReplyMessage().setSendWithEmoji(true);

@@ -39,6 +39,7 @@ public class StageAskForSendSmsToContact extends BaseSendSmsStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         SmsContent sc = getSmsContent();
         switch (action) {
             case Intent.ACTION_UNCAUGHT:

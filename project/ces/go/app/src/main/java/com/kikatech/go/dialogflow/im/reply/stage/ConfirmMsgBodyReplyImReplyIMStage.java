@@ -35,6 +35,7 @@ public class ConfirmMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         switch (action) {
             case Intent.ACTION_UNCAUGHT:
             case SceneActions.ACTION_REPLY_IM_YES:

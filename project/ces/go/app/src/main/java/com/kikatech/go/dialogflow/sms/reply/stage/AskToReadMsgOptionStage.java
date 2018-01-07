@@ -25,6 +25,7 @@ public class AskToReadMsgOptionStage extends BaseReplySmsStage {
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         switch (action) {
             case SceneActions.ACTION_REPLY_SMS_YES:
                 return new AskToReplySmsReadStage(mSceneBase, mFeedback);

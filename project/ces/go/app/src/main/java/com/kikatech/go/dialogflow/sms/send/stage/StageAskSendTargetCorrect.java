@@ -42,6 +42,7 @@ public class StageAskSendTargetCorrect extends BaseSendSmsStage {
 
     @Override
     protected SceneStage getNextStage(String action, Bundle extra) {
+        cancelAsrAlignment();
         SmsContent sc = getSmsContent();
         switch (action) {
             case SceneActions.ACTION_SEND_SMS_NO:

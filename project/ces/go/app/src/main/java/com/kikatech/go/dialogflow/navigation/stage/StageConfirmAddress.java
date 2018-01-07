@@ -43,6 +43,7 @@ public class StageConfirmAddress extends BaseNaviStage {
 
     @Override
     public SceneStage next(String action, Bundle extra) {
+        cancelAsrAlignment();
         SceneStage superStage = super.next(action, extra);
         if (superStage != null) {
             return superStage;
