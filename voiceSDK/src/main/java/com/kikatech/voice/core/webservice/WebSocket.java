@@ -174,7 +174,13 @@ public class WebSocket {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                Logger.v("WebSocket sendData, data.length = " + data.length + " isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen() + " mOpened = " + mOpened);
+                final String logMsg;
+                if (mClient != null) {
+                    logMsg = ", isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen();
+                } else {
+                    logMsg = ", mClient is <null>";
+                }
+                Logger.v("WebSocket sendData, data.length = " + data.length + " mOpened = " + mOpened + logMsg);
                 if (mClient != null && mOpened) {
                     try {
                         mClient.send(data);
