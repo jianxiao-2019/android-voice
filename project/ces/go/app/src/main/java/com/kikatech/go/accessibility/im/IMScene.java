@@ -21,8 +21,8 @@ public class IMScene extends Scene {
      * Click button to search specific user name
      */
     public boolean clickSearchUserButton() {
+        waitForView(1000);
         AccessibilityNodeInfo searchBtn = findNodeByViewId(mRootNodeInfo, getSearchButtonId());
-        mRootNodeInfo.recycle();
         if(searchBtn == null) {
             return false;
         }
@@ -35,7 +35,6 @@ public class IMScene extends Scene {
      */
     public boolean enterSearchUserName(String userName) {
         AccessibilityNodeInfo searchEditText = findNodeByViewId(mRootNodeInfo, getSearchEditTextId());
-        mRootNodeInfo.recycle();
         if (searchEditText == null) {
             return false;
         }

@@ -91,6 +91,7 @@ public class Scene {
         for(AccessibilityNodeInfo node : results) {
             CharSequence contentDescription = node.getContentDescription();
             if(contentDescription != null && StringUtil.equals(contentDescription.toString(), description)) {
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Found node by content description: " + node.getContentDescription() + " | " + node.getClassName());
                 return node;
             }
         }
@@ -102,6 +103,7 @@ public class Scene {
         List<AccessibilityNodeInfo> results = getAllNodes(parentNode);
         for(AccessibilityNodeInfo node : results) {
             if(node != null && StringUtil.equals(node.getClassName(), className)) {
+                if (LogUtil.DEBUG) LogUtil.log(TAG, "Found node by class: " + node.getContentDescription() + " | " + node.getClassName());
                 return node;
             }
         }
@@ -111,13 +113,15 @@ public class Scene {
 
     protected List<AccessibilityNodeInfo> getAllNodes(AccessibilityNodeInfo parentNode) {
         List<AccessibilityNodeInfo> allNodes = new ArrayList<>();
-        for(int i = 0; i < parentNode.getChildCount(); i++) {
+        parentNode.refresh();
+        allNodes.add(parentNode);
+        for (int i = 0; i < parentNode.getChildCount(); i++) {
             AccessibilityNodeInfo node = parentNode.getChild(i);
             if(node != null) {
-                if(node.getChildCount() > 0) {
+                allNodes.add(node);
+                if (node.getChildCount() > 0) {
                     allNodes.addAll(getAllNodes(node));
                 }
-                allNodes.add(node);
             }
         }
         return allNodes;
@@ -130,9 +134,10 @@ public class Scene {
         }
 
         boolean clicked = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-        nodeInfo.recycle();
-        if (!clicked && LogUtil.DEBUG) LogUtil.logwtf(TAG, "Failed to click view");
-        return;
+        if (!clicked && LogUtil.DEBUG) {
+            LogUtil.logwtf(TAG, "Failed to click view");
+            AccessibilityUtils.printNode(nodeInfo);
+        }
     }
 
     protected void longClickView(AccessibilityNodeInfo nodeInfo) {
@@ -142,9 +147,10 @@ public class Scene {
         }
 
         boolean longClicked = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
-        nodeInfo.recycle();
-        if (!longClicked && LogUtil.DEBUG) LogUtil.logwtf(TAG, "Failed to long click view");
-        return;
+        if (!longClicked && LogUtil.DEBUG) {
+            LogUtil.logwtf(TAG, "Failed to long click view");
+            AccessibilityUtils.printNode(nodeInfo);
+        }
     }
 
     protected void selectView(AccessibilityNodeInfo nodeInfo) {
@@ -154,9 +160,10 @@ public class Scene {
         }
 
         boolean selected = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SELECT);
-        nodeInfo.recycle();
-        if (!selected && LogUtil.DEBUG) LogUtil.logwtf(TAG, "Failed to select view");
-        return;
+        if (!selected && LogUtil.DEBUG) {
+            LogUtil.logwtf(TAG, "Failed to select view");
+            AccessibilityUtils.printNode(nodeInfo);
+        }
     }
 
     protected void fillUpEditText(AccessibilityNodeInfo nodeInfo, String text) {
@@ -167,7 +174,12 @@ public class Scene {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle arguments = new Bundle();
             arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text);
-            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+
+            boolean filled = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+            if (!filled && LogUtil.DEBUG) {
+                LogUtil.logwtf(TAG, "Failed to filled view with text: " + text);
+                AccessibilityUtils.printNode(nodeInfo);
+            }
         } else {
             // TODO to be confirmed for API level < 21
 //            ClipData data = ClipData.newPlainText("auto_fill_text", speak);
@@ -176,8 +188,6 @@ public class Scene {
 //            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_FOCUS); // 获取焦点
 //            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE); // 执行粘贴
         }
-
-        nodeInfo.recycle();
     }
 
     protected void waitForView(long millisecond) {

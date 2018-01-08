@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.kikatech.go.util.LogUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,19 +106,29 @@ public class AccessibilityUtils {
             spacerString += '-';
         }
         //Log the info you care about here... I choose classname and view resource name, because they are simple, but interesting.
-        String viewIdResourceName = "(NO_VIEW_ID)";
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
-            viewIdResourceName = nodeInfo.getViewIdResourceName();
-        }
-        Log.d(TAG, spacerString + nodeInfo.getClassName() + " "
-                + nodeInfo.getContentDescription() + " "
-                + nodeInfo.getText() + " "
-                + viewIdResourceName + " "
-        );
+
+        Log.d(TAG, spacerString + getNodeInfoString(nodeInfo));
 
         for (int i = 0; i < nodeInfo.getChildCount(); ++i) {
             printViewHierarchy(nodeInfo.getChild(i), level + 1);
         }
+    }
+
+    public static void printNode(AccessibilityNodeInfo nodeInfo) {
+        if (nodeInfo == null) LogUtil.logwtf(TAG, "Cannot print null node.");
+        Log.d(TAG, getNodeInfoString(nodeInfo));
+    }
+
+    private static String getNodeInfoString(AccessibilityNodeInfo nodeInfo) {
+        String viewIdResourceName = "(NO_VIEW_ID)";
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
+            viewIdResourceName = nodeInfo.getViewIdResourceName();
+        }
+        return "NodeInfo: "
+                + nodeInfo.getClassName() + " "
+                + nodeInfo.getContentDescription() + " "
+                + nodeInfo.getText() + " "
+                + viewIdResourceName + " ";
     }
 
     public interface AccessibilityConstants {

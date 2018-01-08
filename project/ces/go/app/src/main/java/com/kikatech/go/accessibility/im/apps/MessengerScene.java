@@ -53,8 +53,8 @@ public class MessengerScene extends IMScene {
     @Override
     public boolean clickSearchUserButton() {
         // TODO content description of the search button depends on different language
+        waitForView(1000);
         AccessibilityNodeInfo searchBtn = findNodeByContentDescription(mRootNodeInfo, VIEWCD_BUTTON_SEARCH);
-        mRootNodeInfo.recycle();
         if(searchBtn == null) {
             return false;
         }
@@ -65,7 +65,6 @@ public class MessengerScene extends IMScene {
     @Override
     public boolean enterSearchUserName(String userName) {
         AccessibilityNodeInfo searchEditText = findNodeByClass(mRootNodeInfo, AccessibilityUtils.AccessibilityConstants.CLASSNAME_EDIT_TEXT);
-        mRootNodeInfo.recycle();
         if (searchEditText == null) {
             return false;
         }
