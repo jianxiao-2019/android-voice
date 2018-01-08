@@ -154,7 +154,7 @@ class UsbDeviceManager {
 
         @Override
         public void onUsbDetached(UsbDevice device) {
-            if (device != null) {
+            if (device != null && mDevice != null) {
                 int detachedVendorId = device.getVendorId();
                 int attachedVendorId = mDevice.getVendorId();
                 int detachedProductId = device.getProductId();
