@@ -66,6 +66,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                     final MessageEventDispatcher messageEventDispatcher = new MessageEventDispatcher();
                     AccessibilityManager.getInstance().registerDispatcher(messageEventDispatcher);
 
+                    final boolean isAppForeground = DialogFlowForegroundService.isAppForeground();
                     IMProcessor processor = IMProcessor.createIMProcessor(
                             ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody(true)).registerCallback(new IMProcessor.IIMProcessorFlow() {
                         @Override
@@ -84,12 +85,23 @@ public class StageSendIMConfirm extends BaseSendIMStage {
 
                             AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
                             DialogFlowForegroundService.processAccessibilityStopped();
-                            boolean succeed = (NaviSceneUtil.isNavigating() && !DialogFlowForegroundService.isAppForeground()) || IntentUtil.openKikaGo(ctx);
+                            boolean succeed, openKikaGo;
+                            if (NaviSceneUtil.isNavigating() && !isAppForeground) {
+                                succeed = true;
+                                openKikaGo = false;
+                            } else {
+                                succeed = IntentUtil.openKikaGo(ctx);
+                                openKikaGo = succeed;
+                            }
+                            if (LogUtil.DEBUG) {
+                                LogUtil.logd(TAG, String.format("isNavigating: %1$s, isAppForeground: %2$s, succeed: %3$s", NaviSceneUtil.isNavigating(), isAppForeground, succeed));
+                            }
                             if (succeed) {
                                 Bundle args = new Bundle();
                                 args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_DISPLAY_MSG_SENT);
                                 args.putInt(SceneUtil.EXTRA_ALERT, msgSentSuccess ? R.raw.alert_succeed : R.raw.alert_error);
                                 args.putBoolean(SceneUtil.EXTRA_SEND_SUCCESS, msgSentSuccess);
+                                args.putBoolean(SceneUtil.EXTRA_OPEN_KIKA_GO, openKikaGo);
                                 send(args);
                                 uiHandler.postDelayed(new Runnable() {
                                     @Override

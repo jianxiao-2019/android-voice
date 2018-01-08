@@ -734,7 +734,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (event == null) {
                             return;
                         }
-                        if (SceneUtil.EVENT_DISPLAY_MSG_SENT.equals(event) && NaviSceneUtil.isNavigating() && !isAppForeground) {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.logd(TAG, String.format("event: %1$s, isNavigating: %2$s, isAppForeground: %3$s", event, NaviSceneUtil.isNavigating(), isAppForeground));
+                        }
+                        if (SceneUtil.EVENT_DISPLAY_MSG_SENT.equals(event) && !extras.getBoolean(SceneUtil.EXTRA_OPEN_KIKA_GO, isAppForeground)) {
                             boolean isSentSuccess = extras.getBoolean(SceneUtil.EXTRA_SEND_SUCCESS, true);
                             int alertRes = extras.getInt(SceneUtil.EXTRA_ALERT, 0);
                             mManager.handleMsgSentStatusChanged(isSentSuccess);

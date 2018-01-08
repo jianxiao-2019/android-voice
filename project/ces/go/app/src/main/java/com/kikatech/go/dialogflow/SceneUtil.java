@@ -39,6 +39,7 @@ public class SceneUtil {
     public static final String EXTRA_USR_INFO = "extra_usr_info";
     public static final String EXTRA_USR_MSG = "extra_usr_msg";
     public static final String EXTRA_SEND_SUCCESS = "extra_send_success";
+    public static final String EXTRA_OPEN_KIKA_GO = "extra_open_kika_go";
 
     static int sPrevUnknownResponseIdx = -1;
 
