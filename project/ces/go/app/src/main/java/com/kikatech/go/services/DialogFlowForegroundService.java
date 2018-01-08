@@ -117,6 +117,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private static boolean isAppForeground = true;
 
+    private static boolean isDoingAccessibility = false;
+
     private boolean wakeUpInFunnyMode = false;
 
     private boolean mDbgLogFirstAsrResult = false;
@@ -154,7 +156,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 mManager.hideAllItems();
                 break;
             case ToDFServiceEvent.ACTION_ON_APP_BACKGROUND:
-                mManager.showAllItems();
+                if (!isDoingAccessibility) {
+                    mManager.showAllItems();
+                }
                 break;
             case ToDFServiceEvent.ACTION_ON_STATUS_CHANGED:
                 GoLayout.ViewStatus status = (GoLayout.ViewStatus) event.getExtras().getSerializable(ToDFServiceEvent.PARAM_STATUS);
@@ -235,6 +239,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                 }
                 break;
+            case ToDFServiceEvent.ACTION_ACCESSIBILITY_STARTED:
+                setDoingAccessibility(true);
+                mManager.hideAllItems();
+                break;
+            case ToDFServiceEvent.ACTION_ACCESSIBILITY_STOPPED:
+                setDoingAccessibility(false);
+                if (NaviSceneUtil.isNavigating() && !isAppForeground) {
+                    mManager.showAllItems();
+                }
+                break;
         }
     }
 
@@ -291,6 +305,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public static boolean isAppForeground() {
         return isAppForeground;
+    }
+
+    private static void setDoingAccessibility(boolean doingAccessibility) {
+        isDoingAccessibility = doingAccessibility;
     }
 
     private void setupDialogFlowService() {
@@ -970,15 +988,15 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     public synchronized static void processOnAppForeground() {
+        isAppForeground = true;
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_FOREGROUND);
         sendToDFServiceEvent(event);
-        isAppForeground = true;
     }
 
     public synchronized static void processOnAppBackground() {
+        isAppForeground = false;
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_BACKGROUND);
         sendToDFServiceEvent(event);
-        isAppForeground = false;
     }
 
     public synchronized static void processStatusChanged(GoLayout.ViewStatus status) {
@@ -1031,6 +1049,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processBluetoothEvent() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_BLUETOOTH_EVENT);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processAccessibilityStarted() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ACCESSIBILITY_STARTED);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processAccessibilityStopped() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ACCESSIBILITY_STOPPED);
         sendToDFServiceEvent(event);
     }
 

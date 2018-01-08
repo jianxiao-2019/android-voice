@@ -112,6 +112,7 @@ public class NavigationManager {
     public void stopNavigation(final Context context) {
         if (mNavigationProvider != null) {
             mNavigationProvider.stopNavigation(context);
+            DialogFlowForegroundService.processNavigationStopped();
         }
     }
 

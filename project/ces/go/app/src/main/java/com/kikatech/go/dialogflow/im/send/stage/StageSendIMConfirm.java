@@ -72,6 +72,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                         public void onStart() {
                             if (LogUtil.DEBUG) {
                                 LogUtil.log(TAG, "Start ...");
+                                DialogFlowForegroundService.processAccessibilityStarted();
                             }
                         }
 
@@ -82,7 +83,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                             }
 
                             AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
-
+                            DialogFlowForegroundService.processAccessibilityStopped();
                             boolean succeed = (NaviSceneUtil.isNavigating() && !DialogFlowForegroundService.isAppForeground()) || IntentUtil.openKikaGo(ctx);
                             if (succeed) {
                                 Bundle args = new Bundle();

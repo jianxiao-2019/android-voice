@@ -21,6 +21,8 @@ public class ToDFServiceEvent extends BaseDFServiceEvent {
     public static final String ACTION_INVERT_WAKE_UP_DETECTOR_ABILITY = "action_invert_wake_up_detector_ability";
     public static final String ACTION_SWITCH_WAKE_UP_SCENE = "action_switch_wake_up_scene";
     public static final String ACTION_BLUETOOTH_EVENT = "action_bluetooth_event";
+    public static final String ACTION_ACCESSIBILITY_STARTED = "action_accessibility_started";
+    public static final String ACTION_ACCESSIBILITY_STOPPED = "action_accessibility_stopped";
 
     public static final String PARAM_STATUS = "param_status";
     public static final String PARAM_TEXT = "param_text";

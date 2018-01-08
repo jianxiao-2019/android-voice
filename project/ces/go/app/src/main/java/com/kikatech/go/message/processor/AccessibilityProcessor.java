@@ -23,7 +23,7 @@ public abstract class AccessibilityProcessor {
     protected boolean mRunning = false;
     protected String mStage;
 
-    private static final int STAGE_TIMEOUT = 2500;
+    private static final int STAGE_TIMEOUT = 4000;
 
     public AccessibilityProcessor(Context context) {
         mContext = context;
