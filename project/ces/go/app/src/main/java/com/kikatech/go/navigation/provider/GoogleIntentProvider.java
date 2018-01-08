@@ -28,9 +28,9 @@ public class GoogleIntentProvider extends BaseNavigationProvider {
     }
 
     @Override
-    public void showMap(Context context) {
+    public void showMap(Context context, boolean restart) {
         Intent mapIntent = getShowMapIntent();
-        sendGoogleMapIntent(context, mapIntent);
+        sendGoogleMapIntent(context, mapIntent, restart);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class GoogleIntentProvider extends BaseNavigationProvider {
 
     @Override
     public void stopNavigation(Context context) {
-        showMap(context);
+        showMap(context, true);
     }
 
     @Override

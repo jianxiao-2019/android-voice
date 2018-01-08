@@ -54,14 +54,20 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     @Override
     public void addItem(WindowFloatingItem item) {
         if (!isViewAdded(item)) {
-            mWindowManager.addView(item.getItemView(), item.getLayoutParams());
+            try {
+                mWindowManager.addView(item.getItemView(), item.getLayoutParams());
+            } catch (Exception ignore) {
+            }
         }
     }
 
     @Override
     public void removeItem(WindowFloatingItem item) {
         if (isViewAdded(item)) {
-            mWindowManager.removeView(item.getItemView());
+            try {
+                mWindowManager.removeView(item.getItemView());
+            } catch (Exception ignore) {
+            }
         }
     }
 

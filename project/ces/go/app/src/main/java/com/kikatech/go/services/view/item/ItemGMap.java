@@ -19,6 +19,7 @@ public class ItemGMap extends WindowFloatingItem {
 
     private ImageView mStatusView;
     private View mStatusWrapperView;
+    private ImageView mMsgStatusView;
 
     public ItemGMap(View view, View.OnTouchListener listener) {
         super(view, listener);
@@ -28,6 +29,7 @@ public class ItemGMap extends WindowFloatingItem {
     protected void bindView() {
         mStatusWrapperView = mItemView.findViewById(R.id.gmap_status_wrapper);
         mStatusView = (ImageView) mItemView.findViewById(R.id.gmap_status);
+        mMsgStatusView = (ImageView) mItemView.findViewById(R.id.gmap_msg_status);
     }
 
     public void updateStatus(Context context, GoLayout.ViewStatus status) {
@@ -41,6 +43,24 @@ public class ItemGMap extends WindowFloatingItem {
                 .dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mStatusView);
+    }
+
+    public void showMsgStatusView(Context context, boolean isSucceed) {
+        if (mMsgStatusView.getVisibility() == View.GONE) {
+            mMsgStatusView.setVisibility(View.VISIBLE);
+        }
+
+        Glide.with(context.getApplicationContext())
+                .load(isSucceed ? R.drawable.kika_gmap_msgvui_success : R.drawable.kika_gmap_msgvui_alarm)
+                .placeholder(isSucceed ? R.drawable.kika_gmap_msgvui_success : R.drawable.kika_gmap_msgvui_alarm)
+                .dontTransform()
+                .dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(mMsgStatusView);
+    }
+
+    public void hideMsgStatusView() {
+        mMsgStatusView.setVisibility(View.GONE);
     }
 
     @Override

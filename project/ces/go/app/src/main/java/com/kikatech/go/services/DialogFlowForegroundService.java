@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.ces.demo.wakeup.SceneWakeUp;
 import com.kikatech.go.dialogflow.ces.demo.wakeup.WakeUpSceneAction;
 import com.kikatech.go.dialogflow.ces.demo.wakeup.WakeUpSceneManager;
@@ -34,6 +35,7 @@ import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.music.MusicSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
+import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
@@ -42,6 +44,7 @@ import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.music.MusicManager;
+import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.view.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.KikaLaunchActivity;
@@ -52,6 +55,7 @@ import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.usb.IUsbAudioListener;
@@ -708,10 +712,21 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onStageEvent(Bundle extras) {
+                        String event = extras.getString(SceneUtil.EXTRA_EVENT, null);
+                        if (event == null) {
+                            return;
+                        }
+                        if (SceneUtil.EVENT_DISPLAY_MSG_SENT.equals(event) && NaviSceneUtil.isNavigating() && !isAppForeground) {
+                            boolean isSentSuccess = extras.getBoolean(SceneUtil.EXTRA_SEND_SUCCESS, true);
+                            int alertRes = extras.getInt(SceneUtil.EXTRA_ALERT, 0);
+                            mManager.handleMsgSentStatusChanged(isSentSuccess);
+                            MediaPlayerUtil.playAlert(DialogFlowForegroundService.this, alertRes, null);
+                            NavigationManager.getIns().showMap(DialogFlowForegroundService.this, false);
+                        }
                         String action = DFServiceEvent.ACTION_ON_STAGE_EVENT;
-                        DFServiceEvent event = new DFServiceEvent(action);
-                        event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
-                        sendDFServiceEvent(event);
+                        DFServiceEvent serviceEvent = new DFServiceEvent(action);
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
+                        sendDFServiceEvent(serviceEvent);
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Parameters:" + extras);
                         }

@@ -31,9 +31,9 @@ public class NavigationManager {
     }
 
 
-    public void showMap(Context context) {
+    public void showMap(Context context, boolean restart) {
         if (mNavigationProvider != null) {
-            mNavigationProvider.showMap(context);
+            mNavigationProvider.showMap(context, restart);
         }
     }
 

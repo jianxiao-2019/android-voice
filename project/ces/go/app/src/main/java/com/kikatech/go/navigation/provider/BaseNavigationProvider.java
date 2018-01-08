@@ -41,7 +41,7 @@ public abstract class BaseNavigationProvider {
 
     public abstract int getDefaultZoomSize();
 
-    public abstract void showMap(Context context);
+    public abstract void showMap(Context context, boolean restart);
 
     public abstract void showMap(Context context, double latitude, double longitude, int zoom);
 

@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.kikatech.go.R;
-import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.services.view.item.BtnClose;
 import com.kikatech.go.services.view.item.BtnOpenApp;
 import com.kikatech.go.services.view.item.ItemGMap;
@@ -24,6 +23,7 @@ import com.kikatech.go.services.view.item.WindowFloatingButton;
 import com.kikatech.go.services.view.item.WindowFloatingItem;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.GoLayout;
 
 import java.util.ArrayList;
@@ -292,6 +292,7 @@ public class FloatingUiManager {
         @Override
         public void run() {
             mContainer.removeItem(mItemTip);
+            mItemGMap.hideMsgStatusView();
         }
     };
 
@@ -301,7 +302,6 @@ public class FloatingUiManager {
             mContainer.removeItem(mItemMsg);
         }
     };
-
 
     public synchronized void showGMap() {
         if (mContainer.isViewAdded(mItemGMap)) {
@@ -327,11 +327,18 @@ public class FloatingUiManager {
         removeCallbacks(removeMsgViewRunnable);
     }
 
-    public synchronized void showTipView() {
+    private synchronized void showTipView() {
+        showTipView("You can wake me up by saying...", "\"Hi Kika\"", 4000);
+    }
+
+    private synchronized void showTipView(String title, String text, long displayMillis) {
         if (mContainer.isViewAdded(mItemTip)) {
             mContainer.removeItem(mItemTip);
             removeCallbacks(removeTipViewRunnable);
         }
+
+        mItemTip.setTitle(title);
+        mItemTip.setText(text);
 
         int deviceWidth = getDeviceWidthByOrientation();
         int itemWidth = mItemTip.getMeasuredWidth();
@@ -344,10 +351,10 @@ public class FloatingUiManager {
 
         mContainer.addItem(mItemTip);
 
-        postDelay(removeTipViewRunnable, 4000);
+        postDelay(removeTipViewRunnable, displayMillis);
     }
 
-    public synchronized void showMsgView(String text) {
+    private synchronized void showMsgView(String text) {
         if (mContainer.isViewAdded(mItemMsg)) {
             mContainer.removeItem(mItemMsg);
             removeCallbacks(removeMsgViewRunnable);
@@ -374,7 +381,7 @@ public class FloatingUiManager {
     }
 
 
-    public void handleStatusChanged(GoLayout.ViewStatus status) {
+    public synchronized void handleStatusChanged(GoLayout.ViewStatus status) {
         if (!mContainer.isViewAdded(mItemGMap) || status == null) {
             return;
         }
@@ -391,11 +398,31 @@ public class FloatingUiManager {
         }
     }
 
-    public void handleMsgChanged(String text) {
+    public synchronized void handleMsgChanged(String text) {
         if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(text)) {
             return;
         }
         showMsgView(text);
+    }
+
+    public synchronized void handleTipView(String title, String text) {
+        if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(title) || TextUtils.isEmpty(text)) {
+            return;
+        }
+        showTipView(title, text, 2800);
+    }
+
+    public synchronized void handleMsgSentStatusChanged(final boolean isSucceed) {
+        if (!mContainer.isViewAdded(mItemGMap)) {
+            return;
+        }
+        post(new Runnable() {
+            @Override
+            public void run() {
+                handleTipView("Message", isSucceed ? "Sent successfully" : "Contact not found");
+                mItemGMap.showMsgStatusView(mContext, isSucceed);
+            }
+        });
     }
 
 

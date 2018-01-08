@@ -69,4 +69,8 @@ public class NaviSceneUtil {
             }
         }, 3000);
     }
+
+    public synchronized static boolean isNavigating() {
+        return sNavigating;
+    }
 }

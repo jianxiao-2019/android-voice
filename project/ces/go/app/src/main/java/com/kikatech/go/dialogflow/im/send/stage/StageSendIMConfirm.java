@@ -13,7 +13,10 @@ import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.MessageEventDispatcher;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.send.IMContent;
+import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
+import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.message.processor.IMProcessor;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -51,7 +54,9 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                 });
             }
         } else {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "Send IM !!!!" + getIMContent().toString());
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "Send IM !!!!" + getIMContent().toString());
+            }
 
             final Handler uiHandler = new Handler(Looper.getMainLooper());
             uiHandler.post(new Runnable() {
@@ -65,20 +70,25 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                             ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody(true)).registerCallback(new IMProcessor.IIMProcessorFlow() {
                         @Override
                         public void onStart() {
-                            if (LogUtil.DEBUG) LogUtil.log(TAG, "Start ...");
+                            if (LogUtil.DEBUG) {
+                                LogUtil.log(TAG, "Start ...");
+                            }
                         }
 
                         @Override
-                        public void onStop(boolean success) {
-                            if (LogUtil.DEBUG) LogUtil.log(TAG, "End ...");
-                            AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
-                            boolean succeed = IntentUtil.openKikaGo(ctx);
+                        public void onStop(boolean msgSentSuccess) {
+                            if (LogUtil.DEBUG) {
+                                LogUtil.log(TAG, "End ...");
+                            }
 
+                            AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
+
+                            boolean succeed = (NaviSceneUtil.isNavigating() && !DialogFlowForegroundService.isAppForeground()) || IntentUtil.openKikaGo(ctx);
                             if (succeed) {
                                 Bundle args = new Bundle();
                                 args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_DISPLAY_MSG_SENT);
-                                args.putInt(SceneUtil.EXTRA_ALERT, success ? R.raw.alert_succeed : R.raw.alert_error);
-                                args.putBoolean(SceneUtil.EXTRA_SEND_SUCCESS, success);
+                                args.putInt(SceneUtil.EXTRA_ALERT, msgSentSuccess ? R.raw.alert_succeed : R.raw.alert_error);
+                                args.putBoolean(SceneUtil.EXTRA_SEND_SUCCESS, msgSentSuccess);
                                 send(args);
                                 uiHandler.postDelayed(new Runnable() {
                                     @Override

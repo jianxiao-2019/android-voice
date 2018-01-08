@@ -4,6 +4,7 @@ import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.kikatech.go.R;
 
@@ -12,6 +13,8 @@ import com.kikatech.go.R;
  */
 
 public class ItemTip extends WindowFloatingItem {
+    private TextView mTitleView;
+    private TextView mTextView;
 
     public ItemTip(View view, View.OnTouchListener listener) {
         super(view, listener);
@@ -19,6 +22,8 @@ public class ItemTip extends WindowFloatingItem {
 
     @Override
     protected void bindView() {
+        mTitleView = (TextView) mItemView.findViewById(R.id.item_tip_title);
+        mTextView = (TextView) mItemView.findViewById(R.id.item_tip_text);
     }
 
     @Override
@@ -30,6 +35,14 @@ public class ItemTip extends WindowFloatingItem {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
         );
+    }
+
+    public void setTitle(String title) {
+        mTitleView.setText(title);
+    }
+
+    public void setText(String text) {
+        mTextView.setText(text);
     }
 
     public void updateBackgroundRes(int gravity) {
