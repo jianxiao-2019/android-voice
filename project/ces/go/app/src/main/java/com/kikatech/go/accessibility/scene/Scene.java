@@ -10,7 +10,10 @@ import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tianli on 17-10-20.
@@ -127,6 +130,65 @@ public class Scene {
         return allNodes;
     }
 
+    /**
+     * Returns the root node of the tree containing {@code node}.
+     */
+    protected static AccessibilityNodeInfo getRoot(AccessibilityNodeInfo node) {
+        if (node == null) {
+            return null;
+        }
+
+        Set<AccessibilityNodeInfo> visitedNodes = new HashSet<>();
+        AccessibilityNodeInfo current = null;
+        AccessibilityNodeInfo parent = node;
+
+        try {
+            do {
+                if (current != null) {
+                    if (visitedNodes.contains(current)) {
+                        current.recycle();
+                        parent.recycle();
+                        return null;
+                    }
+                    visitedNodes.add(current);
+                }
+
+                current = parent;
+                parent = current.getParent();
+            } while (parent != null);
+        } finally {
+            recycleNodes(visitedNodes);
+        }
+
+        return current;
+    }
+
+    /**
+     * Gets the text of a <code>node</code> by returning the content description
+     * (if available) or by returning the text.
+     *
+     * @param node The node.
+     * @return The node text.
+     */
+    public static CharSequence getNodeText(AccessibilityNodeInfo node) {
+        if (node == null) {
+            return null;
+        }
+
+        // Prefer content description over text.
+        final CharSequence contentDescription = node.getContentDescription();
+        if (!StringUtil.isEmpty(contentDescription)) {
+            return contentDescription;
+        }
+
+        final CharSequence text = node.getText();
+        if (!StringUtil.isEmpty(text)) {
+            return text;
+        }
+
+        return null;
+    }
+
     protected void clickView(AccessibilityNodeInfo nodeInfo) {
         if (nodeInfo == null) {
             if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Cannot click null view");
@@ -195,6 +257,25 @@ public class Scene {
             Thread.sleep(millisecond);
         } catch (InterruptedException ignore) {
         }
+    }
+
+    /**
+     * Recycles the given nodes.
+     *
+     * @param nodes The nodes to recycle.
+     */
+    protected static void recycleNodes(Collection<AccessibilityNodeInfo> nodes) {
+        if (nodes == null) {
+            return;
+        }
+
+        for (AccessibilityNodeInfo node : nodes) {
+            if (node != null) {
+                node.recycle();
+            }
+        }
+
+        nodes.clear();
     }
 
     public void printView() {

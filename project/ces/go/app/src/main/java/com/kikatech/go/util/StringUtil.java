@@ -36,6 +36,10 @@ public class StringUtil {
                 || (!TextUtils.isEmpty(string1) && string1.toString().equalsIgnoreCase(string2.toString()));
     }
 
+    public static boolean isEmpty(CharSequence string) {
+        return TextUtils.isEmpty(string);
+    }
+
     public static <T> String join(List<T> list, String cement) {
         StringBuilder builder = new StringBuilder();
 

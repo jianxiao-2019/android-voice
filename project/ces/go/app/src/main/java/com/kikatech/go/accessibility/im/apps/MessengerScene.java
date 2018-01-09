@@ -5,6 +5,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.IMScene;
+import com.kikatech.go.util.LogUtil;
 
 /**
  * Created by tianli on 17-10-22.
@@ -19,7 +20,12 @@ public class MessengerScene extends IMScene {
     private static final String VIEWID_BUTTON_SEND = "com.facebook.orca:id/single_tap_send_button";
     private static final String VIEWID_EDITTEXT_SEARCH = "com.facebook.orca:id/search_src_text";
 
-    private static final String VIEWCD_BUTTON_SEARCH = "Search";
+    private static final String[] VIEWCD_BUTTON_SEARCHS = new String[] {
+            "Search", "搜尋", "搜索"
+    };
+    private static final String[] VIEW_TEXT_NONFRIEND_HEADS = new String[] {
+            "Discover", "More People", "探索", "更多用戶", "发现", "更多用户"
+    };
 
     public MessengerScene(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo) {
         super(event, rootNodeInfo);
@@ -50,16 +56,34 @@ public class MessengerScene extends IMScene {
         return null;
     }
 
+    public boolean isTargetFriend() {
+        AccessibilityNodeInfo listViewNode = findNodeByClass(mRootNodeInfo, AccessibilityUtils.AccessibilityConstants.CLASSNAME_LIST_VIEW);
+        if (listViewNode != null) {
+            AccessibilityNodeInfo firstNode = listViewNode.getChild(0);
+            for (String headerText : VIEW_TEXT_NONFRIEND_HEADS) {
+                AccessibilityNodeInfo nonFriendHeaderNode = findNodeByText(firstNode, headerText);
+                if (nonFriendHeaderNode != null) {
+                    if (LogUtil.DEBUG) LogUtil.log(TAG, "Target found is not a friend");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public boolean clickSearchUserButton() {
-        // TODO content description of the search button depends on different language
         waitForView(1000);
-        AccessibilityNodeInfo searchBtn = findNodeByContentDescription(mRootNodeInfo, VIEWCD_BUTTON_SEARCH);
-        if(searchBtn == null) {
-            return false;
+        AccessibilityNodeInfo searchBtn;
+        for (String searchCD : VIEWCD_BUTTON_SEARCHS) {
+            searchBtn = findNodeByContentDescription(mRootNodeInfo, searchCD);
+            if (searchBtn != null) {
+                clickView(searchBtn);
+                return true;
+            }
         }
-        clickView(searchBtn);
-        return true;
+        if (LogUtil.DEBUG) LogUtil.logw(TAG, "Cannot find/click search button");
+        return false;
     }
 
     @Override

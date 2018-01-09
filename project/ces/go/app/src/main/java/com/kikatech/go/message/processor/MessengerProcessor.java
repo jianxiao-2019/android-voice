@@ -45,6 +45,10 @@ public class MessengerProcessor extends IMProcessor {
         switch (stage) {
             case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
                 if (scene.findUserItem(target) != null) {
+                    if (!scene.isTargetFriend()) {
+                        return true;
+                    }
+
                     if (scene.clickSendMessage(target)) {
                         updateStage(ProcessingStage.IMProcessStage.STAGE_DONE);
                     }

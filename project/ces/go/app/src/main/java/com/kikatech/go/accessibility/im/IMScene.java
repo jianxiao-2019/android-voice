@@ -11,6 +11,8 @@ import com.kikatech.go.accessibility.scene.Scene;
 
 public class IMScene extends Scene {
 
+    protected static final String TAG = IMScene.class.getName();
+
     private static final String VIEWID_TO_BE_DEFINED = "TBD";
 
     public IMScene(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo) {
