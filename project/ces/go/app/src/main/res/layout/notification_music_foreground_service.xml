@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/notification_view"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="?android:attr/selectableItemBackground"
+              android:orientation="horizontal"
+              android:gravity="center_vertical"
+              android:paddingBottom="15dp"
+              android:paddingLeft="15.5dp"
+              android:paddingRight="13dp"
+              android:paddingTop="15dp"
+              tools:ignore="SpUsage,HardcodedText,RtlHardcoded">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="7dp"
+        android:src="@mipmap/app_icon"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/notification_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KikaGo is playing music"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14.5dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_play_pause"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="right"
+            android:background="@android:color/black"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/notification_btn_close"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_close"/>
+</LinearLayout>

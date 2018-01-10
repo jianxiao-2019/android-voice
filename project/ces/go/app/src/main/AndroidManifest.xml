@@ -116,6 +116,7 @@
         </service>
         <service android:name=".navigation.NavigationService"/>
         <service android:name=".services.DialogFlowForegroundService"/>
+        <service android:name=".services.MusicForegroundService"/>
 
 
         <receiver android:name="com.kikatech.go.dialogflow.telephony.PhoneStateReceiver">

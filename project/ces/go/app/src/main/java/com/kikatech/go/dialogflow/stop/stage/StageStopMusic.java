@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.BaseSceneStage;
-import com.kikatech.go.music.MusicManager;
+import com.kikatech.go.services.MusicForegroundService;
+import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -30,7 +31,7 @@ public class StageStopMusic extends BaseSceneStage {
 
     @Override
     public void action() {
-        MusicManager.getIns().stop();
+        MusicForegroundService.stopMusic(KikaMultiDexApplication.getAppContext());
     }
 
     @Override

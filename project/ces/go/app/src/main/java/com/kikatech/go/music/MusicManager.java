@@ -60,4 +60,12 @@ public class MusicManager {
             mMusicProvider.stop();
         }
     }
+
+    public boolean isPlaying() {
+        return mMusicProvider != null && mMusicProvider.isPlaying();
+    }
+
+    public boolean isPrepared() {
+        return mMusicProvider != null && mMusicProvider.isPrepared();
+    }
 }

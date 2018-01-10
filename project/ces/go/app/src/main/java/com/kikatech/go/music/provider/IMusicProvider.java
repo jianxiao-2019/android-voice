@@ -16,4 +16,8 @@ public interface IMusicProvider {
     void unmute();
 
     void stop();
+
+    boolean isPlaying();
+
+    boolean isPrepared();
 }

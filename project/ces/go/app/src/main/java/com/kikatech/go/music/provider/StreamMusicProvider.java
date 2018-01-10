@@ -3,6 +3,7 @@ package com.kikatech.go.music.provider;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
+import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
 
@@ -18,12 +19,19 @@ public class StreamMusicProvider implements IMusicProvider {
 
     private static StreamMusicProvider sIns;
 
+    private boolean isPrepared = false;
+
     private MediaPlayer mMediaPlayer;
     private final MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mp) {
+            isPrepared = true;
             if (!mMediaPlayer.isPlaying()) {
                 mMediaPlayer.start();
+            }
+            MusicForegroundService.processMusicChanged();
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, ">> Player Prepared");
             }
         }
     };
@@ -47,6 +55,10 @@ public class StreamMusicProvider implements IMusicProvider {
             mMediaPlayer.setOnPreparedListener(onPreparedListener);
             //mediaPlayer.prepare(); // might take long! (for buffering, etc)   //@@
             mMediaPlayer.prepareAsync();
+            MusicForegroundService.processMusicChanged();
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, ">> Player Play");
+            }
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
@@ -58,6 +70,10 @@ public class StreamMusicProvider implements IMusicProvider {
     public void pause() {
         try {
             mMediaPlayer.pause();
+            MusicForegroundService.processMusicChanged();
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, ">> Player Pause");
+            }
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
@@ -69,6 +85,10 @@ public class StreamMusicProvider implements IMusicProvider {
     public void resume() {
         try {
             mMediaPlayer.start();
+            MusicForegroundService.processMusicChanged();
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, ">> Player Resume");
+            }
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
@@ -101,8 +121,12 @@ public class StreamMusicProvider implements IMusicProvider {
     @Override
     public void stop() {
         try {
+            isPrepared = false;
             mMediaPlayer.stop();
             mMediaPlayer.reset();
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, ">> Player Stop");
+            }
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
@@ -110,7 +134,27 @@ public class StreamMusicProvider implements IMusicProvider {
         }
     }
 
+    @Override
+    public boolean isPlaying() {
+        try {
+            if (mMediaPlayer != null) {
+                return mMediaPlayer.isPlaying();
+            }
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isPrepared() {
+        return isPrepared;
+    }
+
     private void reset() {
+        isPrepared = false;
         mMediaPlayer.reset();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mMediaPlayer.setOnPreparedListener(null);

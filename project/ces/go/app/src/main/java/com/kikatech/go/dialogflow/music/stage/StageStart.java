@@ -5,7 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
-import com.kikatech.go.music.MusicManager;
+import com.kikatech.go.services.MusicForegroundService;
+import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -43,7 +44,7 @@ public class StageStart extends BaseMusicStage {
             args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
             speak(ttsText, args);
         }
-        MusicManager.getIns().play();
+        MusicForegroundService.startMusic(KikaMultiDexApplication.getAppContext());
     }
 
     @Override

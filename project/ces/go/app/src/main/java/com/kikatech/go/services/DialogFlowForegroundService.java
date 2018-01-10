@@ -43,7 +43,6 @@ import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
-import com.kikatech.go.music.MusicManager;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.view.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
@@ -437,7 +436,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Exit App, Goodbye !");
         }
 
-        MusicManager.getIns().stop();
+        MusicForegroundService.stopMusic(this);
 
         closeUsbAudio();
     }

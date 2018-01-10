@@ -30,7 +30,8 @@ public abstract class BaseForegroundService extends Service {
 
     protected final class ServiceIds {
         private static final int SERVICE_ID = 0;
-        public static final int DIALOG_FLOW_SERVICE = SERVICE_ID + 1;
+        static final int DIALOG_FLOW_SERVICE    = SERVICE_ID + 1;
+        static final int MUSIC_SERVICE          = SERVICE_ID + 2;
     }
 
     protected static class Commands {
