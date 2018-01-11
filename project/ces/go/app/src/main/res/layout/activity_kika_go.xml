@@ -46,12 +46,6 @@
         android:text="NAVIGATION"/>
 
     <Button
-        android:id="@+id/button_voice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Voice Api"/>
-
-    <Button
         android:id="@+id/button_dialog_flow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,12 +62,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Debug Logs"/>
-
-    <Button
-        android:id="@+id/button_voice_source"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="USB KikaGO"/>
 
     <Button
         android:id="@+id/button_music"

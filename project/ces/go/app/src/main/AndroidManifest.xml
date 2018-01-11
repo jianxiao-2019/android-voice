@@ -72,15 +72,11 @@
         <activity android:name=".ui.KikaNavigationActivity"
                   android:windowSoftInputMode="adjustResize"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.VoiceTestingActivity"
-                  android:screenOrientation="portrait" />
         <activity android:name=".ui.KikaDialogFlowActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaAlphaUiActivity"
                   android:launchMode="singleInstance"
                   android:configChanges="keyboardHidden|keyboard"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaUsbVoiceSourceActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaMusicActivity"
                   android:screenOrientation="portrait"/>

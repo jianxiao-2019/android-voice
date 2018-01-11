@@ -90,14 +90,6 @@ public class KikaGoActivity extends Activity {
             }
         });
 
-        findViewById(R.id.button_voice).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(KikaGoActivity.this, VoiceTestingActivity.class);
-                startActivity(intent);
-            }
-        });
-
         findViewById(R.id.button_dialog_flow).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,14 +110,6 @@ public class KikaGoActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(KikaGoActivity.this, KikaDebugLogActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        findViewById(R.id.button_voice_source).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(KikaGoActivity.this, KikaUsbVoiceSourceActivity.class);
                 startActivity(intent);
             }
         });
