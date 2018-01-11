@@ -212,5 +212,10 @@ public abstract class DialogFlowVoiceService {
 
             mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED);
         }
+
+        @Override
+        public void onSpeechProbabilityChanged(float prob) {
+
+        }
     };
 }

@@ -13,6 +13,9 @@ import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,6 +84,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         void onVadBos();
 
         void onConnectionClosed();
+
+        void onSpeechProbabilityChanged(float prob);
     }
 
     public interface VoiceActiveStateListener {
@@ -132,6 +137,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mWebService.connect(mConf.getConnectionConfiguration());
 
         mVoiceRecorder.open();
+        EventBus.getDefault().register(this);
     }
 
     public void start() {
@@ -237,7 +243,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         Logger.d("VoiceService mWebService.release()");
 
         stop();
-
+        EventBus.getDefault().unregister(this);
         mVoiceRecorder.close();
         if (mWebService == null) {
             return;
@@ -259,7 +265,16 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
-    // TODO : hide this interface?
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(EventMsg eventMsg) {
+        if (eventMsg.type == EventMsg.Type.VD_VAD_CHANGED) {
+            Logger.d("onMessageEvent VD_VAD_CHANGED prob = " + eventMsg.obj);
+            if (mVoiceStateChangedListener != null) {
+                mVoiceStateChangedListener.onSpeechProbabilityChanged((Float) eventMsg.obj);
+            }
+        }
+    }
+
     public void sendCommand(String command, String alter) {
         if (mWebService != null) {
             mWebService.sendCommand(command, alter);

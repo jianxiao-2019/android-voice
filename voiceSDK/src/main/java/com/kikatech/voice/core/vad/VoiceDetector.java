@@ -3,7 +3,10 @@ package com.kikatech.voice.core.vad;
 import com.kikatech.androidspeex.Speex;
 import com.kikatech.voice.VadUtil;
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.service.EventMsg;
 import com.kikatech.voice.util.log.Logger;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,8 +24,6 @@ public class VoiceDetector extends IDataPath {
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mStopped = new AtomicBoolean(false);
 
-    private OnVadProbabilityChangeListener mListener;
-
     private int mFrameLength = DEFAULT_FRAME_LENGTH;
     private short[] mBuf = new short[DEFAULT_FRAME_LENGTH];
     private int mBufLen = 0;
@@ -30,13 +31,8 @@ public class VoiceDetector extends IDataPath {
     private float mPrevProb = -1;
     private Speex mSpeex;
 
-    public interface OnVadProbabilityChangeListener {
-        void onSpeechProbabilityChanged(float speechProbability);
-    }
-
-    public VoiceDetector(IDataPath dataPath, OnVadProbabilityChangeListener listener) {
+    public VoiceDetector(IDataPath dataPath) {
         super(dataPath);
-        mListener = listener;
     }
 
     @Override
@@ -91,8 +87,9 @@ public class VoiceDetector extends IDataPath {
             final byte[] data = mData;
             float[] sample = ByteToFloat(data, data.length / 2);
             float prob = VadUtil.speechProbability(sample, 0, sample.length, VadUtil.sConf);
-            if (mListener != null && mPrevProb != prob) {
-                mListener.onSpeechProbabilityChanged(prob);
+            Logger.d("VoiceDetector prob = " + prob);
+            if (mPrevProb != prob) {
+                EventBus.getDefault().post(new EventMsg(EventMsg.Type.VD_VAD_CHANGED, prob));
             }
             mPrevProb = prob;
 
