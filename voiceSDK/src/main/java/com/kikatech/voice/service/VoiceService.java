@@ -5,7 +5,6 @@ import android.os.Handler;
 
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
-import com.kikatech.voice.core.ns.NoiseSuppression;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -55,9 +54,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     private boolean mIsAsrPaused = false;
 
-    // TODO : tmp version for mNoiseSuppression
-    private NoiseSuppression mNoiseSuppression = null;
-
     @Override
     public void onDetected() {
         if (mVoiceActiveStateListener != null) {
@@ -101,24 +97,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mWakeUpDetector = mConf.isSupportWakeUpMode() ? WakeUpDetector.getDetector(context, this) : null;
         mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath);
-
-        // TODO : tmp version for mNoiseSuppression
-        findNoiseSuppression();
-    }
-
-    // TODO : tmp version for mNoiseSuppression
-    private void findNoiseSuppression() {
-        if (mDataPath != null) {
-            IDataPath next = mDataPath;
-            while (next != null) {
-                if (next instanceof NoiseSuppression) {
-                    mNoiseSuppression = (NoiseSuppression) next;
-                    break;
-                }
-                next = next.getNextPath();
-            }
-            Logger.d("Did not find mNoiseSuppression");
-        }
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
@@ -177,12 +155,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             Logger.d("VoiceService startVadBosTimer");
             mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, bosDuration);
-        }
-    }
-
-    public void setNoiseSuppressionParameters(int mode, int value) {
-        if (mNoiseSuppression != null) {
-            mNoiseSuppression.setControl(mode, value);
         }
     }
 

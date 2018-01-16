@@ -3,7 +3,6 @@ package com.kikatech.voice.util;
 import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
-import com.kikatech.voice.core.ns.NoiseSuppression;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
@@ -33,12 +32,7 @@ public class VoicePathConnector {
         }
 
         Logger.d("VoicePathConnector isUsbVoiceSource = " + isUsbVoiceSource);
-        // TODO : NoiseSuppression is bind with USB driver, but this NoiseSuppression is in this Voice SDK.
-        if (isUsbVoiceSource) {
-            dataPath = new NoiseSuppression(wrapFileWriter(dataPath, conf, "_NC"));
-        }
-
-        dataPath = wrapFileWriter(dataPath, conf, isUsbVoiceSource ? "_USB" : "_SRC");
+        dataPath = wrapFileWriter(dataPath, conf, isUsbVoiceSource ? "_NC" : "_SRC");
         // TODO : This is for debug.
         dataPath.dump();
         return dataPath;
