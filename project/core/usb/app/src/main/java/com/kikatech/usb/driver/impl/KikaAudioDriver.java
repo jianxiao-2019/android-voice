@@ -2,7 +2,6 @@ package com.kikatech.usb.driver.impl;
 
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
-import android.support.annotation.NonNull;
 
 import com.kikatech.voice.util.log.Logger;
 import com.xiao.usbaudio.AudioPlayBack;
@@ -15,9 +14,7 @@ import com.xiao.usbaudio.UsbAudio;
 public class KikaAudioDriver extends UsbHostDriver {
 
     private UsbAudio mUsbAudio = new UsbAudio();
-
-    private AudioBuffer mAudioBuffer = new AudioBuffer(20000);
-
+    private OnDataListener mOnDataListener;
     public KikaAudioDriver(Context context, UsbDevice device) {
         super(context, device);
     }
@@ -26,12 +23,16 @@ public class KikaAudioDriver extends UsbHostDriver {
     public boolean open() {
         Logger.d("KikaAudioDriver open");
         if (openConnection()) {
-            Logger.d("KikaAudioDriver open openConnection  device name = " + mDevice.getDeviceName() + " mConnectionFileDes = " + mConnection.getFileDescriptor() + " productId = " + mDevice.getProductId() + " vendorId = " + mDevice.getVendorId());
+            Logger.d("KikaAudioDriver open openConnection  device name = "+ mDevice.getDeviceName()
+                    + " mConnectionFileDes = " + mConnection.getFileDescriptor()
+                    + " productId = " + mDevice.getProductId()
+                    + " vendorId = " + mDevice.getVendorId());
             if (mUsbAudio.setup(
                     mDevice.getDeviceName(),
                     mConnection.getFileDescriptor(),
                     mDevice.getProductId(),
                     mDevice.getVendorId())) {
+                Logger.d("KikaAudioDriver open successful.");
                 new Thread(new Runnable() {
 
                     @Override
@@ -49,23 +50,30 @@ public class KikaAudioDriver extends UsbHostDriver {
 
     @Override
     public void startRecording() {
-        AudioPlayBack.setup(mAudioBuffer);
         mUsbAudio.start();
-    }
-
-    @Override
-    public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
-        return mAudioBuffer.read(audioData, offsetInBytes, sizeInBytes);
+        AudioPlayBack.setup(this);
     }
 
     @Override
     public void stopRecording() {
         mUsbAudio.stop();
+        AudioPlayBack.stop();
     }
 
     @Override
     public void close() {
         super.close();
         mUsbAudio.close();
+    }
+
+    @Override
+    public void setOnDataListener(OnDataListener listener) {
+        mOnDataListener = listener;
+    }
+
+    public void onData(byte[] data, int length) {
+        if (mOnDataListener != null) {
+            mOnDataListener.onData(data, length);
+        }
     }
 }

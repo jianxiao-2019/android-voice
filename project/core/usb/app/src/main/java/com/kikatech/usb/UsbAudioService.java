@@ -63,7 +63,7 @@ public class UsbAudioService {
             mDevice = device;
             UsbAudioDriver driver = new KikaAudioDriver(mContext, mDevice);
             if (driver.open()) {
-                mAudioSource = new UsbAudioSource(new KikaAudioDriver(mContext, mDevice));
+                mAudioSource = new UsbAudioSource(driver);
                 mListener.onDeviceAttached(mAudioSource);
             } else {
                 // TODO: 17-11-20 handle exception
