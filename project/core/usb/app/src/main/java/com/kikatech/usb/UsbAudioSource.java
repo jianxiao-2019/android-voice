@@ -20,9 +20,9 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
     private KikaNcBuffer mKikaNcBuffer;
 
     public UsbAudioSource(UsbAudioDriver driver) {
-        mKikaNcBuffer = new KikaNcBuffer();
         mAudioDriver = driver;
         mAudioDriver.setOnDataListener(this);
+        mKikaNcBuffer = new KikaNcBuffer();
     }
 
     @Override
