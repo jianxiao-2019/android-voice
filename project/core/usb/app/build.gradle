@@ -36,6 +36,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.kikatech.voice:voice:1.0.2.0'
 //    compile project(':voice')
+    compile files('lib/nc.jar')
 }
 
 android {
