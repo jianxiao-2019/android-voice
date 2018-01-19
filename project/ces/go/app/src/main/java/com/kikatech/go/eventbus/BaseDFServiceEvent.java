@@ -1,8 +1,10 @@
 package com.kikatech.go.eventbus;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * @author SkeeterWang Created on 2017/12/1.
@@ -43,5 +45,9 @@ class BaseDFServiceEvent {
 
     public void putExtra(String key, Serializable value) {
         extras.putSerializable(key, value);
+    }
+
+    public void putExtra(String key, ArrayList<? extends Parcelable> value) {
+        extras.putParcelableArrayList(key, value);
     }
 }

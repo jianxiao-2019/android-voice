@@ -44,7 +44,7 @@ import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
-import com.kikatech.go.services.view.FloatingUiManager;
+import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.KikaLaunchActivity;
 import com.kikatech.go.ui.KikaMultiDexApplication;

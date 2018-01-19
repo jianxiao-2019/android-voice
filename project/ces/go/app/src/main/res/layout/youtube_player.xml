@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.kikatech.go.view.youtube.DispatchKeyEventRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:background="#252525"
+    android:gravity="center">
+
+    <FrameLayout
+        android:id="@+id/youtube_bar_player_view"
+        android:layout_width="@dimen/youtube_bar_player_view_width"
+        android:layout_height="@dimen/youtube_bar_player_view_height"
+        android:background="@android:color/black">
+
+        <com.kikatech.go.view.youtube.FensterVideoView
+            android:id="@+id/play_video_texture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:keepScreenOn="true"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/player_caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@android:color/black"
+                android:gravity="center"
+                android:lineSpacingExtra="3dp"
+                android:paddingBottom="2dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="2dp"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <com.kikatech.go.view.youtube.FloatingPlayerController
+            android:id="@+id/play_video_controller"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/youtube_bar_title_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/youtube_bar_player_view"
+        android:layout_below="@+id/youtube_bar_player_view">
+
+        <com.kikatech.go.view.widget.MarqueeTextView
+            android:id="@+id/youtube_bar_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="start"
+            android:padding="0dp"
+            android:singleLine="true"
+            android:textColor="#ffffff"
+            android:textDirection="locale"
+            android:textSize="15sp"/>
+    </LinearLayout>
+
+</com.kikatech.go.view.youtube.DispatchKeyEventRelativeLayout>

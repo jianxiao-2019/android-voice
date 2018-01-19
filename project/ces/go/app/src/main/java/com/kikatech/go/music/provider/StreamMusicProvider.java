@@ -48,7 +48,7 @@ public class StreamMusicProvider implements IMusicProvider {
     }
 
     @Override
-    public void play() {
+    public synchronized void play(Object musicModel) {
         reset();
         try {
             MediaPlayerUtil.safeSetMediaPlayerSource(mMediaPlayer, STREAM_LINK);
@@ -67,7 +67,7 @@ public class StreamMusicProvider implements IMusicProvider {
     }
 
     @Override
-    public void pause() {
+    public synchronized void pause() {
         try {
             mMediaPlayer.pause();
             MusicForegroundService.processMusicChanged();
@@ -82,7 +82,7 @@ public class StreamMusicProvider implements IMusicProvider {
     }
 
     @Override
-    public void resume() {
+    public synchronized void resume() {
         try {
             mMediaPlayer.start();
             MusicForegroundService.processMusicChanged();
@@ -97,7 +97,7 @@ public class StreamMusicProvider implements IMusicProvider {
     }
 
     @Override
-    public void mute() {
+    public synchronized void mute() {
         try {
             mMediaPlayer.setVolume(0, 0);
         } catch (Exception e) {
@@ -108,7 +108,7 @@ public class StreamMusicProvider implements IMusicProvider {
     }
 
     @Override
-    public void unmute() {
+    public synchronized void unmute() {
         try {
             mMediaPlayer.setVolume(1, 1);
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class StreamMusicProvider implements IMusicProvider {
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         try {
             isPrepared = false;
             mMediaPlayer.stop();

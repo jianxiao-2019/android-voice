@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.kikatech.go.view.youtube.VideoTouchRoot
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/controller_touch_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#cc000000">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/controller_center_btn_pause_resume"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="25dp"
+                android:gravity="center"
+                android:src="@drawable/kika_kikago_float_ic_play"/>
+
+            <ImageView
+                android:id="@+id/controller_center_btn_close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:gravity="center"
+                android:src="@drawable/kika_kikago_float_ic_close"/>
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/controller_center_progress_loading"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+</com.kikatech.go.view.youtube.VideoTouchRoot>

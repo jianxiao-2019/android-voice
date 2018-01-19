@@ -8,8 +8,8 @@ android {
         applicationId "com.kikatech.go"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20180107
-        versionName "1.1.03_20180107_beta2_v5"
+        versionCode 20180108
+        versionName "1.1.03_20180108_beta2_v7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -89,6 +89,10 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.1.1'
     // Emoji
     compile 'com.vdurmont:emoji-java:4.0.0'
+    // Youtube Extractor
+    compile 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+    // Youtube Data API v3
+    compile 'com.google.apis:google-api-services-youtube:v3-rev189-1.23.0'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
     compile 'com.kikatech.voice:voice:1.0.2.0'

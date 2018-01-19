@@ -1,4 +1,4 @@
-package com.kikatech.go.services.view;
+package com.kikatech.go.services.view.manager;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -14,11 +14,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.kikatech.go.R;
+import com.kikatech.go.services.view.WindowManagerContainer;
 import com.kikatech.go.services.view.item.BtnClose;
 import com.kikatech.go.services.view.item.BtnOpenApp;
 import com.kikatech.go.services.view.item.ItemGMap;
 import com.kikatech.go.services.view.item.ItemMsg;
 import com.kikatech.go.services.view.item.ItemTip;
+import com.kikatech.go.services.view.item.ItemYouTubePlayer;
 import com.kikatech.go.services.view.item.WindowFloatingButton;
 import com.kikatech.go.services.view.item.WindowFloatingItem;
 import com.kikatech.go.ui.ResolutionUtil;
@@ -34,22 +36,13 @@ import java.util.List;
  */
 
 @SuppressWarnings("SuspiciousNameCombination")
-public class FloatingUiManager {
+public class FloatingUiManager extends BaseFloatingManager {
     private static final String TAG = "FloatingUiManager";
 
     private static final int GMAP_MARGIN_DP = 14;
 
-    private int DEVICE_WIDTH;
-    private int DEVICE_HEIGHT;
-
-    private final Context mContext;
-    private final WindowManager mWindowManager;
-    private final LayoutInflater mLayoutInflater;
-    private Configuration mConfiguration;
     private IOnFloatingItemAction mListener;
-    private final Handler mUiHandler = new Handler(Looper.getMainLooper());
 
-    private WindowManagerContainer mContainer;
     private ItemGMap mItemGMap;
     private ItemTip mItemTip;
     private ItemMsg mItemMsg;
@@ -146,7 +139,7 @@ public class FloatingUiManager {
 
         private int getValidX(int viewOriginalX, int deltaX) {
             int boundLeft = 0;
-            int boundRight = getDeviceWidthByOrientation() - mItemGMap.getItemView().getMeasuredWidth();
+            int boundRight = getDeviceWidthByOrientation() - mItemGMap.getMeasuredWidth();
             return (deltaX > 0)
                     ? (viewOriginalX + deltaX < boundRight) ? viewOriginalX + deltaX : boundRight
                     : (viewOriginalX + deltaX >= boundLeft) ? viewOriginalX + deltaX : boundLeft;
@@ -154,7 +147,7 @@ public class FloatingUiManager {
 
         private int getValidY(int viewOriginalY, int deltaY) {
             int boundTop = 0;
-            int boundBottom = getDeviceHeightByOrientation() - mItemGMap.getItemView().getMeasuredHeight();
+            int boundBottom = getDeviceHeightByOrientation() - mItemGMap.getMeasuredHeight();
             return (deltaY > 0)
                     ? (viewOriginalY + deltaY < boundBottom) ? viewOriginalY + deltaY : boundBottom
                     : (viewOriginalY + deltaY >= boundTop) ? viewOriginalY + deltaY : boundTop;
@@ -163,29 +156,8 @@ public class FloatingUiManager {
 
 
     private FloatingUiManager(Context context, WindowManager manager, LayoutInflater inflater, Configuration configuration, IOnFloatingItemAction listener) {
-        this.mContext = context;
-        this.mWindowManager = manager;
-        this.mLayoutInflater = inflater;
+        super(context, manager, inflater, configuration);
         this.mListener = listener;
-
-        mConfiguration = configuration;
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        mWindowManager.getDefaultDisplay().getMetrics(displayMetrics);
-
-        switch (mConfiguration.orientation) {
-            case Configuration.ORIENTATION_LANDSCAPE:
-                DEVICE_HEIGHT = displayMetrics.widthPixels;
-                DEVICE_WIDTH = displayMetrics.heightPixels;
-                break;
-            default:
-            case Configuration.ORIENTATION_PORTRAIT:
-                DEVICE_WIDTH = displayMetrics.widthPixels;
-                DEVICE_HEIGHT = displayMetrics.heightPixels;
-                break;
-        }
-
-        mContainer = new WindowManagerContainer(mWindowManager);
-
         initItems();
         initButtons();
     }
@@ -286,7 +258,6 @@ public class FloatingUiManager {
         }
         return nearestItem;
     }
-
 
     private Runnable removeTipViewRunnable = new Runnable() {
         @Override
@@ -443,87 +414,8 @@ public class FloatingUiManager {
     }
 
 
-    public synchronized void updateConfiguration(Configuration configuration) {
-        this.mConfiguration = configuration;
-    }
-
-    private int getDeviceWidthByOrientation() {
-        try {
-            switch (mConfiguration.orientation) {
-                default:
-                case Configuration.ORIENTATION_PORTRAIT:
-                    return DEVICE_WIDTH;
-                case Configuration.ORIENTATION_LANDSCAPE:
-                    return DEVICE_HEIGHT;
-            }
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
-        }
-        return DEVICE_WIDTH;
-    }
-
-    private int getDeviceHeightByOrientation() {
-        try {
-            switch (mConfiguration.orientation) {
-                case Configuration.ORIENTATION_PORTRAIT:
-                    return DEVICE_HEIGHT;
-                case Configuration.ORIENTATION_LANDSCAPE:
-                    return DEVICE_WIDTH;
-            }
-        } catch (Exception e) {
-            if (LogUtil.DEBUG) {
-                LogUtil.printStackTrace(TAG, e.getMessage(), e);
-            }
-        }
-        return DEVICE_HEIGHT;
-    }
-
-
-    private synchronized View inflate(int resId) {
-        return inflate(resId, null);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private synchronized View inflate(int resId, ViewGroup root) {
-        return mLayoutInflater.inflate(resId, root);
-    }
-
-
-    private synchronized void post(Runnable runnable) {
-        mUiHandler.post(runnable);
-    }
-
-    private synchronized void postDelay(Runnable runnable, long delayMillis) {
-        mUiHandler.postDelayed(runnable, delayMillis);
-    }
-
-    private synchronized void removeCallbacks(Runnable runnable) {
-        mUiHandler.removeCallbacks(runnable);
-    }
-
-
-    public static final class Builder {
-        private WindowManager mWindowManager;
-        private LayoutInflater mLayoutInflater;
-        private Configuration mConfiguration;
+    public static final class Builder extends BaseFloatingManager.Builder<Builder> {
         private IOnFloatingItemAction mListener;
-
-        public Builder setWindowManager(WindowManager manager) {
-            this.mWindowManager = manager;
-            return this;
-        }
-
-        public Builder setLayoutInflater(LayoutInflater inflater) {
-            this.mLayoutInflater = inflater;
-            return this;
-        }
-
-        public Builder setConfiguration(Configuration configuration) {
-            this.mConfiguration = configuration;
-            return this;
-        }
 
         public Builder setOnFloatingItemAction(IOnFloatingItemAction listener) {
             this.mListener = listener;

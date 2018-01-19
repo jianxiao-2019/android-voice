@@ -30,8 +30,8 @@ public abstract class BaseForegroundService extends Service {
 
     protected final class ServiceIds {
         private static final int SERVICE_ID = 0;
-        static final int DIALOG_FLOW_SERVICE    = SERVICE_ID + 1;
-        static final int MUSIC_SERVICE          = SERVICE_ID + 2;
+        static final int DIALOG_FLOW_SERVICE = SERVICE_ID + 1;
+        static final int MUSIC_SERVICE = SERVICE_ID + 2;
     }
 
     protected static class Commands {
@@ -44,7 +44,7 @@ public abstract class BaseForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(intent != null) {
+        if (intent != null) {
             try {
                 //noinspection ConstantConditions
                 switch (intent.getAction()) {
@@ -59,7 +59,9 @@ public abstract class BaseForegroundService extends Service {
                         break;
                 }
             } catch (Exception e) {
-                if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
+                if (LogUtil.DEBUG) {
+                    LogUtil.printStackTrace(TAG, e.getMessage(), e);
+                }
             }
         }
 
@@ -68,9 +70,9 @@ public abstract class BaseForegroundService extends Service {
 
 
     private void handleStart() {
-        isStarted = true;
         startForeground(getServiceId(), getForegroundNotification());
         onStartForeground();
+        isStarted = true;
     }
 
     private void handleStop() {

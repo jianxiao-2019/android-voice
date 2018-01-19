@@ -1,0 +1,373 @@
+package com.kikatech.go.services.view.manager;
+
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.media.MediaPlayer;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+
+import com.kikatech.go.R;
+import com.kikatech.go.music.MusicManager;
+import com.kikatech.go.music.model.YouTubeVideo;
+import com.kikatech.go.services.MusicForegroundService;
+import com.kikatech.go.services.presenter.YouTubeExtractorManager;
+import com.kikatech.go.services.view.item.ItemYouTubePlayer;
+import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.view.FlexibleOnTouchListener;
+import com.kikatech.go.view.youtube.FensterVideoView;
+import com.kikatech.go.view.youtube.FloatingPlayerController;
+
+import java.util.ArrayList;
+
+/**
+ * @author SkeeterWang Created on 2018/1/16.
+ */
+
+public class FloatingPlayerManager extends BaseFloatingManager {
+    private static final String TAG = "FloatingPlayerManager";
+
+    private final int MIN_WIDTH;
+    private final int MIN_HEIGHT;
+
+    private ItemYouTubePlayer mItemPlayer;
+
+
+    private FlexibleOnTouchListener onYouTubePlayerTouchListener = new FlexibleOnTouchListener(100, new FlexibleOnTouchListener.ITouchListener() {
+        private int[] viewOriginalXY = new int[2];
+        private float[] eventOriginalXY = new float[2];
+        private int[] deltaXY = new int[2];
+
+        @Override
+        public void onLongPress(View view, MotionEvent event) {
+        }
+
+        @Override
+        public void onShortPress(View view, MotionEvent event) {
+        }
+
+        @Override
+        public void onClick(View view, MotionEvent event) {
+            mItemPlayer.performControllerView(event.getRawX(), event.getRawY());
+        }
+
+        @Override
+        public void onDown(View view, MotionEvent event) {
+            viewOriginalXY = mItemPlayer.getViewXY();
+            eventOriginalXY = new float[]{event.getRawX(), event.getRawY()};
+        }
+
+        @Override
+        public void onMove(View view, MotionEvent event, long timeSpentFromStart) {
+            deltaXY = new int[]{(int) (event.getRawX() - eventOriginalXY[0]), (int) (event.getRawY() - eventOriginalXY[1])};
+            int targetX = getValidX(viewOriginalXY[0], deltaXY[0]);
+            int targetY = getValidY(viewOriginalXY[1], deltaXY[1]);
+            mContainer.moveItem(mItemPlayer, targetX, targetY);
+        }
+
+        @Override
+        public void onUp(View view, MotionEvent event, long timeSpentFromStart) {
+        }
+
+        private int getValidX(int viewOriginalX, int deltaX) {
+            int boundLeft = 0;
+            int boundRight = getDeviceWidthByOrientation() - mItemPlayer.getMeasuredWidth();
+            return (deltaX > 0)
+                    ? (viewOriginalX + deltaX < boundRight) ? viewOriginalX + deltaX : boundRight
+                    : (viewOriginalX + deltaX >= boundLeft) ? viewOriginalX + deltaX : boundLeft;
+        }
+
+        private int getValidY(int viewOriginalY, int deltaY) {
+            int boundTop = 0;
+            int boundBottom = getDeviceHeightByOrientation() - mItemPlayer.getMeasuredHeight();
+            return (deltaY > 0)
+                    ? (viewOriginalY + deltaY < boundBottom) ? viewOriginalY + deltaY : boundBottom
+                    : (viewOriginalY + deltaY >= boundTop) ? viewOriginalY + deltaY : boundTop;
+        }
+    });
+
+    private FloatingPlayerController.IControllerCallback mControllerCallback = new FloatingPlayerController.IControllerCallback() {
+        @Override
+        public void onPrev() {
+        }
+
+        @Override
+        public void onNext() {
+        }
+
+        @Override
+        public void onScaleUp() {
+        }
+
+        @Override
+        public void onScaleDown() {
+        }
+
+        @Override
+        public void onClose() {
+            MusicForegroundService.stopMusic(mItemPlayer.getItemView().getContext());
+        }
+
+        @Override
+        public void onRepeatModeChanged(boolean isChecked) {
+        }
+
+        @Override
+        public void onShare() {
+        }
+
+        @Override
+        public void onFavorite() {
+        }
+
+        @Override
+        public void onYouTubeIconClick() {
+        }
+
+        @Override
+        public void onLockModeLocked() {
+        }
+
+        @Override
+        public void onLockModeUnlocked() {
+        }
+    };
+
+
+    private FloatingPlayerManager(Context context, WindowManager manager, LayoutInflater inflater, Configuration configuration) {
+        super(context, manager, inflater, configuration);
+        MIN_WIDTH = context.getResources().getDimensionPixelSize(R.dimen.youtube_bar_player_view_width);
+        MIN_HEIGHT = context.getResources().getDimensionPixelSize(R.dimen.youtube_bar_player_view_height);
+        initItems();
+        if (LogUtil.DEBUG) {
+            switch (configuration.orientation) {
+                case Configuration.ORIENTATION_LANDSCAPE:
+                    LogUtil.log(TAG, "ORIENTATION_LANDSCAPE");
+                    break;
+                case Configuration.ORIENTATION_PORTRAIT:
+                    LogUtil.log(TAG, "ORIENTATION_PORTRAIT");
+                    break;
+            }
+        }
+    }
+
+    private void initItems() {
+        mItemPlayer = new ItemYouTubePlayer(inflate(R.layout.youtube_player), onYouTubePlayerTouchListener);
+        initPlayer();
+        MusicManager.getIns().setItemYouTubePlayer(mItemPlayer);
+    }
+
+    private void initPlayer() {
+        View mPlayerView = mItemPlayer.getPlayerView();
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mPlayerView.getLayoutParams();
+        int deviceWidth = getDeviceWidth();
+
+        // Init player style according to current scale type
+        switch (mItemPlayer.getPlayerSize()) {
+            case FensterVideoView.PlayerSize.MINIMUM:
+                layoutParams.width = MIN_WIDTH;
+                layoutParams.height = MIN_HEIGHT;
+                mItemPlayer.setViewWidth(MIN_WIDTH);
+                break;
+            case FensterVideoView.PlayerSize.MEDIUM:
+                float scale = ((float) deviceWidth) / ((float) MIN_WIDTH);
+                layoutParams.width = deviceWidth;
+                layoutParams.height = (int) (MIN_HEIGHT * scale);
+                mItemPlayer.setViewWidth(deviceWidth);
+                break;
+            case FensterVideoView.PlayerSize.FULLSCREEN:
+                // TODO: adjust init player with fullscreen
+                mItemPlayer.setViewWidth(WindowManager.LayoutParams.MATCH_PARENT);
+                break;
+        }
+
+        int x = (deviceWidth - mItemPlayer.getMeasuredWidth()) / 2;
+        mItemPlayer.setViewXY(x, 400);
+        mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        mItemPlayer.setControllerCallback(mControllerCallback);
+        mItemPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                next(mItemPlayer.getItemView().getContext());
+            }
+        });
+    }
+
+
+    public synchronized void showPlayer(final Context context, final ArrayList<YouTubeVideo> listToPlay) {
+        if (LogUtil.DEBUG) {
+            LogUtil.logw(TAG, "showPlayer");
+        }
+        if (!mContainer.isViewAdded(mItemPlayer)) {
+            mContainer.addItem(mItemPlayer);
+        } else {
+            MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
+        }
+        final YouTubeVideo mainVideo = listToPlay.get(0);
+        YouTubeExtractorManager.getIns().loadCompleteList(context, mainVideo, new YouTubeExtractorManager.IExtractListener() {
+            int retryCounter = 1;
+
+            @Override
+            public void onLoaded(YouTubeVideo loadedVideo) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "onLoaded");
+                }
+                MusicManager.getIns().play(loadedVideo);
+            }
+
+            @Override
+            public void onError() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "onError");
+                }
+                if (retryCounter > 0) {
+                    YouTubeExtractorManager.getIns().loadCompleteList(mContext, mainVideo, this);
+                }
+                retryCounter--;
+            }
+        });
+    }
+
+    public synchronized void pauseOrResume() {
+        if (!mContainer.isViewAdded(mItemPlayer)) {
+            return;
+        }
+        MusicManager musicManager = MusicManager.getIns();
+        if (musicManager.isPlaying(MusicManager.ProviderType.YOUTUBE)) {
+            musicManager.pause(MusicManager.ProviderType.YOUTUBE);
+        } else {
+            musicManager.resume(MusicManager.ProviderType.YOUTUBE);
+        }
+    }
+
+    public synchronized void next(final Context context) {
+        if (!mContainer.isViewAdded(mItemPlayer)) {
+            return;
+        } else {
+            MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
+        }
+        YouTubeExtractorManager.getIns().next(context, new YouTubeExtractorManager.IExtractListener() {
+            int retryCounter = 1;
+
+            @Override
+            public void onLoaded(YouTubeVideo loadedVideo) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "onLoaded");
+                }
+                MusicManager.getIns().play(loadedVideo);
+            }
+
+            @Override
+            public void onError() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "onError");
+                }
+                if (retryCounter > 0) {
+                    YouTubeExtractorManager.getIns().next(mContext, this);
+                }
+                retryCounter--;
+            }
+        });
+    }
+
+    public synchronized void prev(final Context context) {
+        if (!mContainer.isViewAdded(mItemPlayer)) {
+            return;
+        } else {
+            MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
+        }
+        YouTubeExtractorManager.getIns().prev(context, new YouTubeExtractorManager.IExtractListener() {
+            int retryCounter = 1;
+
+            @Override
+            public void onLoaded(YouTubeVideo loadedVideo) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "onLoaded");
+                }
+                MusicManager.getIns().setItemYouTubePlayer(mItemPlayer);
+                MusicManager.getIns().play(loadedVideo);
+            }
+
+            @Override
+            public void onError() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "onError");
+                }
+                if (retryCounter > 0) {
+                    YouTubeExtractorManager.getIns().prev(mContext, this);
+                }
+                retryCounter--;
+            }
+        });
+    }
+
+    public void scale(@FensterVideoView.PlayerSize int scaleType, Configuration configuration) {
+        View mPlayerView = mItemPlayer.getPlayerView();
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mPlayerView.getLayoutParams();
+        layoutParams.topMargin = 0;
+        layoutParams.leftMargin = 0;
+
+        int deviceWidth = getDeviceWidth();
+        int oldPlayerWidth = mPlayerView.getWidth();
+        int oldPlayerHeight = mPlayerView.getHeight();
+        float scale;
+
+        switch (scaleType) {
+            case FensterVideoView.PlayerSize.MINIMUM:
+                layoutParams.width = MIN_WIDTH;
+                layoutParams.height = MIN_HEIGHT;
+                layoutParams.leftMargin = 0;
+                layoutParams.rightMargin = 0;
+                mItemPlayer.setViewWidth(MIN_WIDTH);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                // mLayoutParams.x = ( FloatingPlayer.getDeviceWidthByOrientation() - MIN_WIDTH ) / 2;
+                // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Scale Down Align Original Bottom
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                break;
+            case FensterVideoView.PlayerSize.MEDIUM:
+                scale = ((float) deviceWidth) / ((float) oldPlayerWidth);
+                layoutParams.width = deviceWidth;
+                layoutParams.height = (int) (oldPlayerHeight * scale);
+                mItemPlayer.setViewWidth(deviceWidth);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    mItemPlayer.setViewX(0);
+                }
+                // mLayoutParams.x = 0;
+                // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Fit Original Bottom
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                break;
+            case FensterVideoView.PlayerSize.FULLSCREEN:
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                mItemPlayer.setViewWidth(WindowManager.LayoutParams.MATCH_PARENT);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.MATCH_PARENT);
+                mItemPlayer.setViewXY(0, 0);
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                break;
+        }
+        mPlayerView.setLayoutParams(layoutParams);
+        mPlayerView.requestLayout();
+        mItemPlayer.getItemView().requestLayout();
+        mContainer.requestLayout(mItemPlayer);
+    }
+
+    public synchronized void removePlayer() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logw(TAG, "removePlayer");
+        }
+        mContainer.removeItem(mItemPlayer);
+        MusicManager.getIns().stop(MusicManager.ProviderType.YOUTUBE);
+        YouTubeExtractorManager.getIns().clearTasks();
+    }
+
+
+    public static final class Builder extends BaseFloatingManager.Builder<Builder> {
+        public FloatingPlayerManager build(Context context) {
+            return new FloatingPlayerManager(context, mWindowManager, mLayoutInflater, mConfiguration);
+        }
+    }
+}

@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
-import com.kikatech.go.services.MusicForegroundService;
-import com.kikatech.go.ui.KikaMultiDexApplication;
+import com.kikatech.go.util.LogUtil;
+import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -23,7 +23,12 @@ public class StageStart extends BaseMusicStage {
 
     @Override
     public SceneStage next(String action, Bundle extra) {
-        return null;
+        setQueryAnyWords(false);
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "action:" + action + ", extra:" + extra);
+        }
+        String userSay = Intent.parseUserInput(extra);
+        return new StageQuerySong(mSceneBase, mFeedback, userSay);
     }
 
     @Override
@@ -34,8 +39,8 @@ public class StageStart extends BaseMusicStage {
 
     @Override
     public void action() {
-        String tmp = "OK, playing music.";
-        String[] uiAndTtsText = new String[] {tmp, tmp};
+        setQueryAnyWords(true);
+        String[] uiAndTtsText = new String[]{"What", "What song do you want to play?"};
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
@@ -44,11 +49,5 @@ public class StageStart extends BaseMusicStage {
             args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
             speak(ttsText, args);
         }
-        MusicForegroundService.startMusic(KikaMultiDexApplication.getAppContext());
-    }
-
-    @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
-        exitScene();
     }
 }

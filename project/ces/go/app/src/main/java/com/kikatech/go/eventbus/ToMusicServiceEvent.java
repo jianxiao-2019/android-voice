@@ -6,17 +6,14 @@ package com.kikatech.go.eventbus;
  * @author jason Created on 2018/1/10.
  */
 
-public class ToMusicServiceEvent {
+public class ToMusicServiceEvent extends BaseDFServiceEvent {
 
+    public static final String ACTION_PLAY_SONG = "action_play_song";
     public static final String ACTION_MUSIC_CHANGE = "action_music_change";
 
-    private String action;
+    public static final String PARAM_PLAY_LIST = "param_play_list";
 
     public ToMusicServiceEvent(String action) {
-        this.action = action;
-    }
-
-    public String getAction() {
-        return action;
+        super(action);
     }
 }

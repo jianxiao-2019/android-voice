@@ -1,7 +1,11 @@
 package com.kikatech.go.music;
 
-import com.kikatech.go.music.provider.IMusicProvider;
+import android.support.annotation.IntDef;
+
+import com.kikatech.go.music.model.YouTubeVideo;
 import com.kikatech.go.music.provider.StreamMusicProvider;
+import com.kikatech.go.music.provider.YouTubeMusicProvider;
+import com.kikatech.go.services.view.item.ItemYouTubePlayer;
 
 /**
  * @author SkeeterWang Created on 2018/1/5.
@@ -12,7 +16,17 @@ public class MusicManager {
 
     private static MusicManager sIns;
 
-    private IMusicProvider mMusicProvider;
+    private static final int PROVIDER_STREAM = 0;
+    private static final int PROVIDER_YOUTUBE = 1;
+
+    @IntDef({PROVIDER_STREAM, PROVIDER_YOUTUBE})
+    public @interface ProviderType {
+        int STREAM = PROVIDER_STREAM;
+        int YOUTUBE = PROVIDER_YOUTUBE;
+    }
+
+    private YouTubeMusicProvider mYouTubeMusicProvider;
+    private StreamMusicProvider mStreamMusicProvider;
 
     public static synchronized MusicManager getIns() {
         if (sIns == null) {
@@ -22,50 +36,124 @@ public class MusicManager {
     }
 
     private MusicManager() {
-        mMusicProvider = StreamMusicProvider.getIns();
+        mYouTubeMusicProvider = YouTubeMusicProvider.getIns();
+        mStreamMusicProvider = StreamMusicProvider.getIns();
     }
 
-    public void play() {
-        if (mMusicProvider != null) {
-            mMusicProvider.play();
+    public void setItemYouTubePlayer(ItemYouTubePlayer itemYouTubePlayer) {
+        if (mYouTubeMusicProvider != null) {
+            mYouTubeMusicProvider.setItemYouTubePlayer(itemYouTubePlayer);
         }
     }
 
-    public void pause() {
-        if (mMusicProvider != null) {
-            mMusicProvider.pause();
+    public void play(Object object) {
+        int providerType = object instanceof YouTubeVideo ? PROVIDER_YOUTUBE : PROVIDER_STREAM;
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.play(null);
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.play((YouTubeVideo) object);
+                }
+                break;
         }
     }
 
-    public void resume() {
-        if (mMusicProvider != null) {
-            mMusicProvider.resume();
+    public void pause(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.pause();
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.pause();
+                }
+                break;
         }
     }
 
-    public void mute() {
-        if (mMusicProvider != null) {
-            mMusicProvider.mute();
+    public void resume(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.resume();
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.resume();
+                }
+                break;
         }
     }
 
-    public void unmute() {
-        if (mMusicProvider != null) {
-            mMusicProvider.unmute();
+    public void mute(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.mute();
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.mute();
+                }
+                break;
         }
     }
 
-    public void stop() {
-        if (mMusicProvider != null) {
-            mMusicProvider.stop();
+    public void unmute(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.unmute();
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.unmute();
+                }
+                break;
         }
     }
 
-    public boolean isPlaying() {
-        return mMusicProvider != null && mMusicProvider.isPlaying();
+    public void stop(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.stop();
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.stop();
+                }
+                break;
+        }
     }
 
-    public boolean isPrepared() {
-        return mMusicProvider != null && mMusicProvider.isPrepared();
+    public boolean isPlaying(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                return mStreamMusicProvider != null && mStreamMusicProvider.isPlaying();
+            default:
+            case ProviderType.YOUTUBE:
+                return mYouTubeMusicProvider != null && mYouTubeMusicProvider.isPlaying();
+        }
+    }
+
+    public boolean isPrepared(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                return mStreamMusicProvider != null && mStreamMusicProvider.isPrepared();
+            default:
+            case ProviderType.YOUTUBE:
+                return mYouTubeMusicProvider != null && mYouTubeMusicProvider.isPrepared();
+        }
     }
 }

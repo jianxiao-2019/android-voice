@@ -15,6 +15,8 @@ import com.kikatech.go.music.MusicManager;
 public class KikaMusicActivity extends Activity {
     private static final String TAG = "KikaMusicActivity";
 
+    private static final int mProviderType = MusicManager.ProviderType.YOUTUBE;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,37 +24,37 @@ public class KikaMusicActivity extends Activity {
         findViewById(R.id.btn_play_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicManager.getIns().play();
+                MusicManager.getIns().play(mProviderType);
             }
         });
         findViewById(R.id.btn_pause_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicManager.getIns().pause();
+                MusicManager.getIns().pause(mProviderType);
             }
         });
         findViewById(R.id.btn_resume_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicManager.getIns().resume();
+                MusicManager.getIns().resume(mProviderType);
             }
         });
         findViewById(R.id.btn_stop_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicManager.getIns().stop();
+                MusicManager.getIns().stop(mProviderType);
             }
         });
         findViewById(R.id.btn_mute_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicManager.getIns().mute();
+                MusicManager.getIns().mute(mProviderType);
             }
         });
         findViewById(R.id.btn_unmute_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicManager.getIns().unmute();
+                MusicManager.getIns().unmute(mProviderType);
             }
         });
     }
