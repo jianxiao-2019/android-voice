@@ -130,6 +130,23 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
         mPlayerController.updatePausePlay();
     }
 
+    public void volumeUp() {
+        mPlayer.volumeUp();
+    }
+
+    public void volumeDown() {
+        mPlayer.volumeDown();
+    }
+
+    public void mute() {
+        mPlayer.mute();
+    }
+
+    public void unmute() {
+        mPlayer.unmute();
+    }
+
+
     public void performControllerView(float rawX, float rawY) {
         if (mPlayerController != null) {
             mPlayerController.performControllerView(rawX, rawY);

@@ -47,6 +47,10 @@ class BaseDFServiceEvent {
         extras.putSerializable(key, value);
     }
 
+    public void putExtra(String key, Parcelable value) {
+        extras.putParcelable(key, value);
+    }
+
     public void putExtra(String key, ArrayList<? extends Parcelable> value) {
         extras.putParcelableArrayList(key, value);
     }

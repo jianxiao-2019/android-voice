@@ -118,8 +118,10 @@ public class FensterVideoView extends TextureView implements MediaController.Med
     @ScaleType
     private int mScaleType;
 
-    private Uri mUri;
+    private static final float VOLUME_SCALE_INTERVAL = 0.3f;
+    private float mVolumeScalar = 1.0f;
 
+    private Uri mUri;
     private AssetFileDescriptor mAssetFileDescriptor;
     private Map<String, String> mHeaders;
     private SurfaceTexture mSurfaceTexture;
@@ -899,5 +901,26 @@ public class FensterVideoView extends TextureView implements MediaController.Med
 
     public void setOnPlayStateListener(final VideoStatusListener onPlayStateListener) {
         this.onPlayStateListener = onPlayStateListener;
+    }
+
+
+    public void volumeUp() {
+        float nextLevel = mVolumeScalar + VOLUME_SCALE_INTERVAL;
+        mVolumeScalar = nextLevel > 1.0f ? 1.0f : nextLevel;
+        mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
+    }
+
+    public void volumeDown() {
+        float nextLevel = mVolumeScalar - VOLUME_SCALE_INTERVAL;
+        mVolumeScalar = nextLevel < 0.0f ? 0.0f : nextLevel;
+        mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
+    }
+
+    public void mute() {
+        mMediaPlayer.setVolume(0.0f, 0.0f);
+    }
+
+    public void unmute() {
+        mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
     }
 }

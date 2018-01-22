@@ -7,6 +7,9 @@ import android.view.View;
 
 import com.kikatech.go.R;
 import com.kikatech.go.music.MusicManager;
+import com.kikatech.go.music.google.serivce.YouTubeAPI;
+import com.kikatech.go.music.model.YouTubeVideoList;
+import com.kikatech.go.services.MusicForegroundService;
 
 /**
  * @author SkeeterWang Created on 2018/1/5.
@@ -24,7 +27,12 @@ public class KikaMusicActivity extends Activity {
         findViewById(R.id.btn_play_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicManager.getIns().play(mProviderType);
+                YouTubeAPI.getIns().searchVideo("Loser", new YouTubeAPI.IYoutubeApiCallback() {
+                    @Override
+                    public void onLoaded(YouTubeVideoList result) {
+                        MusicForegroundService.startMusic(KikaMusicActivity.this, result);
+                    }
+                });
             }
         });
         findViewById(R.id.btn_pause_music).setOnClickListener(new View.OnClickListener() {
@@ -43,6 +51,18 @@ public class KikaMusicActivity extends Activity {
             @Override
             public void onClick(View v) {
                 MusicManager.getIns().stop(mProviderType);
+            }
+        });
+        findViewById(R.id.btn_volume_up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MusicManager.getIns().volumeUp(mProviderType);
+            }
+        });
+        findViewById(R.id.btn_volume_down).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MusicManager.getIns().volumeDown(mProviderType);
             }
         });
         findViewById(R.id.btn_mute_music).setOnClickListener(new View.OnClickListener() {

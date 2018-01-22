@@ -8,10 +8,14 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.kikatech.go.R;
+import com.kikatech.go.music.YouTubeUtil;
 import com.kikatech.go.music.model.YouTubeVideo;
+import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogUtil;
@@ -26,12 +30,6 @@ import java.util.List;
 
 public class YouTubeAPI {
     private static final String TAG = "YoutubeAPI";
-
-    private static final String DEVELOPER_KEY = "AIzaSyBTCFdcfSCeWPYWONMWOd9Z3bnUKuLLApI";
-
-    private static final String SEARCH_TYPE_VIDEO = "video";
-    private static final long MAX_RESULT_SIZE = 12L;
-    private static final long MAX_RELATED_SIZE = 25L;
 
     private static YouTubeAPI sIns;
     private static YouTube mYouTube;
@@ -59,7 +57,7 @@ public class YouTubeAPI {
         BackgroundThread.post(new Runnable() {
             @Override
             public void run() {
-                ArrayList<YouTubeVideo> resultVideos = new ArrayList<>();
+                YouTubeVideoList resultVideos = new YouTubeVideoList();
                 try {
                     // Define the API request for retrieving search results.
                     YouTube.Search.List search = mYouTube.search().list("id,snippet");
@@ -67,12 +65,12 @@ public class YouTubeAPI {
                     // Set your developer key from the Google Cloud Console for
                     // non-authenticated requests. See:
                     // https://cloud.google.com/console
-                    search.setKey(DEVELOPER_KEY);
+                    search.setKey(YouTubeUtil.DEVELOPER_KEY);
                     search.setQ(videoKeyword);
 
                     // Restrict the search results to only include videos. See:
                     // https://developers.google.com/youtube/v3/docs/search/list#type
-                    search.setType(SEARCH_TYPE_VIDEO);
+                    search.setType(YouTubeUtil.SEARCH_TYPE_VIDEO);
 
                     // The category 'Music' is ID: 10. See: https://gist.github.com/dgp/1b24bf2961521bd75d6c
                     // https://developers.google.com/youtube/v3/docs/search/list#videoCategoryId
@@ -83,7 +81,7 @@ public class YouTubeAPI {
                     // To increase efficiency, only retrieve the fields that the
                     // application uses.
                     //search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-                    search.setMaxResults(MAX_RESULT_SIZE);
+                    search.setMaxResults(YouTubeUtil.MAX_RESULT_SIZE);
 
                     SearchListResponse searchResponse = search.execute();
 
@@ -95,7 +93,7 @@ public class YouTubeAPI {
                             resultVideos.add(youTubeVideo);
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     if (LogUtil.DEBUG) {
                         LogUtil.printStackTrace(TAG, e.getMessage(), e);
                     }
@@ -111,7 +109,7 @@ public class YouTubeAPI {
         BackgroundThread.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                ArrayList<YouTubeVideo> relatedVideos = new ArrayList<>();
+                YouTubeVideoList relatedVideos = new YouTubeVideoList();
                 try {
                     // Define the API request for retrieving search results.
                     YouTube.Search.List search = mYouTube.search().list("id,snippet");
@@ -119,17 +117,17 @@ public class YouTubeAPI {
                     // Set your developer key from the Google Cloud Console for
                     // non-authenticated requests. See:
                     // https://cloud.google.com/console
-                    search.setKey(DEVELOPER_KEY);
+                    search.setKey(YouTubeUtil.DEVELOPER_KEY);
                     search.setRelatedToVideoId(resultVideo.getVideoId());
 
                     // Restrict the search results to only include videos. See:
                     // https://developers.google.com/youtube/v3/docs/search/list#type
-                    search.setType(SEARCH_TYPE_VIDEO);
+                    search.setType(YouTubeUtil.SEARCH_TYPE_VIDEO);
 
                     // To increase efficiency, only retrieve the fields that the
                     // application uses.
                     //search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-                    search.setMaxResults(MAX_RELATED_SIZE);
+                    search.setMaxResults(YouTubeUtil.MAX_RELATED_SIZE);
 
                     SearchListResponse searchResponse = search.execute();
 
@@ -142,12 +140,11 @@ public class YouTubeAPI {
                             relatedVideos.add(youTubeVideo);
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     if (LogUtil.DEBUG) {
                         LogUtil.printStackTrace(TAG, e.getMessage(), e);
                     }
                 }
-
                 if (callback != null) {
                     callback.onLoaded(relatedVideos);
                 }
@@ -155,7 +152,60 @@ public class YouTubeAPI {
         });
     }
 
+    public void searchDefaultRecommendPlayList(final IYoutubeApiCallback callback) {
+        searchRecommendPlayList(YouTubeUtil.RECOMMEND_PLAYLIST, callback);
+    }
+
+    public void searchRecommendPlayList(final String listId, final IYoutubeApiCallback callback) {
+        BackgroundThread.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                YouTubeVideoList recommendVideos = new YouTubeVideoList(YouTubeVideoList.ListType.RECOMMEND);
+                try {
+                    // Define the API request for retrieving search results.
+                    YouTube.PlaylistItems.List search = mYouTube.playlistItems().list("id,snippet,contentDetails");
+
+                    // Set your developer key from the Google Cloud Console for
+                    // non-authenticated requests. See:
+                    // https://cloud.google.com/console
+                    search.setKey(YouTubeUtil.DEVELOPER_KEY);
+                    search.setPlaylistId(listId);
+
+                    // To increase efficiency, only retrieve the fields that the
+                    // application uses.
+                    //search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+                    search.setMaxResults(YouTubeUtil.MAX_RECOMMEND_SIZE);
+
+                    PlaylistItemListResponse searchResponse = search.execute();
+
+                    List<PlaylistItem> results = searchResponse != null ? searchResponse.getItems() : null;
+
+                    if (results != null && !results.isEmpty()) {
+                        for (PlaylistItem playlistItem : results) {
+                            YouTubeVideo youTubeVideo = new YouTubeVideo(playlistItem);
+                            recommendVideos.add(youTubeVideo);
+                        }
+                        // randomly resort list
+                        int randomIndex = (int) (Math.random() * recommendVideos.size());
+                        ArrayList<YouTubeVideo> firstSubList = new ArrayList<>(recommendVideos.subList(randomIndex, recommendVideos.size()));
+                        ArrayList<YouTubeVideo> secondSubList = new ArrayList<>(recommendVideos.subList(0, randomIndex));
+                        recommendVideos.clear();
+                        recommendVideos.addAll(firstSubList);
+                        recommendVideos.addAll(secondSubList);
+                    }
+                } catch (Exception e) {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.printStackTrace(TAG, e.getMessage(), e);
+                    }
+                }
+                if (callback != null) {
+                    callback.onLoaded(recommendVideos);
+                }
+            }
+        });
+    }
+
     public interface IYoutubeApiCallback {
-        void onLoaded(ArrayList<YouTubeVideo> result);
+        void onLoaded(YouTubeVideoList result);
     }
 }

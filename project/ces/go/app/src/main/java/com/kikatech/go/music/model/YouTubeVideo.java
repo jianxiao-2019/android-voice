@@ -4,6 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemContentDetails;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
@@ -25,6 +28,16 @@ public class YouTubeVideo implements Parcelable {
         SearchResultSnippet srs = result.getSnippet();
         this.title = srs != null ? srs.getTitle() : null;
         ThumbnailDetails tds = srs != null ? srs.getThumbnails() : null;
+        Thumbnail tb = tds != null ? tds.getDefault() : null;
+        this.thumbnail = tb != null ? tb.getUrl() : null;
+    }
+
+    public YouTubeVideo(@NonNull PlaylistItem result) {
+        PlaylistItemContentDetails picd = result.getContentDetails();
+        this.videoId = picd != null ? picd.getVideoId() : null;
+        PlaylistItemSnippet pis = result.getSnippet();
+        this.title = pis != null ? pis.getTitle() : null;
+        ThumbnailDetails tds = pis != null ? pis.getThumbnails() : null;
         Thumbnail tb = tds != null ? tds.getDefault() : null;
         this.thumbnail = tb != null ? tb.getUrl() : null;
     }

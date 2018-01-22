@@ -81,16 +81,24 @@ public class DrawerTipFragment extends Fragment {
 
     private List<TipBase> getTipList() {
         List<TipBase> list = new ArrayList<>();
+        // --------------------------------------------------
         list.add(new TipTitle("Navigation"));
         list.add(new Tip("Take me <i>home</i>"));
         list.add(new Tip("Navigate to <i>Starbucks</i>"));
         list.add(new Tip("Find <i>gas stations</i>"));
         list.add(new Tip("<i>More natural commands...</i>"));
+        // --------------------------------------------------
         list.add(new TipTitle("Message"));
         list.add(new Tip("Message <i>David</i> on <i>WhatsApp</i>."));
         list.add(new Tip("<i>WhatsApp</i> <i>Jason</i>."));
         list.add(new Tip("Send a <i>WhatsApp</i> to <i>Chris</i>."));
         list.add(new Tip("<i>More natural commands...</i>"));
+        // --------------------------------------------------
+        list.add(new TipTitle("Music"));
+        list.add(new Tip("Play <i>See you again</i>."));
+        list.add(new Tip("Play <i>Jazz music</i>."));
+        list.add(new Tip("Play <i>Sorry</i> by <i>Justin Bieber</i>"));
+        // --------------------------------------------------
         return list;
     }
 

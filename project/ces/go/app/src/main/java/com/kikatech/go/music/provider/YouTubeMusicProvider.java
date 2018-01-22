@@ -66,11 +66,31 @@ public class YouTubeMusicProvider implements IMusicProvider<YouTubeVideo> {
     }
 
     @Override
+    public void volumeUp() {
+        if (mPlayer != null) {
+            mPlayer.volumeUp();
+        }
+    }
+
+    @Override
+    public void volumeDown() {
+        if (mPlayer != null) {
+            mPlayer.volumeDown();
+        }
+    }
+
+    @Override
     public synchronized void mute() {
+        if (mPlayer != null) {
+            mPlayer.mute();
+        }
     }
 
     @Override
     public synchronized void unmute() {
+        if (mPlayer != null) {
+            mPlayer.unmute();
+        }
     }
 
     @Override

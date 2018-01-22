@@ -11,6 +11,10 @@ public interface IMusicProvider<T extends Object> {
 
     void resume();
 
+    void volumeUp();
+
+    void volumeDown();
+
     void mute();
 
     void unmute();

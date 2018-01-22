@@ -32,6 +32,18 @@
         android:text="Stop"/>
 
     <Button
+        android:id="@+id/btn_volume_up"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Volume Up"/>
+
+    <Button
+        android:id="@+id/btn_volume_down"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Volume Down"/>
+
+    <Button
         android:id="@+id/btn_mute_music"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

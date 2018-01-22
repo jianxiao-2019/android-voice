@@ -5,13 +5,10 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.go.music.google.serivce.YouTubeAPI;
-import com.kikatech.go.music.model.YouTubeVideo;
+import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author SkeeterWang Created on 2018/1/17.
@@ -21,7 +18,7 @@ class StageQuerySong extends BaseMusicStage {
     private static final String TAG = "StageQuerySong";
 
     private String mSongToQuery;
-    private ArrayList<YouTubeVideo> mPlayList;
+    private YouTubeVideoList mPlayList;
 
     StageQuerySong(@NonNull SceneBase scene, ISceneFeedback feedback, String songToQuery) {
         super(scene, feedback);
@@ -45,13 +42,19 @@ class StageQuerySong extends BaseMusicStage {
         if (!TextUtils.isEmpty(mSongToQuery)) {
             YouTubeAPI.getIns().searchVideo(mSongToQuery, new YouTubeAPI.IYoutubeApiCallback() {
                 @Override
-                public void onLoaded(ArrayList<YouTubeVideo> result) {
+                public void onLoaded(YouTubeVideoList result) {
                     mPlayList = result;
                     onStageActionDone(false, false);
                 }
             });
         } else {
-            onStageActionDone(false, false);
+            YouTubeAPI.getIns().searchDefaultRecommendPlayList(new YouTubeAPI.IYoutubeApiCallback() {
+                @Override
+                public void onLoaded(YouTubeVideoList result) {
+                    mPlayList = result;
+                    onStageActionDone(false, false);
+                }
+            });
         }
     }
 

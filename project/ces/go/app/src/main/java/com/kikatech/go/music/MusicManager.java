@@ -92,6 +92,36 @@ public class MusicManager {
         }
     }
 
+    public void volumeUp(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.volumeUp();
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.volumeUp();
+                }
+                break;
+        }
+    }
+
+    public void volumeDown(@ProviderType int providerType) {
+        switch (providerType) {
+            case ProviderType.STREAM:
+                if (mStreamMusicProvider != null) {
+                    mStreamMusicProvider.volumeDown();
+                }
+                break;
+            case ProviderType.YOUTUBE:
+                if (mYouTubeMusicProvider != null) {
+                    mYouTubeMusicProvider.volumeDown();
+                }
+                break;
+        }
+    }
+
     public void mute(@ProviderType int providerType) {
         switch (providerType) {
             case ProviderType.STREAM:

@@ -22,16 +22,25 @@ public class StageMusicIdle extends BaseMusicStage {
     }
 
     @Override
+    protected int getAsrMode() {
+        return super.getAsrMode();
+    }
+
+    @Override
     public SceneStage next(String action, Bundle extra) {
         if (!TextUtils.isEmpty(action)) {
             switch (action) {
                 case SceneActions.ACTION_MUSIC_START:
                     String songName = MusicSceneUtil.parseSongName(extra);
-                    if (!TextUtils.isEmpty(songName)) {
-                        return new StageQuerySong(mSceneBase, mFeedback, songName);
-                    } else {
-                        return new StageAskSong(mSceneBase, mFeedback);
-                    }
+                    return new StageQuerySong(mSceneBase, mFeedback, songName);
+                case SceneActions.ACTION_VOLUME_UP:
+                    return new StageVolumeControl(mSceneBase, mFeedback, MusicSceneUtil.VolumeControlType.VOLUME_UP);
+                case SceneActions.ACTION_VOLUME_DOWN:
+                    return new StageVolumeControl(mSceneBase, mFeedback, MusicSceneUtil.VolumeControlType.VOLUME_DOWN);
+                case SceneActions.ACTION_MUTE:
+                    return new StageVolumeControl(mSceneBase, mFeedback, MusicSceneUtil.VolumeControlType.MUTE);
+                case SceneActions.ACTION_UNMUTE:
+                    return new StageVolumeControl(mSceneBase, mFeedback, MusicSceneUtil.VolumeControlType.UNMUTE);
             }
         }
         return null;

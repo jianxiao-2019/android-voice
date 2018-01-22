@@ -2,11 +2,13 @@ package com.kikatech.go.services.presenter;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.kikatech.go.music.google.serivce.YouTubeAPI;
 import com.kikatech.go.music.model.YouTubeVideo;
+import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.util.LogUtil;
 
 import java.util.ArrayList;
@@ -28,8 +30,7 @@ public class YouTubeExtractorManager {
     private List<YouTubeExtractTask> mExtractTaskList = new ArrayList<>();
     //    private List<YouTubeVideo> mResultsList = new ArrayList<>(); // 5 main videos
 //    private HashMap<String, List<YouTubeVideo>> mPlayLists = new HashMap<>(); // Complete play list with one main video and its related videos
-    private List<YouTubeVideo> mPlayingList = new ArrayList<>(); // one of mRelatedVideosList
-    private static int mPlayingIndex = 0;
+    private YouTubeVideoList mPlayingList = new YouTubeVideoList(); // one of mRelatedVideosList
 
     public static synchronized YouTubeExtractorManager getIns() {
         if (sIns == null) {
@@ -42,29 +43,61 @@ public class YouTubeExtractorManager {
     }
 
 
-    public synchronized void loadCompleteList(final Context context, final YouTubeVideo mainVideo, final IExtractListener listener) {
+    public synchronized void loadPlayList(final Context context, final YouTubeVideoList list, final IExtractListener listener) {
+        final YouTubeVideo mainVideo = list != null && !list.isEmpty() ? list.get(0) : null;
+        if (mainVideo == null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "error: main video is null");
+            }
+            if (listener != null) {
+                listener.onError();
+            }
+            return;
+        }
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "mainVideo: " + mainVideo.getTitle());
         }
+        switch (list.getListType()) {
+            case YouTubeVideoList.ListType.KEYWORD_RESULT:
+                loadCompleteList(context, mainVideo, listener);
+                break;
+            case YouTubeVideoList.ListType.RECOMMEND:
+                loadRecommendList(context, list, mainVideo, listener);
+                break;
+        }
+    }
+
+    private synchronized void loadCompleteList(final Context context, @NonNull final YouTubeVideo mainVideo, final IExtractListener listener) {
         mPlayingList.clear();
+        mPlayingList.setListType(YouTubeVideoList.ListType.KEYWORD_RESULT);
         YouTubeAPI.getIns().searchRelatedVideos(mainVideo, new YouTubeAPI.IYoutubeApiCallback() {
             @Override
-            public void onLoaded(ArrayList<YouTubeVideo> result) {
+            public void onLoaded(YouTubeVideoList result) {
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, "mainVideo: " + mainVideo.getTitle());
                 }
                 if (result != null && !result.isEmpty()) {
                     mPlayingList.addAll(result);
                     loadVideo(context, mainVideo, listener);
+                } else {
+                    if (listener != null) {
+                        listener.onError();
+                    }
                 }
             }
         });
     }
 
+    private synchronized void loadRecommendList(final Context context, @NonNull final YouTubeVideoList list, @NonNull final YouTubeVideo mainVideo, final IExtractListener listener) {
+        mPlayingList.clear();
+        mPlayingList.setListType(YouTubeVideoList.ListType.RECOMMEND);
+        mPlayingList.addAll(list);
+        loadVideo(context, mainVideo, listener);
+    }
+
+
     public synchronized void next(Context context, final IExtractListener listener) {
-        int nextIndex = mPlayingIndex + 1;
-        mPlayingIndex = nextIndex < mPlayingList.size() ? nextIndex : 0;
-        YouTubeVideo nextVideo = mPlayingList.get(mPlayingIndex);
+        YouTubeVideo nextVideo = mPlayingList.next();
         if (!TextUtils.isEmpty(nextVideo.getStreamUrl())) {
             if (listener != null) {
                 listener.onLoaded(nextVideo);
@@ -75,9 +108,7 @@ public class YouTubeExtractorManager {
     }
 
     public synchronized void prev(Context context, final IExtractListener listener) {
-        int nextIndex = mPlayingIndex - 1;
-        mPlayingIndex = nextIndex >= 0 ? nextIndex : mPlayingList.size() - 1;
-        YouTubeVideo prevVideo = mPlayingList.get(mPlayingIndex);
+        YouTubeVideo prevVideo = mPlayingList.prev();
         if (!TextUtils.isEmpty(prevVideo.getStreamUrl())) {
             if (listener != null) {
                 listener.onLoaded(prevVideo);
@@ -87,13 +118,6 @@ public class YouTubeExtractorManager {
         }
     }
 
-    private void loadPlayList(Context context, List<YouTubeVideo> listToLoad) {
-        if (listToLoad != null && !listToLoad.isEmpty()) {
-            for (YouTubeVideo video : listToLoad) {
-                loadVideo(context, video, null);
-            }
-        }
-    }
 
     private synchronized void loadVideo(Context context, final YouTubeVideo video, final IExtractListener listener) {
         if (TextUtils.isEmpty(video.getVideoId()) || video.getStreamUrl() != null) {

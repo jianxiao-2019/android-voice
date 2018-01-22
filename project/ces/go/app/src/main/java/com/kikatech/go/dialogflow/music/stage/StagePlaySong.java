@@ -3,15 +3,14 @@ package com.kikatech.go.dialogflow.music.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
-import com.kikatech.go.music.model.YouTubeVideo;
+import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-
-import java.util.ArrayList;
 
 /**
  * @author SkeeterWang Created on 2018/1/17.
@@ -20,9 +19,9 @@ import java.util.ArrayList;
 class StagePlaySong extends BaseMusicStage {
     private static final String TAG = "StagePlaySong";
 
-    private ArrayList<YouTubeVideo> mPlayList;
+    private YouTubeVideoList mPlayList;
 
-    StagePlaySong(@NonNull SceneBase scene, ISceneFeedback feedback, ArrayList<YouTubeVideo> playList) {
+    StagePlaySong(@NonNull SceneBase scene, ISceneFeedback feedback, YouTubeVideoList playList) {
         super(scene, feedback);
         mPlayList = playList;
     }
@@ -47,7 +46,7 @@ class StagePlaySong extends BaseMusicStage {
             if (uiAndTtsText.length > 0) {
                 String uiText = uiAndTtsText[0];
                 String ttsText = uiAndTtsText[1];
-                TtsText tText = new TtsText(uiText);
+                TtsText tText = new TtsText(R.drawable.kika_ic_music, uiText);
                 Bundle args = new Bundle();
                 args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
                 speak(ttsText, args);

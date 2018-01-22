@@ -17,8 +17,11 @@ public class StreamMusicProvider implements IMusicProvider {
     private static final String STREAM_LINK = "http://178.63.62.145:8080/wide01";
     private static final String STREAM_LINK2 = "http://78.46.246.97:9000";
 
+    private static final float VOLUME_SCALE_INTERVAL = 0.3f;
+
     private static StreamMusicProvider sIns;
 
+    private float mVolumeScalar = 1.0f;
     private boolean isPrepared = false;
 
     private MediaPlayer mMediaPlayer;
@@ -97,6 +100,32 @@ public class StreamMusicProvider implements IMusicProvider {
     }
 
     @Override
+    public void volumeUp() {
+        try {
+            float nextLevel = mVolumeScalar + VOLUME_SCALE_INTERVAL;
+            mVolumeScalar = nextLevel > 1.0f ? 1.0f : nextLevel;
+            mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
+    }
+
+    @Override
+    public void volumeDown() {
+        try {
+            float nextLevel = mVolumeScalar - VOLUME_SCALE_INTERVAL;
+            mVolumeScalar = nextLevel < 0.0f ? 0.0f : nextLevel;
+            mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
+        } catch (Exception e) {
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
+            }
+        }
+    }
+
+    @Override
     public synchronized void mute() {
         try {
             mMediaPlayer.setVolume(0, 0);
@@ -110,7 +139,7 @@ public class StreamMusicProvider implements IMusicProvider {
     @Override
     public synchronized void unmute() {
         try {
-            mMediaPlayer.setVolume(1, 1);
+            mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);

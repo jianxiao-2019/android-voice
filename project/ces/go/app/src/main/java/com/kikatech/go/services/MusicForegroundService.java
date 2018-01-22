@@ -14,9 +14,10 @@ import android.view.WindowManager;
 import android.widget.RemoteViews;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.music.MusicSceneUtil;
 import com.kikatech.go.eventbus.ToMusicServiceEvent;
 import com.kikatech.go.music.MusicManager;
-import com.kikatech.go.music.model.YouTubeVideo;
+import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.services.view.manager.FloatingPlayerManager;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
@@ -26,8 +27,6 @@ import com.kikatech.usb.util.ImageUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
 
 /**
  * @author jason Created on 2018/1/10.
@@ -67,11 +66,15 @@ public class MusicForegroundService extends BaseForegroundService {
         }
         switch (action) {
             case ToMusicServiceEvent.ACTION_PLAY_SONG:
-                ArrayList<YouTubeVideo> listToPlay = event.getExtras().getParcelableArrayList(ToMusicServiceEvent.PARAM_PLAY_LIST);
+                YouTubeVideoList listToPlay = event.getExtras().getParcelable(ToMusicServiceEvent.PARAM_PLAY_LIST);
                 doStartMusic(listToPlay);
                 break;
             case ToMusicServiceEvent.ACTION_MUSIC_CHANGE:
                 updateNotification();
+                break;
+            case ToMusicServiceEvent.ACTION_VOLUME_CONTROL:
+                @MusicSceneUtil.VolumeControlType int volumeControlType = event.getExtras().getInt(ToMusicServiceEvent.PARAM_VOLUME_CONTROL_TYPE);
+                doVolumeControl(volumeControlType);
                 break;
         }
     }
@@ -158,7 +161,7 @@ public class MusicForegroundService extends BaseForegroundService {
         PendingIntent playPausePendingIntent = PendingIntent.getService(packageContext, getServiceId(), playPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent prevIntent = new Intent(packageContext, MusicForegroundService.class);
-        playPauseIntent.setAction(Commands.MUSIC_PREV_SONG);
+        prevIntent.setAction(Commands.MUSIC_PREV_SONG);
         PendingIntent prevPendingIntent = PendingIntent.getService(packageContext, getServiceId(), prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent nextIntent = new Intent(packageContext, MusicForegroundService.class);
@@ -197,7 +200,7 @@ public class MusicForegroundService extends BaseForegroundService {
     }
 
 
-    private void doStartMusic(ArrayList<YouTubeVideo> listToPlay) {
+    private void doStartMusic(YouTubeVideoList listToPlay) {
         if (listToPlay != null && !listToPlay.isEmpty()) {
             mManager.showPlayer(MusicForegroundService.this, listToPlay);
         }
@@ -217,6 +220,10 @@ public class MusicForegroundService extends BaseForegroundService {
 
     private void doPlayNextSong() {
         mManager.next(MusicForegroundService.this);
+    }
+
+    private void doVolumeControl(@MusicSceneUtil.VolumeControlType int type) {
+        mManager.volumeControl(type);
     }
 
     private void updateNotification() {
@@ -239,7 +246,7 @@ public class MusicForegroundService extends BaseForegroundService {
     }
 
 
-    public static synchronized void startMusic(Context context, final ArrayList<YouTubeVideo> listToPlay) {
+    public static synchronized void startMusic(Context context, final YouTubeVideoList listToPlay) {
         processStart(context, MusicForegroundService.class);
         BackgroundThread.getHandler().postDelayed(new Runnable() {
             @Override
@@ -258,7 +265,7 @@ public class MusicForegroundService extends BaseForegroundService {
         processStop(context, MusicForegroundService.class);
     }
 
-    public static synchronized void processPlaySong(ArrayList<YouTubeVideo> listToPlay) {
+    public static synchronized void processPlaySong(YouTubeVideoList listToPlay) {
         ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_PLAY_SONG);
         event.putExtra(ToMusicServiceEvent.PARAM_PLAY_LIST, listToPlay);
         sendToMusicServiceEvent(event);
@@ -266,6 +273,12 @@ public class MusicForegroundService extends BaseForegroundService {
 
     public static synchronized void processMusicChanged() {
         ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_MUSIC_CHANGE);
+        sendToMusicServiceEvent(event);
+    }
+
+    public static synchronized void processVolumeControl(@MusicSceneUtil.VolumeControlType int type) {
+        ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_VOLUME_CONTROL);
+        event.putExtra(ToMusicServiceEvent.PARAM_VOLUME_CONTROL_TYPE, type);
         sendToMusicServiceEvent(event);
     }
 

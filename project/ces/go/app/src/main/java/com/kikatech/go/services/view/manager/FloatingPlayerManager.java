@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.music.MusicSceneUtil;
 import com.kikatech.go.music.MusicManager;
 import com.kikatech.go.music.model.YouTubeVideo;
+import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.presenter.YouTubeExtractorManager;
 import com.kikatech.go.services.view.item.ItemYouTubePlayer;
@@ -20,8 +22,6 @@ import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.youtube.FensterVideoView;
 import com.kikatech.go.view.youtube.FloatingPlayerController;
-
-import java.util.ArrayList;
 
 /**
  * @author SkeeterWang Created on 2018/1/16.
@@ -197,7 +197,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
     }
 
 
-    public synchronized void showPlayer(final Context context, final ArrayList<YouTubeVideo> listToPlay) {
+    public synchronized void showPlayer(final Context context, final YouTubeVideoList listToPlay) {
         if (LogUtil.DEBUG) {
             LogUtil.logw(TAG, "showPlayer");
         }
@@ -206,8 +206,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         } else {
             MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
         }
-        final YouTubeVideo mainVideo = listToPlay.get(0);
-        YouTubeExtractorManager.getIns().loadCompleteList(context, mainVideo, new YouTubeExtractorManager.IExtractListener() {
+        YouTubeExtractorManager.getIns().loadPlayList(context, listToPlay, new YouTubeExtractorManager.IExtractListener() {
             int retryCounter = 1;
 
             @Override
@@ -224,7 +223,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                     LogUtil.logw(TAG, "onError");
                 }
                 if (retryCounter > 0) {
-                    YouTubeExtractorManager.getIns().loadCompleteList(mContext, mainVideo, this);
+                    YouTubeExtractorManager.getIns().loadPlayList(mContext, listToPlay, this);
                 }
                 retryCounter--;
             }
@@ -302,6 +301,25 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                 retryCounter--;
             }
         });
+    }
+
+    public synchronized void volumeControl(@MusicSceneUtil.VolumeControlType int type) {
+        if (mContainer.isViewAdded(mItemPlayer)) {
+            switch (type) {
+                case MusicSceneUtil.VolumeControlType.VOLUME_UP:
+                    MusicManager.getIns().volumeUp(MusicManager.ProviderType.YOUTUBE);
+                    break;
+                case MusicSceneUtil.VolumeControlType.VOLUME_DOWN:
+                    MusicManager.getIns().volumeDown(MusicManager.ProviderType.YOUTUBE);
+                    break;
+                case MusicSceneUtil.VolumeControlType.MUTE:
+                    MusicManager.getIns().mute(MusicManager.ProviderType.YOUTUBE);
+                    break;
+                case MusicSceneUtil.VolumeControlType.UNMUTE:
+                    MusicManager.getIns().unmute(MusicManager.ProviderType.YOUTUBE);
+                    break;
+            }
+        }
     }
 
     public void scale(@FensterVideoView.PlayerSize int scaleType, Configuration configuration) {
