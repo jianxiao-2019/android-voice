@@ -172,7 +172,7 @@ public class MusicForegroundService extends BaseForegroundService {
         RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_music_foreground_service);// set your custom layout
 
         boolean isPlaying = MusicManager.getIns().isPlaying(MusicManager.ProviderType.YOUTUBE);
-        int imgRes = isPlaying ? R.drawable.kika_kikago_qs_ic_pause : R.drawable.kika_kikago_qs_ic_play;
+        int imgRes = isPlaying ? R.drawable.selector_qs_ic_pause : R.drawable.selector_qs_ic_play;
         contentView.setImageViewResource(R.id.btn_play_pause, imgRes);
 
         contentView.setOnClickPendingIntent(R.id.btn_play_pause, playPausePendingIntent);

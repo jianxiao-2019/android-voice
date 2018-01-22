@@ -49,7 +49,7 @@
                         android:layout_marginLeft="18dp"
                         android:layout_marginRight="18dp"
                         android:padding="6dp"
-                        android:src="@drawable/kika_kikago_qs_ic_pause"/>
+                        android:src="@drawable/kika_kikago_float_ic_pause"/>
 
                     <ImageView
                         android:id="@+id/controller_center_btn_next"
