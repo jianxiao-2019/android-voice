@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * @author SkeeterWang Created on 2018/1/17.
  */
 
-public class StagePlaySong extends BaseMusicStage {
+class StagePlaySong extends BaseMusicStage {
     private static final String TAG = "StagePlaySong";
 
     private ArrayList<YouTubeVideo> mPlayList;

@@ -1,10 +1,9 @@
 package com.kikatech.go.dialogflow.music;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import com.kikatech.go.dialogflow.NonLoopSceneBase;
-import com.kikatech.go.dialogflow.music.stage.StageStart;
+import com.kikatech.go.dialogflow.music.stage.StageMusicIdle;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
@@ -32,22 +31,6 @@ public class SceneMusic extends NonLoopSceneBase {
 
     @Override
     protected SceneStage idle() {
-        return new SceneStage(this, mFeedback) {
-            @Override
-            public SceneStage next(String action, Bundle extra) {
-                if (SceneActions.ACTION_MUSIC_START.equals(action)) {
-                    return new StageStart(mSceneBase, mFeedback);
-                }
-                return null;
-            }
-
-            @Override
-            public void prepare() {
-            }
-
-            @Override
-            public void action() {
-            }
-        };
+        return new StageMusicIdle(this, mFeedback);
     }
 }

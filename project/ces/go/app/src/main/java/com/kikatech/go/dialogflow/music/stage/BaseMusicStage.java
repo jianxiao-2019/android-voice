@@ -12,7 +12,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  * @author SkeeterWang Created on 2018/1/5.
  */
 
-public class BaseMusicStage extends BaseSceneStage {
+class BaseMusicStage extends BaseSceneStage {
 
     BaseMusicStage(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
