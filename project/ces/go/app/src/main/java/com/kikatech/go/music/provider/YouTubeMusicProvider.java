@@ -3,7 +3,7 @@ package com.kikatech.go.music.provider;
 import com.kikatech.go.music.model.YouTubeVideo;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.view.item.ItemYouTubePlayer;
-import com.kikatech.go.view.youtube.FloatingPlayerController;
+import com.kikatech.go.view.youtube.playercontroller.impl.SkPlayerController;
 
 /**
  * @author SkeeterWang Created on 2018/1/15.
@@ -27,7 +27,7 @@ public class YouTubeMusicProvider implements IMusicProvider<YouTubeVideo> {
 
     public void setItemYouTubePlayer(ItemYouTubePlayer player) {
         this.mPlayer = player;
-        this.mPlayer.setPlayerStatusCallback(new FloatingPlayerController.IPlayerStatusCallback() {
+        this.mPlayer.setControllerStatusCallback(new SkPlayerController.IControllerCallback.IStatusCallback() {
             @Override
             public void onPlay() {
                 MusicForegroundService.processMusicChanged();
@@ -36,10 +36,6 @@ public class YouTubeMusicProvider implements IMusicProvider<YouTubeVideo> {
             @Override
             public void onPause() {
                 MusicForegroundService.processMusicChanged();
-            }
-
-            @Override
-            public void onBuffer() {
             }
         });
     }

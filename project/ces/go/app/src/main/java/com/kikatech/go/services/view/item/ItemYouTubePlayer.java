@@ -3,14 +3,17 @@ package com.kikatech.go.services.view.item;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
 import com.kikatech.go.R;
 import com.kikatech.go.music.model.YouTubeVideo;
 import com.kikatech.go.view.widget.MarqueeTextView;
-import com.kikatech.go.view.youtube.FensterVideoView;
-import com.kikatech.go.view.youtube.FloatingPlayerController;
+import com.kikatech.go.view.youtube.model.VideoInfo;
+import com.kikatech.go.view.youtube.player.impl.SkVideoPlayerView;
+import com.kikatech.go.view.youtube.playercontroller.impl.SkPlayerController;
+import com.kikatech.go.view.youtube.playercontroller.impl.SkPlayerController.IControllerCallback;
 
 /**
  * @author SkeeterWang Created on 2018/1/15.
@@ -19,13 +22,14 @@ import com.kikatech.go.view.youtube.FloatingPlayerController;
 public class ItemYouTubePlayer extends WindowFloatingItem {
     private static final String TAG = "ItemYouTubePlayer";
 
-    @FensterVideoView.PlayerSize
-    private int mPlayerSize = FensterVideoView.PlayerSize.DEFAULT;
+    @SkVideoPlayerView.PlayerSize
+    private int mPlayerSize = SkVideoPlayerView.PlayerSize.DEFAULT;
 
     private View mPlayerView;
-    private FensterVideoView mPlayer;
-    private FloatingPlayerController mPlayerController;
+    private SkVideoPlayerView mPlayer;
+    private SkPlayerController mPlayerController;
     private MarqueeTextView mVideoTitle;
+
 
     public ItemYouTubePlayer(View view, View.OnTouchListener listener) {
         super(view, listener);
@@ -36,25 +40,25 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     @Override
     protected void bindView() {
         mPlayerView = mItemView.findViewById(R.id.youtube_bar_player_view);
-        mPlayer = (FensterVideoView) mItemView.findViewById(R.id.play_video_texture);
-        mPlayerController = (FloatingPlayerController) mItemView.findViewById(R.id.play_video_controller);
+        mPlayer = (SkVideoPlayerView) mItemView.findViewById(R.id.play_video_texture);
+        mPlayerController = (SkPlayerController) mItemView.findViewById(R.id.play_video_controller);
         mVideoTitle = (MarqueeTextView) mItemView.findViewById(R.id.youtube_bar_title);
         bindListener();
     }
 
     private void bindListener() {
         mPlayerController.setMediaPlayer(mPlayer);
-        mPlayer.setMediaController(mPlayerController);
-        mPlayer.setOnPlayStateListener(mPlayerController);
+        mPlayer.setPlayerController(mPlayerController);
+        mPlayer.setVideoStatusListener(mPlayerController);
     }
 
     private void initPlayer() {
         switch (mPlayerSize) {
-            case FensterVideoView.PlayerSize.MINIMUM:
+            case SkVideoPlayerView.PlayerSize.MINIMUM:
                 mVideoTitle.setVisibility(View.GONE);
                 break;
-            case FensterVideoView.PlayerSize.MEDIUM:
-            case FensterVideoView.PlayerSize.FULLSCREEN:
+            case SkVideoPlayerView.PlayerSize.MEDIUM:
+            case SkVideoPlayerView.PlayerSize.FULLSCREEN:
                 mVideoTitle.setVisibility(View.VISIBLE);
                 break;
         }
@@ -65,15 +69,27 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
 
-    public void setControllerCallback(FloatingPlayerController.IControllerCallback callback) {
+    public void setControllerVideoCallback(IControllerCallback.IVideoCallback callback) {
         if (mPlayerController != null) {
-            mPlayerController.setControllerListener(callback);
+            mPlayerController.setControllerVideoCallback(callback);
         }
     }
 
-    public void setPlayerStatusCallback(FloatingPlayerController.IPlayerStatusCallback callback) {
+    public void setControllerPlayerCallback(IControllerCallback.IPlayerCallback callback) {
         if (mPlayerController != null) {
-            mPlayerController.setPlayerStatusCallback(callback);
+            mPlayerController.setControllerPlayerCallback(callback);
+        }
+    }
+
+    public void setControllerBehaviorCallback(IControllerCallback.IBehaviorCallback callback) {
+        if (mPlayerController != null) {
+            mPlayerController.setControllerBehaviorCallback(callback);
+        }
+    }
+
+    public void setControllerStatusCallback(IControllerCallback.IStatusCallback callback) {
+        if (mPlayerController != null) {
+            mPlayerController.setControllerStatusCallback(callback);
         }
     }
 
@@ -109,7 +125,8 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
 
 
     public void play(final YouTubeVideo videoToPlay) {
-        mPlayer.setVideo(videoToPlay.getStreamUrl());
+        VideoInfo videoInfo = new VideoInfo.Builder().setPath(videoToPlay.getStreamUrl()).build();
+        mPlayer.setVideo(videoInfo);
         setVideoTitle(videoToPlay.getTitle());
         mPlayer.start();
         mPlayerController.updatePausePlay();
@@ -126,7 +143,7 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
     public void stop() {
-        mPlayer.stopPlayback();
+        mPlayer.stop();
         mPlayerController.updatePausePlay();
     }
 
@@ -147,9 +164,9 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
 
-    public void performControllerView(float rawX, float rawY) {
+    public void onControllerViewClickEvent(MotionEvent event) {
         if (mPlayerController != null) {
-            mPlayerController.performControllerView(rawX, rawY);
+            mPlayerController.onClickedEvent(event);
         }
     }
 
@@ -161,7 +178,7 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
 
-    @FensterVideoView.PlayerSize
+    @SkVideoPlayerView.PlayerSize
     public int getPlayerSize() {
         return mPlayerSize;
     }

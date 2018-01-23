@@ -14,11 +14,10 @@
         <item name="android:layout_width">match_parent</item>
     </style>
 
-    <declare-styleable name="FensterVideoView">
+    <declare-styleable name="SkVideoPlayerView">
         <attr name="scaleType" format="enum">
             <enum name="scaleToFit" value="0"/>
             <enum name="crop" value="1"/>
         </attr>
     </declare-styleable>
-
 </resources>

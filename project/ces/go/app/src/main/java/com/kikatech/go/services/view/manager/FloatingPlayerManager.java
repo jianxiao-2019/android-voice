@@ -20,8 +20,8 @@ import com.kikatech.go.services.presenter.YouTubeExtractorManager;
 import com.kikatech.go.services.view.item.ItemYouTubePlayer;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.FlexibleOnTouchListener;
-import com.kikatech.go.view.youtube.FensterVideoView;
-import com.kikatech.go.view.youtube.FloatingPlayerController;
+import com.kikatech.go.view.youtube.player.impl.SkVideoPlayerView;
+import com.kikatech.go.view.youtube.playercontroller.impl.SkPlayerController;
 
 /**
  * @author SkeeterWang Created on 2018/1/16.
@@ -51,7 +51,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
 
         @Override
         public void onClick(View view, MotionEvent event) {
-            mItemPlayer.performControllerView(event.getRawX(), event.getRawY());
+            mItemPlayer.onControllerViewClickEvent(event);
         }
 
         @Override
@@ -89,15 +89,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         }
     });
 
-    private FloatingPlayerController.IControllerCallback mControllerCallback = new FloatingPlayerController.IControllerCallback() {
-        @Override
-        public void onPrev() {
-        }
-
-        @Override
-        public void onNext() {
-        }
-
+    private SkPlayerController.IControllerCallback.IPlayerCallback mControllerPlayerCallback = new SkPlayerController.IControllerCallback.IPlayerCallback() {
         @Override
         public void onScaleUp() {
         }
@@ -112,10 +104,6 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         }
 
         @Override
-        public void onRepeatModeChanged(boolean isChecked) {
-        }
-
-        @Override
         public void onShare() {
         }
 
@@ -125,14 +113,6 @@ public class FloatingPlayerManager extends BaseFloatingManager {
 
         @Override
         public void onYouTubeIconClick() {
-        }
-
-        @Override
-        public void onLockModeLocked() {
-        }
-
-        @Override
-        public void onLockModeUnlocked() {
         }
     };
 
@@ -167,18 +147,18 @@ public class FloatingPlayerManager extends BaseFloatingManager {
 
         // Init player style according to current scale type
         switch (mItemPlayer.getPlayerSize()) {
-            case FensterVideoView.PlayerSize.MINIMUM:
+            case SkVideoPlayerView.PlayerSize.MINIMUM:
                 layoutParams.width = MIN_WIDTH;
                 layoutParams.height = MIN_HEIGHT;
                 mItemPlayer.setViewWidth(MIN_WIDTH);
                 break;
-            case FensterVideoView.PlayerSize.MEDIUM:
+            case SkVideoPlayerView.PlayerSize.MEDIUM:
                 float scale = ((float) deviceWidth) / ((float) MIN_WIDTH);
                 layoutParams.width = deviceWidth;
                 layoutParams.height = (int) (MIN_HEIGHT * scale);
                 mItemPlayer.setViewWidth(deviceWidth);
                 break;
-            case FensterVideoView.PlayerSize.FULLSCREEN:
+            case SkVideoPlayerView.PlayerSize.FULLSCREEN:
                 // TODO: adjust init player with fullscreen
                 mItemPlayer.setViewWidth(WindowManager.LayoutParams.MATCH_PARENT);
                 break;
@@ -187,7 +167,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         int x = (deviceWidth - mItemPlayer.getMeasuredWidth()) / 2;
         mItemPlayer.setViewXY(x, 400);
         mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        mItemPlayer.setControllerCallback(mControllerCallback);
+        mItemPlayer.setControllerPlayerCallback(mControllerPlayerCallback);
         mItemPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -239,7 +219,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         YouTubeExtractorManager.getIns().clearTasks();
     }
 
-    public void scale(@FensterVideoView.PlayerSize int scaleType, Configuration configuration) {
+    public void scale(@SkVideoPlayerView.PlayerSize int scaleType, Configuration configuration) {
         View mPlayerView = mItemPlayer.getPlayerView();
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mPlayerView.getLayoutParams();
         layoutParams.topMargin = 0;
@@ -251,7 +231,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         float scale;
 
         switch (scaleType) {
-            case FensterVideoView.PlayerSize.MINIMUM:
+            case SkVideoPlayerView.PlayerSize.MINIMUM:
                 layoutParams.width = MIN_WIDTH;
                 layoutParams.height = MIN_HEIGHT;
                 layoutParams.leftMargin = 0;
@@ -262,7 +242,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                 // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Scale Down Align Original Bottom
                 mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
                 break;
-            case FensterVideoView.PlayerSize.MEDIUM:
+            case SkVideoPlayerView.PlayerSize.MEDIUM:
                 scale = ((float) deviceWidth) / ((float) oldPlayerWidth);
                 layoutParams.width = deviceWidth;
                 layoutParams.height = (int) (oldPlayerHeight * scale);
@@ -275,7 +255,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                 // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Fit Original Bottom
                 mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
                 break;
-            case FensterVideoView.PlayerSize.FULLSCREEN:
+            case SkVideoPlayerView.PlayerSize.FULLSCREEN:
                 layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
                 mItemPlayer.setViewWidth(WindowManager.LayoutParams.MATCH_PARENT);

@@ -1,9 +1,11 @@
-package com.kikatech.go.view.youtube.interfaces;
+package com.kikatech.go.view.youtube.player.interfaces;
 
 /**
- * @author SkeeterWang Created on 2017/6/20.
+ * @author SkeeterWang Created on 2018/1/19.
  */
-public interface VideoStatusListener {
+
+public interface IVideoStatusListener {
+
     void onFirstVideoFrameRendered();
 
     void onPlay();
