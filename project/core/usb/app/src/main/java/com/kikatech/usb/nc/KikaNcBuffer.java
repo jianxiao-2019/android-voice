@@ -18,6 +18,7 @@ public class KikaNcBuffer {
 
     public static final int CONTROL_ANGLE = 0;
     public static final int CONTROL_NC = 1;
+    public static final int CONTROL_MODE = 2;
 
     private final AudioBuffer mAudioBuffer;
     private final byte[] mAudioBytes = new byte[BUFFER_SIZE];
