@@ -1,28 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="MediaButton">
+    <!-- Small -->
+    <style name="MediaButtonSmall">
         <item name="android:background">@null</item>
-        <item name="android:layout_width">@dimen/fen__media_controller_button_width</item>
-        <item name="android:layout_height">@dimen/fen__media_controller_button_height</item>
+        <item name="android:layout_width">@dimen/player_btn_width_small</item>
+        <item name="android:layout_height">@dimen/player_btn_height_small</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:gravity">center</item>
     </style>
 
-    <style name="MediaButton.Previous">
-        <item name="android:src">@android:drawable/ic_media_rew</item>
+    <style name="MediaProgressBarSmall">
+        <item name="android:layout_width">@dimen/player_btn_width_small</item>
+        <item name="android:layout_height">@dimen/player_btn_width_small</item>
     </style>
 
-    <style name="MediaButton.Play">
-        <item name="android:src">@android:drawable/ic_media_play</item>
+
+    <!-- Medium -->
+    <style name="MediaButtonMedium">
+        <item name="android:background">@null</item>
+        <item name="android:layout_width">@dimen/player_btn_width_medium</item>
+        <item name="android:layout_height">@dimen/player_btn_height_medium</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingRight">6dp</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:gravity">center</item>
     </style>
 
-    <style name="MediaButton.Next">
-        <item name="android:src">@android:drawable/ic_media_ff</item>
+    <style name="MediaButtonMedium.Play">
+        <item name="android:src">@drawable/kika_kikago_float_ic_play</item>
     </style>
+
+    <style name="MediaProgressBarMedium">
+        <item name="android:layout_width">@dimen/player_btn_width_medium</item>
+        <item name="android:layout_height">@dimen/player_btn_width_medium</item>
+    </style>
+
+
+    <!-- Fullscreen -->
+    <style name="MediaButtonFullscreen">
+        <item name="android:background">@null</item>
+        <item name="android:layout_width">@dimen/player_btn_width_fullscreen</item>
+        <item name="android:layout_height">@dimen/player_btn_height_fullscreen</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingRight">6dp</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="MediaProgressBarFullscreen">
+        <item name="android:layout_width">@dimen/player_btn_width_fullscreen</item>
+        <item name="android:layout_height">@dimen/player_btn_width_fullscreen</item>
+    </style>
+
+
+    <style name="MediaSeekBar">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/player_seek_bar_height</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
 
     <style name="MediaText">
-        <item name="android:textSize">@dimen/fen__media_controller_text_size</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/player_seek_bar_text_size</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">@dimen/fen__padding_medium</item>
+        <item name="android:paddingTop">@dimen/player_seek_bar_text_padding_top</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:gravity">center_horizontal</item>
     </style>

@@ -204,7 +204,7 @@ public class MusicForegroundService extends BaseForegroundService {
 
     private void doStartMusic(YouTubeVideoList listToPlay) {
         if (listToPlay != null && !listToPlay.isEmpty()) {
-            mManager.showPlayer(MusicForegroundService.this, listToPlay);
+            mManager.showPlayer(listToPlay);
         }
     }
 
@@ -217,11 +217,11 @@ public class MusicForegroundService extends BaseForegroundService {
     }
 
     private void doPlayPrevSong() {
-        mManager.prev(MusicForegroundService.this);
+        mManager.prev();
     }
 
     private void doPlayNextSong() {
-        mManager.next(MusicForegroundService.this);
+        mManager.next();
     }
 
     private void doVolumeControl(@MusicSceneUtil.VolumeControlType int type) {

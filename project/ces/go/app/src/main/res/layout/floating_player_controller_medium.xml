@@ -4,7 +4,7 @@
     android:id="@+id/controller_touch_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#cc000000">
+    android:background="@color/floating_player_controller_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,9 +13,7 @@
 
         <include
             android:id="@+id/controller_top_area"
-            layout="@layout/floating_player_controller_top_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            layout="@layout/floating_player_controller_top_bar_medium"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -34,8 +32,7 @@
 
                     <ImageView
                         android:id="@+id/controller_center_btn_previous"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        style="@style/MediaButtonMedium"
                         android:layout_centerVertical="true"
                         android:layout_toLeftOf="@+id/controller_center_btn_pause_resume"
                         android:padding="6dp"
@@ -43,8 +40,7 @@
 
                     <ImageView
                         android:id="@+id/controller_center_btn_pause_resume"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        style="@style/MediaButtonMedium"
                         android:layout_centerInParent="true"
                         android:layout_marginLeft="18dp"
                         android:layout_marginRight="18dp"
@@ -53,8 +49,7 @@
 
                     <ImageView
                         android:id="@+id/controller_center_btn_next"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        style="@style/MediaButtonMedium"
                         android:layout_centerVertical="true"
                         android:layout_toRightOf="@+id/controller_center_btn_pause_resume"
                         android:padding="6dp"
@@ -77,17 +72,14 @@
 
             <ProgressBar
                 android:id="@+id/controller_center_progress_loading"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                style="@style/MediaProgressBarMedium"
                 android:layout_centerInParent="true"/>
 
         </RelativeLayout>
 
         <include
             android:id="@+id/controller_bottom_area"
-            layout="@layout/floating_player_controller_bottom_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            layout="@layout/floating_player_controller_bottom_bar"/>
     </LinearLayout>
 
 </com.kikatech.go.view.youtube.VideoTouchRoot>

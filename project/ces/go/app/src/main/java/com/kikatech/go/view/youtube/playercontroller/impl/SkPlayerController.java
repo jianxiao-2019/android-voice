@@ -186,6 +186,7 @@ public class SkPlayerController extends FrameLayout implements IVideoPlayerContr
     private boolean mFirstTimeLoading = true;
     private boolean mShowing;
     private boolean mDragging;
+    private boolean mLoadingViewShowing;
     private int mLastPlayedSeconds = -1;
 
 
@@ -339,6 +340,9 @@ public class SkPlayerController extends FrameLayout implements IVideoPlayerContr
                 mSeekBar.setMax(1000);
                 break;
         }
+        if (!mLoadingViewShowing) {
+            hideLoadingView();
+        }
     }
 
     @Override
@@ -477,12 +481,18 @@ public class SkPlayerController extends FrameLayout implements IVideoPlayerContr
                 : mFormatter.format("%02d:%02d", minutes, seconds).toString();
     }
 
+    @SkVideoPlayerView.PlayerSize
+    public int getPlayerSize() {
+        return mPlayerSize;
+    }
 
     public void setPlayerSize(@SkVideoPlayerView.PlayerSize int playerSize) {
+        removeAllViews();
         this.mPlayerSize = playerSize;
         bindView();
         bindListeners();
         initControllerUI();
+        requestLayout();
     }
 
     public void onClickedEvent(MotionEvent event) {
@@ -746,14 +756,16 @@ public class SkPlayerController extends FrameLayout implements IVideoPlayerContr
         if (mProgressLoading != null) {
             mProgressLoading.setVisibility(VISIBLE);
         }
+        mLoadingViewShowing = true;
     }
 
     @Override
     public synchronized void hideLoadingView() {
-        hide();
         if (mProgressLoading != null) {
             mProgressLoading.setVisibility(GONE);
         }
+        hide();
+        mLoadingViewShowing = false;
     }
 
     @Override

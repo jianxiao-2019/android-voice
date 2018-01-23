@@ -89,18 +89,32 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         }
     });
 
+    private SkPlayerController.IControllerCallback.IVideoCallback mControllerVideoCallback = new SkPlayerController.IControllerCallback.IVideoCallback() {
+        @Override
+        public void onPrev() {
+            prev();
+        }
+
+        @Override
+        public void onNext() {
+            next();
+        }
+    };
+
     private SkPlayerController.IControllerCallback.IPlayerCallback mControllerPlayerCallback = new SkPlayerController.IControllerCallback.IPlayerCallback() {
         @Override
         public void onScaleUp() {
+            scaleUp();
         }
 
         @Override
         public void onScaleDown() {
+            scaleDown();
         }
 
         @Override
         public void onClose() {
-            MusicForegroundService.stopMusic(mItemPlayer.getItemView().getContext());
+            MusicForegroundService.stopMusic(mContext);
         }
 
         @Override
@@ -115,7 +129,6 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         public void onYouTubeIconClick() {
         }
     };
-
 
     private FloatingPlayerManager(Context context, WindowManager manager, LayoutInflater inflater, Configuration configuration) {
         super(context, manager, inflater, configuration);
@@ -167,17 +180,18 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         int x = (deviceWidth - mItemPlayer.getMeasuredWidth()) / 2;
         mItemPlayer.setViewXY(x, 400);
         mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        mItemPlayer.setControllerVideoCallback(mControllerVideoCallback);
         mItemPlayer.setControllerPlayerCallback(mControllerPlayerCallback);
         mItemPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                next(mItemPlayer.getItemView().getContext());
+                next();
             }
         });
     }
 
 
-    public synchronized void showPlayer(final Context context, final YouTubeVideoList listToPlay) {
+    public synchronized void showPlayer(final YouTubeVideoList listToPlay) {
         if (LogUtil.DEBUG) {
             LogUtil.logw(TAG, "showPlayer");
         }
@@ -186,9 +200,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         } else {
             MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
         }
-        YouTubeExtractorManager.getIns().loadPlayList(context, listToPlay, new YouTubeExtractorManager.IExtractListener() {
-            int retryCounter = 1;
-
+        YouTubeExtractorManager.getIns().loadPlayList(mContext, listToPlay, new RetryableExtractListener() {
             @Override
             public void onLoaded(YouTubeVideo loadedVideo) {
                 if (LogUtil.DEBUG) {
@@ -202,10 +214,10 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                 if (LogUtil.DEBUG) {
                     LogUtil.logw(TAG, "onError");
                 }
-                if (retryCounter > 0) {
+                if (mRetryCount > 0) {
                     YouTubeExtractorManager.getIns().loadPlayList(mContext, listToPlay, this);
                 }
-                retryCounter--;
+                mRetryCount--;
             }
         });
     }
@@ -219,7 +231,34 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         YouTubeExtractorManager.getIns().clearTasks();
     }
 
-    public void scale(@SkVideoPlayerView.PlayerSize int scaleType, Configuration configuration) {
+
+    private void scaleUp() {
+        switch (mItemPlayer.getPlayerSize()) {
+            case SkVideoPlayerView.PlayerSize.MINIMUM:
+                scale(SkVideoPlayerView.PlayerSize.MEDIUM, mConfiguration);
+                break;
+            case SkVideoPlayerView.PlayerSize.MEDIUM:
+                scale(SkVideoPlayerView.PlayerSize.FULLSCREEN, mConfiguration);
+                break;
+            case SkVideoPlayerView.PlayerSize.FULLSCREEN:
+                break;
+        }
+    }
+
+    private void scaleDown() {
+        switch (mItemPlayer.getPlayerSize()) {
+            case SkVideoPlayerView.PlayerSize.FULLSCREEN:
+                scale(SkVideoPlayerView.PlayerSize.MEDIUM, mConfiguration);
+                break;
+            case SkVideoPlayerView.PlayerSize.MEDIUM:
+                scale(SkVideoPlayerView.PlayerSize.MINIMUM, mConfiguration);
+                break;
+            case SkVideoPlayerView.PlayerSize.MINIMUM:
+                break;
+        }
+    }
+
+    private void scale(@SkVideoPlayerView.PlayerSize int scaleType, Configuration configuration) {
         View mPlayerView = mItemPlayer.getPlayerView();
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mPlayerView.getLayoutParams();
         layoutParams.topMargin = 0;
@@ -267,6 +306,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         mPlayerView.setLayoutParams(layoutParams);
         mPlayerView.requestLayout();
         mItemPlayer.getItemView().requestLayout();
+        mItemPlayer.scale(scaleType);
         mContainer.requestLayout(mItemPlayer);
     }
 
@@ -283,15 +323,13 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         }
     }
 
-    public synchronized void next(final Context context) {
+    public synchronized void next() {
         if (!mContainer.isViewAdded(mItemPlayer)) {
             return;
         } else {
             MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
         }
-        YouTubeExtractorManager.getIns().next(context, new YouTubeExtractorManager.IExtractListener() {
-            int retryCounter = 1;
-
+        YouTubeExtractorManager.getIns().next(mContext, new RetryableExtractListener() {
             @Override
             public void onLoaded(YouTubeVideo loadedVideo) {
                 if (LogUtil.DEBUG) {
@@ -305,23 +343,21 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                 if (LogUtil.DEBUG) {
                     LogUtil.logw(TAG, "onError");
                 }
-                if (retryCounter > 0) {
+                if (mRetryCount > 0) {
                     YouTubeExtractorManager.getIns().next(mContext, this);
                 }
-                retryCounter--;
+                mRetryCount--;
             }
         });
     }
 
-    public synchronized void prev(final Context context) {
+    public synchronized void prev() {
         if (!mContainer.isViewAdded(mItemPlayer)) {
             return;
         } else {
             MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
         }
-        YouTubeExtractorManager.getIns().prev(context, new YouTubeExtractorManager.IExtractListener() {
-            int retryCounter = 1;
-
+        YouTubeExtractorManager.getIns().prev(mContext, new RetryableExtractListener() {
             @Override
             public void onLoaded(YouTubeVideo loadedVideo) {
                 if (LogUtil.DEBUG) {
@@ -336,10 +372,10 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                 if (LogUtil.DEBUG) {
                     LogUtil.logw(TAG, "onError");
                 }
-                if (retryCounter > 0) {
+                if (mRetryCount > 0) {
                     YouTubeExtractorManager.getIns().prev(mContext, this);
                 }
-                retryCounter--;
+                mRetryCount--;
             }
         });
     }
@@ -372,6 +408,19 @@ public class FloatingPlayerManager extends BaseFloatingManager {
     public static final class Builder extends BaseFloatingManager.Builder<Builder> {
         public FloatingPlayerManager build(Context context) {
             return new FloatingPlayerManager(context, mWindowManager, mLayoutInflater, mConfiguration);
+        }
+    }
+
+
+    private abstract class RetryableExtractListener implements YouTubeExtractorManager.IExtractListener {
+        int mRetryCount;
+
+        private RetryableExtractListener() {
+            this(1);
+        }
+
+        private RetryableExtractListener(int retryCount) {
+            mRetryCount = retryCount;
         }
     }
 }

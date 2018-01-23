@@ -22,9 +22,6 @@ import com.kikatech.go.view.youtube.playercontroller.impl.SkPlayerController.ICo
 public class ItemYouTubePlayer extends WindowFloatingItem {
     private static final String TAG = "ItemYouTubePlayer";
 
-    @SkVideoPlayerView.PlayerSize
-    private int mPlayerSize = SkVideoPlayerView.PlayerSize.DEFAULT;
-
     private View mPlayerView;
     private SkVideoPlayerView mPlayer;
     private SkPlayerController mPlayerController;
@@ -53,7 +50,7 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
     private void initPlayer() {
-        switch (mPlayerSize) {
+        switch (mPlayerController.getPlayerSize()) {
             case SkVideoPlayerView.PlayerSize.MINIMUM:
                 mVideoTitle.setVisibility(View.GONE);
                 break;
@@ -178,9 +175,18 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
 
+    public void scale(@SkVideoPlayerView.PlayerSize int targetSize) {
+        if (mPlayerController != null) {
+            mPlayerController.setPlayerSize(targetSize);
+        }
+        mPlayerView.requestLayout();
+        initPlayer();
+    }
+
+
     @SkVideoPlayerView.PlayerSize
     public int getPlayerSize() {
-        return mPlayerSize;
+        return mPlayerController.getPlayerSize();
     }
 
 

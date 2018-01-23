@@ -96,8 +96,6 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
 
     @ScaleType
     private int mScaleType;
-    @PlayerSize
-    private int mPlayerSize;
 
     /*
      * mCurrentState is a VideoView object's current state.

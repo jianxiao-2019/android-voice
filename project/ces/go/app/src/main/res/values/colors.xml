@@ -50,4 +50,7 @@
 
     <color name="floating_btn_close">#f66b6b</color>
     <color name="floating_btn_open">#0dcbc4</color>
+
+
+    <color name="floating_player_controller_bg">#cc000000</color>
 </resources>

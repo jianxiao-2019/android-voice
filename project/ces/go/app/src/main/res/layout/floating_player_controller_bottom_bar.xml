@@ -3,27 +3,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="top"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingLeft="10dp"
     android:paddingRight="10dp">
 
     <TextView
         android:id="@+id/controller_bottom_tv_time_current"
-        style="@style/MediaText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        style="@style/MediaText"/>
 
     <SeekBar
         android:id="@+id/controller_bottom_seek_bar"
-        android:layout_width="0dip"
-        android:layout_height="@dimen/fen__media_controller_seekbar_height"
-        android:layout_weight="1"/>
+        style="@style/MediaSeekBar"/>
 
     <TextView
         android:id="@+id/controller_bottom_tv_time_total"
-        style="@style/MediaText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        style="@style/MediaText"/>
 
 </LinearLayout>
