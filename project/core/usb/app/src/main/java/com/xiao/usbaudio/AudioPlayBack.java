@@ -62,7 +62,7 @@ public class AudioPlayBack {
         sKikaAudioDriver = kikaAudioDriver;
 
         if (sFilePath != null) {
-            mRecording = getFile("raw");
+            mRecording = getFile("_USB");
             try {
                 output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(mRecording)));
             } catch (IOException e) {
@@ -84,12 +84,12 @@ public class AudioPlayBack {
     private static DataOutputStream output = null;
     private static File mRecording;
 
-    private static File getFile(final String suffix) {
+    public static File getFile(final String suffix) {
         if (TextUtils.isEmpty(sFilePath)) {
             return null;
         }
 
-        File file = new File(sFilePath  + "_USB");
+        File file = new File(sFilePath  + suffix);
         return file;
     }
 }

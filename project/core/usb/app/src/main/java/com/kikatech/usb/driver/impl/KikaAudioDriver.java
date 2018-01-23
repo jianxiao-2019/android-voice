@@ -21,7 +21,6 @@ public class KikaAudioDriver extends UsbHostDriver {
 
     @Override
     public boolean open() {
-        Logger.d("KikaAudioDriver open");
         if (openConnection()) {
             Logger.d("KikaAudioDriver open openConnection  device name = "+ mDevice.getDeviceName()
                     + " mConnectionFileDes = " + mConnection.getFileDescriptor()
@@ -32,7 +31,6 @@ public class KikaAudioDriver extends UsbHostDriver {
                     mConnection.getFileDescriptor(),
                     mDevice.getProductId(),
                     mDevice.getVendorId())) {
-                Logger.d("KikaAudioDriver open successful.");
                 new Thread(new Runnable() {
 
                     @Override
@@ -42,9 +40,9 @@ public class KikaAudioDriver extends UsbHostDriver {
                 }).start();
                 return true;
             }
-            Logger.d("KikaAudioDriver open setup fail.");
+            Logger.w("Fail to setup the usb audio device.");
         }
-        Logger.d("KikaAudioDriver open setup fail 2.");
+        Logger.w("Fail to connect the usb device.");
         return false;
     }
 

@@ -25,6 +25,9 @@ public abstract class UsbHostDriver implements UsbAudioDriver {
     protected boolean openConnection() {
         try {
             UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
+            if (manager == null) {
+                return false;
+            }
             mConnection = manager.openDevice(mDevice);
             return mConnection != null;
         } catch (Exception e) {
