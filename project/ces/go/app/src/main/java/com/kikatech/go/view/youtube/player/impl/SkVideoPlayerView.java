@@ -230,26 +230,6 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
         requestFocus();
         mCurrentState = PlayerState.DEFAULT;
         mTargetState = PlayerState.DEFAULT;
-        setOnInfoListener(new MediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                if (mVideoStatusListener != null) {
-                    switch (what) {
-                        case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                            mVideoStatusListener.onFirstVideoFrameRendered();
-                            mVideoStatusListener.onPlay();
-                            break;
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
-                            mVideoStatusListener.onBuffer();
-                            break;
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
-                            mVideoStatusListener.onPlay();
-                            break;
-                    }
-                }
-                return false;
-            }
-        });
     }
 
 
@@ -486,7 +466,21 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
     }
 
     private boolean performOnInfo(MediaPlayer mediaPlayer, int what, int extra) {
-        if (mOnInfoListener != null) { // let customized listener handle the info
+        if (mVideoStatusListener != null) { // perform video status
+            switch (what) {
+                case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                    mVideoStatusListener.onFirstVideoFrameRendered();
+                    mVideoStatusListener.onPlay();
+                    break;
+                case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                    mVideoStatusListener.onBuffer();
+                    break;
+                case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                    mVideoStatusListener.onPlay();
+                    break;
+            }
+        }
+        if (mOnInfoListener != null) { // let customized listener perform the info
             mOnInfoListener.onInfo(mMediaPlayer, what, extra);
         }
         return true;
