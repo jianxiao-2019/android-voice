@@ -19,6 +19,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -43,10 +44,12 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_video_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="KikaGO is running in the background"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:textColor="@android:color/black"
                 android:textSize="13dp"/>
 
@@ -54,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Tap to open KikaGO"
+                android:text="Music are provided by YouTube"
                 android:textColor="#3e4149"
                 android:textSize="11dp"/>
 

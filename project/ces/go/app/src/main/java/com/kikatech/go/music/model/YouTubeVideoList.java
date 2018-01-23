@@ -104,6 +104,10 @@ public class YouTubeVideoList implements Parcelable {
         return index >= 0 && index < mList.size() ? mList.get(index) : null;
     }
 
+    public YouTubeVideo getCurrent() {
+        return !isEmpty() ? mList.get(mPlayingIndex) : null;
+    }
+
 
     /*---------- Parcelable impl ----------*/
 

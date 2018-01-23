@@ -178,6 +178,8 @@ public class MusicForegroundService extends BaseForegroundService {
         int imgRes = isPlaying ? R.drawable.selector_qs_ic_pause : R.drawable.selector_qs_ic_play;
         contentView.setImageViewResource(R.id.btn_play_pause, imgRes);
 
+        contentView.setTextViewText(R.id.tv_video_title, mManager.getCurrentVideoTitle());
+
         contentView.setOnClickPendingIntent(R.id.btn_play_pause, playPausePendingIntent);
         contentView.setOnClickPendingIntent(R.id.btn_play_prev, prevPendingIntent);
         contentView.setOnClickPendingIntent(R.id.btn_play_next, nextPendingIntent);

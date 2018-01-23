@@ -171,6 +171,12 @@ public class YouTubeExtractorManager {
     }
 
 
+    public String getCurrentVideoTitle() {
+        final YouTubeVideo video = mPlayingList.getCurrent();
+        return video != null ? video.getTitle() : "";
+    }
+
+
     public synchronized void clearTasks() {
         for (YouTubeExtractTask task : mExtractTaskList) {
             if (!task.isCancelled()) {

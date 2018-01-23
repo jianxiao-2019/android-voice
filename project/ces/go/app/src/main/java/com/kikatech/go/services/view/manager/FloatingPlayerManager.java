@@ -230,6 +230,67 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         });
     }
 
+    public synchronized void removePlayer() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logw(TAG, "removePlayer");
+        }
+        mContainer.removeItem(mItemPlayer);
+        MusicManager.getIns().stop(MusicManager.ProviderType.YOUTUBE);
+        YouTubeExtractorManager.getIns().clearTasks();
+    }
+
+    public void scale(@FensterVideoView.PlayerSize int scaleType, Configuration configuration) {
+        View mPlayerView = mItemPlayer.getPlayerView();
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mPlayerView.getLayoutParams();
+        layoutParams.topMargin = 0;
+        layoutParams.leftMargin = 0;
+
+        int deviceWidth = getDeviceWidth();
+        int oldPlayerWidth = mPlayerView.getWidth();
+        int oldPlayerHeight = mPlayerView.getHeight();
+        float scale;
+
+        switch (scaleType) {
+            case FensterVideoView.PlayerSize.MINIMUM:
+                layoutParams.width = MIN_WIDTH;
+                layoutParams.height = MIN_HEIGHT;
+                layoutParams.leftMargin = 0;
+                layoutParams.rightMargin = 0;
+                mItemPlayer.setViewWidth(MIN_WIDTH);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                // mLayoutParams.x = ( FloatingPlayer.getDeviceWidthByOrientation() - MIN_WIDTH ) / 2;
+                // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Scale Down Align Original Bottom
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                break;
+            case FensterVideoView.PlayerSize.MEDIUM:
+                scale = ((float) deviceWidth) / ((float) oldPlayerWidth);
+                layoutParams.width = deviceWidth;
+                layoutParams.height = (int) (oldPlayerHeight * scale);
+                mItemPlayer.setViewWidth(deviceWidth);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    mItemPlayer.setViewX(0);
+                }
+                // mLayoutParams.x = 0;
+                // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Fit Original Bottom
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                break;
+            case FensterVideoView.PlayerSize.FULLSCREEN:
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                mItemPlayer.setViewWidth(WindowManager.LayoutParams.MATCH_PARENT);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.MATCH_PARENT);
+                mItemPlayer.setViewXY(0, 0);
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                break;
+        }
+        mPlayerView.setLayoutParams(layoutParams);
+        mPlayerView.requestLayout();
+        mItemPlayer.getItemView().requestLayout();
+        mContainer.requestLayout(mItemPlayer);
+    }
+
+
     public synchronized void pauseOrResume() {
         if (!mContainer.isViewAdded(mItemPlayer)) {
             return;
@@ -322,64 +383,9 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         }
     }
 
-    public void scale(@FensterVideoView.PlayerSize int scaleType, Configuration configuration) {
-        View mPlayerView = mItemPlayer.getPlayerView();
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mPlayerView.getLayoutParams();
-        layoutParams.topMargin = 0;
-        layoutParams.leftMargin = 0;
 
-        int deviceWidth = getDeviceWidth();
-        int oldPlayerWidth = mPlayerView.getWidth();
-        int oldPlayerHeight = mPlayerView.getHeight();
-        float scale;
-
-        switch (scaleType) {
-            case FensterVideoView.PlayerSize.MINIMUM:
-                layoutParams.width = MIN_WIDTH;
-                layoutParams.height = MIN_HEIGHT;
-                layoutParams.leftMargin = 0;
-                layoutParams.rightMargin = 0;
-                mItemPlayer.setViewWidth(MIN_WIDTH);
-                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-                // mLayoutParams.x = ( FloatingPlayer.getDeviceWidthByOrientation() - MIN_WIDTH ) / 2;
-                // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Scale Down Align Original Bottom
-                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-                break;
-            case FensterVideoView.PlayerSize.MEDIUM:
-                scale = ((float) deviceWidth) / ((float) oldPlayerWidth);
-                layoutParams.width = deviceWidth;
-                layoutParams.height = (int) (oldPlayerHeight * scale);
-                mItemPlayer.setViewWidth(deviceWidth);
-                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-                if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    mItemPlayer.setViewX(0);
-                }
-                // mLayoutParams.x = 0;
-                // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Fit Original Bottom
-                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-                break;
-            case FensterVideoView.PlayerSize.FULLSCREEN:
-                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                mItemPlayer.setViewWidth(WindowManager.LayoutParams.MATCH_PARENT);
-                mItemPlayer.setViewHeight(WindowManager.LayoutParams.MATCH_PARENT);
-                mItemPlayer.setViewXY(0, 0);
-                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                break;
-        }
-        mPlayerView.setLayoutParams(layoutParams);
-        mPlayerView.requestLayout();
-        mItemPlayer.getItemView().requestLayout();
-        mContainer.requestLayout(mItemPlayer);
-    }
-
-    public synchronized void removePlayer() {
-        if (LogUtil.DEBUG) {
-            LogUtil.logw(TAG, "removePlayer");
-        }
-        mContainer.removeItem(mItemPlayer);
-        MusicManager.getIns().stop(MusicManager.ProviderType.YOUTUBE);
-        YouTubeExtractorManager.getIns().clearTasks();
+    public synchronized String getCurrentVideoTitle() {
+        return YouTubeExtractorManager.getIns().getCurrentVideoTitle();
     }
 
 
