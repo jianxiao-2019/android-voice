@@ -66,6 +66,15 @@
     </style>
 
 
+    <!-- Common -->
+
+    <style name="MediaButtonYouTubeIcon">
+        <item name="android:layout_width">59dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:src">@drawable/youtube_icon</item>
+    </style>
+
+
     <style name="MediaSeekBar">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">@dimen/player_seek_bar_height</item>

@@ -58,15 +58,13 @@
 
                 <ImageView
                     android:id="@+id/controller_center_btn_youtube_icon"
-                    android:layout_width="59dp"
-                    android:layout_height="24dp"
+                    style="@style/MediaButtonYouTubeIcon"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginBottom="2dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:src="@drawable/youtube_icon"/>
+                    android:layout_marginRight="8dp"/>
 
             </RelativeLayout>
 
