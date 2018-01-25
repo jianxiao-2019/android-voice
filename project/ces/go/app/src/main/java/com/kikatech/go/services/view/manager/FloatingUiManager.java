@@ -452,18 +452,29 @@ public class FloatingUiManager extends BaseFloatingManager {
 
     public synchronized void hideAllItems() {
         if (mContainer.isViewAdded(mItemGMap)) {
-            mItemGMap.setViewVisibility(View.GONE);
-            mItemTip.setViewVisibility(View.GONE);
-            mItemAsrResult.setViewVisibility(View.GONE);
-            mItemMsg.setViewVisibility(View.GONE);
+            mUiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mItemGMap.setViewVisibility(View.GONE);
+                    mItemTip.setViewVisibility(View.GONE);
+                    mItemAsrResult.setViewVisibility(View.GONE);
+                    mItemMsg.setViewVisibility(View.GONE);
+                }
+            });
         }
     }
 
     public synchronized void showAllItems() {
         if (mContainer.isViewAdded(mItemGMap)) {
-            mItemGMap.setViewVisibility(View.VISIBLE);
-            mItemTip.setViewVisibility(View.VISIBLE);
-            mItemMsg.setViewVisibility(View.VISIBLE);
+            mUiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mItemGMap.setViewVisibility(View.VISIBLE);
+                    mItemTip.setViewVisibility(View.VISIBLE);
+                    mItemAsrResult.setViewVisibility(View.VISIBLE);
+                    mItemMsg.setViewVisibility(View.VISIBLE);
+                }
+            });
         }
     }
 
