@@ -194,6 +194,12 @@ public class UiTaskManager {
             int alertRes = extras.getInt(SceneUtil.EXTRA_ALERT, 0);
             if (!TextUtils.isEmpty(event)) {
                 switch (event) {
+                    case SceneUtil.EVENT_SYNONYM_RESULT:
+                        String synonymResult = extras.getString(SceneUtil.EXTRA_UI_TEXT, "");
+                        if (!TextUtils.isEmpty(synonymResult)) {
+                            dispatchSpeechTask(synonymResult);
+                        }
+                        break;
                     case SceneUtil.EVENT_DISPLAY_MSG_SENT:
                         if (alertRes > 0) {
                             playAlert(alertRes);

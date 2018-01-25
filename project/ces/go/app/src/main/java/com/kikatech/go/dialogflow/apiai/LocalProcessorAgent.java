@@ -40,8 +40,18 @@ public class LocalProcessorAgent extends Agent {
 
         for (String stop : LocalProcessorCommands.CANCEL) {
             if (words.contains(stop)) {
-                if (LogUtil.DEBUG) LogUtil.log(TAG, "Find stop word : " + stop);
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "Find stop word : " + stop);
+                }
                 return new Intent(SceneStopIntent.SCENE, SceneActions.STOP_ACTION, stop, nBestWords);
+            }
+        }
+        for (String synonymStop : LocalProcessorCommands.CANCEL_SYNONYM) {
+            if (words.contains(synonymStop)) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "Find synonym stop word : " + synonymStop);
+                }
+                return new Intent(SceneStopIntent.SCENE, SceneActions.STOP_ACTION, LocalProcessorCommands.FIXED_CANCEL_SYNONYM, nBestWords);
             }
         }
         return null;

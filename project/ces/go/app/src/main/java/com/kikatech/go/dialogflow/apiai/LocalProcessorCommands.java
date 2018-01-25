@@ -18,6 +18,7 @@ class LocalProcessorCommands {
             "back to main page",
     };
 
+    static final String FIXED_CANCEL_SYNONYM = "Cancel";
     static final String[] CANCEL_SYNONYM = new String[]{
             "pixel",
             "pencil",

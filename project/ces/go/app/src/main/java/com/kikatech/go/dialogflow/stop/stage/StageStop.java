@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.kikatech.go.dialogflow.BaseSceneStage;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
+import com.kikatech.go.util.StringUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -15,9 +16,11 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
  */
 
 public class StageStop extends BaseSceneStage {
+    private String mStopKeyWord;
 
-    public StageStop(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    public StageStop(@NonNull SceneBase scene, ISceneFeedback feedback, String stopKeyWord) {
         super(scene, feedback);
+        mStopKeyWord = stopKeyWord;
     }
 
     @Override
@@ -27,6 +30,10 @@ public class StageStop extends BaseSceneStage {
 
     @Override
     protected void prepare() {
+        Bundle args = new Bundle();
+        args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_SYNONYM_RESULT);
+        args.putString(SceneUtil.EXTRA_UI_TEXT, StringUtil.upperCaseFirstWord(mStopKeyWord));
+        send(args);
     }
 
     @Override
