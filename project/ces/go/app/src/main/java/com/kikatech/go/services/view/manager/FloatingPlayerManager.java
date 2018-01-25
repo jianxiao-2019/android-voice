@@ -214,7 +214,10 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         } else {
             MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
         }
-        YouTubeExtractorManager.getIns().loadPlayList(mContext, listToPlay, new RetryableExtractListener() {
+        final YouTubeVideoList mClonedList = new YouTubeVideoList();
+        mClonedList.setListType(listToPlay.getListType());
+        mClonedList.addAll(listToPlay.getList());
+        YouTubeExtractorManager.getIns().loadPlayList(mContext, mClonedList, new RetryableExtractListener() {
             @Override
             public void onLoaded(YouTubeVideo loadedVideo) {
                 if (LogUtil.DEBUG) {
@@ -229,7 +232,7 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                     LogUtil.logw(TAG, "onError");
                 }
                 if (mRetryCount > 0) {
-                    YouTubeExtractorManager.getIns().loadPlayList(mContext, listToPlay, this);
+                    YouTubeExtractorManager.getIns().loadPlayList(mContext, mClonedList, this);
                 }
                 mRetryCount--;
             }
