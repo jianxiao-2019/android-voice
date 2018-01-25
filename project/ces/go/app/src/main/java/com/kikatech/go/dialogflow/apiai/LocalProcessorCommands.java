@@ -6,12 +6,20 @@ package com.kikatech.go.dialogflow.apiai;
 
 class LocalProcessorCommands {
     static final String[] CANCEL = new String[]{
-            "cancel",
-            "stop",
+            "skip",
+            "dismiss",
             "abort",
+            "stop",
             "stop it",
+            "cancel",
             "cancel it",
+            "cancel that",
             "go to main page",
             "back to main page",
+    };
+
+    static final String[] CANCEL_SYNONYM = new String[]{
+            "pixel",
+            "pencil",
     };
 }
