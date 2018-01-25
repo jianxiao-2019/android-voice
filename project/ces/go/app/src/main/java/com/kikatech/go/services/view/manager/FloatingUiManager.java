@@ -334,8 +334,8 @@ public class FloatingUiManager extends BaseFloatingManager {
     }
 
     private synchronized void showAsrResult(String text) {
-        if (mContainer.isViewAdded(mItemAsrResult)) {
-            mContainer.removeItem(mItemAsrResult);
+        boolean isViewShowing = mContainer.isViewAdded(mItemAsrResult);
+        if (isViewShowing) {
             removeCallbacks(removeAsrResultViewRunnable);
         }
         if (mContainer.isViewAdded(mItemMsg)) {
@@ -358,7 +358,11 @@ public class FloatingUiManager extends BaseFloatingManager {
         mItemAsrResult.setAnimation(android.R.style.Animation_Toast);
         mItemAsrResult.updateBackgroundRes(mGravity);
 
-        mContainer.addItem(mItemAsrResult);
+        if (!isViewShowing) {
+            mContainer.addItem(mItemAsrResult);
+        } else {
+            mContainer.requestLayout(mItemAsrResult);
+        }
 
         postDelay(removeAsrResultViewRunnable, 2800);
     }

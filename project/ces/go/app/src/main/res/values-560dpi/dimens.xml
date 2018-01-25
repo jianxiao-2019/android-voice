@@ -37,6 +37,7 @@
     <dimen name="go_layout_usr_msg_avatar_margin_left">17dp</dimen>
 
     <dimen name="go_layout_gmap_max_width">262dp</dimen>
+    <dimen name="go_layout_gmap_asr_result_max_width">212dp</dimen>
 
     <dimen name="dialog_margin_large">40dp</dimen>
     <dimen name="dialog_margin">22dp</dimen>
