@@ -230,8 +230,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 }
                 break;
             case ToDFServiceEvent.ACTION_BLUETOOTH_EVENT:
-                if(mDialogFlowService != null) {
-                    if(!mDFServiceStatus.isAwake()) {
+                if (mDialogFlowService != null) {
+                    if (!mDFServiceStatus.isAwake()) {
                         mDialogFlowService.wakeUp("bluetooth_event");
                     } else {
                         mDialogFlowService.forceArsResult();
@@ -312,9 +312,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private void setupDialogFlowService() {
         if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, "setupDialogFlowService, isStarted:" + isStarted);
+            LogUtil.logv(TAG, "setupDialogFlowService, mIsStarted:" + mIsStarted);
         }
-        if (isStarted) {
+        if (mIsStarted) {
             mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -365,9 +365,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
             sAudioSource = audioSource;
             if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms, isStarted:" + isStarted + ", sAudioSource:" + sAudioSource);
+                LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms, mIsStarted:" + mIsStarted + ", sAudioSource:" + sAudioSource);
             }
-            if (!isStarted) {
+            if (!mIsStarted) {
                 sHandleUsbConnect = true;
                 Context context = KikaMultiDexApplication.getAppContext();
                 Intent intent = new Intent(context, KikaLaunchActivity.class);
@@ -383,9 +383,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
             closeUsbAudio();
             if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms, isStarted:" + isStarted);
+                LogUtil.logv(TAG, "onDeviceDetached, spend:" + (System.currentTimeMillis() - start_t) + " ms, mIsStarted:" + mIsStarted);
             }
-            if (isStarted) {
+            if (mIsStarted) {
                 setupDialogFlowService();
             }
         }
@@ -604,6 +604,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             return;
                         } else if (isFinished) {
                             pauseAsr();
+                            mManager.handleAsrResult(speechText);
                         }
 
                         String action = DFServiceEvent.ACTION_ON_ASR_RESULT;
@@ -956,6 +957,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "onStartCommand: " + intent.getAction());
+            }
             //noinspection ConstantConditions
             switch (intent.getAction()) {
                 case Commands.OPEN_KIKA_GO:
@@ -972,8 +976,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     @Override
     public void onDestroy() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logw("SkTest", "onDestroy");
+        }
         onStopForeground();
-
         super.onDestroy();
     }
 

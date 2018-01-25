@@ -161,25 +161,39 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         // Init player style according to current scale type
         switch (mItemPlayer.getPlayerSize()) {
             case SkVideoPlayerView.PlayerSize.MINIMUM:
+                int x = (deviceWidth - mItemPlayer.getMeasuredWidth()) / 2;
                 layoutParams.width = MIN_WIDTH;
                 layoutParams.height = MIN_HEIGHT;
                 mItemPlayer.setViewWidth(MIN_WIDTH);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                mItemPlayer.setViewXY(x, 400);
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
                 break;
             case SkVideoPlayerView.PlayerSize.MEDIUM:
                 float scale = ((float) deviceWidth) / ((float) MIN_WIDTH);
                 layoutParams.width = deviceWidth;
                 layoutParams.height = (int) (MIN_HEIGHT * scale);
                 mItemPlayer.setViewWidth(deviceWidth);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                if (mConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    mItemPlayer.setViewXY(0, 400);
+                }
+                // mLayoutParams.x = 0;
+                // mLayoutParams.y = mLayoutParams.y - ( layoutParams.height - oldPlayerHeight ); // Fit Original Bottom
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
                 break;
             case SkVideoPlayerView.PlayerSize.FULLSCREEN:
-                // TODO: adjust init player with fullscreen
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
                 mItemPlayer.setViewWidth(WindowManager.LayoutParams.MATCH_PARENT);
+                mItemPlayer.setViewHeight(WindowManager.LayoutParams.MATCH_PARENT);
+                mItemPlayer.setViewXY(0, 0);
+                mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
                 break;
         }
-
-        int x = (deviceWidth - mItemPlayer.getMeasuredWidth()) / 2;
-        mItemPlayer.setViewXY(x, 400);
-        mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        mPlayerView.setLayoutParams(layoutParams);
+        mPlayerView.requestLayout();
+        mItemPlayer.getItemView().requestLayout();
         mItemPlayer.setControllerVideoCallback(mControllerVideoCallback);
         mItemPlayer.setControllerPlayerCallback(mControllerPlayerCallback);
         mItemPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

@@ -62,7 +62,7 @@
         <activity android:name=".ui.KikaIMReplyActivity"
                   android:screenOrientation="portrait" />
         <activity android:name=".ui.KikaDebugLogActivity"
-            android:screenOrientation="portrait" />
+                  android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaSMSActivity"
                   android:screenOrientation="portrait" />
         <activity android:name=".ui.HotWordActivity"
@@ -76,7 +76,7 @@
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaAlphaUiActivity"
                   android:launchMode="singleInstance"
-                  android:configChanges="keyboardHidden|keyboard"
+                  android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaMusicActivity"
                   android:screenOrientation="portrait"/>

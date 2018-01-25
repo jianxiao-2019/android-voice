@@ -2,25 +2,20 @@ package com.kikatech.go.services.view.manager;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.kikatech.go.R;
-import com.kikatech.go.services.view.WindowManagerContainer;
 import com.kikatech.go.services.view.item.BtnClose;
 import com.kikatech.go.services.view.item.BtnOpenApp;
+import com.kikatech.go.services.view.item.ItemAsrResult;
 import com.kikatech.go.services.view.item.ItemGMap;
 import com.kikatech.go.services.view.item.ItemMsg;
 import com.kikatech.go.services.view.item.ItemTip;
-import com.kikatech.go.services.view.item.ItemYouTubePlayer;
 import com.kikatech.go.services.view.item.WindowFloatingButton;
 import com.kikatech.go.services.view.item.WindowFloatingItem;
 import com.kikatech.go.ui.ResolutionUtil;
@@ -45,6 +40,7 @@ public class FloatingUiManager extends BaseFloatingManager {
 
     private ItemGMap mItemGMap;
     private ItemTip mItemTip;
+    private ItemAsrResult mItemAsrResult;
     private ItemMsg mItemMsg;
 
     private BtnClose mBtnClose;
@@ -83,6 +79,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             viewOriginalXY = mItemGMap.getViewXY();
             eventOriginalXY = new float[]{event.getRawX(), event.getRawY()};
             mItemTip.setViewVisibility(View.GONE);
+            mItemAsrResult.setViewVisibility(View.GONE);
             mItemMsg.setViewVisibility(View.GONE);
             buttonShown = false;
         }
@@ -134,6 +131,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             mContainer.moveItem(mItemGMap, gmapX, gmapY);
             hideButtons();
             mItemTip.setViewVisibility(View.VISIBLE);
+            mItemAsrResult.setViewVisibility(View.VISIBLE);
             mItemMsg.setViewVisibility(View.VISIBLE);
         }
 
@@ -165,6 +163,7 @@ public class FloatingUiManager extends BaseFloatingManager {
     private void initItems() {
         mItemGMap = new ItemGMap(inflate(R.layout.go_layout_gmap), onGMapTouchListener);
         mItemTip = new ItemTip(inflate(R.layout.go_layout_gmap_tip), null);
+        mItemAsrResult = new ItemAsrResult(inflate(R.layout.go_layout_gmap_asr_result), null);
         mItemMsg = new ItemMsg(inflate(R.layout.go_layout_gmap_msg), null);
     }
 
@@ -267,6 +266,13 @@ public class FloatingUiManager extends BaseFloatingManager {
         }
     };
 
+    private Runnable removeAsrResultViewRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mContainer.removeItem(mItemAsrResult);
+        }
+    };
+
     private Runnable removeMsgViewRunnable = new Runnable() {
         @Override
         public void run() {
@@ -293,8 +299,10 @@ public class FloatingUiManager extends BaseFloatingManager {
     public synchronized void removeGMap() {
         mContainer.removeItem(mItemGMap);
         mContainer.removeItem(mItemTip);
+        mContainer.removeItem(mItemAsrResult);
         mContainer.removeItem(mItemMsg);
         removeCallbacks(removeTipViewRunnable);
+        removeCallbacks(removeAsrResultViewRunnable);
         removeCallbacks(removeMsgViewRunnable);
     }
 
@@ -325,7 +333,41 @@ public class FloatingUiManager extends BaseFloatingManager {
         postDelay(removeTipViewRunnable, displayMillis);
     }
 
+    private synchronized void showAsrResult(String text) {
+        if (mContainer.isViewAdded(mItemAsrResult)) {
+            mContainer.removeItem(mItemAsrResult);
+            removeCallbacks(removeAsrResultViewRunnable);
+        }
+        if (mContainer.isViewAdded(mItemMsg)) {
+            mContainer.removeItem(mItemMsg);
+            removeCallbacks(removeMsgViewRunnable);
+        }
+
+        mItemAsrResult.setText(text);
+
+        int deviceWidth = getDeviceWidthByOrientation();
+        int itemWidth = mItemAsrResult.getMeasuredWidth();
+
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("deviceWidth: %1$s, itemWidth: %2$s", deviceWidth, itemWidth));
+        }
+
+        mItemAsrResult.setGravity(Gravity.TOP | mGravity);
+        mItemAsrResult.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
+        mItemAsrResult.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
+        mItemAsrResult.setAnimation(android.R.style.Animation_Toast);
+        mItemAsrResult.updateBackgroundRes(mGravity);
+
+        mContainer.addItem(mItemAsrResult);
+
+        postDelay(removeAsrResultViewRunnable, 2800);
+    }
+
     private synchronized void showMsgView(String text) {
+        if (mContainer.isViewAdded(mItemAsrResult)) {
+            mContainer.removeItem(mItemAsrResult);
+            removeCallbacks(removeAsrResultViewRunnable);
+        }
         if (mContainer.isViewAdded(mItemMsg)) {
             mContainer.removeItem(mItemMsg);
             removeCallbacks(removeMsgViewRunnable);
@@ -369,6 +411,13 @@ public class FloatingUiManager extends BaseFloatingManager {
         }
     }
 
+    public synchronized void handleAsrResult(String text) {
+        if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(text)) {
+            return;
+        }
+        showAsrResult(text);
+    }
+
     public synchronized void handleMsgChanged(String text) {
         if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(text)) {
             return;
@@ -376,7 +425,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         showMsgView(text);
     }
 
-    public synchronized void handleTipView(String title, String text) {
+    private synchronized void handleTipView(String title, String text) {
         if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(title) || TextUtils.isEmpty(text)) {
             return;
         }
@@ -401,6 +450,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         if (mContainer.isViewAdded(mItemGMap)) {
             mItemGMap.setViewVisibility(View.GONE);
             mItemTip.setViewVisibility(View.GONE);
+            mItemAsrResult.setViewVisibility(View.GONE);
             mItemMsg.setViewVisibility(View.GONE);
         }
     }

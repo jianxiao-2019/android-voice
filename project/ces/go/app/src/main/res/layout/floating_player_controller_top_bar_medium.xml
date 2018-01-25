@@ -17,17 +17,20 @@
         <ImageView
             android:id="@+id/controller_top_btn_repeat"
             style="@style/MediaButtonMedium"
-            android:src="@drawable/kika_kikago_float_ic_play"/>
+            android:src="@drawable/kika_kikago_float_ic_play"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/controller_top_btn_share"
             style="@style/MediaButtonMedium"
-            android:src="@drawable/kika_kikago_float_ic_play"/>
+            android:src="@drawable/kika_kikago_float_ic_play"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/controller_top_btn_favorite"
             style="@style/MediaButtonMedium"
-            android:src="@drawable/kika_kikago_float_ic_play"/>
+            android:src="@drawable/kika_kikago_float_ic_play"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <LinearLayout
@@ -41,12 +44,14 @@
         <ImageView
             android:id="@+id/controller_top_btn_scale_down"
             style="@style/MediaButtonMedium"
-            android:src="@drawable/kika_kikago_float_ic_play"/>
+            android:src="@drawable/kika_kikago_float_ic_play"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/controller_top_btn_scale_up"
             style="@style/MediaButtonMedium"
-            android:src="@drawable/kika_kikago_float_ic_play"/>
+            android:src="@drawable/kika_kikago_float_ic_play"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/controller_top_btn_close"

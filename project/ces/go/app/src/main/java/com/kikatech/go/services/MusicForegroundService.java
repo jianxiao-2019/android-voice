@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -18,8 +19,8 @@ import com.kikatech.go.dialogflow.music.MusicSceneUtil;
 import com.kikatech.go.eventbus.ToMusicServiceEvent;
 import com.kikatech.go.music.MusicManager;
 import com.kikatech.go.music.model.YouTubeVideoList;
+import com.kikatech.go.services.presenter.YouTubeExtractorManager;
 import com.kikatech.go.services.view.manager.FloatingPlayerManager;
-import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.usb.util.ImageUtil;
@@ -65,10 +66,6 @@ public class MusicForegroundService extends BaseForegroundService {
             return;
         }
         switch (action) {
-            case ToMusicServiceEvent.ACTION_PLAY_SONG:
-                YouTubeVideoList listToPlay = event.getExtras().getParcelable(ToMusicServiceEvent.PARAM_PLAY_LIST);
-                doStartMusic(listToPlay);
-                break;
             case ToMusicServiceEvent.ACTION_MUSIC_CHANGE:
                 updateNotification();
                 break;
@@ -93,22 +90,20 @@ public class MusicForegroundService extends BaseForegroundService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             try {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "onStartCommand: " + intent.getAction());
+                }
                 //noinspection ConstantConditions
                 switch (intent.getAction()) {
-                    case BaseForegroundService.Commands.START_FOREGROUND:
-                        break;
-                    case BaseForegroundService.Commands.STOP_FOREGROUND:
-                        doStopMusic();
-                        break;
                     case Commands.MUSIC_PLAY_PAUSE:
                         doPlayPauseMusic();
-                        break;
+                        return START_STICKY;
                     case Commands.MUSIC_PREV_SONG:
                         doPlayPrevSong();
-                        break;
+                        return START_STICKY;
                     case Commands.MUSIC_NEXT_SONG:
                         doPlayNextSong();
-                        break;
+                        return START_STICKY;
                     case Commands.OPEN_KIKA_GO:
                         IntentUtil.openKikaGo(MusicForegroundService.this);
                         return START_STICKY;
@@ -117,20 +112,25 @@ public class MusicForegroundService extends BaseForegroundService {
                 if (LogUtil.DEBUG) LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
         }
+        return super.onStartCommand(intent, flags, startId);
+    }
 
-        super.onStartCommand(intent, flags, startId);
-
-        return START_NOT_STICKY;
+    @Override
+    public void onDestroy() {
+        onStopForeground();
+        super.onDestroy();
     }
 
     @Override
     protected void onStartForeground() {
         registerReceiver();
+        doStartMusic(YouTubeExtractorManager.getIns().getPlayingList());
     }
 
     @Override
     protected void onStopForeground() {
         unregisterReceiver();
+        doStopMusic();
     }
 
     @Override
@@ -250,27 +250,11 @@ public class MusicForegroundService extends BaseForegroundService {
 
     public static synchronized void startMusic(Context context, final YouTubeVideoList listToPlay) {
         processStart(context, MusicForegroundService.class);
-        BackgroundThread.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isStarted) {
-                    BackgroundThread.getHandler().postDelayed(this, 100);
-                } else {
-                    BackgroundThread.getHandler().removeCallbacks(this);
-                    processPlaySong(listToPlay);
-                }
-            }
-        }, 200);
+        YouTubeExtractorManager.getIns().bindPlayList(listToPlay);
     }
 
     public static synchronized void stopMusic(Context context) {
         processStop(context, MusicForegroundService.class);
-    }
-
-    public static synchronized void processPlaySong(YouTubeVideoList listToPlay) {
-        ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_PLAY_SONG);
-        event.putExtra(ToMusicServiceEvent.PARAM_PLAY_LIST, listToPlay);
-        sendToMusicServiceEvent(event);
     }
 
     public static synchronized void processMusicChanged() {

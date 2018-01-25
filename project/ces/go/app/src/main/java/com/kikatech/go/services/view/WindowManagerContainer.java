@@ -20,7 +20,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public void setItemX(WindowFloatingItem item, int xPosition) {
+    public synchronized void setItemX(WindowFloatingItem item, int xPosition) {
         if (isViewAdded(item)) {
             item.setViewX(xPosition);
             mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
@@ -28,7 +28,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public void setItemY(WindowFloatingItem item, int yPosition) {
+    public synchronized void setItemY(WindowFloatingItem item, int yPosition) {
         if (isViewAdded(item)) {
             item.setViewX(yPosition);
             mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
@@ -36,7 +36,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public int getItemX(WindowFloatingItem item) {
+    public synchronized int getItemX(WindowFloatingItem item) {
         if (isViewAdded(item)) {
             return item.getViewX();
         }
@@ -44,7 +44,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public int getItemY(WindowFloatingItem item) {
+    public synchronized int getItemY(WindowFloatingItem item) {
         if (isViewAdded(item)) {
             return item.getViewY();
         }
@@ -52,7 +52,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public void addItem(WindowFloatingItem item) {
+    public synchronized void addItem(WindowFloatingItem item) {
         if (!isViewAdded(item)) {
             try {
                 mWindowManager.addView(item.getItemView(), item.getLayoutParams());
@@ -62,7 +62,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public void removeItem(WindowFloatingItem item) {
+    public synchronized void removeItem(WindowFloatingItem item) {
         if (isViewAdded(item)) {
             try {
                 mWindowManager.removeView(item.getItemView());
@@ -72,7 +72,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public void moveItem(WindowFloatingItem item, int xPosition, int yPosition) {
+    public synchronized void moveItem(WindowFloatingItem item, int xPosition, int yPosition) {
         if (isViewAdded(item)) {
             item.setViewX(xPosition);
             item.setViewY(yPosition);
@@ -81,7 +81,7 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     }
 
     @Override
-    public void requestLayout(WindowFloatingItem item) {
+    public synchronized void requestLayout(WindowFloatingItem item) {
         if (isViewAdded(item)) {
             mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
         }

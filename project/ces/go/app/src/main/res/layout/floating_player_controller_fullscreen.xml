@@ -36,7 +36,7 @@
                         android:layout_centerVertical="true"
                         android:layout_toLeftOf="@+id/controller_center_btn_pause_resume"
                         android:padding="6dp"
-                        android:src="@drawable/kika_kikago_qs_ic_previous"/>
+                        android:src="@drawable/kika_kikago_player_ic_previous"/>
 
                     <ImageView
                         android:id="@+id/controller_center_btn_pause_resume"
@@ -53,7 +53,7 @@
                         android:layout_centerVertical="true"
                         android:layout_toRightOf="@+id/controller_center_btn_pause_resume"
                         android:padding="6dp"
-                        android:src="@drawable/kika_kikago_qs_ic_next"/>
+                        android:src="@drawable/kika_kikago_player_ic_next"/>
                 </RelativeLayout>
 
                 <ImageView

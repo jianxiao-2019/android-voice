@@ -43,6 +43,14 @@ public class YouTubeExtractorManager {
     }
 
 
+    public synchronized void bindPlayList(YouTubeVideoList list) {
+        this.mPlayingList = list;
+    }
+
+    public synchronized YouTubeVideoList getPlayingList() {
+        return this.mPlayingList;
+    }
+
     public synchronized void loadPlayList(final Context context, final YouTubeVideoList list, final IExtractListener listener) {
         final YouTubeVideo mainVideo = list != null && !list.isEmpty() ? list.get(0) : null;
         if (mainVideo == null) {
