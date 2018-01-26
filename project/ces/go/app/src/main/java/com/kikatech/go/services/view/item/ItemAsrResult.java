@@ -56,10 +56,10 @@ public class ItemAsrResult extends WindowFloatingItem {
     public void updateBackgroundRes(int gravity) {
         switch (gravity) {
             case Gravity.LEFT:
-                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
+                mTvAsrResult.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
                 break;
             case Gravity.RIGHT:
-                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
+                mTvAsrResult.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
                 break;
         }
     }

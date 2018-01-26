@@ -605,7 +605,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         } else if (isFinished) {
                             pauseAsr();
                         }
-                        mManager.handleAsrResult(speechText);
+                        mManager.handleAsrResult(StringUtil.upperCaseFirstWord(speechText));
 
                         String action = DFServiceEvent.ACTION_ON_ASR_RESULT;
                         DFServiceEvent event = new DFServiceEvent(action);

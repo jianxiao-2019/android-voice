@@ -343,7 +343,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             removeCallbacks(removeMsgViewRunnable);
         }
 
-        mItemAsrResult.setText(text);
+        mItemAsrResult.setText(String.format("\"%s\"", text));
 
         int deviceWidth = getDeviceWidthByOrientation();
         int itemWidth = mItemAsrResult.getMeasuredWidth();
