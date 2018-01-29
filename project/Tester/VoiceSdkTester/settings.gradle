@@ -1,0 +1,6 @@
+include ':app'
+include ':voice'
+include ':usb'
+
+project(":voice").projectDir = new File("../../../../android-voice/voiceSDK");
+project(":usb").projectDir = new File("../../core/usb/app");

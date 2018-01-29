@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="path:/sdcard/voiceTester/fromMic/" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="4dp"
+        android:background="#33333333" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_mic"
+        tools:context=".activities.LocalPlayBackActivity"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="path:/sdcard/voiceTester/fromLocal/" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="4dp"
+        android:background="#33333333" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_local"
+        tools:context=".activities.LocalPlayBackActivity"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+</LinearLayout>

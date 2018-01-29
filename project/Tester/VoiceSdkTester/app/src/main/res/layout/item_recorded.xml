@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FF2F3A4F"
+    android:gravity="center_vertical"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/source_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_list_usbcable_select" />
+
+
+    <TextView
+        android:id="@+id/file_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/source_icon"
+        android:layout_toStartOf="@+id/control_raw"
+        android:paddingStart="14dp"
+        android:singleLine="true"
+        android:text="Kikago_180124_0020"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/file_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/source_icon"
+        android:layout_toEndOf="@+id/source_icon"
+        android:layout_toStartOf="@+id/control_raw"
+        android:paddingStart="14dp"
+        android:singleLine="true"
+        android:text="2018/01/24 | 00:20"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/control_raw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/control_nc"
+        android:drawableBottom="@drawable/ic_source_tag_raw"
+        android:drawablePadding="-9dp"
+        android:drawableTop="@drawable/ic_source_raw_play"
+        android:paddingLeft="10dp" />
+
+    <TextView
+        android:id="@+id/control_nc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:drawableBottom="@drawable/ic_source_tag_nc"
+        android:drawablePadding="-9dp"
+        android:drawableTop="@drawable/ic_source_nc_play"
+        android:paddingLeft="10dp"
+        android:singleLine="true" />
+
+    <LinearLayout
+        android:id="@+id/expanded_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/control_nc"
+        android:layout_marginTop="14dp"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="51dp"
+            android:background="#FFACB4C4" />
+
+        <TextView
+            android:id="@+id/asr_result_text"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:layout_marginStart="51dp"
+            android:ellipsize="end" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FFACB4C4" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="91dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Delete"
+                android:textColor="#FFEC5181" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Rename"
+                android:textColor="#FF50E3C2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Share"
+                android:textColor="#FF50E3C2" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
