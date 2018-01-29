@@ -5,13 +5,13 @@ public class UsbAudio {
         System.loadLibrary("usbaudio");
     }
 
-
+    
     /**
-     *  Return result of setup,
-     *  This function will enumerate and configure usb audio device.
-     *  After setup(), we should invoke loop() to prepare to receive
+     *  Return result of setup, 
+     *  This function will enumerate and configure usb audio device.    
+     *  After setup(), we should invoke loop() to prepare to receive 
      *  usb data.
-     * @param      path   usb device path.
+     * @param      path   usb device path. 
      *             fd     usb descriptor handle.
      *             vid    vendor id.
      *             pid    product id.
@@ -21,37 +21,88 @@ public class UsbAudio {
      */
     public native boolean setup(String path, int fd, int vid, int pid);
 
-
+    
     /**
-     *  Inform device to prepare to capture usb data stream
-     *  and waiting for start() to invoke callback function :
-     *  AudioPlayBack.write()
+     *  Inform device to prepare to capture usb data stream   
+     *  and waiting for start() to invoke callback function :          
+     *  AudioPlayBack.write()                                      
      */
     public native void loop();
 
 
     /**
-     *  Close usb handle.
+     *  Close usb handle.    
      *  After this call, start and stop function become non-sense.
      */
     public native void close();
 
 
     /**
-     *  Allow device to capture usb data stream, data will be
-     *  transmit to AudioPlayBack.write() function
+     *  Allow device to capture usb data stream, data will be   
+     *  transmit to AudioPlayBack.write() function                  
      */
     public native void start();
 
-
-    /**
+    
+    /** 
      *  Disallow capturing usb data stream, then AudioPlayBack.write()
      *  function will not be invoked.
-     *  An invoke of start() will re-allow device to capture usb data
+     *  An invoke of start() will re-allow device to capture usb data 
      *  stram.
      */
     public native void stop();
 
+    /**
+     *  Return volume level. Max: 9, Min: 1 
+     *  1              -16.5 db
+     *  2              -6.5 db
+     *  3              0 db
+     *  4              5 db
+     *  5              10 db
+     *  6              15 db
+     *  7              20 db
+     *  8              25 db
+     *  9              30 db
+     * @return     1 ~ 9   volume level
+     *             255     error
+     */
+    public native int checkVolumeState();
+
+
+    /**
+     *  Inscrease volume level.
+     *  Return actuel volume level. Max: 9, Min: 1 
+     *  1              -16.5 db
+     *  2              -6.5 db
+     *  3              0 db
+     *  4              5 db
+     *  5              10 db
+     *  6              15 db
+     *  7              20 db
+     *  8              25 db
+     *  9              30 db
+     * @return     1 ~ 9   volume level
+     *             255     error
+     */
+    public native int volumeUp();
+
+    
+    /**
+     *  Descrease volume level.  
+     *  Return actuel volume level. Max: 9, Min: 1 
+     *  1              -16.5 db
+     *  2              -6.5 db
+     *  3              0 db
+     *  4              5 db
+     *  5              10 db
+     *  6              15 db
+     *  7              20 db
+     *  8              25 db
+     *  9              30 db
+     * @return     1 ~ 9   volume level
+     *             255     error
+     */
+    public native int volumeDown();
 
     public native int measure();
 

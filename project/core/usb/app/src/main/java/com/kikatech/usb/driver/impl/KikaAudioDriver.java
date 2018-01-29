@@ -73,5 +73,6 @@ public class KikaAudioDriver extends UsbHostDriver {
         if (mOnDataListener != null) {
             mOnDataListener.onData(data, length);
         }
+        Logger.d("onData mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
     }
 }
