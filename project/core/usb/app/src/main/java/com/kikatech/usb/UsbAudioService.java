@@ -57,7 +57,7 @@ public class UsbAudioService {
                 mAudioSource = new UsbAudioSource(driver);
                 mListener.onDeviceAttached(mAudioSource);
             } else {
-                // TODO: 17-11-20 handle exception
+                mListener.onDeviceError(0);
             }
         }
 

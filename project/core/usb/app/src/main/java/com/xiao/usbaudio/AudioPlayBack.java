@@ -37,7 +37,9 @@ public class AudioPlayBack {
         if (len == 0) {
             return;
         }
-        sKikaAudioDriver.onData(decodedAudio, len);
+        if (sKikaAudioDriver != null) {
+            sKikaAudioDriver.onData(decodedAudio, len);
+        }
 
         if (sFilePath != null) {
             try {
