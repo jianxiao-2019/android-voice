@@ -389,6 +389,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 setupDialogFlowService();
             }
         }
+
+        @Override
+        public void onDeviceError(int errorCode) {
+            
+        }
     };
 
     private void initUsbVoice() {
