@@ -11,11 +11,7 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
-import com.kikatech.usb.util.LogUtil;
-
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by tianli on 17-11-6.
@@ -57,7 +53,15 @@ class UsbDeviceManager {
 
     public void scanDevices() {
         UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
+        if (manager == null) {
+            mListener.onNoDevices();
+            return;
+        }
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        if (deviceList == null || deviceList.size() == 0) {
+            mListener.onNoDevices();
+            return;
+        }
         for (UsbDevice device : deviceList.values()) {
             mDeviceListener.onUsbAttached(device);
         }
@@ -122,5 +126,7 @@ class UsbDeviceManager {
         void onDeviceAttached(UsbDevice device);
 
         void onDeviceDetached();
+
+        void onNoDevices();
     }
 }

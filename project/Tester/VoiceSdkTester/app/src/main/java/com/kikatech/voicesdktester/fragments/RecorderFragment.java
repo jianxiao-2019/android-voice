@@ -414,10 +414,17 @@ public class RecorderFragment extends Fragment implements
 
         @Override
         public void onDeviceError(int errorCode) {
-            if (mErrorHintText != null) {
-                mErrorHintText.setVisibility(View.VISIBLE);
+            if (errorCode == ERROR_NO_DEVICES) {
+                Logger.d("onDeviceError ERROR_NO_DEVICES");
+                mUsbAudioSource = null;
+                attachService();
+            } else if (errorCode == ERROR_DRIVER_INIT_FAIL) {
+                Logger.d("onDeviceError ERROR_DRIVER_INIT_FAIL");
+                if (mErrorHintText != null) {
+                    mErrorHintText.setVisibility(View.VISIBLE);
+                }
+                mKikagoSignal.setImageResource(R.drawable.signal_point_red);
             }
-            mKikagoSignal.setImageResource(R.drawable.signal_point_red);
         }
     };
 

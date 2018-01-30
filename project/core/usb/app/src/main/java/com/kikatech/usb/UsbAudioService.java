@@ -7,6 +7,9 @@ import com.kikatech.usb.driver.UsbAudioDriver;
 import com.kikatech.usb.driver.impl.KikaAudioDriver;
 import com.kikatech.voice.util.log.Logger;
 
+import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_INIT_FAIL;
+import static com.kikatech.usb.IUsbAudioListener.ERROR_NO_DEVICES;
+
 /**
  * Created by tianli on 17-11-6.
  */
@@ -55,9 +58,13 @@ public class UsbAudioService {
             UsbAudioDriver driver = new KikaAudioDriver(mContext, mDevice);
             if (driver.open()) {
                 mAudioSource = new UsbAudioSource(driver);
-                mListener.onDeviceAttached(mAudioSource);
+                if (mListener != null) {
+                    mListener.onDeviceAttached(mAudioSource);
+                }
             } else {
-                mListener.onDeviceError(0);
+                if (mListener != null) {
+                    mListener.onDeviceError(ERROR_DRIVER_INIT_FAIL);
+                }
             }
         }
 
@@ -67,7 +74,16 @@ public class UsbAudioService {
             if (mAudioSource != null) {
                 mAudioSource.close();
                 mAudioSource = null;
-                mListener.onDeviceDetached();
+                if (mListener != null) {
+                    mListener.onDeviceDetached();
+                }
+            }
+        }
+
+        @Override
+        public void onNoDevices() {
+            if (mListener != null) {
+                mListener.onDeviceError(ERROR_NO_DEVICES);
             }
         }
     };
