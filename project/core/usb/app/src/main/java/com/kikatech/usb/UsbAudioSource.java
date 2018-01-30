@@ -77,6 +77,10 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
         mKikaNcBuffer.setNoiseSuppressionParameters(mode, value);
     }
 
+    public int getNoiseSuppressionParameters(int mode) {
+        return mKikaNcBuffer.getNoiseSuppressionParameters(mode);
+    }
+
     @Override
     public void onData(byte[] data, int length) {
         mKikaNcBuffer.onData(data, length);

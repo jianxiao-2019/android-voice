@@ -94,4 +94,8 @@ public class KikaNcBuffer {
     public void setNoiseSuppressionParameters(int mode, int value) {
         NoiseCancellation.SetControl(mode, value);
     }
+
+    public int getNoiseSuppressionParameters(int mode) {
+        return NoiseCancellation.GetControl(mode);
+    }
 }
