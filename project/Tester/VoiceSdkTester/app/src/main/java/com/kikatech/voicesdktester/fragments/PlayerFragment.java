@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -100,6 +102,11 @@ public class PlayerFragment extends Fragment {
             holder.expendedLayout.setVisibility(isOpenedItem ? View.VISIBLE : View.GONE);
             holder.itemView.setOnClickListener(new ItemClickListener(position));
             holder.recognizeResult.setText(item.recognizeResult);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
+            long duration = item.file.length() / 2 / 16000;
+            Logger.d("[" + holder.fileName + "] duration = " + duration + " date = " + sdf.format(item.file.lastModified()));
+            holder.fileTime.setText(sdf.format(item.file.lastModified()) + " | " + String.format("%02d:%02d", duration / 60, duration % 60));
 //            holder.fileTime.setVisibility(View.GONE);
         }
 
@@ -145,9 +152,10 @@ public class PlayerFragment extends Fragment {
             if (file.isDirectory()) {
                 continue;
             }
-            if (file.getName().startsWith("Kikago_") && file.getName().contains("_USB")) {
+            if (file.getName().startsWith("Kikago_") && file.getName().contains("_NC")) {
                 String simpleFileName = file.getPath().substring(0, file.getPath().lastIndexOf("_"));
                 RecognizeItem item = new RecognizeItem();
+                item.file = file;
                 item.filePath = simpleFileName;
                 item.fileName = simpleFileName.substring(simpleFileName.lastIndexOf("/") + 1);
                 item.isSourceUsb = true;
@@ -158,6 +166,7 @@ public class PlayerFragment extends Fragment {
             } else if (file.getName().startsWith("Phone_") && file.getName().contains("_SRC")) {
                 String simpleFileName = file.getPath().substring(0, file.getPath().lastIndexOf("_"));
                 RecognizeItem item = new RecognizeItem();
+                item.file = file;
                 item.filePath = simpleFileName;
                 item.fileName = simpleFileName.substring(simpleFileName.lastIndexOf("/") + 1);
                 item.isSourceUsb = false;
@@ -308,6 +317,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private class RecognizeItem {
+        File file;
         String fileName;
         String filePath;
         boolean isSourceUsb;

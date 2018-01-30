@@ -35,8 +35,7 @@
         android:paddingStart="14dp"
         android:singleLine="true"
         android:text="2018/01/24 | 00:20"
-        android:textSize="13sp"
-        android:visibility="gone" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/control_raw"
