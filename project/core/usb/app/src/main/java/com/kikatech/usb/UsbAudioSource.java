@@ -81,4 +81,25 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
     public void onData(byte[] data, int length) {
         mKikaNcBuffer.onData(data, length);
     }
+
+    public int checkVolumeState() {
+        if (mAudioDriver != null) {
+            return mAudioDriver.checkVolumeState();
+        }
+        return -1;
+    }
+
+    public int volumeUp() {
+        if (mAudioDriver != null) {
+            return mAudioDriver.volumeUp();
+        }
+        return -1;
+    }
+
+    public int volumeDown() {
+        if (mAudioDriver != null) {
+            return mAudioDriver.volumeDown();
+        }
+        return -1;
+    }
 }

@@ -464,6 +464,45 @@ public class MainActivity extends AppCompatActivity implements
                 });
             }
         });
+
+        findViewById(R.id.button_volume_up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mUsbAudioSource != null) {
+                    int volume = mUsbAudioSource.volumeUp();
+                    Logger.d("button_volume_up volume = " + volume);
+                    if (mTextView != null) {
+                        mTextView.setText("volume : " + volume);
+                    }
+                }
+            }
+        });
+
+        findViewById(R.id.button_volume_down).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mUsbAudioSource != null) {
+                    int volume = mUsbAudioSource.volumeDown();
+                    Logger.d("button_volume_down volume = " + volume);
+                    if (mTextView != null) {
+                        mTextView.setText("volume : " + volume);
+                    }
+                }
+            }
+        });
+
+        findViewById(R.id.button_check_volume).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mUsbAudioSource != null) {
+                    int volume = mUsbAudioSource.checkVolumeState();
+                    Logger.d("button_check_volume volume = " + volume);
+                    if (mTextView != null) {
+                        mTextView.setText("volume : " + volume);
+                    }
+                }
+            }
+        });
     }
 
     private void updatePermissionButtonState() {

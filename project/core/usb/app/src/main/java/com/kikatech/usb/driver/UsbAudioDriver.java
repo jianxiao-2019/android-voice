@@ -19,4 +19,10 @@ public interface UsbAudioDriver {
     interface OnDataListener {
         void onData(byte[] data, int length);
     }
+
+    int checkVolumeState();
+
+    int volumeUp();
+
+    int volumeDown();
 }

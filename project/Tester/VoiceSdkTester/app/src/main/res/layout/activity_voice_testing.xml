@@ -64,6 +64,36 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <Button
+                    android:id="@+id/button_volume_up"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Volume Up"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/button_volume_down"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Volume Down"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/button_check_volume"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Check Volume"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
