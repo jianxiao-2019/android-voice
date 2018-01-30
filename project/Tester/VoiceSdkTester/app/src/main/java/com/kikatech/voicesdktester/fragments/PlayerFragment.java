@@ -1,5 +1,7 @@
 package com.kikatech.voicesdktester.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -103,6 +106,10 @@ public class PlayerFragment extends Fragment {
             holder.itemView.setOnClickListener(new ItemClickListener(position));
             holder.recognizeResult.setText(item.recognizeResult);
 
+            holder.deleteItem.setOnClickListener(new ItemDeleteClickListener(item.file));
+//            holder.renameItem.setOnClickListener(new ItemRenameListener(item.file));
+//            holder.shareItem.setOnClickListener();
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
             long duration = item.file.length() / 2 / 16000;
             Logger.d("[" + holder.fileName + "] duration = " + duration + " date = " + sdf.format(item.file.lastModified()));
@@ -127,6 +134,10 @@ public class PlayerFragment extends Fragment {
         View expendedLayout;
         TextView recognizeResult;
 
+        View deleteItem;
+        View renameItem;
+        View shareItem;
+
         public FileViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
@@ -138,6 +149,10 @@ public class PlayerFragment extends Fragment {
 
             expendedLayout = itemView.findViewById(R.id.expanded_layout);
             recognizeResult = (TextView) itemView.findViewById(R.id.asr_result_text);
+
+            deleteItem = itemView.findViewById(R.id.item_delete);
+            renameItem = itemView.findViewById(R.id.item_rename);
+            shareItem = itemView.findViewById(R.id.item_share);
         }
     }
 
@@ -152,7 +167,7 @@ public class PlayerFragment extends Fragment {
             if (file.isDirectory()) {
                 continue;
             }
-            if (file.getName().startsWith("Kikago_") && file.getName().contains("_NC")) {
+            if (file.getName().contains("_NC")) {
                 String simpleFileName = file.getPath().substring(0, file.getPath().lastIndexOf("_"));
                 RecognizeItem item = new RecognizeItem();
                 item.file = file;
@@ -163,7 +178,7 @@ public class PlayerFragment extends Fragment {
 
                 items.add(item);
 
-            } else if (file.getName().startsWith("Phone_") && file.getName().contains("_SRC")) {
+            } else if (file.getName().contains("_SRC")) {
                 String simpleFileName = file.getPath().substring(0, file.getPath().lastIndexOf("_"));
                 RecognizeItem item = new RecognizeItem();
                 item.file = file;
@@ -199,43 +214,73 @@ public class PlayerFragment extends Fragment {
 
         return sb.toString();
     }
+
+    private class ItemDeleteClickListener implements View.OnClickListener {
+
+        private File file;
+
+        public ItemDeleteClickListener(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (file.getName().contains("_NC")) {
+                File usb = new File(file.getPath().substring(0, file.getPath().lastIndexOf("_NC")) + "_USB");
+                Logger.d("ItemDeleteClickListener usb = " + usb.getPath());
+                usb.delete();
+            }
+            file.delete();
+            refreshFiles();
+        }
+    }
+
+//    private class ItemRenameListener implements View.OnClickListener {
 //
-//    private List<String> scanAvailableFile(String path) {
-//        List<String> fileNames = new ArrayList<>();
+//        private File file;
 //
-//        File folder = new File(path);
-//        if (!folder.exists() || !folder.isDirectory() || folder.listFiles() == null) {
-//            return fileNames;
+//        public ItemRenameListener(File file) {
+//            this.file = file;
 //        }
 //
-//        for (final File file : folder.listFiles()) {
-//            if (file.isDirectory()
-//                    || file.getName().contains("wav")
-//                    || file.getName().contains("speex")
-//                    || file.getName().contains("txt")) {
-//                continue;
-//            }
-//            fileNames.add(file.getAbsolutePath());
-//        }
+//        @Override
+//        public void onClick(View v) {
+//            final AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
+//            editDialog.setTitle("Enter new file name.");
 //
-//        return process(fileNames);
-//    }
+//            final EditText editText = new EditText(getContext());
+//            editDialog.setView(editText);
 //
-//    private List<String> process(List<String> fileNames) {
-//        List<String> result = new ArrayList<>();
-//        for (int i = fileNames.size() - 1; i >= 0; i--) {
-//            String fileName = fileNames.get(i);
-//            if (fileName.contains("_SRC")) {
-//                result.add(fileName);
-//            } else if (fileName.contains("_NC")) {
-//                String special = fileName.substring(0, fileName.lastIndexOf("_"));
-//                if (!TextUtils.isEmpty(special) && fileNames.contains(special + "_USB")) {
-//                    result.add(special);
+//            editDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                // do something when the button is clicked
+//                public void onClick(DialogInterface dialog, int which) {
+//                    if (file.getName().contains("_NC")) {
+//                        File usb = new File(file.getPath().substring(0, file.getPath().lastIndexOf("_NC")) + "_USB");
+//                        File newUsbFile = new File(usb.getPath().substring(0, usb.getPath().lastIndexOf("/") + 1) + editText.getText() + "_USB");
+//                        Logger.d("ItemRenameListener usb = " + usb.getPath());
+//                        Logger.d("ItemRenameListener newUsbFile = " + newUsbFile.getPath());
+//                        usb.renameTo(newUsbFile);
+//                        File newFile = new File(file.getPath().substring(0, file.getPath().lastIndexOf("/") + 1) + editText.getText() + "_NC");
+//                        file.renameTo(newFile);
+//                        Logger.d("ItemRenameListener usb = " + newFile.getPath());
+//                    } else {
+//                        File newFile = new File(file.getPath().substring(0, file.getPath().lastIndexOf("/") + 1) + editText.getText() + "_SRC");
+//                        file.renameTo(newFile);
+//                        Logger.d("ItemRenameListener usb = " + newFile.getPath());
+//                    }
+//
+//                    refreshFiles();
 //                }
-//            }
+//            });
+//            editDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                // do something when the button is clicked
+//                public void onClick(DialogInterface dialog, int which) {
+//                    dialog.dismiss();
+//                }
+//            });
+//            editDialog.show();
 //        }
-//
-//        return result;
 //    }
 
     private class ItemClickListener implements View.OnClickListener {
