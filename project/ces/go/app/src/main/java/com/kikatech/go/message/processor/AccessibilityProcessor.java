@@ -23,6 +23,8 @@ public abstract class AccessibilityProcessor {
     protected boolean mRunning = false;
     protected String mStage;
 
+    protected Scene mScene = null;
+
     private static final int STAGE_TIMEOUT = 4000;
 
     public AccessibilityProcessor(Context context) {
@@ -58,7 +60,7 @@ public abstract class AccessibilityProcessor {
 
     abstract void onStageTimeout();
 
-    protected String getStage() {
+    protected String getCurrentStage() {
         return mStage;
     }
 

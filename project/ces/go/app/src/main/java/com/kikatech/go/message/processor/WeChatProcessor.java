@@ -6,7 +6,6 @@ import android.content.Intent;
 
 import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.im.apps.WeChatScene;
-import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.util.AppConstants;
 
 /**
@@ -36,7 +35,7 @@ public class WeChatProcessor extends IMProcessor {
         mActionRunnable = new Runnable() {
             @Override
             public void run() {
-                String stage = getStage();
+                String stage = getCurrentStage();
                 final WeChatScene scene = (WeChatScene) mScene;
                 String target = mTarget;
                 switch (stage) {

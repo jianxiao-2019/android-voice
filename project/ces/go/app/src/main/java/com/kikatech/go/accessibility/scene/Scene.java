@@ -1,6 +1,5 @@
 package com.kikatech.go.accessibility.scene;
 
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.kikatech.go.accessibility.AccessibilityNodeWrapper;
@@ -19,18 +18,13 @@ public class Scene {
 
     private static final String TAG = "Access.Scene";
 
-    protected AccessibilityEvent mEvent;
     protected AccessibilityNodeInfo mRootNodeInfo;
 
     protected Map<String, AccessibilityNodeWrapper> mAllNodes = new HashMap<>();
 
-    public Scene(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo) {
-        mEvent = event;
-        mRootNodeInfo = rootNodeInfo;
-    }
-
     public Scene(AccessibilityNodeInfo rootNodeInfo) {
         mRootNodeInfo = rootNodeInfo;
+        updateNodes(rootNodeInfo);
     }
 
 
@@ -45,7 +39,8 @@ public class Scene {
         updateNodes(scene.getRootNodeInfo());
     }
 
-    public void updateNodes(AccessibilityNodeInfo rootNodeInfo) {
+    private synchronized void updateNodes(AccessibilityNodeInfo rootNodeInfo) {
+        mRootNodeInfo = rootNodeInfo;
         List<AccessibilityNodeInfo> allNodeInfo = AccessibilityUtils.getAllChildNodeInfo(rootNodeInfo);
         for (AccessibilityNodeInfo nodeInfo : allNodeInfo) {
             if (AccessibilityUtils.isNodeValid(nodeInfo)) {
@@ -55,7 +50,7 @@ public class Scene {
         }
     }
 
-    protected AccessibilityNodeWrapper findNodeByViewId(String viewId) {
+    protected synchronized AccessibilityNodeWrapper findNodeByViewId(String viewId) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(viewId, nodeWrapper.getResourceId())) {
                 return nodeWrapper;
@@ -68,7 +63,7 @@ public class Scene {
         return null;
     }
 
-    protected AccessibilityNodeWrapper findNodeByText(String text) {
+    protected synchronized AccessibilityNodeWrapper findNodeByText(String text) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(text, nodeWrapper.getText()) ||
                 StringUtil.equals(text, nodeWrapper.getContentDescription())) {
@@ -78,7 +73,7 @@ public class Scene {
         return null;
     }
 
-    protected AccessibilityNodeWrapper findNodeByClass(String clz) {
+    protected synchronized AccessibilityNodeWrapper findNodeByClass(String clz) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(clz, nodeWrapper.getClassName())) {
                 return nodeWrapper;
@@ -87,7 +82,7 @@ public class Scene {
         return null;
     }
 
-    protected AccessibilityNodeWrapper findNodeByContentDescription(String contentDescription) {
+    protected synchronized AccessibilityNodeWrapper findNodeByContentDescription(String contentDescription) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(contentDescription, nodeWrapper.getContentDescription())) {
                 return nodeWrapper;
@@ -96,7 +91,7 @@ public class Scene {
         return null;
     }
 
-    protected AccessibilityNodeWrapper findNodeByTextAndId(String text, String viewId) {
+    protected synchronized AccessibilityNodeWrapper findNodeByTextAndId(String text, String viewId) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(text, nodeWrapper.getText()) &&
                 StringUtil.equals(viewId, nodeWrapper.getResourceId())) {
@@ -106,7 +101,7 @@ public class Scene {
         return null;
     }
 
-    protected AccessibilityNodeWrapper findNodeByTextAndClass(String text, String clz) {
+    protected synchronized AccessibilityNodeWrapper findNodeByTextAndClass(String text, String clz) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if ((StringUtil.equals(text, nodeWrapper.getText()) ||
                  StringUtil.equals(text, nodeWrapper.getContentDescription())) &&

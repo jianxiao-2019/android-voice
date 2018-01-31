@@ -38,7 +38,7 @@ public class MessengerProcessor extends IMProcessor {
         mActionRunnable = new Runnable() {
             @Override
             public void run() {
-                final String stage = getStage();
+                final String stage = getCurrentStage();
                 final String target = mTarget;
                 MessengerScene scene = (MessengerScene) mScene;
                 try {

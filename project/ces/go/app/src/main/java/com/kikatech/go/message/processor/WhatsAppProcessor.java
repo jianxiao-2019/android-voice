@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.im.apps.WhatsAppScene;
-import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.util.AppConstants;
 
 /**
@@ -39,7 +38,7 @@ public class WhatsAppProcessor extends IMProcessor {
         mActionRunnable = new Runnable() {
             @Override
             public void run() {
-                String stage = getStage();
+                String stage = getCurrentStage();
                 final WhatsAppScene scene = (WhatsAppScene) mScene;
                 String target = mTarget;
                 switch (stage) {

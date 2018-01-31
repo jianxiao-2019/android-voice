@@ -24,7 +24,6 @@ public abstract class IMProcessor extends AccessibilityProcessor {
     protected String mMessage;
 
     protected Runnable mActionRunnable = null;
-    protected Scene mScene = null;
 
     public IMProcessor(Context context) {
         super(context);
@@ -85,7 +84,7 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
         setRunning(false);
 
-        String stage = getStage();
+        String stage = getCurrentStage();
         switch (stage) {
             case ProcessingStage.IMProcessStage.STAGE_INITIAL:
                 if(LogUtil.DEBUG) LogUtil.logw(TAG,"Not install app: " + getPackage());
