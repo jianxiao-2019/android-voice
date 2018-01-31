@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
@@ -424,6 +425,7 @@ public class RecorderFragment extends Fragment implements
                 Logger.d("onDeviceError ERROR_NO_DEVICES");
                 mUsbAudioSource = null;
                 attachService();
+                Toast.makeText(getContext(), "KikaGo mic isn’t plugged-in.", Toast.LENGTH_SHORT).show();
             } else if (errorCode == ERROR_DRIVER_INIT_FAIL) {
                 Logger.d("onDeviceError ERROR_DRIVER_INIT_FAIL");
                 if (mErrorHintText != null) {
