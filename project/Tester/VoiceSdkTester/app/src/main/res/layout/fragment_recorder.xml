@@ -167,7 +167,40 @@
         android:layout_height="92dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="12dp"
-        android:background="#FF2F3A4F" />
+        android:background="#FF2F3A4F">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/no_recore_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_list_nodata" />
+
+            <TextView
+                android:id="@+id/no_record_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/no_recore_image"
+                android:layout_marginStart="14dp"
+                android:layout_toEndOf="@+id/no_recore_image"
+                android:text="No record file."
+                android:textColor="#FFFFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/no_record_text"
+                android:layout_below="@+id/no_record_text"
+                android:text="—/—/—"
+                android:textColor="#FFFFFFFF" />
+        </RelativeLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/error_hint"

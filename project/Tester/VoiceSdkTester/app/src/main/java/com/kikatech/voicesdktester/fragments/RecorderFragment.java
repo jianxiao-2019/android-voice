@@ -28,6 +28,7 @@ import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
+import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 import com.xiao.usbaudio.AudioPlayBack;
 
@@ -128,7 +129,10 @@ public class RecorderFragment extends Fragment implements
 
         mRecordingTimerText = (TextView) view.findViewById(R.id.recording_timer_text);
 
+        mRecentArea = (FrameLayout) view.findViewById(R.id.recent_area);
+
         attachService();
+        refreshRecentView();
     }
 
     @Override
@@ -349,6 +353,8 @@ public class RecorderFragment extends Fragment implements
         mTimerHandler.removeMessages(0);
         mTimeInSec = 0;
         mIsListening = false;
+
+        refreshRecentView();
     }
 
     @Override
@@ -442,4 +448,111 @@ public class RecorderFragment extends Fragment implements
 
         }
     };
+
+    private void refreshRecentView() {
+        if (mRecentArea != null) {
+            RecognizeItem item = scanLatestFile(PATH_FROM_MIC);
+            if (item == null) {
+                return;
+            }
+            mRecentArea.removeAllViews();
+
+            View recentView = LayoutInflater.from(getContext()).inflate(R.layout.item_recorded, mRecentArea, false);
+
+            recentView.findViewById(R.id.expanded_layout).setVisibility(View.GONE);
+            ((ImageView) recentView.findViewById(R.id.source_icon)).setImageResource(item.isSourceUsb ?
+                     R.drawable.ic_list_usbcable : R.drawable.ic_list_phone);;
+            ((TextView) recentView.findViewById(R.id.file_name)).setText(item.fileName);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
+            long duration = item.file.length() / 2 / 16000;
+            ((TextView) recentView.findViewById(R.id.file_time)).setText(sdf.format(item.file.lastModified()) + " | " + String.format("%02d:%02d", duration / 60, duration % 60));
+            View controlNc = recentView.findViewById(R.id.control_nc);
+            controlNc.setVisibility(item.isSourceUsb ? View.VISIBLE : View.INVISIBLE);
+            controlNc.setOnClickListener(new PlayButtonClickListener(
+                    item.filePath + "_NC",
+                    R.drawable.ic_source_nc_play,
+                    R.drawable.ic_source_nc_pause,
+                    R.drawable.ic_source_tag_nc));
+            recentView.findViewById(R.id.control_raw).setOnClickListener(new PlayButtonClickListener(
+                    item.filePath + (item.isSourceUsb ? "_USB" : "_SRC"),
+                    R.drawable.ic_source_raw_play,
+                    R.drawable.ic_source_raw_pause,
+                    R.drawable.ic_source_tag_raw));
+
+            mRecentArea.addView(recentView);
+        }
+    }
+
+    private RecognizeItem scanLatestFile(String path) {
+        File folder = new File(path);
+        if (!folder.exists() || !folder.isDirectory() || folder.listFiles() == null) {
+            return null;
+        }
+
+        File latestFile = null;
+        RecognizeItem latestItem = null;
+        for (final File file : folder.listFiles()) {
+            if (file.isDirectory()) {
+                continue;
+            }
+
+            if (file.getName().contains("_NC") || file.getName().contains("_SRC")) {
+                if (latestFile == null || file.lastModified() > latestFile.lastModified()) {
+                    String simpleFileName = file.getPath().substring(0, file.getPath().lastIndexOf("_"));
+                    latestFile = file;
+                    latestItem = new RecognizeItem();
+                    latestItem.file = file;
+                    latestItem.filePath = simpleFileName;
+                    latestItem.fileName = simpleFileName.substring(simpleFileName.lastIndexOf("/") + 1);
+                    latestItem.isSourceUsb = file.getName().contains("_NC");
+                }
+            }
+        }
+
+        return latestItem;
+    }
+
+    private class RecognizeItem {
+        File file;
+        String fileName;
+        String filePath;
+        boolean isSourceUsb;
+    }
+
+    private class PlayButtonClickListener implements View.OnClickListener {
+
+        private String mFilePath;
+        private AudioPlayerTask mTask;
+
+        private int mDrawablePlay;
+        private int mDrawableStop;
+        private int mDrawableSource;
+
+        public PlayButtonClickListener(String filePath,
+                                       int drawablePlay, int drawableStop, int drawableSource) {
+            mFilePath = filePath;
+
+            mDrawablePlay = drawablePlay;
+            mDrawableStop = drawableStop;
+            mDrawableSource = drawableSource;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mTask == null || !mTask.isPlaying()) {
+                mTask = new AudioPlayerTask(mFilePath, (TextView) v, mDrawablePlay, mDrawableSource);
+                mTask.execute();
+                ((TextView) v).setCompoundDrawablesWithIntrinsicBounds(
+                        0, mDrawableStop, 0, mDrawableSource);
+            } else {
+                if (mTask.isPlaying()) {
+                    mTask.stop();
+                    mTask = null;
+                }
+                ((TextView) v).setCompoundDrawablesWithIntrinsicBounds(
+                        0, mDrawablePlay, 0, mDrawableSource);
+            }
+        }
+    }
 }
