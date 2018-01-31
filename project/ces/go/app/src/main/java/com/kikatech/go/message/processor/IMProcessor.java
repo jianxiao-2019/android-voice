@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
 
-import com.kikatech.go.accessibility.im.IMScene;
 import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.util.AppConstants;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 
@@ -23,12 +23,16 @@ public abstract class IMProcessor extends AccessibilityProcessor {
     protected String mTarget;
     protected String mMessage;
 
+    protected Runnable mActionRunnable = null;
+    protected Scene mScene = null;
+
     public IMProcessor(Context context) {
         super(context);
         updateStage(ProcessingStage.IMProcessStage.STAGE_INITIAL);
     }
 
     abstract public String getPackage();
+    abstract void initActionRunnable();
 
     public interface IIMProcessorFlow {
         void onStart();
@@ -44,14 +48,15 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
     @Override
     public void onStageTimeout() {
-        LogUtil.logw(TAG, "onStageTimeout, stage:" + mStage);
-        if(isRunning()) {
+        if (isRunning()) {
+            LogUtil.logw(TAG, "onStageTimeout, stage:" + mStage);
             stop();
         }
     }
 
     @Override
     public void start() {
+        initActionRunnable();
         setRunning(true);
         new CountDownTimer(TIMEOUT, 1000) {
             @Override
@@ -69,39 +74,40 @@ public abstract class IMProcessor extends AccessibilityProcessor {
             updateStage(ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT);
         }
 
-        if(mIIMProcessorFlow != null) {
+        if (mIIMProcessorFlow != null) {
             mIIMProcessorFlow.onStart();
         }
     }
 
     @Override
     public void stop() {
+        BackgroundThread.getHandler().removeCallbacks(mActionRunnable);
+
         setRunning(false);
 
         String stage = getStage();
-        if(LogUtil.DEBUG) LogUtil.logw(TAG, "Send message failed with stage: " + stage);
         switch (stage) {
             case ProcessingStage.IMProcessStage.STAGE_INITIAL:
-                if(LogUtil.DEBUG) LogUtil.log(TAG,"Not install app: " + getPackage());
+                if(LogUtil.DEBUG) LogUtil.logw(TAG,"Not install app: " + getPackage());
                 break;
             case ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT:
-                if(LogUtil.DEBUG) LogUtil.log(TAG,"Cannot find search button");
+                if(LogUtil.DEBUG) LogUtil.logw(TAG,"Cannot find search button");
                 break;
             case ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON:
-                if(LogUtil.DEBUG) LogUtil.log(TAG,"Cannot enter search name");
+                if(LogUtil.DEBUG) LogUtil.logw(TAG,"Cannot enter search name");
                 break;
             case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
-                if(LogUtil.DEBUG) LogUtil.log(TAG,"Cannot find user: " + mTarget);
+                if(LogUtil.DEBUG) LogUtil.logw(TAG,"Cannot find user: " + mTarget);
                 break;
             case ProcessingStage.IMProcessStage.STAGE_DONE:
                 if(LogUtil.DEBUG) LogUtil.log(TAG,"Message sent.");
                 break;
             default:
-                if(LogUtil.DEBUG) LogUtil.log(TAG,"Send message failed.");
+                if(LogUtil.DEBUG) LogUtil.logw(TAG,"Send message failed.");
                 break;
         }
 
-        if(mIIMProcessorFlow != null) {
+        if (mIIMProcessorFlow != null) {
             mIIMProcessorFlow.onStop(ProcessingStage.IMProcessStage.STAGE_DONE.equals(stage));
         }
     }
@@ -145,32 +151,18 @@ public abstract class IMProcessor extends AccessibilityProcessor {
     }
 
     @Override
-    public boolean onSceneShown(Scene sceneShown) {
+    public void onSceneShown(Scene sceneShown) {
         if (!isRunning()) {
             LogUtil.logwtf(TAG, "onSceneShown called while it has been stopped.");
-            return true;
+            return;
         }
-        String stage = getStage();
-        IMScene scene = (IMScene) sceneShown;
-        String target = mTarget;
-        try {
-            switch (stage) {
-                case ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT:
-                    if (scene.clickSearchUserButton()) {
-                        updateStage(ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON);
-                    }
-                    return true;
-                case ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON:
-                    if (scene.enterSearchUserName(target)) {
-                        updateStage(ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME);
-                    }
-                    return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (mScene == null) {
+            mScene = sceneShown;
         }
-        checkStage();
-        return false;
+        mScene.updateNodes(sceneShown);
+
+        BackgroundThread.post(mActionRunnable);
     }
 
 
@@ -192,7 +184,7 @@ public abstract class IMProcessor extends AccessibilityProcessor {
             default:
                 break;
         }
-        if(processor != null) {
+        if (processor != null) {
             processor.setTarget(target);
             processor.setMessage(message);
         }

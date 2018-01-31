@@ -32,6 +32,38 @@ public class WeChatProcessor extends IMProcessor {
     }
 
     @Override
+    void initActionRunnable() {
+        mActionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String stage = getStage();
+                final WeChatScene scene = (WeChatScene) mScene;
+                String target = mTarget;
+                switch (stage) {
+                    case ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT:
+                        if (scene.enterSearchUserName(mTarget)) {
+                            updateStage(ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME);
+                        }
+                        break;
+                    case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
+                        if (scene.findUserItem(target) != null) {
+                            if (scene.selectUserItem(target)) {
+                                updateStage(ProcessingStage.IMProcessStage.STAGE_PICK_USER);
+                            }
+                        }
+                        break;
+                    case ProcessingStage.IMProcessStage.STAGE_PICK_USER:
+                        if (scene.clickShareButton()) {
+                            updateStage(ProcessingStage.IMProcessStage.STAGE_DONE);
+                        }
+                        break;
+                }
+                checkStage();
+            }
+        };
+    }
+
+    @Override
     protected Intent getShareIntent(String packageName, String message) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         ComponentName componentName = new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI");
@@ -44,33 +76,6 @@ public class WeChatProcessor extends IMProcessor {
     @Override
     public String getPackage() {
         return AppConstants.PACKAGE_WECHAT;
-    }
-
-    @Override
-    public boolean onSceneShown(Scene sceneShown) {
-        sceneShown.printView();
-        if (super.onSceneShown(sceneShown)) {
-            return true;
-        }
-        String stage = getStage();
-        WeChatScene scene = (WeChatScene) sceneShown;
-        String target = mTarget;
-        switch (stage) {
-            case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
-                if (scene.findUserItem(target) != null) {
-                    if (scene.selectUserItem(target)) {
-                        updateStage(ProcessingStage.IMProcessStage.STAGE_PICK_USER);
-                    }
-                }
-                return true;
-            case ProcessingStage.IMProcessStage.STAGE_PICK_USER:
-                if (scene.clickShareButton()) {
-                    updateStage(ProcessingStage.IMProcessStage.STAGE_DONE);
-                }
-                return true;
-        }
-        checkStage();
-        return false;
     }
 
 }

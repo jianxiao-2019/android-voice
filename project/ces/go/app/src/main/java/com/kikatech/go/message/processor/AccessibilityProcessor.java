@@ -31,7 +31,7 @@ public abstract class AccessibilityProcessor {
 
     abstract public void start();
     abstract public void stop();
-    abstract public boolean onSceneShown(Scene scene);
+    abstract public void onSceneShown(Scene scene);
 
     protected synchronized void setRunning(boolean running) {
         mRunning = running;

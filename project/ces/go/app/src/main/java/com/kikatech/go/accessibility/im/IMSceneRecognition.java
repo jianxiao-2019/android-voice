@@ -19,16 +19,17 @@ public class IMSceneRecognition extends SceneRecognition{
     @Override
     public Scene recognize(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
-                event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED ||
+                event.getEventType() == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
             // TODO: 17-10-22 识别当前页面是发送列表页面
-            String packageName = event.getPackageName().toString();
+            String packageName = rootNodeInfo.getPackageName().toString();
             switch (packageName) {
                 case AppConstants.PACKAGE_MESSENGER:
-                    return new MessengerScene(event, rootNodeInfo);
+                    return new MessengerScene(rootNodeInfo);
                 case AppConstants.PACKAGE_WHATSAPP:
-                    return new WhatsAppScene(event, rootNodeInfo);
+                    return new WhatsAppScene(rootNodeInfo);
                 case AppConstants.PACKAGE_WECHAT:
-                    return new WeChatScene(event, rootNodeInfo);
+                    return new WeChatScene(rootNodeInfo);
             }
         }
         return null;

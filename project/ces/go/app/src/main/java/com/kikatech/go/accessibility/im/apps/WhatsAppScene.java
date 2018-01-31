@@ -1,8 +1,8 @@
 package com.kikatech.go.accessibility.im.apps;
 
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.kikatech.go.accessibility.AccessibilityNodeWrapper;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.IMScene;
 import com.kikatech.go.util.LogUtil;
@@ -23,39 +23,38 @@ public class WhatsAppScene extends IMScene {
     private static final String VIEWID_BUTTON_SEND = "com.whatsapp:id/send";
     private static final String VIEWID_LAYOUT_INPUT_CHATROOM = "com.whatsapp:id/input_layout_content";
 
-    public WhatsAppScene(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo) {
-        super(event, rootNodeInfo);
+    public WhatsAppScene(AccessibilityNodeInfo rootNodeInfo) {
+        super(rootNodeInfo);
     }
 
     public boolean selectUserItem(String userName) {
         waitForView(1500);
-        AccessibilityNodeInfo userItem = findUserItem(userName);
+        AccessibilityNodeWrapper userItem = findUserItem(userName).getParent();
         if (userItem == null) {
             if (LogUtil.DEBUG) LogUtil.logwtf(TAG, "Cannot find WhatsApp user item");
             return false;
         }
 
-        clickView(userItem.getParent());
+        userItem.click();
         return true;
     }
 
     public boolean clickSendButton() {
         waitForView(1500);
-        AccessibilityNodeInfo buttonSend = findNodeByViewId(mRootNodeInfo, VIEWID_BUTTON_SEND);
+        AccessibilityNodeWrapper buttonSend = findNodeByViewId(VIEWID_BUTTON_SEND);
         if (buttonSend == null) {
             return false;
         }
-        clickView(buttonSend);
+        buttonSend.click();
         return true;
     }
 
     public boolean isInChatRoomPage() {
-        return findNodeByViewId(mRootNodeInfo, VIEWID_LAYOUT_INPUT_CHATROOM) != null;
+        return findNodeByViewId(VIEWID_LAYOUT_INPUT_CHATROOM) != null;
     }
 
-    public AccessibilityNodeInfo findUserItem(String userName) {
-        AccessibilityNodeInfo nodeInfo = mRootNodeInfo;
-        return findNodeByTextAndClass(nodeInfo, userName, AccessibilityUtils.AccessibilityConstants.CLASSNAME_TEXT_VIEW);
+    public AccessibilityNodeWrapper findUserItem(String userName) {
+        return findNodeByTextAndClass(userName, AccessibilityUtils.AccessibilityConstants.CLASSNAME_TEXT_VIEW);
     }
 
     @Override

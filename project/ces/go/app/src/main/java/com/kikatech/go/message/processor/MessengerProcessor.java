@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.im.apps.MessengerScene;
-import com.kikatech.go.accessibility.scene.Scene;
 import com.kikatech.go.util.AppConstants;
 
 /**
@@ -35,27 +34,41 @@ public class MessengerProcessor extends IMProcessor {
     }
 
     @Override
-    public boolean onSceneShown(Scene sceneShown) {
-        if (super.onSceneShown(sceneShown)) {
-            return true;
-        }
-        String stage = getStage();
-        MessengerScene scene = (MessengerScene) sceneShown;
-        String target = mTarget;
-        switch (stage) {
-            case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
-                if (scene.findUserItem(target) != null) {
-                    if (!scene.isTargetFriend()) {
-                        return true;
+    void initActionRunnable() {
+        mActionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                final String stage = getStage();
+                final String target = mTarget;
+                MessengerScene scene = (MessengerScene) mScene;
+                try {
+                    switch (stage) {
+                        case ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT:
+                            if (scene.clickSearchUserButton()) {
+                                updateStage(ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON);
+                            }
+                            break;
+                        case ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON:
+                            if (scene.enterSearchUserName(target)) {
+                                updateStage(ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME);
+                            }
+                            break;
+                        case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
+                            if (scene.findUserItem(target) != null) {
+                                if (scene.isTargetFriend()) {
+                                    if (scene.clickSendMessage(target)) {
+                                        updateStage(ProcessingStage.IMProcessStage.STAGE_DONE);
+                                    }
+                                }
+                            }
+                            break;
                     }
-
-                    if (scene.clickSendMessage(target)) {
-                        updateStage(ProcessingStage.IMProcessStage.STAGE_DONE);
-                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                return true;
-        }
-        checkStage();
-        return false;
+                checkStage();
+            }
+        };
     }
+
 }

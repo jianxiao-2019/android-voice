@@ -35,39 +35,50 @@ public class WhatsAppProcessor extends IMProcessor {
     }
 
     @Override
-    public boolean onSceneShown(Scene sceneShown) {
-        if (super.onSceneShown(sceneShown)) {
-            return true;
-        }
-        String stage = getStage();
-        WhatsAppScene scene = (WhatsAppScene) sceneShown;
-        String target = mTarget;
-        switch (stage) {
-            case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
-                if (scene.findUserItem(target) != null) {
-                    if (scene.selectUserItem(target)) {
-                        updateStage(ProcessingStage.IMProcessStage.STAGE_PICK_USER);
-                    }
+    void initActionRunnable() {
+        mActionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String stage = getStage();
+                final WhatsAppScene scene = (WhatsAppScene) mScene;
+                String target = mTarget;
+                switch (stage) {
+                    case ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT:
+                        if (scene.clickSearchUserButton()) {
+                            updateStage(ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON);
+                        }
+                        break;
+                    case ProcessingStage.IMProcessStage.STAGE_CLICK_SEARCH_BUTTON:
+                        if (scene.enterSearchUserName(target)) {
+                            updateStage(ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME);
+                        }
+                        break;
+                    case ProcessingStage.IMProcessStage.STAGE_ENTER_USER_NAME:
+                        if (scene.findUserItem(target) != null) {
+                            if (scene.selectUserItem(target)) {
+                                updateStage(ProcessingStage.IMProcessStage.STAGE_PICK_USER);
+                            }
+                        }
+                        break;
+                    case ProcessingStage.IMProcessStage.STAGE_PICK_USER:
+                        // click the send button in WhatsApp share page
+                        if (scene.clickSendButton()) {
+                            updateStage(ProcessingStage.IMProcessStage.STAGE_CLICK_SEND_BUTTON);
+                        }
+                        break;
+                    case ProcessingStage.IMProcessStage.STAGE_CLICK_SEND_BUTTON:
+                        // click the send button in WhatsApp chatroom
+                        if (!scene.isInChatRoomPage()) {
+                            // wait for chatroom launched
+                        }
+                        if (scene.clickSendButton()) {
+                            updateStage(ProcessingStage.IMProcessStage.STAGE_DONE);
+                        }
+                        break;
                 }
-                return true;
-            case ProcessingStage.IMProcessStage.STAGE_PICK_USER:
-                // click the send button in WhatsApp share page
-                if (scene.clickSendButton()) {
-                    updateStage(ProcessingStage.IMProcessStage.STAGE_CLICK_SEND_BUTTON);
-                }
-                return true;
-            case ProcessingStage.IMProcessStage.STAGE_CLICK_SEND_BUTTON:
-                // click the send button in WhatsApp chatroom
-                if (!scene.isInChatRoomPage()) {
-                    // wait for chatroom launched
-                    return true;
-                }
-                if (scene.clickSendButton()) {
-                    updateStage(ProcessingStage.IMProcessStage.STAGE_DONE);
-                }
-                return true;
-        }
-        checkStage();
-        return false;
+                checkStage();
+            }
+        };
     }
+
 }

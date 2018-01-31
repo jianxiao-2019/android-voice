@@ -1,8 +1,8 @@
 package com.kikatech.go.accessibility.im;
 
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.kikatech.go.accessibility.AccessibilityNodeWrapper;
 import com.kikatech.go.accessibility.scene.Scene;
 
 /**
@@ -15,20 +15,20 @@ public class IMScene extends Scene {
 
     private static final String VIEWID_TO_BE_DEFINED = "TBD";
 
-    public IMScene(AccessibilityEvent event, AccessibilityNodeInfo rootNodeInfo) {
-        super(event, rootNodeInfo);
+    public IMScene(AccessibilityNodeInfo rootNodeInfo) {
+        super(rootNodeInfo);
     }
 
     /**
      * Click button to search specific user name
      */
     public boolean clickSearchUserButton() {
-        waitForView(1000);
-        AccessibilityNodeInfo searchBtn = findNodeByViewId(mRootNodeInfo, getSearchButtonId());
-        if(searchBtn == null) {
+        waitForView(1500);
+        AccessibilityNodeWrapper searchBtn = findNodeByViewId(getSearchButtonId());
+        if (searchBtn == null) {
             return false;
         }
-        clickView(searchBtn);
+        searchBtn.click();
         return true;
     }
 
@@ -36,12 +36,12 @@ public class IMScene extends Scene {
      * Fill up the user name to the search EditText
      */
     public boolean enterSearchUserName(String userName) {
-        AccessibilityNodeInfo searchEditText = findNodeByViewId(mRootNodeInfo, getSearchEditTextId());
+        AccessibilityNodeWrapper searchEditText = findNodeByViewId(getSearchEditTextId());
         if (searchEditText == null) {
             return false;
         }
         waitForView(1000);
-        fillUpEditText(searchEditText, userName);
+        searchEditText.fillUpText(userName);
         return true;
     }
 

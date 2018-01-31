@@ -78,16 +78,33 @@ public class AccessibilityUtils {
         return allTexts;
     }
 
-    private static List<AccessibilityNodeInfo> getAllChildNodeInfo(AccessibilityNodeInfo rootNodeInfo) {
-        ArrayList<AccessibilityNodeInfo> allNodeInfo = new ArrayList<>();
-
-        int childCount = rootNodeInfo.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            AccessibilityNodeInfo childNodeInfo = rootNodeInfo.getChild(i);
-            allNodeInfo.add(childNodeInfo);
-            allNodeInfo.addAll(getAllChildNodeInfo(childNodeInfo));
+    public static List<AccessibilityNodeInfo> getAllChildNodeInfo(AccessibilityNodeInfo parentNode) {
+        List<AccessibilityNodeInfo> allNodes = new ArrayList<>();
+        parentNode.refresh();
+        allNodes.add(parentNode);
+        for (int i = 0; i < parentNode.getChildCount(); i++) {
+            AccessibilityNodeInfo node = parentNode.getChild(i);
+            if(node != null) {
+                allNodes.add(node);
+                if (node.getChildCount() > 0) {
+                    allNodes.addAll(getAllChildNodeInfo(node));
+                }
+            }
         }
-        return allNodeInfo;
+        return allNodes;
+    }
+
+    public static boolean isNodeValid(AccessibilityNodeInfo nodeInfo) {
+        if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
+            return true;
+        } else if (!TextUtils.isEmpty(nodeInfo.getText())) {
+            return true;
+        } else if (!TextUtils.isEmpty(nodeInfo.getViewIdResourceName())) {
+            return true;
+        } else if (!TextUtils.isEmpty(nodeInfo.getClassName())) {
+            return true;
+        }
+        return false;
     }
 
     @SuppressLint("NewApi")
