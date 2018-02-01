@@ -70,6 +70,7 @@ public class PlayerFragment extends Fragment {
         mFileNames.clear();
         mFileNames.addAll(scanRecognizeResultFiles(RecorderFragment.PATH_FROM_MIC));
 
+        mOpenedIndex = -1;
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
