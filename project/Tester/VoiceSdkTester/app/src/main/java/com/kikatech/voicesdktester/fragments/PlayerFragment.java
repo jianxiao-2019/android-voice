@@ -1,6 +1,7 @@
 package com.kikatech.voicesdktester.fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -225,12 +227,30 @@ public class PlayerFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            deleteFile(new File(fileSimplePath + "_USB"));
-            deleteFile(new File(fileSimplePath + ".txt"));
-            deleteFile(new File(fileSimplePath + "_SRC"));
-            deleteFile(new File(fileSimplePath + "_NC"));
-            deleteFile(new File(fileSimplePath + "_speex"));
-            refreshFiles();
+            final AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
+            editDialog.setTitle("Delete file");
+            editDialog.setMessage("Do you want to delete this record file?");
+            editDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                // do something when the button is clicked
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteFile(new File(fileSimplePath + "_USB"));
+                    deleteFile(new File(fileSimplePath + ".txt"));
+                    deleteFile(new File(fileSimplePath + "_SRC"));
+                    deleteFile(new File(fileSimplePath + "_NC"));
+                    deleteFile(new File(fileSimplePath + "_speex"));
+
+                    mOpenedIndex = -1;
+                    refreshFiles();
+                    dialog.dismiss();
+                }
+            });
+            editDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                // do something when the button is clicked
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            editDialog.show();
         }
 
         private boolean deleteFile(File file) {
@@ -270,7 +290,9 @@ public class PlayerFragment extends Fragment {
                     renameFile(new File(fileSimplePath + "_speex"),
                             new File(fileSimplePath.substring(0, fileSimplePath.lastIndexOf("/") + 1) + newName + "_speex"));
 
+                    mOpenedIndex = -1;
                     refreshFiles();
+                    dialog.dismiss();
                 }
             });
             editDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
