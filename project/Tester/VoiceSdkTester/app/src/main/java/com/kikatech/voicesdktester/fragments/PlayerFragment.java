@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -110,10 +111,10 @@ public class PlayerFragment extends Fragment {
             holder.renameItem.setOnClickListener(new ItemRenameListener(item.filePath));
 //            holder.shareItem.setOnClickListener();
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/ hh:mm");
             long duration = item.file.length() / 2 / 16000;
             Logger.d("[" + holder.fileName + "] duration = " + duration + " date = " + sdf.format(item.file.lastModified()));
-            holder.fileTime.setText(sdf.format(item.file.lastModified()) + " | " + String.format("%02d:%02d", duration / 60, duration % 60));
+            holder.fileTime.setText(sdf.format(item.file.lastModified()) + " (" + String.format("%02d:%02d", duration / 60, duration % 60) + ")");
         }
 
         @Override
@@ -190,7 +191,7 @@ public class PlayerFragment extends Fragment {
             }
         }
 
-        Collections.reverse(items);
+        Collections.sort(items);
         return items;
     }
 
@@ -200,7 +201,7 @@ public class PlayerFragment extends Fragment {
             FileReader fr = new FileReader(path);
             BufferedReader br = new BufferedReader(fr);
             String line;
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 if (line.startsWith("result:")) {
                     sb.append(line.substring(7)).append(" ");
                 }
@@ -368,11 +369,16 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    private class RecognizeItem {
+    private class RecognizeItem implements Comparable<RecognizeItem>{
         File file;
         String fileName;
         String filePath;
         boolean isSourceUsb;
         String recognizeResult;
+
+        @Override
+        public int compareTo(@NonNull RecognizeItem another) {
+            return Long.compare(another.file.lastModified(), file.lastModified());
+        }
     }
 }
