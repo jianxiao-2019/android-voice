@@ -279,6 +279,15 @@ public class PlayerFragment extends Fragment {
                     dialog.dismiss();
                 }
             });
+            editDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    }
+                }
+            });
             editDialog.show();
         }
 
