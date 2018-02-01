@@ -50,7 +50,7 @@ public class Scene {
         }
     }
 
-    protected synchronized AccessibilityNodeWrapper findNodeByViewId(String viewId) {
+    public synchronized AccessibilityNodeWrapper findNodeByViewId(String viewId) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(viewId, nodeWrapper.getResourceId())) {
                 return nodeWrapper;
@@ -63,7 +63,7 @@ public class Scene {
         return null;
     }
 
-    protected synchronized AccessibilityNodeWrapper findNodeByText(String text) {
+    public synchronized AccessibilityNodeWrapper findNodeByText(String text) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(text, nodeWrapper.getText()) ||
                 StringUtil.equals(text, nodeWrapper.getContentDescription())) {
@@ -73,7 +73,7 @@ public class Scene {
         return null;
     }
 
-    protected synchronized AccessibilityNodeWrapper findNodeByClass(String clz) {
+    public synchronized AccessibilityNodeWrapper findNodeByClass(String clz) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(clz, nodeWrapper.getClassName())) {
                 return nodeWrapper;
@@ -82,7 +82,7 @@ public class Scene {
         return null;
     }
 
-    protected synchronized AccessibilityNodeWrapper findNodeByContentDescription(String contentDescription) {
+    public synchronized AccessibilityNodeWrapper findNodeByContentDescription(String contentDescription) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(contentDescription, nodeWrapper.getContentDescription())) {
                 return nodeWrapper;
@@ -91,7 +91,7 @@ public class Scene {
         return null;
     }
 
-    protected synchronized AccessibilityNodeWrapper findNodeByTextAndId(String text, String viewId) {
+    public synchronized AccessibilityNodeWrapper findNodeByTextAndId(String text, String viewId) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(text, nodeWrapper.getText()) &&
                 StringUtil.equals(viewId, nodeWrapper.getResourceId())) {
@@ -101,7 +101,7 @@ public class Scene {
         return null;
     }
 
-    protected synchronized AccessibilityNodeWrapper findNodeByTextAndClass(String text, String clz) {
+    public synchronized AccessibilityNodeWrapper findNodeByTextAndClass(String text, String clz) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if ((StringUtil.equals(text, nodeWrapper.getText()) ||
                  StringUtil.equals(text, nodeWrapper.getContentDescription())) &&

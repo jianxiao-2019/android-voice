@@ -63,9 +63,14 @@ public class AccessibilityNodeWrapper {
     public boolean click() {
         AccessibilityNodeInfo nodeInfo = mNodeInfo;
         boolean clicked = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-        if (!clicked && LogUtil.DEBUG) {
-            //LogUtil.logwtf(TAG, "Failed to click view");
-            AccessibilityUtils.printNode(nodeInfo);
+        if (!clicked) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logwtf(TAG, "Failed to click view: " + toString());
+            }
+        } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "Click view: " + toString());
+            }
         }
         return clicked;
     }

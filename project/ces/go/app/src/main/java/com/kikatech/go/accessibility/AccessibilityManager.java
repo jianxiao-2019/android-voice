@@ -1,10 +1,13 @@
 package com.kikatech.go.accessibility;
 
+import com.google.common.collect.EvictingQueue;
 import com.kikatech.go.accessibility.scene.Scene;
+import com.kikatech.go.util.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -20,6 +23,8 @@ public class AccessibilityManager {
     private HashMap<String, List<Object>> mSubscribers = new HashMap<>();
 
     AccessibilityEventDispatcher mRoot;
+
+    private static EvictingQueue<ActivityInfo> mRecentActivity = EvictingQueue.create(30);
 
     public static AccessibilityManager getInstance() {
         return sInstance;
@@ -111,6 +116,63 @@ public class AccessibilityManager {
                     }
                 }
             }
+        }
+    }
+
+    public void recordActivity(String packageName, String className) {
+        ActivityInfo activityInfo = new ActivityInfo(packageName, className);
+        mRecentActivity.add(activityInfo);
+    }
+
+    public boolean isAppRecentUsed(String packageName) {
+        for (ActivityInfo activityInfo : mRecentActivity) {
+            if (StringUtil.equals(activityInfo.getPackageName(), packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAppOnTop(String packageName) {
+        if (mRecentActivity.size() > 0) {
+            final Iterator<ActivityInfo> itr = mRecentActivity.iterator();
+            ActivityInfo lastActivityInfo = itr.next();
+            while (itr.hasNext()) {
+                lastActivityInfo = itr.next();
+            }
+            return StringUtil.equals(lastActivityInfo.getPackageName(), packageName);
+        }
+        return false;
+    }
+
+    public String getTopApp() {
+        if (mRecentActivity.size() > 0) {
+            final Iterator<ActivityInfo> itr = mRecentActivity.iterator();
+            ActivityInfo lastActivityInfo = itr.next();
+            while (itr.hasNext()) {
+                lastActivityInfo = itr.next();
+            }
+            return lastActivityInfo.getActivityName();
+        }
+        return null;
+    }
+
+    private static class ActivityInfo {
+
+        private String mPackageName;
+        private String mActivityName;
+
+        public ActivityInfo(String packageName, String activityName) {
+            mPackageName = packageName;
+            mActivityName = activityName;
+        }
+
+        public String getPackageName() {
+            return mPackageName;
+        }
+
+        public String getActivityName() {
+            return mActivityName;
         }
     }
 }
