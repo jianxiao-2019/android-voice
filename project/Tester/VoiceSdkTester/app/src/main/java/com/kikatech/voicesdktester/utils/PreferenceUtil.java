@@ -21,6 +21,8 @@ public class PreferenceUtil {
     public static final String KEY_VOICE_ENGINE = "voice_engine";
     public static final String KEY_SERVER_LOCATION = "server_location";
 
+    public static final String KEY_ENABLE_DEBUG_APP = "enable_debug_app";
+
     private static SharedPreferences getSharedPreference(@NonNull Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }

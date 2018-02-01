@@ -31,6 +31,7 @@ import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
+import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import com.xiao.usbaudio.AudioPlayBack;
 
 import java.io.BufferedWriter;
@@ -40,6 +41,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_APP;
 
 /**
  * Created by ryanlin on 23/01/2018.
@@ -58,9 +61,9 @@ public class RecorderFragment extends Fragment implements
     private View mStartRecordView;
     private View mStopRecordView;
     private TextView mRecordingTimerText;
-    private View mUsingKikago;
-    private ImageView mKikagoSignal;
     private View mUsingAndroid;
+    private ImageView mKikagoSignal;
+    private View mUsingKikaGo;
     private ImageView mAndroidSignal;
     private TextView mErrorHintText;
     private FrameLayout mRecentArea;
@@ -73,6 +76,12 @@ public class RecorderFragment extends Fragment implements
     private String mDebugFileName;
     private BufferedWriter mBufferedWriter;
     private boolean mIsListening = false;
+
+    private static final int MSG_TIMER = 0;
+    private static final int MSG_CHECK_DEBUG = 1;
+    private long mTimeInSec = 0;
+
+    private int mDebugCount = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -95,12 +104,13 @@ public class RecorderFragment extends Fragment implements
 
         mErrorHintText = (TextView) view.findViewById(R.id.error_hint);
 
-        mUsingKikago = view.findViewById(R.id.device_button_right);
-        mUsingKikago.setOnClickListener(new View.OnClickListener() {
+        mUsingAndroid = view.findViewById(R.id.device_button_right);
+        mUsingAndroid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mUsingAndroid.setSelected(false);
-                mUsingKikago.setSelected(true);
+
+                mUsingKikaGo.setSelected(false);
+                mUsingAndroid.setSelected(true);
                 mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
                 mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
                 mErrorHintText.setVisibility(View.GONE);
@@ -114,12 +124,12 @@ public class RecorderFragment extends Fragment implements
         });
         mKikagoSignal = (ImageView) view.findViewById(R.id.signal_kikago);
 
-        mUsingAndroid = view.findViewById(R.id.device_button_left);
-        mUsingAndroid.setOnClickListener(new View.OnClickListener() {
+        mUsingKikaGo = view.findViewById(R.id.device_button_left);
+        mUsingKikaGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mUsingAndroid.setSelected(true);
-                mUsingKikago.setSelected(false);
+                mUsingKikaGo.setSelected(true);
+                mUsingAndroid.setSelected(false);
                 mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
                 mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
                 mErrorHintText.setVisibility(View.GONE);
@@ -134,6 +144,19 @@ public class RecorderFragment extends Fragment implements
         mRecordingTimerText = (TextView) view.findViewById(R.id.recording_timer_text);
 
         mRecentArea = (FrameLayout) view.findViewById(R.id.recent_area);
+
+        view.findViewById(R.id.enter_debug_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Logger.d("onClick mDebugCount = " + mDebugCount);
+                mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
+                if (mDebugCount++ > 10) {
+                    PreferenceUtil.setBoolean(getContext(), KEY_ENABLE_DEBUG_APP, true);
+                    Toast.makeText(getContext(), "You'er in developer mode", Toast.LENGTH_SHORT).show();
+                }
+                mTimerHandler.sendEmptyMessageDelayed(MSG_CHECK_DEBUG, 1000);
+            }
+        });
 
         attachService();
         refreshRecentView();
@@ -315,14 +338,14 @@ public class RecorderFragment extends Fragment implements
         if (mUsbAudioSource != null) {
             if (mKikagoSignal != null) {
                 mKikagoSignal.setImageResource(R.drawable.signal_point_yellow);
-                mUsingAndroid.setSelected(true);
-                mUsingKikago.setSelected(false);
+                mUsingKikaGo.setSelected(true);
+                mUsingAndroid.setSelected(false);
             }
         } else {
             if (mAndroidSignal != null) {
                 mAndroidSignal.setImageResource(R.drawable.signal_point_yellow);
-                mUsingAndroid.setSelected(false);
-                mUsingKikago.setSelected(true);
+                mUsingKikaGo.setSelected(false);
+                mUsingAndroid.setSelected(true);
             }
         }
 
@@ -336,7 +359,7 @@ public class RecorderFragment extends Fragment implements
         mStopRecordView.setVisibility(View.VISIBLE);
 
         mRecordingTimerText.setText("00:00");
-        mTimerHandler.sendEmptyMessageDelayed(0, 1000);
+        mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
 
         try {
             if (mBufferedWriter != null) {
@@ -354,7 +377,7 @@ public class RecorderFragment extends Fragment implements
         mStartRecordView.setVisibility(View.VISIBLE);
         mStopRecordView.setVisibility(View.GONE);
 
-        mTimerHandler.removeMessages(0);
+        mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
         mIsListening = false;
 
@@ -439,18 +462,20 @@ public class RecorderFragment extends Fragment implements
         }
     };
 
-    private long mTimeInSec = 0;
     private Handler mTimerHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
             super.handleMessage(msg);
-            mTimeInSec++;
-            if (mRecordingTimerText != null) {
-                String result = String.format("%02d:%02d", mTimeInSec / 60, mTimeInSec % 60);
-                mRecordingTimerText.setText(result);
-                mTimerHandler.sendEmptyMessageDelayed(0, 1000);
+            if (msg.what == MSG_TIMER) {
+                mTimeInSec++;
+                if (mRecordingTimerText != null) {
+                    String result = String.format("%02d:%02d", mTimeInSec / 60, mTimeInSec % 60);
+                    mRecordingTimerText.setText(result);
+                    mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
+                }
+            } else if (msg.what == MSG_CHECK_DEBUG) {
+                mDebugCount = 0;
             }
-
         }
     };
 

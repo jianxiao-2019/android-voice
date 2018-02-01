@@ -212,4 +212,11 @@
         android:text="Hardware Error !"
         android:textColor="#FFEC316B"
         android:visibility="gone" />
+
+    <View
+        android:id="@+id/enter_debug_view"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_above="@+id/recent_area"
+        android:layout_alignParentRight="true" />
 </RelativeLayout>
