@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -270,10 +271,12 @@ public class PlayerFragment extends Fragment {
         @Override
         public void onClick(View v) {
             final AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
-            editDialog.setTitle("Enter new file name.");
+            editDialog.setTitle("Rename");
 
             final EditText editText = new EditText(getContext());
             editDialog.setView(editText);
+            editText.setText(fileSimplePath.substring(fileSimplePath.lastIndexOf("/") + 1));
+            editText.setSelection(0, editText.getText().length());
 
             editDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 // do something when the button is clicked
@@ -310,7 +313,10 @@ public class PlayerFragment extends Fragment {
                     }
                 }
             });
-            editDialog.show();
+            AlertDialog dialog = editDialog.create();
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+            dialog.show();
         }
 
         private boolean renameFile(File origin, File newFile) {
