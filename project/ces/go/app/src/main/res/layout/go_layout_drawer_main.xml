@@ -274,15 +274,35 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/selector_settings_ic_exit"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
-                    android:fontFamily="sans-serif-light"
-                    android:text="@string/drawer_item_exit"
-                    android:textColor="@drawable/selector_text_drawer_item"
-                    android:textSize="@dimen/drawer_item_text_size"/>
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:text="@string/drawer_item_exit"
+                        android:textColor="@drawable/selector_text_drawer_item"
+                        android:textSize="@dimen/drawer_item_text_size"/>
+
+                    <TextView
+                        android:id="@+id/drawer_item_exit_app_version_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-light"
+                        android:singleLine="true"
+                        android:textColor="@color/drawer_subtitle_text_disable"
+                        android:textSize="16dp"/>
+
+                </LinearLayout>
+
             </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
