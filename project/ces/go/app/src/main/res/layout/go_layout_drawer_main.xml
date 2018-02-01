@@ -129,16 +129,38 @@
                         android:textColor="@drawable/selector_text_drawer_item"
                         android:textSize="@dimen/drawer_item_text_size"/>
 
-                    <TextView
-                        android:id="@+id/drawer_item_mic_status_text"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="sans-serif-light"
-                        android:singleLine="true"
-                        android:text="@string/drawer_item_mic_status_disconnected"
-                        android:textColor="@color/drawer_subtitle_text_disable"
-                        android:textSize="18dp"/>
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/drawer_item_mic_status_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:fontFamily="sans-serif-light"
+                            android:singleLine="true"
+                            android:text="@string/drawer_item_mic_status_disconnected"
+                            android:textColor="@color/drawer_subtitle_text_disable"
+                            android:textSize="18dp"/>
+
+                        <TextView
+                            android:id="@+id/drawer_item_usb_data_status_error_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="6dp"
+                            android:ellipsize="end"
+                            android:fontFamily="sans-serif-light"
+                            android:singleLine="true"
+                            android:text="@string/drawer_item_mic_usb_data_status_error"
+                            android:textColor="#f66b6b"
+                            android:textSize="16dp"
+                            android:visibility="gone"/>
+
+
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>

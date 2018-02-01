@@ -54,6 +54,16 @@ android {
             universalApk false
         }
     }
+
+    flavorDimensions "tier"
+    productFlavors {
+        main {
+            flavorDimensions "tier"
+        }
+        manufacturer {
+            flavorDimensions "tier"
+        }
+    }
 }
 
 dependencies {

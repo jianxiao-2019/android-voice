@@ -17,6 +17,9 @@ import java.util.Locale;
 
 public class AudioPlayBack {
     private static KikaAudioDriver sKikaAudioDriver;
+
+    public static final int RAW_DATA_LENGTH_STEREO = 640;
+
     // For debug
     private static long previousWrite = 0;
     private static String sTmpLog = "";

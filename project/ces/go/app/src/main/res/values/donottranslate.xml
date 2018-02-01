@@ -185,6 +185,7 @@ it's the alpha version now."</string>
     <string name="drawer_item_navigation_dialog_edit_hint">"Edit the address..."</string>
     <string name="drawer_item_mic_status_connected">"Connected"</string>
     <string name="drawer_item_mic_status_disconnected">"Disconnected"</string>
+    <string name="drawer_item_mic_usb_data_status_error">"(Hardware Error)"</string>
     <string name="drawer_item_advanced_confirmation_title">"Confirmation"</string>
     <string name="drawer_item_advanced_confirmation_item_auto">"Auto confirm before sending messages and starting navigation"</string>
     <string name="drawer_item_advanced_confirmation_item_manually">"Confirm manually before sending messages and starting navigation"</string>

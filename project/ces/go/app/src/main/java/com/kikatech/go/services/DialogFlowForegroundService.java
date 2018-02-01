@@ -66,6 +66,7 @@ import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.xiao.usbaudio.AudioPlayBack;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -364,6 +365,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         public void onDeviceAttached(UsbAudioSource audioSource) {
             BackgroundThread.getHandler().removeCallbacks(mTimeOutTask);
             sAudioSource = audioSource;
+            mDFServiceStatus.setUsbDeviceAvailable(true);
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, "onDeviceAttached, spend:" + (System.currentTimeMillis() - start_t) + " ms, mIsStarted:" + mIsStarted + ", sAudioSource:" + sAudioSource);
             }
@@ -392,7 +394,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         @Override
         public void onDeviceError(int errorCode) {
-            
+
         }
     };
 
@@ -444,6 +446,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         MusicForegroundService.stopMusic(this);
 
         closeUsbAudio();
+
+        AudioPlayBack.setListener(null);
     }
 
     private void closeUsbAudio() {
@@ -453,6 +457,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             }
 //            sAudioSource.close();
             sAudioSource = null;
+            mDFServiceStatus.setUsbDeviceAvailable(false);
 //            if (LogUtil.DEBUG) {
 //                LogUtil.log(TAG, "closeUsbAudio complete");
 //            }
@@ -854,6 +859,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onComplete");
                         // dbgMsg[0] : scene - action
                         // dbgMsg[1] : parameters
+                        if (dbgMsg == null) {
+                            // TODO: this is work around for dbgMsg null situation, should confirm the reason
+                            return;
+                        }
                         String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_COMPLETE;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_DBG_INTENT_ACTION, dbgMsg[0]);
@@ -957,6 +966,20 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                 })
                 .build(DialogFlowForegroundService.this);
+        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
+            @Override
+            public void onWrite(int len) {
+                if (mDFServiceStatus.isUsbDeviceAvailable()) {
+                    boolean isValidRawDataLen = AudioPlayBack.RAW_DATA_LENGTH_STEREO == len;
+                    if (mDFServiceStatus.isUsbDeviceDataCorrect() == null || mDFServiceStatus.isUsbDeviceDataCorrect() != isValidRawDataLen) {
+                        mDFServiceStatus.setUsbDeviceDataCorrect(isValidRawDataLen);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
+                        event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, isValidRawDataLen);
+                        sendDFServiceEvent(event);
+                    }
+                }
+            }
+        });
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.KikaDebugLogActivity;
+import com.kikatech.go.util.FlavorUtil;
 import com.kikatech.go.util.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -60,6 +61,11 @@ public class DrawerMainFragment extends Fragment {
                 String text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
                 updateMicStatus(text);
                 break;
+            case DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED:
+                boolean isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT);
+                updateUsbDataStatus(isUsbDataCorrect);
+                break;
+
         }
     }
 
@@ -71,12 +77,20 @@ public class DrawerMainFragment extends Fragment {
             } else {
                 mMicStatusView.setText(getString(R.string.drawer_item_mic_status_disconnected));
                 mMicStatusView.setTextColor(getResources().getColor(R.color.drawer_subtitle_text_disable));
+                updateUsbDataStatus(true);
             }
+        }
+    }
+
+    private void updateUsbDataStatus(boolean isDataCorrect) {
+        if (mUsbDataStatusErrorView != null) {
+            mUsbDataStatusErrorView.setVisibility(isDataCorrect ? View.GONE : View.VISIBLE);
         }
     }
 
 
     private TextView mMicStatusView;
+    private View mUsbDataStatusErrorView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,6 +104,7 @@ public class DrawerMainFragment extends Fragment {
         View mView = inflater.inflate(R.layout.go_layout_drawer_main, null);
 
         mMicStatusView = (TextView) mView.findViewById(R.id.drawer_item_mic_status_text);
+        mUsbDataStatusErrorView = mView.findViewById(R.id.drawer_item_usb_data_status_error_text);
 
         mView.findViewById(R.id.drawer_title_icon).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +160,7 @@ public class DrawerMainFragment extends Fragment {
             }
         });
 
-        if (LogUtil.DEBUG) {
+        if (LogUtil.DEBUG && !FlavorUtil.isFlavorManufacturer()) {
             View mItemDebug = mView.findViewById(R.id.drawer_item_debug);
             View mItemDebugUnderline = mView.findViewById(R.id.drawer_item_debug_underline);
             mItemDebug.setVisibility(View.VISIBLE);
