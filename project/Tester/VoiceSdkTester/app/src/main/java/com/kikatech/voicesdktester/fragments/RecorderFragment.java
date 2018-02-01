@@ -105,6 +105,9 @@ public class RecorderFragment extends Fragment implements
                 mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
                 mErrorHintText.setVisibility(View.GONE);
 
+                if (mUsbAudioSource != null) {
+                    mUsbAudioSource.close();
+                }
                 mUsbAudioSource = null;
                 attachService();
             }
