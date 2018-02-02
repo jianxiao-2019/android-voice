@@ -7,8 +7,8 @@ android {
         applicationId "com.kikatech.voicesdktester"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 31
-        versionName "2017_0129_2"
+        versionCode 34
+        versionName "2017_0202_1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
