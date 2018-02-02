@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
+                attachService();
             }
         });
         mStopButton.setEnabled(false);
