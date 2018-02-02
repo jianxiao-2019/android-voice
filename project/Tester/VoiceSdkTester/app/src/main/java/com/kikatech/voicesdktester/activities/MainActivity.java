@@ -605,9 +605,8 @@ public class MainActivity extends AppCompatActivity implements
             mTtsSource = null;
         }
 
-        Logger.d("MainActivity onDestroy mUsbAudioService = " + mUsbAudioService);
         if (mUsbAudioSource != null) {
-            mUsbAudioSource.close();
+            mUsbAudioSource.closeDevice();
         }
         if (mUsbAudioService != null) {
             mUsbAudioService.setListener(null);

@@ -72,7 +72,7 @@ public class UsbAudioService {
         public void onDeviceDetached() {
             mDevice = null;
             if (mAudioSource != null) {
-                mAudioSource.close();
+                mAudioSource.closeDevice();
                 mAudioSource = null;
                 if (mListener != null) {
                     mListener.onDeviceDetached();

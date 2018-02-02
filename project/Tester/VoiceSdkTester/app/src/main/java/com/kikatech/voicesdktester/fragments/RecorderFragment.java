@@ -116,7 +116,7 @@ public class RecorderFragment extends Fragment implements
                 mErrorHintText.setVisibility(View.GONE);
 
                 if (mUsbAudioSource != null) {
-                    mUsbAudioSource.close();
+                    mUsbAudioSource.closeDevice();
                 }
                 mUsbAudioSource = null;
                 attachService();
@@ -166,11 +166,15 @@ public class RecorderFragment extends Fragment implements
     public void onDestroy() {
         super.onDestroy();
 
+        if (mVoiceService != null) {
+            mVoiceService.destroy();
+        }
+
         if (mUsbAudioService != null) {
             mUsbAudioService.setListener(null);
         }
         if (mUsbAudioSource != null) {
-            mUsbAudioSource.close();
+            mUsbAudioSource.closeDevice();
         }
     }
 

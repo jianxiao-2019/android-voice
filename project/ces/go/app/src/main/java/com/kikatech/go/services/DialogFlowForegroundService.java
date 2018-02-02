@@ -455,7 +455,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "closeUsbAudio");
             }
-//            sAudioSource.close();
+//            sAudioSource.closeDevice();
             sAudioSource = null;
             mDFServiceStatus.setUsbDeviceAvailable(false);
 //            if (LogUtil.DEBUG) {

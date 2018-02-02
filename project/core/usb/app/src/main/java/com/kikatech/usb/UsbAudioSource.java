@@ -36,7 +36,7 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
             mAudioDriver.startRecording();
             mKikaNcBuffer.start();
         } else {
-            Logger.w("Don't call start() after close().");
+            Logger.w("Don't call start() after device detached.");
         }
     }
 
@@ -46,23 +46,26 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
             mAudioDriver.stopRecording();
             mKikaNcBuffer.stop();
         } else {
-            Logger.w("Don't call stop() after close().");
+            Logger.w("Don't call stop() after device detached.");
         }
     }
 
     @Override
     public void close() {
+        mKikaNcBuffer.close();
+    }
+
+    public void closeDevice() {
         if (mAudioDriver != null) {
             mAudioDriver.close();
             mAudioDriver = null;
-            mKikaNcBuffer.close();
         }
     }
 
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
         if (mAudioDriver == null) {
-            Logger.w("Don't call read() after close().");
+            Logger.w("Don't call read() after device detached.");
             return READ_FAIL;
         }
         return mKikaNcBuffer.read(audioData, offsetInBytes, sizeInBytes);
