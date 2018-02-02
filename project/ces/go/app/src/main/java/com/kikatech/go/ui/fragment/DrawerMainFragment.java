@@ -107,7 +107,7 @@ public class DrawerMainFragment extends Fragment {
         mMicStatusView = (TextView) mView.findViewById(R.id.drawer_item_mic_status_text);
         mUsbDataStatusErrorView = mView.findViewById(R.id.drawer_item_usb_data_status_error_text);
 
-        ((TextView) mView.findViewById(R.id.drawer_item_exit_app_version_text)).setText(String.format("v%s", BuildConfig.VERSION_NAME));
+        ((TextView) mView.findViewById(R.id.drawer_item_exit_app_version_text)).setText(String.format("V. %s", BuildConfig.VERSION_NAME));
 
         mView.findViewById(R.id.drawer_title_icon).setOnClickListener(new View.OnClickListener() {
             @Override
