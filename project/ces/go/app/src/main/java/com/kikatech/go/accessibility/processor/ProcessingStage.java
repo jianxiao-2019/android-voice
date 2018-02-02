@@ -1,4 +1,4 @@
-package com.kikatech.go.message.processor;
+package com.kikatech.go.accessibility.processor;
 
 /**
  * @author jasonli Created on 2017/10/24.

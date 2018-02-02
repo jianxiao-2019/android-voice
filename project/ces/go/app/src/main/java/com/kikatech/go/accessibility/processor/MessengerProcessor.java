@@ -1,4 +1,4 @@
-package com.kikatech.go.message.processor;
+package com.kikatech.go.accessibility.processor;
 
 import android.content.Context;
 

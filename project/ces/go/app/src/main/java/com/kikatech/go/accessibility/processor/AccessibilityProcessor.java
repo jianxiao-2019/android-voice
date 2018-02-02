@@ -1,12 +1,9 @@
-package com.kikatech.go.message.processor;
+package com.kikatech.go.accessibility.processor;
 
 import android.content.Context;
-import android.content.Intent;
 import android.widget.Toast;
 
 import com.kikatech.go.accessibility.scene.Scene;
-import com.kikatech.go.ui.KikaAlphaUiActivity;
-import com.kikatech.go.ui.KikaGoActivity;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
