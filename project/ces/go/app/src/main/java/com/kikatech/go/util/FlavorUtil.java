@@ -16,6 +16,10 @@ public class FlavorUtil {
         return BuildConfig.FLAVOR;
     }
 
+    public static boolean isFlavorMain() {
+        return FLAVOR_MAIN.equals(getFlavor());
+    }
+
     public static boolean isFlavorManufacturer() {
         return FLAVOR_MANUFACTURER.equals(getFlavor());
     }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
+import com.kikatech.go.util.FlavorUtil;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.util.request.RequestManager;
@@ -25,7 +26,7 @@ public class DialogFlowConfig {
     private static final int BOS_DURATION = 6800;
 
     public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
-        String WEB_SOCKET_URL_DEV = "ws://speech0-dev.kikakeyboard.com/v3/speech";
+        String WEB_SOCKET_URL_DEV = FlavorUtil.isFlavorMain() ? VoiceConfiguration.HostUrl.DEV_MVP : VoiceConfiguration.HostUrl.DEV_KIKA;
 
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
