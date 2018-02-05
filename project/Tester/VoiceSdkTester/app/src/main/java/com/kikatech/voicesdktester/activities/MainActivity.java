@@ -127,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_testing);
 
+        Logger.i("onCreate");
         mPermissionButton = (Button) findViewById(R.id.button_permission);
-        updatePermissionButtonState();
         mPermissionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,12 +269,6 @@ public class MainActivity extends AppCompatActivity implements
         mResultRecyclerView.setAdapter(mResultAdapter);
         mResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        if (mTtsSource == null) {
-            mTtsSource = TtsService.getInstance().getSpeaker(TtsService.TtsSourceType.KIKA_WEB);
-            mTtsSource.init(this, null);
-            mTtsSource.setTtsStateChangedListener(MainActivity.this);
-        }
-
         mCurServerButton = (Button) findViewById(R.id.server_button);
         mCurServerButton.setOnClickListener(new View.OnClickListener() {
 
@@ -337,7 +331,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        // TODO : this panel will be hidden when using android.
         mNcParamLayout = findViewById(R.id.nc_parameters_layout);
         mNcParamLayout.setVisibility(View.GONE);
 
@@ -446,25 +439,7 @@ public class MainActivity extends AppCompatActivity implements
         });
         mButtonMode.setEnabled(false);
 
-        Message.register("INTERMEDIATE", IntermediateMessage.class);
-        Message.register("ALTER", EditTextMessage.class);
-        Message.register("ASR", TextMessage.class);
-
         ((TextView) findViewById(R.id.text_version)).setText("version : " + getVersionName(this));
-
-        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
-            @Override
-            public void onWrite(final int len) {
-                mStatus2TextView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mStatus2TextView != null) {
-                            mStatus2TextView.setText("size : " + len);
-                        }
-                    }
-                });
-            }
-        });
 
         findViewById(R.id.button_volume_up).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -504,6 +479,10 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        Message.register("INTERMEDIATE", IntermediateMessage.class);
+        Message.register("ALTER", EditTextMessage.class);
+        Message.register("ASR", TextMessage.class);
     }
 
     private void updatePermissionButtonState() {
@@ -523,6 +502,31 @@ public class MainActivity extends AppCompatActivity implements
             mPermissionButton.setEnabled(false);
             mPermissionButton.setText("Permission granted");
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Logger.i("onStart");
+        updatePermissionButtonState();
+        if (mTtsSource == null) {
+            mTtsSource = TtsService.getInstance().getSpeaker(TtsService.TtsSourceType.KIKA_WEB);
+            mTtsSource.init(this, null);
+            mTtsSource.setTtsStateChangedListener(MainActivity.this);
+        }
+        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
+            @Override
+            public void onWrite(final int len) {
+                mStatus2TextView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mStatus2TextView != null) {
+                            mStatus2TextView.setText("size : " + len);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public String getVersionName(Context context) {
@@ -551,7 +555,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private void attachService() {
         if (mVoiceService != null) {
-            mVoiceService.stop();
             mVoiceService.destroy();
             mVoiceService = null;
         }
@@ -594,10 +597,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
+        Logger.i("onStop");
         if (mVoiceService != null) {
-            mVoiceService.stop();
             mVoiceService.destroy();
             mVoiceService = null;
         }
@@ -612,9 +615,13 @@ public class MainActivity extends AppCompatActivity implements
         if (mUsbAudioService != null) {
             mUsbAudioService.setListener(null);
         }
-
         AudioPlayBack.setListener(null);
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Logger.i("onDestroy");
         Message.unregisterAll();
     }
 

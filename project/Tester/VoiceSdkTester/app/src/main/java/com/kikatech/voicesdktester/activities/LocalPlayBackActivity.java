@@ -153,7 +153,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 
     private void attachService() {
         if (mVoiceService != null) {
-            mVoiceService.stop();
             mVoiceService.destroy();
             mVoiceService = null;
         }

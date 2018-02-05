@@ -53,7 +53,7 @@ public class RecorderFragment extends Fragment implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceStateChangedListener,
         VoiceService.VoiceActiveStateListener,
-        TtsSource.TtsStateChangedListener  {
+        TtsSource.TtsStateChangedListener {
 
     public static final String PATH_FROM_MIC = "/sdcard/voiceTesterUi/fromMic/";
     public static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev.kikakeyboard.com/v3/speech";
@@ -157,15 +157,18 @@ public class RecorderFragment extends Fragment implements
                 mTimerHandler.sendEmptyMessageDelayed(MSG_CHECK_DEBUG, 1000);
             }
         });
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
         attachService();
         refreshRecentView();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
+    public void onStop() {
+        super.onStop();
         if (mVoiceService != null) {
             mVoiceService.destroy();
         }
@@ -178,6 +181,11 @@ public class RecorderFragment extends Fragment implements
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     private void attachService() {
         mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
         mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
@@ -186,7 +194,6 @@ public class RecorderFragment extends Fragment implements
         mErrorHintText.setVisibility(View.GONE);
 
         if (mVoiceService != null) {
-            mVoiceService.stop();
             mVoiceService.destroy();
             mVoiceService = null;
         }
@@ -495,7 +502,7 @@ public class RecorderFragment extends Fragment implements
 
             recentView.findViewById(R.id.expanded_layout).setVisibility(View.GONE);
             ((ImageView) recentView.findViewById(R.id.source_icon)).setImageResource(item.isSourceUsb ?
-                     R.drawable.ic_list_usbcable : R.drawable.ic_list_phone);;
+                    R.drawable.ic_list_usbcable : R.drawable.ic_list_phone);
             ((TextView) recentView.findViewById(R.id.file_name)).setText(item.fileName);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
