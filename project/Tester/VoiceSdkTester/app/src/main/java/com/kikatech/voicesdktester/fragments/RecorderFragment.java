@@ -149,12 +149,27 @@ public class RecorderFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 Logger.d("onClick mDebugCount = " + mDebugCount);
-                mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
-                if (mDebugCount++ > 10) {
-                    PreferenceUtil.setBoolean(getContext(), KEY_ENABLE_DEBUG_APP, true);
-                    Toast.makeText(getContext(), "You'er in developer mode", Toast.LENGTH_SHORT).show();
+                Boolean isDebug = PreferenceUtil.getBoolean(getContext(), KEY_ENABLE_DEBUG_APP, false);
+                if (isDebug) {
+                    if (++mDebugCount >= 3) {
+                        Toast.makeText(getContext(), "You'er already in the developer mode", Toast.LENGTH_SHORT).show();
+                        mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
+                        mDebugCount = 0;
+                    } else  {
+                        mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
+                        mTimerHandler.sendEmptyMessageDelayed(MSG_CHECK_DEBUG, 1000);
+                    }
+                } else {
+                    if (++mDebugCount >= 10) {
+                        PreferenceUtil.setBoolean(getContext(), KEY_ENABLE_DEBUG_APP, true);
+                        Toast.makeText(getContext(), "You'er entering the developer mode", Toast.LENGTH_SHORT).show();
+                        mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
+                        mDebugCount = 0;
+                    } else {
+                        mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
+                        mTimerHandler.sendEmptyMessageDelayed(MSG_CHECK_DEBUG, 1000);
+                    }
                 }
-                mTimerHandler.sendEmptyMessageDelayed(MSG_CHECK_DEBUG, 1000);
             }
         });
     }
