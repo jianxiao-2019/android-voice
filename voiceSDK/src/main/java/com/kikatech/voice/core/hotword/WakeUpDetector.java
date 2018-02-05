@@ -1,8 +1,11 @@
 package com.kikatech.voice.core.hotword;
 
 import android.content.Context;
+import android.text.TextUtils;
 
+import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
 
 import ai.kitt.snowboy.AppResCopy;
@@ -16,6 +19,8 @@ public abstract class WakeUpDetector {
 
     protected OnHotWordDetectListener mListener;
     private IDataPath mDataPath;
+
+    private FileWriter mFileWriter;
 
     WakeUpDetector(OnHotWordDetectListener listener) {
         mListener = listener;
@@ -36,6 +41,14 @@ public abstract class WakeUpDetector {
         return mDataPath;
     }
 
+    public final void setDebugFilePath(String path) {
+        if (VoicePathConnector.IS_DEBUG && !TextUtils.isEmpty(path)) {
+            mFileWriter = new FileWriter(path + "_COMMAND", null);
+        } else {
+            mFileWriter = null;
+        }
+    }
+
     private class WakeUpDataPath extends IDataPath {
 
         WakeUpDataPath(IDataPath nextPath) {
@@ -51,6 +64,9 @@ public abstract class WakeUpDetector {
                 }
             } else {
                 checkWakeUpCommand(data);
+                if (mFileWriter != null) {
+                    mFileWriter.onData(data);
+                }
             }
         }
     }

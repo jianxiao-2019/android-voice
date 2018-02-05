@@ -16,7 +16,7 @@ import com.kikatech.voice.util.log.Logger;
 
 public class VoicePathConnector {
 
-    private static final boolean IS_DEBUG = true;
+    public static final boolean IS_DEBUG = true;
 
     public static IDataPath genDataPath(VoiceConfiguration conf,
                                         WakeUpDetector wakeUpDetector, IDataPath finalPath) {
