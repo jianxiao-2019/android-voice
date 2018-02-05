@@ -182,12 +182,6 @@ public class MainActivity extends AppCompatActivity implements
         mStopButton.setEnabled(false);
 
         mWavButton = (Button) findViewById(R.id.button_to_wav);
-        mWavButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addWavHeader();
-            }
-        });
         mWavButton.setEnabled(false);
 
         if (IS_WAKE_UP_MODE) {
@@ -625,18 +619,34 @@ public class MainActivity extends AppCompatActivity implements
         Message.unregisterAll();
     }
 
-    private void addWavHeader() {
-        Logger.i("-----addWavHeader mDebugFileName = " + mDebugFileName);
-        if (TextUtils.isEmpty(mDebugFileName)) {
+    private class ConvertWavButtonListener implements View.OnClickListener {
+
+        private String mFilePath;
+
+        public ConvertWavButtonListener(String filePath) {
+            mFilePath = filePath;
+        }
+
+        @Override
+        public void onClick(View v) {
+            addWavHeader(mFilePath);
+            mWavButton.setEnabled(false);
+        }
+    }
+
+    private void addWavHeader(String debugFilePath) {
+        // TODO : convert at the other thread.
+        Logger.i("-----addWavHeader mDebugFileName = " + debugFilePath);
+        if (TextUtils.isEmpty(debugFilePath)) {
             return;
         }
-        String fileName = mDebugFileName.substring(mDebugFileName.lastIndexOf("/") + 1);
+        String fileName = debugFilePath.substring(debugFilePath.lastIndexOf("/") + 1);
         Logger.i("-----addWavHeader fileName = " + fileName);
         if (TextUtils.isEmpty(fileName)) {
             return;
         }
 
-        File folder = new File(mDebugFileName.substring(0, mDebugFileName.lastIndexOf("/")));
+        File folder = new File(debugFilePath.substring(0, debugFilePath.lastIndexOf("/")));
         if (!folder.exists() || !folder.isDirectory()) {
             return;
         }
@@ -791,7 +801,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         mStartButton.setEnabled(true);
         mStopButton.setEnabled(false);
-        mWavButton.setEnabled(false);
         if (mUsbAudioSource != null) {
             mButtonAngle.setEnabled(true);
             mButtonNc.setEnabled(true);
@@ -833,6 +842,7 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setEnabled(true);
         mStopButton.setEnabled(false);
         mWavButton.setEnabled(true);
+        mWavButton.setOnClickListener(new ConvertWavButtonListener(mDebugFileName));
 
         mIsListening = false;
     }
@@ -845,9 +855,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         mStartButton.setEnabled(false);
         mStopButton.setEnabled(false);
-        mWavButton.setEnabled(false);
         mButtonAngle.setEnabled(false);
-        mButtonNc.setEnabled(false);
         if (mBufferedWriter != null) {
             try {
                 mBufferedWriter.close();
