@@ -14,8 +14,16 @@ import com.kikatech.voice.service.conf.AsrConfiguration;
 
 public class VoiceConfiguration {
 
+    public static final class HostUrl {
+        public static final String DEV_MVP = "ws://speech0-dev-mvp.kikakeyboard.com/v3/speech";
+        public static final String DEV_JINCHENG = "ws://speech0-poc.kikakeyboard.com/v3/speech";
+        public static final String DEV_HAO = "ws://speech.orctom.com:8080/v3/speech";
+        public static final String DEV_KIKA = "ws://speech0-dev.kikakeyboard.com/v3/speech";
+    }
+
     private static final String DEFAULT_ENGINE = "google";
     private static final String DEFAULT_LOCALE = "en_US";
+
     private static final int DEFAULT_BOS_DURATION = 6000;
 
     private IVoiceSource mVoiceSource;
