@@ -7,7 +7,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.navigation.provider.BaseNavigationProvider;
-import com.kikatech.go.util.AsyncThread;
+import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 
@@ -62,7 +62,7 @@ public class NaviSceneUtil {
 
         sNavigating = false;
         NavigationManager.getIns().stopNavigation(ctx);
-        AsyncThread.getIns().executeDelay(new Runnable() {
+        AsyncThreadPool.getIns().executeDelay(new Runnable() {
             @Override
             public void run() {
                 IntentUtil.openKikaGo(ctx);

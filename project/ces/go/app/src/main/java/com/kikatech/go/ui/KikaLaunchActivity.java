@@ -11,7 +11,7 @@ import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.notification.NotificationListenerUtil;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.util.AsyncThread;
+import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.OverlayUtil;
@@ -123,7 +123,7 @@ public class KikaLaunchActivity extends BaseActivity {
                 || !NotificationListenerUtil.isPermissionNLEnabled(context)
                 || (DeviceUtil.overM() && !OverlayUtil.isPermissionOverlayEnabled(context))
                 || !PermissionUtil.hasAllKikaPermissions(context)) {
-            AsyncThread.getIns().executeDelay(new Runnable() {
+            AsyncThreadPool.getIns().executeDelay(new Runnable() {
                 @Override
                 public void run() {
                     startAnotherActivity(KikaPermissionsActivity.class, true);

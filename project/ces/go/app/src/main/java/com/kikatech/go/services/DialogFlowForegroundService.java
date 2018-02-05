@@ -49,7 +49,7 @@ import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.KikaLaunchActivity;
 import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
-import com.kikatech.go.util.AsyncThread;
+import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogOnViewUtil;
@@ -537,7 +537,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, SceneWakeUp.SCENE);
                             sendDFServiceEvent(event);
                             pauseAsr();
-                            AsyncThread.getIns().executeDelay(new Runnable() {
+                            AsyncThreadPool.getIns().executeDelay(new Runnable() {
                                 @Override
                                 public void run() {
                                     mDialogFlowService.onLocalIntent(SceneWakeUp.SCENE, WakeUpSceneAction.ACTION_WAKE_UP_FUNNY);
@@ -707,7 +707,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             LogUtil.log(TAG, String.format("isInterrupted: %1$s, delayAsrResume: %2$s", isInterrupted, delayAsrResume));
                         }
                         if (delayAsrResume) {
-                            AsyncThread.getIns().executeDelay(new Runnable() {
+                            AsyncThreadPool.getIns().executeDelay(new Runnable() {
                                 @Override
                                 public void run() {
                                     pauseAsr();
