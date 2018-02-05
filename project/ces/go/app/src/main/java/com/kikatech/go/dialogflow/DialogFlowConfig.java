@@ -9,6 +9,7 @@ import com.kikatech.go.util.FlavorUtil;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.util.request.RequestManager;
+import com.xiao.usbaudio.AudioPlayBack;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -28,10 +29,12 @@ public class DialogFlowConfig {
     public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
         String WEB_SOCKET_URL_DEV = FlavorUtil.isFlavorMain() ? VoiceConfiguration.HostUrl.DEV_MVP : VoiceConfiguration.HostUrl.DEV_KIKA;
 
+        String debugFilePath = getDebugFilePath(ctx);
+        AudioPlayBack.sFilePath = debugFilePath;
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
                 .source(audioSource);
-        conf.setDebugFilePath(getDebugFilePath(ctx));
+        conf.setDebugFilePath(debugFilePath);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName(APP_NAME)
                 .setUrl(WEB_SOCKET_URL_DEV)
