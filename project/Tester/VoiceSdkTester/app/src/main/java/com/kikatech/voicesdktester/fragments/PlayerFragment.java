@@ -10,8 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +45,9 @@ public class PlayerFragment extends Fragment {
     private FileAdapter mAdapter;
     private int mOpenedIndex = -1;
 
+    private TextView mPrevPlayingView = null;
+    private AudioPlayerTask mTask;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -64,6 +65,14 @@ public class PlayerFragment extends Fragment {
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(3));
 
         refreshFiles();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mTask != null && mTask.isPlaying()) {
+            mTask.stop();
+        }
     }
 
     public void refreshFiles() {
@@ -351,7 +360,6 @@ public class PlayerFragment extends Fragment {
     private class PlayButtonClickListener implements View.OnClickListener {
 
         private String mFilePath;
-        private AudioPlayerTask mTask;
 
         private int mDrawablePlay;
         private int mDrawableStop;
@@ -368,18 +376,41 @@ public class PlayerFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            if (mTask == null || !mTask.isPlaying()) {
-                mTask = new AudioPlayerTask(mFilePath, (TextView) v, mDrawablePlay, mDrawableSource);
-                mTask.execute();
-                ((TextView) v).setCompoundDrawablesWithIntrinsicBounds(
-                        0, mDrawableStop, 0, mDrawableSource);
-            } else {
-                if (mTask.isPlaying()) {
-                    mTask.stop();
-                    mTask = null;
+            if (!(v instanceof TextView)) {
+                return;
+            }
+            TextView currentView = (TextView) v;
+            if (v == mPrevPlayingView) {
+                if (mTask == null || !mTask.isPlaying()) {
+                    mTask = new AudioPlayerTask(mFilePath, currentView, mDrawablePlay, mDrawableSource);
+                    mTask.execute();
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawableStop, 0, mDrawableSource);
+                } else {
+                    if (mTask.isPlaying()) {
+                        mTask.stop();
+                        mTask = null;
+                    }
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawablePlay, 0, mDrawableSource);
                 }
-                ((TextView) v).setCompoundDrawablesWithIntrinsicBounds(
-                        0, mDrawablePlay, 0, mDrawableSource);
+            } else {
+                if (mTask != null && mTask.isPlaying()) {
+                    mTask.stop();
+//                    mPrevPlayingView.setCompoundDrawablesWithIntrinsicBounds(
+//                            0, mDrawablePlay, 0, mDrawableSource);
+                    mTask = new AudioPlayerTask(mFilePath, (TextView) v, mDrawablePlay, mDrawableSource);
+                    mTask.execute();
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawableStop, 0, mDrawableSource);
+                } else {
+                    mTask = new AudioPlayerTask(mFilePath, (TextView) v, mDrawablePlay, mDrawableSource);
+                    mTask.execute();
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawableStop, 0, mDrawableSource);
+                }
+
+                mPrevPlayingView = (TextView) v;
             }
         }
     }
