@@ -4,9 +4,9 @@
               android:id="@+id/notification_view"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="?android:attr/selectableItemBackground"
-              android:orientation="horizontal"
+              android:background="@android:color/white"
               android:gravity="center_vertical"
+              android:orientation="horizontal"
               android:paddingBottom="15dp"
               android:paddingLeft="15.5dp"
               android:paddingRight="13dp"
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="KikaGo is running in the background"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@android:color/black"
             android:textSize="14.5dp"/>
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tap to open KikaGo"
-            android:textColor="?android:attr/textColorSecondary"
+            android:textColor="#b2000000"
             android:textSize="13dp"/>
 
     </LinearLayout>

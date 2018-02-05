@@ -4,7 +4,7 @@
                 android:id="@+id/notification_view"
                 android:layout_width="match_parent"
                 android:layout_height="117dp"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@android:color/white"
                 tools:ignore="SpUsage,HardcodedText,RtlHardcoded,UseCompoundDrawables">
 
     <LinearLayout
