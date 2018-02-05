@@ -285,7 +285,7 @@ public class WebSocket {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            Logger.i("VoiceWebSocketClient reconnect onClose code = [" + code + "] Thread = " + Thread.currentThread().getName());
+            Logger.i("VoiceWebSocketClient onClose code = [" + code + "] Thread = " + Thread.currentThread().getName());
             mOpened = false;
             reconnect();
             if (mListener != null) {
@@ -295,7 +295,7 @@ public class WebSocket {
 
         @Override
         public void onError(Exception ex) {
-            Logger.w("VoiceWebSocketClient reconnect onError ex = " + ex + " Thread = " + Thread.currentThread().getName());
+            Logger.w("VoiceWebSocketClient onError ex = " + ex + " Thread = " + Thread.currentThread().getName());
             ex.printStackTrace();
             mOpened = false;
             reconnect();

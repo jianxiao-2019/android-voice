@@ -75,7 +75,9 @@ public class KikaTtsSource implements TtsSource {
 
     @Override
     public void close() {
-        mMediaPlayer.stop();
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
+        }
         mMediaPlayer.release();
         mBackupAndroidTts.close();
     }
