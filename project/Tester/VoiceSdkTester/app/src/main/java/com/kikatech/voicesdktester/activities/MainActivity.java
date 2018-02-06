@@ -235,9 +235,6 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 if (mVoiceService != null) {
-                    mAsrConfiguration.setSpeechMode(((CheckBox) findViewById(R.id.check_one_shot)).isChecked()
-                            ? AsrConfiguration.SpeechMode.ONE_SHOT
-                            : AsrConfiguration.SpeechMode.CONVERSATION);
                     mAsrConfiguration.setAlterEnabled(
                             ((CheckBox) findViewById(R.id.check_alter)).isChecked());
                     mAsrConfiguration.setEmojiEnabled(
@@ -558,9 +555,6 @@ public class MainActivity extends AppCompatActivity implements
         mAudioIdText.setText("File : " + mDebugFileName.substring(mDebugFileName.lastIndexOf("/") + 1));
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
-                .setSpeechMode(((CheckBox) findViewById(R.id.check_one_shot)).isChecked()
-                        ? AsrConfiguration.SpeechMode.ONE_SHOT
-                        : AsrConfiguration.SpeechMode.CONVERSATION)
                 .setAlterEnabled(((CheckBox) findViewById(R.id.check_alter)).isChecked())
                 .setEmojiEnabled(((CheckBox) findViewById(R.id.check_emoji)).isChecked())
                 .setPunctuationEnabled(((CheckBox) findViewById(R.id.check_punctuation)).isChecked())

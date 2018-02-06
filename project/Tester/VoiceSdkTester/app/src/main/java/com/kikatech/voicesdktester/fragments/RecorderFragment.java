@@ -216,7 +216,6 @@ public class RecorderFragment extends Fragment implements
         AudioPlayBack.sFilePath = mDebugFileName;       // For debug.
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
-                .setSpeechMode(AsrConfiguration.SpeechMode.CONVERSATION)
                 .setAlterEnabled(false)
                 .setEmojiEnabled(false)
                 .setPunctuationEnabled(false)
