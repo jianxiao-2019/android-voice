@@ -84,7 +84,11 @@ public class MessengerScene extends Scene {
 
     public AccessibilityNodeWrapper findUserItem(String userName) {
         waitForView(1500);
-        return findNodeByTextAndClass(userName, AccessibilityUtils.AccessibilityConstants.CLASSNAME_VIEW);
+        AccessibilityNodeWrapper listView = findNodeByClass(AccessibilityUtils.AccessibilityConstants.CLASSNAME_LIST_VIEW);
+        if (listView != null) {
+            return listView.findNodeByTextAndClass(userName, AccessibilityUtils.AccessibilityConstants.CLASSNAME_VIEW);
+        }
+        return null;
     }
 
     public boolean isTargetFriend() {
