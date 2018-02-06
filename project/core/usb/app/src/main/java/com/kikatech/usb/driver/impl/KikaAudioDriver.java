@@ -50,7 +50,6 @@ public class KikaAudioDriver extends UsbHostDriver {
     public void startRecording() {
         mUsbAudio.start();
         AudioPlayBack.setup(this);
-        Logger.d("[" + Thread.currentThread().getName() + "] onData mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
     }
 
     @Override
@@ -74,7 +73,6 @@ public class KikaAudioDriver extends UsbHostDriver {
         if (mOnDataListener != null) {
             mOnDataListener.onData(data, length);
         }
-        Logger.d("[" + Thread.currentThread().getName() + "] onData mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
     }
 
     public int checkVolumeState() {

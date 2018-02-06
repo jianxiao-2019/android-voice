@@ -861,6 +861,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onError(int reason) {
+        Logger.e("MainActivity onError reason = " + reason);
         if (reason == ERR_REASON_NOT_CREATED) {
             Logger.e("ERR_REASON_NOT_CREATED");
             if (mTextView != null) {
@@ -876,7 +877,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionClosed() {
-
+        Logger.e("MainActivity onConnectionClosed");
     }
 
     @Override

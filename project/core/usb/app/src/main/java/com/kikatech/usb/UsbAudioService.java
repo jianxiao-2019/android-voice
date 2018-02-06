@@ -54,6 +54,10 @@ public class UsbAudioService {
 
         @Override
         public void onDeviceAttached(UsbDevice device) {
+            Logger.i("UsbAudioService onDeviceAttached");
+            if (mAudioSource != null) {
+                mAudioSource.closeDevice();
+            }
             mDevice = device;
             UsbAudioDriver driver = new KikaAudioDriver(mContext, mDevice);
             if (driver.open()) {
@@ -70,6 +74,7 @@ public class UsbAudioService {
 
         @Override
         public void onDeviceDetached() {
+            Logger.i("UsbAudioService onDeviceDetached");
             mDevice = null;
             if (mAudioSource != null) {
                 mAudioSource.closeDevice();

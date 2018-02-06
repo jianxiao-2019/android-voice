@@ -44,6 +44,7 @@ public class AudioPlayBack {
             sKikaAudioDriver.onData(decodedAudio, len);
         }
 
+        Logger.d("sFilePath = " + sFilePath + " output = " + output);
         if (sFilePath != null) {
             try {
                 for (int i = 0; i < len; i++) {
@@ -66,10 +67,13 @@ public class AudioPlayBack {
     public static void setup(KikaAudioDriver kikaAudioDriver) {
         sKikaAudioDriver = kikaAudioDriver;
 
-        if (sFilePath != null) {
+        Logger.d("AudioPlayBack setup sFilePath = " + sFilePath);
+        if (!TextUtils.isEmpty(sFilePath)) {
             mRecording = getFile("_USB");
+            Logger.d("AudioPlayBack setup mRecording = " + mRecording);
             try {
                 output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(mRecording)));
+                Logger.d("AudioPlayBack setup output = " + output);
             } catch (IOException e) {
                 Log.e("Error writing file : ", e.getMessage());
             }

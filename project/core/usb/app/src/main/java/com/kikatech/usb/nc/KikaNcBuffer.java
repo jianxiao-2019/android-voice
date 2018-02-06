@@ -55,6 +55,7 @@ public class KikaNcBuffer {
     }
 
     public void create() {
+        Logger.e("KikaNcBuffer create");
         NoiseCancellation.Init();
     }
 
@@ -65,6 +66,7 @@ public class KikaNcBuffer {
     }
 
     public void close() {
+        Logger.e("KikaNcBuffer close");
         NoiseCancellation.Destroy();
     }
 

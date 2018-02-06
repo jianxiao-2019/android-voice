@@ -128,15 +128,19 @@ public class RecorderFragment extends Fragment implements
         mUsingKikaGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mUsingKikaGo.setSelected(true);
-                mUsingAndroid.setSelected(false);
-                mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
-                mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
-                mErrorHintText.setVisibility(View.GONE);
+                if (mUsbAudioSource == null) {
+                    mUsingKikaGo.setSelected(true);
+                    mUsingAndroid.setSelected(false);
+                    mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
+                    mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
+                    mErrorHintText.setVisibility(View.GONE);
 
-                mUsbAudioService = UsbAudioService.getInstance(getActivity());
-                mUsbAudioService.setListener(mIUsbAudioListener);
-                mUsbAudioService.scanDevices();
+                    if (mUsbAudioService != null) {
+                        mUsbAudioService.scanDevices();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "You'er already using kikiGO device.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         mAndroidSignal = (ImageView) view.findViewById(R.id.signal_phone);
@@ -177,7 +181,10 @@ public class RecorderFragment extends Fragment implements
     @Override
     public void onStart() {
         super.onStart();
-        attachService();
+
+        mUsbAudioService = UsbAudioService.getInstance(getActivity());
+        mUsbAudioService.setListener(mIUsbAudioListener);
+        mUsbAudioService.scanDevices();
         refreshRecentView();
     }
 
@@ -416,6 +423,7 @@ public class RecorderFragment extends Fragment implements
 
     @Override
     public void onError(int reason) {
+        Logger.e("onError reason = " + reason);
         mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
         mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
         mStartRecordView.setAlpha(0.2f);
@@ -432,6 +440,7 @@ public class RecorderFragment extends Fragment implements
 
     @Override
     public void onConnectionClosed() {
+        Logger.e("onConnectionClosed");
         mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
         mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
         mStartRecordView.setAlpha(0.2f);
@@ -468,6 +477,8 @@ public class RecorderFragment extends Fragment implements
         @Override
         public void onDeviceDetached() {
             Logger.d("onDeviceDetached.");
+            mUsbAudioSource = null;
+            attachService();
         }
 
         @Override
