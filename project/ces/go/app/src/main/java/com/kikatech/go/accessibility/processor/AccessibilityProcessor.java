@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.kikatech.go.accessibility.scene.Scene;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
@@ -22,15 +23,28 @@ public abstract class AccessibilityProcessor {
 
     protected Scene mScene = null;
 
+    protected IProcessorFlow mIProcessorFlow = null;
+
     private static final int STAGE_TIMEOUT = 4000;
 
     public AccessibilityProcessor(Context context) {
         mContext = context;
     }
 
-    abstract public void start();
-    abstract public void stop();
     abstract public void onSceneShown(Scene scene);
+
+    abstract void onStageTimeout();
+
+    protected void start() {
+        DialogFlowForegroundService.processAccessibilityStarted();
+        if (mIProcessorFlow != null) {
+            mIProcessorFlow.onStart();
+        }
+    }
+
+    protected void stop() {
+        DialogFlowForegroundService.processAccessibilityStopped();
+    }
 
     protected synchronized void setRunning(boolean running) {
         mRunning = running;
@@ -38,6 +52,10 @@ public abstract class AccessibilityProcessor {
 
     public synchronized boolean isRunning() {
         return mRunning;
+    }
+
+    public void registerCallback(IProcessorFlow callback) {
+        mIProcessorFlow = callback;
     }
 
     protected void updateStage(String stage) {
@@ -55,8 +73,6 @@ public abstract class AccessibilityProcessor {
         }
     };
 
-    abstract void onStageTimeout();
-
     protected String getCurrentStage() {
         return mStage;
     }
@@ -67,6 +83,16 @@ public abstract class AccessibilityProcessor {
 
     protected void showToast(String message) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public interface IProcessorFlow {
+
+        int RESULT_SUCCESS  = 1;
+        int RESULT_FAILED   = 2;
+
+        void onStart();
+        void onStop(int result);
     }
 
 }

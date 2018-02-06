@@ -33,18 +33,6 @@ public abstract class IMProcessor extends AccessibilityProcessor {
     abstract public String getPackage();
     abstract void initActionRunnable();
 
-    public interface IIMProcessorFlow {
-        void onStart();
-
-        void onStop(boolean success);
-    }
-
-    private IIMProcessorFlow mIIMProcessorFlow;
-    public IMProcessor registerCallback(IIMProcessorFlow callback) {
-        mIIMProcessorFlow = callback;
-        return this;
-    }
-
     @Override
     public void onStageTimeout() {
         if (isRunning()) {
@@ -55,6 +43,7 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
     @Override
     public void start() {
+        super.start();
         initActionRunnable();
         setRunning(true);
         new CountDownTimer(TIMEOUT, 1000) {
@@ -72,14 +61,11 @@ public abstract class IMProcessor extends AccessibilityProcessor {
         if (openShareIntent()) {
             updateStage(ProcessingStage.IMProcessStage.STAGE_OPEN_SHARE_INTENT);
         }
-
-        if (mIIMProcessorFlow != null) {
-            mIIMProcessorFlow.onStart();
-        }
     }
 
     @Override
     public void stop() {
+        super.stop();
         BackgroundThread.getHandler().removeCallbacks(mActionRunnable);
 
         setRunning(false);
@@ -106,8 +92,12 @@ public abstract class IMProcessor extends AccessibilityProcessor {
                 break;
         }
 
-        if (mIIMProcessorFlow != null) {
-            mIIMProcessorFlow.onStop(ProcessingStage.IMProcessStage.STAGE_DONE.equals(stage));
+        if (mIProcessorFlow != null) {
+            if (ProcessingStage.IMProcessStage.STAGE_DONE.equals(stage)) {
+                mIProcessorFlow.onStop(IProcessorFlow.RESULT_SUCCESS);
+            } else {
+                mIProcessorFlow.onStop(IProcessorFlow.RESULT_FAILED);
+            }
         }
     }
 

@@ -48,6 +48,7 @@ public class FloatingUiManager extends BaseFloatingManager {
     private List<WindowFloatingButton> mButtonList = new ArrayList<>();
 
     private boolean isTipViewShown;
+    private boolean isGMapShown;
 
     private int mGravity = Gravity.LEFT;
 
@@ -282,6 +283,7 @@ public class FloatingUiManager extends BaseFloatingManager {
 
     public synchronized void showGMap() {
         if (mContainer.isViewAdded(mItemGMap)) {
+            showAllItems();
             return;
         }
 
@@ -292,6 +294,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         mItemGMap.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP));
         mItemGMap.setViewY(ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP));
         mContainer.addItem(mItemGMap);
+        mItemGMap.updateStatus(mContext, GoLayout.ViewStatus.STAND_BY_SLEEP);
 
         isTipViewShown = false;
     }
@@ -477,6 +480,19 @@ public class FloatingUiManager extends BaseFloatingManager {
             });
         }
     }
+
+    public synchronized void setShowGMap(boolean shown) {
+        isGMapShown = shown;
+    }
+
+    public synchronized void updateGMapVisibility() {
+        if (isGMapShown) {
+            showGMap();
+        } else {
+            hideAllItems();
+        }
+    }
+
 
 
     public static final class Builder extends BaseFloatingManager.Builder<Builder> {

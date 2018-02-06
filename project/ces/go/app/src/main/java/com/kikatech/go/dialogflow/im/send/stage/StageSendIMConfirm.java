@@ -11,6 +11,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.accessibility.AccessibilityManager;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.accessibility.im.MessageEventDispatcher;
+import com.kikatech.go.accessibility.processor.AccessibilityProcessor;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
@@ -66,24 +67,23 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                     AccessibilityManager.getInstance().registerDispatcher(messageEventDispatcher);
 
                     final boolean isAppForeground = DialogFlowForegroundService.isAppForeground();
-                    IMProcessor processor = IMProcessor.createIMProcessor(
-                            ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody(true)).registerCallback(new IMProcessor.IIMProcessorFlow() {
+                    IMProcessor processor = IMProcessor.createIMProcessor(ctx, imc.getIMAppPackageName(), imc.getSendTarget(), imc.getMessageBody(true));
+                    processor.registerCallback(new AccessibilityProcessor.IProcessorFlow() {
                         @Override
                         public void onStart() {
                             if (LogUtil.DEBUG) {
                                 LogUtil.log(TAG, "Start ...");
-                                DialogFlowForegroundService.processAccessibilityStarted();
                             }
                         }
 
                         @Override
-                        public void onStop(boolean msgSentSuccess) {
+                        public void onStop(int result) {
                             if (LogUtil.DEBUG) {
                                 LogUtil.log(TAG, "End ...");
                             }
+                            boolean msgSentSuccess = result == AccessibilityProcessor.IProcessorFlow.RESULT_SUCCESS;
 
                             AccessibilityManager.getInstance().unregisterDispatcher(messageEventDispatcher);
-                            DialogFlowForegroundService.processAccessibilityStopped();
                             boolean succeed, openKikaGo;
                             if (NaviSceneUtil.isNavigating() && !isAppForeground) {
                                 succeed = true;

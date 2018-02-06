@@ -153,11 +153,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 sendDFServiceEvent(serviceEvent);
                 break;
             case ToDFServiceEvent.ACTION_ON_APP_FOREGROUND:
-                mManager.hideAllItems();
+                mManager.setShowGMap(false);
+                mManager.updateGMapVisibility();
                 break;
             case ToDFServiceEvent.ACTION_ON_APP_BACKGROUND:
                 if (!isDoingAccessibility) {
-                    mManager.showAllItems();
+                    mManager.setShowGMap(true);
+                    mManager.updateGMapVisibility();
                 }
                 break;
             case ToDFServiceEvent.ACTION_ON_STATUS_CHANGED:
@@ -173,10 +175,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     LogUtil.logv(TAG, String.format("action: %s", action));
                 }
                 pauseAsr();
-                mManager.showGMap();
                 break;
             case ToDFServiceEvent.ACTION_ON_NAVIGATION_STOPPED:
-                mManager.removeGMap();
                 break;
             case ToDFServiceEvent.ACTION_DIALOG_FLOW_TALK:
                 if (LogUtil.DEBUG) {
@@ -241,13 +241,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 break;
             case ToDFServiceEvent.ACTION_ACCESSIBILITY_STARTED:
                 setDoingAccessibility(true);
+                // hide the item temporarily
                 mManager.hideAllItems();
                 break;
             case ToDFServiceEvent.ACTION_ACCESSIBILITY_STOPPED:
                 setDoingAccessibility(false);
-                if (NaviSceneUtil.isNavigating() && !isAppForeground) {
-                    mManager.showAllItems();
-                }
+                // resume to its original visibility
+                mManager.updateGMapVisibility();
                 break;
         }
     }
