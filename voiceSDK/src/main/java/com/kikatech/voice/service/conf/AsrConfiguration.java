@@ -8,12 +8,6 @@ import com.google.gson.Gson;
 
 public class AsrConfiguration {
 
-    public enum SpeechMode {
-        ONE_SHOT,
-        CONVERSATION
-    }
-
-    private SpeechMode speechMode;
     private boolean spellingEnabled;
     private boolean alterEnabled;
     private boolean emojiEnabled;
@@ -21,21 +15,20 @@ public class AsrConfiguration {
     private boolean vprEnabled;
     private int eosPackets;
 
-    private AsrConfiguration(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
+    private AsrConfiguration(boolean spellingEnabled, boolean alterEnabled,
                              boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
-        setConfig(speechMode, spellingEnabled, alterEnabled,
+        setConfig(spellingEnabled, alterEnabled,
                 emojiEnable, punctuationEnabled, vprEnabled, eosPackets);
     }
 
     public void copyConfig(AsrConfiguration conf) {
-        setConfig(conf.speechMode, conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled,
+        setConfig(conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled,
                 conf.punctuationEnabled, conf.vprEnabled, conf.eosPackets);
     }
 
-    private void setConfig(SpeechMode speechMode, boolean spellingEnabled, boolean alterEnabled,
+    private void setConfig(boolean spellingEnabled, boolean alterEnabled,
                            boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
         this.spellingEnabled = spellingEnabled;
-        this.speechMode = speechMode;
         this.alterEnabled = alterEnabled;
         this.emojiEnabled = emojiEnable;
         this.punctuationEnabled = punctuationEnabled;
@@ -44,21 +37,12 @@ public class AsrConfiguration {
     }
 
     private boolean sameValue(AsrConfiguration asrConfig) {
-        return speechMode == asrConfig.speechMode &&
-                alterEnabled == asrConfig.alterEnabled &&
+        return alterEnabled == asrConfig.alterEnabled &&
                 emojiEnabled == asrConfig.emojiEnabled &&
                 punctuationEnabled == asrConfig.punctuationEnabled &&
                 spellingEnabled == asrConfig.spellingEnabled &&
                 vprEnabled == asrConfig.vprEnabled &&
                 eosPackets == asrConfig.eosPackets;
-    }
-
-    public void setSpeechMode(SpeechMode speechMode) {
-        this.speechMode = speechMode;
-    }
-
-    public SpeechMode getSpeechMode() {
-        return this.speechMode;
     }
 
     public void setSpellingEnabled(boolean spellingEnabled) {
@@ -124,18 +108,12 @@ public class AsrConfiguration {
     }
 
     public static class Builder {
-        private SpeechMode speechMode = SpeechMode.CONVERSATION;
         private boolean spellingEnabled = false;
         private boolean alterEnabled = false;
         private boolean emojiEnabled = false;
         private boolean punctuationEnabled = false;
         private boolean vprEnabled = false;
         private int eosPackets = 1;
-
-        public Builder setSpeechMode(SpeechMode speechMode) {
-            this.speechMode = speechMode;
-            return this;
-        }
 
         public Builder setSpellingEnabled(boolean spellingEnabled) {
             this.spellingEnabled = spellingEnabled;
@@ -168,7 +146,7 @@ public class AsrConfiguration {
         }
 
         public AsrConfiguration build() {
-            return new AsrConfiguration(speechMode, spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled, eosPackets);
+            return new AsrConfiguration(spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled, eosPackets);
         }
     }
 }
