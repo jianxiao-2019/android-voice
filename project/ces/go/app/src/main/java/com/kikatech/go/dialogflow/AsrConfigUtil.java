@@ -52,7 +52,6 @@ public class AsrConfigUtil {
     static AsrConfiguration getConfig(@NonNull AsrConfiguration asrConf, @ASRMode int mode) {
         switch (mode) {
             case ASR_MODE_CONVERSATION_COMMAND:
-                asrConf.setSpeechMode(AsrConfiguration.SpeechMode.CONVERSATION);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
@@ -60,7 +59,6 @@ public class AsrConfigUtil {
                 asrConf.setEosPackets(3);
                 break;
             case ASR_MODE_CONVERSATION:
-                asrConf.setSpeechMode(AsrConfiguration.SpeechMode.CONVERSATION);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
@@ -68,7 +66,6 @@ public class AsrConfigUtil {
                 asrConf.setEosPackets(4);
                 break;
             case ASR_MODE_CONVERSATION_CMD_ALTER:
-                asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
@@ -76,7 +73,6 @@ public class AsrConfigUtil {
                 asrConf.setEosPackets(2);
                 break;
             case ASR_MODE_CONVERSATION_ALTER:
-                asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
@@ -84,7 +80,6 @@ public class AsrConfigUtil {
                 asrConf.setEosPackets(2);
                 break;
             case ASR_MODE_SHORT_COMMAND:
-                asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
@@ -92,7 +87,6 @@ public class AsrConfigUtil {
                 asrConf.setEosPackets(2);
                 break;
             case ASR_MODE_SHORT_COMMAND_SPELLING:
-                asrConf.setSpeechMode(AsrConfiguration.SpeechMode.ONE_SHOT);
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
