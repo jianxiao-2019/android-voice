@@ -102,7 +102,8 @@ public class PlayerFragment extends Fragment {
             holder.sourceImage.setImageResource(item.isSourceUsb ?
                     isOpenedItem ? R.drawable.ic_list_usbcable_select : R.drawable.ic_list_usbcable :
                     isOpenedItem ? R.drawable.ic_list_phone_select : R.drawable.ic_list_phone);
-            holder.controlNc.setVisibility(item.isSourceUsb ? View.VISIBLE : View.INVISIBLE);
+//            holder.controlNc.setVisibility(item.isSourceUsb ? View.VISIBLE : View.INVISIBLE);
+            holder.controlNc.getLayoutParams().width = item.isSourceUsb ? ViewGroup.LayoutParams.WRAP_CONTENT : 0;
             holder.controlNc.setOnClickListener(
                     new PlayButtonClickListener(
                             item.filePath + "_NC",

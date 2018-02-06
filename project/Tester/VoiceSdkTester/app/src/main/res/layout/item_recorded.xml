@@ -57,14 +57,13 @@
         android:drawableBottom="@drawable/ic_source_tag_nc"
         android:drawablePadding="-9dp"
         android:drawableTop="@drawable/ic_source_nc_play"
-        android:paddingLeft="10dp"
-        android:singleLine="true" />
+        android:paddingLeft="10dp" />
 
     <LinearLayout
         android:id="@+id/expanded_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/control_nc"
+        android:layout_below="@+id/control_raw"
         android:layout_marginTop="14dp"
         android:orientation="vertical">
 
