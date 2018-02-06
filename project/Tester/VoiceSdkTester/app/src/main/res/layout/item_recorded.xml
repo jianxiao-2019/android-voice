@@ -117,8 +117,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Share"
-                android:textColor="#FF50E3C2"
-                android:visibility="gone" />
+                android:textColor="#FF50E3C2" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

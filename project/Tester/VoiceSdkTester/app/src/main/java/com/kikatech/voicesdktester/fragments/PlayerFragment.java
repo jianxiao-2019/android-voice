@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
+import com.kikatech.voicesdktester.listeners.ItemShareClickListener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -123,7 +124,7 @@ public class PlayerFragment extends Fragment {
 
             holder.deleteItem.setOnClickListener(new ItemDeleteClickListener(item.filePath));
             holder.renameItem.setOnClickListener(new ItemRenameListener(item.filePath));
-//            holder.shareItem.setOnClickListener();
+            holder.shareItem.setOnClickListener(new ItemShareClickListener(getContext(), item.isSourceUsb, item.filePath));
 
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/ hh:mm");
             long duration = item.file.length() / 2 / 16000;
@@ -318,7 +319,7 @@ public class PlayerFragment extends Fragment {
             editDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
                         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                     }
