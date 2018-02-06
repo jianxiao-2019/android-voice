@@ -2,6 +2,7 @@ package com.kikatech.go.accessibility;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.view.accessibility.AccessibilityEvent;
@@ -15,6 +16,12 @@ import java.util.List;
 public class AccessibilityWatchDog extends AccessibilityService {
 
     private static final String TAG = "AccessibilityWatchDog";
+
+    private static AccessibilityWatchDog sInstance;
+
+    public static AccessibilityWatchDog getInstance() {
+        return sInstance;
+    }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -63,6 +70,18 @@ public class AccessibilityWatchDog extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        sInstance = this;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        sInstance = null;
+        return super.onUnbind(intent);
     }
 
     private ActivityInfo tryGetActivity(ComponentName componentName) {

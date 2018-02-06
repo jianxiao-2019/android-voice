@@ -73,6 +73,16 @@ public class Scene {
         return null;
     }
 
+    public synchronized AccessibilityNodeWrapper findNodeByText(String[] texts) {
+        for (String text : texts) {
+            AccessibilityNodeWrapper node = findNodeByText(text);
+            if (node != null) {
+                return node;
+            }
+        }
+        return null;
+    }
+
     public synchronized AccessibilityNodeWrapper findNodeByClass(String clz) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if (StringUtil.equals(clz, nodeWrapper.getClassName())) {
@@ -101,12 +111,32 @@ public class Scene {
         return null;
     }
 
+    public synchronized AccessibilityNodeWrapper findNodeByTextAndId(String[] texts, String viewId) {
+        for (String text : texts) {
+            AccessibilityNodeWrapper node = findNodeByTextAndId(text, viewId);
+            if (node != null) {
+                return node;
+            }
+        }
+        return null;
+    }
+
     public synchronized AccessibilityNodeWrapper findNodeByTextAndClass(String text, String clz) {
         for (AccessibilityNodeWrapper nodeWrapper : mAllNodes.values()) {
             if ((StringUtil.equals(text, nodeWrapper.getText()) ||
                  StringUtil.equals(text, nodeWrapper.getContentDescription())) &&
                  StringUtil.equals(clz, nodeWrapper.getClassName())) {
                 return nodeWrapper;
+            }
+        }
+        return null;
+    }
+
+    public synchronized AccessibilityNodeWrapper findNodeByTextAndClass(String[] texts, String viewId) {
+        for (String text : texts) {
+            AccessibilityNodeWrapper node = findNodeByTextAndClass(text, viewId);
+            if (node != null) {
+                return node;
             }
         }
         return null;
