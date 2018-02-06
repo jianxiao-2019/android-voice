@@ -148,19 +148,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_recent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/recent_area"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="12dp"
-        android:layout_marginLeft="20dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="Recent"
-        android:textColor="#838FA5"
-        android:textSize="14sp" />
-
     <FrameLayout
         android:id="@+id/recent_area"
         android:layout_width="match_parent"
@@ -201,6 +188,19 @@
                 android:textColor="#FFFFFFFF" />
         </RelativeLayout>
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/text_recent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/recent_area"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="20dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Recent"
+        android:textColor="#838FA5"
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/error_hint"

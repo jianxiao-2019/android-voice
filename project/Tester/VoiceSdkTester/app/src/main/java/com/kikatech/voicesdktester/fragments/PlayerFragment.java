@@ -120,6 +120,7 @@ public class PlayerFragment extends Fragment {
 
             holder.expendedLayout.setVisibility(isOpenedItem ? View.VISIBLE : View.GONE);
             holder.itemView.setOnClickListener(new ItemClickListener(position));
+            holder.itemView.setBackgroundColor(isOpenedItem ? 0xFF3B475D : 0xFF2F3A4F);
             holder.recognizeResult.setText(item.recognizeResult);
 
             holder.deleteItem.setOnClickListener(new ItemDeleteClickListener(item.filePath));

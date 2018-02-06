@@ -4,12 +4,13 @@
     android:layout_height="wrap_content"
     android:background="#FF2F3A4F"
     android:gravity="center_vertical"
-    android:padding="20dp">
+    android:paddingTop="26dp">
 
     <ImageView
         android:id="@+id/source_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
         android:src="@drawable/ic_list_usbcable_select" />
 
 
@@ -42,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="14dp"
         android:layout_toStartOf="@+id/control_nc"
         android:drawableBottom="@drawable/ic_source_tag_raw"
         android:drawablePadding="-9dp"
@@ -54,6 +56,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="14dp"
+        android:layout_marginEnd="20dp"
         android:drawableBottom="@drawable/ic_source_tag_nc"
         android:drawablePadding="-9dp"
         android:drawableTop="@drawable/ic_source_nc_play"
@@ -64,26 +68,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/control_raw"
-        android:layout_marginTop="14dp"
         android:orientation="vertical">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginStart="51dp"
-            android:background="#FFACB4C4" />
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="71dp"
+            android:background="#6FACB4C4" />
 
         <TextView
             android:id="@+id/asr_result_text"
             android:layout_width="match_parent"
-            android:layout_height="84dp"
-            android:layout_marginStart="51dp"
-            android:ellipsize="end" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="71dp"
+            android:layout_marginTop="18dp"
+            android:ellipsize="end"
+            android:maxLines="3" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#FFACB4C4" />
+            android:background="#44ACB4C4" />
 
         <LinearLayout
             android:layout_width="match_parent"
