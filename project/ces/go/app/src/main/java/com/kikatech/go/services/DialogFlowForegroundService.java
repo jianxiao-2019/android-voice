@@ -157,8 +157,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 mManager.updateGMapVisibility();
                 break;
             case ToDFServiceEvent.ACTION_ON_APP_BACKGROUND:
+                mManager.setShowGMap(true);
                 if (!isDoingAccessibility) {
-                    mManager.setShowGMap(true);
                     mManager.updateGMapVisibility();
                 }
                 break;
