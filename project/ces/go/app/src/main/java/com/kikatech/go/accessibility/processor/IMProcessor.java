@@ -20,6 +20,8 @@ public abstract class IMProcessor extends AccessibilityProcessor {
     private static final String TAG = "IMProcessor";
     private static final int TIMEOUT = 15000;
 
+    private static final int STAGE_TIMEOUT = 4000;
+
     protected String mTarget;
     protected String mMessage;
 
@@ -32,6 +34,22 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
     abstract public String getPackage();
     abstract void initActionRunnable();
+
+    @Override
+    protected void updateStage(String stage) {
+        super.updateStage(stage);
+
+        // there is time limitation on each stage
+        BackgroundThread.getHandler().removeCallbacks(timeOutTask);
+        BackgroundThread.postDelayed(timeOutTask, STAGE_TIMEOUT);
+    }
+
+    private Runnable timeOutTask = new Runnable() {
+        @Override
+        public void run() {
+            onStageTimeout();
+        }
+    };
 
     @Override
     public void onStageTimeout() {

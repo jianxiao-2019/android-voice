@@ -77,6 +77,11 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                         }
 
                         @Override
+                        public void onStageChanged(String stage) {
+
+                        }
+
+                        @Override
                         public void onStop(int result) {
                             if (LogUtil.DEBUG) {
                                 LogUtil.log(TAG, "End ...");

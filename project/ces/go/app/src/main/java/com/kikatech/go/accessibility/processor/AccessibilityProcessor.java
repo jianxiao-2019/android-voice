@@ -25,8 +25,6 @@ public abstract class AccessibilityProcessor {
 
     protected IProcessorFlow mIProcessorFlow = null;
 
-    private static final int STAGE_TIMEOUT = 4000;
-
     public AccessibilityProcessor(Context context) {
         mContext = context;
     }
@@ -62,16 +60,10 @@ public abstract class AccessibilityProcessor {
         LogUtil.logw(TAG, "Update Processing Stage: " + stage);
         mStage = stage;
 
-        BackgroundThread.getHandler().removeCallbacks(timeOutTask);
-        BackgroundThread.postDelayed(timeOutTask, STAGE_TIMEOUT);
-    }
-
-    private Runnable timeOutTask = new Runnable() {
-        @Override
-        public void run() {
-            onStageTimeout();
+        if (mIProcessorFlow != null) {
+            mIProcessorFlow.onStageChanged(stage);
         }
-    };
+    }
 
     protected String getCurrentStage() {
         return mStage;
@@ -93,6 +85,7 @@ public abstract class AccessibilityProcessor {
 
         void onStart();
         void onStop(int result);
+        void onStageChanged(String stage);
     }
 
 }
