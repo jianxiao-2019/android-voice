@@ -38,7 +38,7 @@ import java.util.List;
  * Created by ryanlin on 23/01/2018.
  */
 
-public class PlayerFragment extends Fragment {
+public class PlayerFragment extends PageFragment {
 
     private final List<RecognizeItem> mFileNames = new ArrayList<>();
 
@@ -84,6 +84,18 @@ public class PlayerFragment extends Fragment {
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onPagePause() {
+        if (mTask != null && mTask.isPlaying()) {
+            mTask.stop();
+        }
+    }
+
+    @Override
+    public void onPageResume() {
+
     }
 
     private class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {

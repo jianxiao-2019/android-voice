@@ -67,6 +67,11 @@ public class TesterActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 if (position == 1) {
                     mPlayerFragment.refreshFiles();
+                    mPlayerFragment.onPageResume();
+                    mRecorderFragment.onPagePause();
+                } else {
+                    mRecorderFragment.onPageResume();
+                    mPlayerFragment.onPagePause();
                 }
             }
 

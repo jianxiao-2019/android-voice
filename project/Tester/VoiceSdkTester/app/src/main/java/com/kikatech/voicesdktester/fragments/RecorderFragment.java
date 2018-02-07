@@ -48,7 +48,7 @@ import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_
  * Created by ryanlin on 23/01/2018.
  */
 
-public class RecorderFragment extends Fragment implements
+public class RecorderFragment extends PageFragment implements
         View.OnClickListener,
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceStateChangedListener,
@@ -82,6 +82,9 @@ public class RecorderFragment extends Fragment implements
     private long mTimeInSec = 0;
 
     private int mDebugCount = 0;
+
+    private TextView mPrevPlayingView = null;
+    private AudioPlayerTask mTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -579,6 +582,18 @@ public class RecorderFragment extends Fragment implements
         return latestItem;
     }
 
+    @Override
+    public void onPagePause() {
+        if (mTask != null && mTask.isPlaying()) {
+            mTask.stop();
+        }
+    }
+
+    @Override
+    public void onPageResume() {
+
+    }
+
     private class RecognizeItem {
         File file;
         String fileName;
@@ -589,7 +604,6 @@ public class RecorderFragment extends Fragment implements
     private class PlayButtonClickListener implements View.OnClickListener {
 
         private String mFilePath;
-        private AudioPlayerTask mTask;
 
         private int mDrawablePlay;
         private int mDrawableStop;
@@ -606,18 +620,41 @@ public class RecorderFragment extends Fragment implements
 
         @Override
         public void onClick(View v) {
-            if (mTask == null || !mTask.isPlaying()) {
-                mTask = new AudioPlayerTask(mFilePath, (TextView) v, mDrawablePlay, mDrawableSource);
-                mTask.execute();
-                ((TextView) v).setCompoundDrawablesWithIntrinsicBounds(
-                        0, mDrawableStop, 0, mDrawableSource);
-            } else {
-                if (mTask.isPlaying()) {
-                    mTask.stop();
-                    mTask = null;
+            if (!(v instanceof TextView)) {
+                return;
+            }
+            TextView currentView = (TextView) v;
+            if (v == mPrevPlayingView) {
+                if (mTask == null || !mTask.isPlaying()) {
+                    mTask = new AudioPlayerTask(mFilePath, currentView, mDrawablePlay, mDrawableSource);
+                    mTask.execute();
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawableStop, 0, mDrawableSource);
+                } else {
+                    if (mTask.isPlaying()) {
+                        mTask.stop();
+                        mTask = null;
+                    }
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawablePlay, 0, mDrawableSource);
                 }
-                ((TextView) v).setCompoundDrawablesWithIntrinsicBounds(
-                        0, mDrawablePlay, 0, mDrawableSource);
+            } else {
+                if (mTask != null && mTask.isPlaying()) {
+                    mTask.stop();
+//                    mPrevPlayingView.setCompoundDrawablesWithIntrinsicBounds(
+//                            0, mDrawablePlay, 0, mDrawableSource);
+                    mTask = new AudioPlayerTask(mFilePath, (TextView) v, mDrawablePlay, mDrawableSource);
+                    mTask.execute();
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawableStop, 0, mDrawableSource);
+                } else {
+                    mTask = new AudioPlayerTask(mFilePath, (TextView) v, mDrawablePlay, mDrawableSource);
+                    mTask.execute();
+                    currentView.setCompoundDrawablesWithIntrinsicBounds(
+                            0, mDrawableStop, 0, mDrawableSource);
+                }
+
+                mPrevPlayingView = (TextView) v;
             }
         }
     }
