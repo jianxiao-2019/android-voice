@@ -251,7 +251,6 @@ public class RecorderFragment extends PageFragment implements
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
-        refreshRecentView();
     }
 
     @UiThread
@@ -419,6 +418,13 @@ public class RecorderFragment extends PageFragment implements
         mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
         mIsListening = false;
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshRecentView();
+            }
+        }, 1000);
     }
 
     @Override
@@ -552,7 +558,7 @@ public class RecorderFragment extends PageFragment implements
             long duration = item.file.length() / 2 / 16000;
             ((TextView) recentView.findViewById(R.id.file_time)).setText(sdf.format(item.file.lastModified()) + " | " + String.format("%02d:%02d", duration / 60, duration % 60));
             View controlNc = recentView.findViewById(R.id.control_nc);
-            controlNc.setVisibility(item.isSourceUsb ? View.VISIBLE : View.INVISIBLE);
+            controlNc.getLayoutParams().width = item.isSourceUsb ? ViewGroup.LayoutParams.WRAP_CONTENT : 0;
             controlNc.setOnClickListener(new PlayButtonClickListener(
                     item.filePath + "_NC",
                     R.drawable.ic_source_nc_play,
