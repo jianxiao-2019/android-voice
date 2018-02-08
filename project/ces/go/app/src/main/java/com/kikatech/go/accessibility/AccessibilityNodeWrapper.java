@@ -160,6 +160,18 @@ public class AccessibilityNodeWrapper {
         return null;
     }
 
+    public AccessibilityNodeWrapper getChild(int index) {
+        AccessibilityNodeInfo child = mNodeInfo.getChild(index);
+        if (child != null) {
+            return new AccessibilityNodeWrapper(child);
+        }
+        return null;
+    }
+
+    public int getChildCount() {
+        return mNodeInfo.getChildCount();
+    }
+
     public AccessibilityNodeInfo getNodeInfo() {
         return mNodeInfo;
     }

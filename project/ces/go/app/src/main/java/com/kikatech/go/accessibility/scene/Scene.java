@@ -45,6 +45,15 @@ public class Scene {
         for (AccessibilityNodeInfo nodeInfo : allNodeInfo) {
             if (AccessibilityUtils.isNodeValid(nodeInfo)) {
                 AccessibilityNodeWrapper nodeWrapper = new AccessibilityNodeWrapper(nodeInfo);
+                AccessibilityNodeWrapper oldNodeWrapper = mAllNodes.get(nodeWrapper.getHash());
+                // Do not replace recorded node strategy
+                if (oldNodeWrapper != null) {
+                    // in case RatingBar widget's child number varied each time
+                    if (AccessibilityUtils.AccessibilityConstants.CLASSNAME_RATING_BAR.equals(oldNodeWrapper.getClassName())
+                        && oldNodeWrapper.getChildCount() > nodeWrapper.getChildCount()) {
+                        continue;
+                    }
+                }
                 mAllNodes.put(nodeWrapper.getHash(), nodeWrapper);
             }
         }

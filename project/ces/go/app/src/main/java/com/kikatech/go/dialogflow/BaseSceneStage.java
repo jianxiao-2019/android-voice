@@ -24,7 +24,7 @@ public abstract class BaseSceneStage extends SceneStage {
         updateAsrConfig(getAsrMode());
     }
 
-    private void updateAsrConfig(@AsrConfigUtil.ASRMode int mode) {
+    protected void updateAsrConfig(@AsrConfigUtil.ASRMode int mode) {
         AsrConfigUtil.getConfig(mAsrConfig, mode);
     }
 

@@ -149,18 +149,19 @@ public class AccessibilityUtils {
     }
 
     public interface AccessibilityConstants {
-        public static final String CLASSNAME_EDIT_TEXT = "android.widget.EditText";
-        public static final String CLASSNAME_TEXT_VIEW = "android.widget.TextView";
-        public static final String CLASSNAME_IMAGE_VIEW = "android.widget.ImageView";
-        public static final String CLASSNAME_BUTTON = "android.widget.Button";
+        String CLASSNAME_EDIT_TEXT              = "android.widget.EditText";
+        String CLASSNAME_TEXT_VIEW              = "android.widget.TextView";
+        String CLASSNAME_IMAGE_VIEW             = "android.widget.ImageView";
+        String CLASSNAME_BUTTON                 = "android.widget.Button";
 
-        public static final String CLASSNAME_FRAMELAYOUT = "android.widget.FrameLayout";
-        public static final String CLASSNAME_LINEARLAYOUT = "android.widget.LinearLayout";
-        public static final String CLASSNAME_RELATIVELAYOUT = "android.widget.RelativeLayout";
-        public static final String CLASSNAME_LIST_VIEW = "android.widget.ListView";
+        String CLASSNAME_FRAMELAYOUT            = "android.widget.FrameLayout";
+        String CLASSNAME_LINEARLAYOUT           = "android.widget.LinearLayout";
+        String CLASSNAME_RELATIVELAYOUT         = "android.widget.RelativeLayout";
+        String CLASSNAME_LIST_VIEW              = "android.widget.ListView";
+        String CLASSNAME_RATING_BAR             = "android.widget.RatingBar";
 
-        public static final String CLASSNAME_VIEW = "android.view.View";
-        public static final String CLASSNAME_VIEW_GROUP = "android.view.ViewGroup";
+        String CLASSNAME_VIEW                   = "android.view.View";
+        String CLASSNAME_VIEW_GROUP             = "android.view.ViewGroup";
     }
 
 }
