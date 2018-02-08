@@ -1,5 +1,6 @@
 package com.kikatech.voicesdktester.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -541,20 +542,24 @@ public class RecorderFragment extends PageFragment implements
 
     private void refreshRecentView() {
         if (mRecentArea != null) {
+            Activity activity = getActivity();
+            if (activity == null || activity.isDestroyed()) {
+                return;
+            }
             RecognizeItem item = scanLatestFile(PATH_FROM_MIC);
             if (item == null) {
                 return;
             }
             mRecentArea.removeAllViews();
 
-            View recentView = LayoutInflater.from(getContext()).inflate(R.layout.item_recorded, mRecentArea, false);
+            View recentView = LayoutInflater.from(activity).inflate(R.layout.item_recorded, mRecentArea, false);
 
             recentView.findViewById(R.id.expanded_layout).setVisibility(View.GONE);
             ((ImageView) recentView.findViewById(R.id.source_icon)).setImageResource(item.isSourceUsb ?
                     R.drawable.ic_list_usbcable : R.drawable.ic_list_phone);
             ((TextView) recentView.findViewById(R.id.file_name)).setText(item.fileName);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd hh:mm");
             long duration = item.file.length() / 2 / 16000;
             ((TextView) recentView.findViewById(R.id.file_time)).setText(sdf.format(item.file.lastModified()) + " | " + String.format("%02d:%02d", duration / 60, duration % 60));
             View controlNc = recentView.findViewById(R.id.control_nc);
