@@ -7,9 +7,10 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,16 +134,16 @@ public class PlayerFragment extends PageFragment {
             holder.expendedLayout.setVisibility(isOpenedItem ? View.VISIBLE : View.GONE);
             holder.itemView.setOnClickListener(new ItemClickListener(position));
             holder.itemView.setBackgroundColor(isOpenedItem ? 0xFF3B475D : 0xFF2F3A4F);
-            holder.recognizeResult.setText(item.recognizeResult);
+            holder.recognizeResult.setText(Html.fromHtml(item.recognizeResult));
 
             holder.deleteItem.setOnClickListener(new ItemDeleteClickListener(item.filePath));
             holder.renameItem.setOnClickListener(new ItemRenameListener(item.filePath));
             holder.shareItem.setOnClickListener(new ItemShareClickListener(getContext(), item.isSourceUsb, item.filePath));
 
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/ hh:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd hh:mm");
             long duration = item.file.length() / 2 / 16000;
             Logger.d("[" + holder.fileName + "] duration = " + duration + " date = " + sdf.format(item.file.lastModified()));
-            holder.fileTime.setText(sdf.format(item.file.lastModified()) + " (" + String.format("%02d:%02d", duration / 60, duration % 60) + ")");
+            holder.fileTime.setText(sdf.format(item.file.lastModified()) + " | " + String.format("%02d:%02d", duration / 60, duration % 60));
         }
 
         @Override
@@ -240,7 +241,12 @@ public class PlayerFragment extends PageFragment {
             e.printStackTrace();
         }
 
-        return sb.toString();
+        String result = sb.toString();
+        if (TextUtils.isEmpty(result)) {
+            result = "<i>No voice recognition results</i>";
+        }
+
+        return result;
     }
 
     private class ItemDeleteClickListener implements View.OnClickListener {
