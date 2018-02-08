@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,12 +78,15 @@ public class RecorderFragment extends PageFragment implements
 
     private static final int MSG_TIMER = 0;
     private static final int MSG_CHECK_DEBUG = 1;
+    private static final int MSG_VAD_TIMER = 2;
     private long mTimeInSec = 0;
 
     private int mDebugCount = 0;
 
     private TextView mPrevPlayingView = null;
     private AudioPlayerTask mTask;
+
+    private boolean mStartSpeech = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -249,6 +251,7 @@ public class RecorderFragment extends PageFragment implements
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
+        refreshRecentView();
     }
 
     @UiThread
@@ -405,6 +408,7 @@ public class RecorderFragment extends PageFragment implements
             e.printStackTrace();
         }
         mIsListening = true;
+        mStartSpeech = false;
     }
 
     @Override
@@ -415,8 +419,6 @@ public class RecorderFragment extends PageFragment implements
         mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
         mIsListening = false;
-
-        refreshRecentView();
     }
 
     @Override
@@ -455,7 +457,16 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
-
+        if (mStartSpeech && prob < 0.2) {
+            if (!mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
+                mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_TIMER, 1600);
+            }
+        } else if (prob > 0.2) {
+            mStartSpeech = true;
+            if (mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
+                mTimerHandler.removeMessages(MSG_VAD_TIMER);
+            }
+        }
     }
 
     @Override
@@ -514,6 +525,10 @@ public class RecorderFragment extends PageFragment implements
                 }
             } else if (msg.what == MSG_CHECK_DEBUG) {
                 mDebugCount = 0;
+            } else if (msg.what == MSG_VAD_TIMER) {
+                if (mVoiceService != null) {
+                    mVoiceService.stop();
+                }
             }
         }
     };
@@ -587,6 +602,7 @@ public class RecorderFragment extends PageFragment implements
         if (mTask != null && mTask.isPlaying()) {
             mTask.stop();
         }
+        attachService();
     }
 
     @Override
