@@ -301,7 +301,6 @@ public class RecorderFragment extends PageFragment implements
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
-                attachService();
                 break;
             case R.id.device_button_left:
                 break;
@@ -618,7 +617,7 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onPageResume() {
-
+        refreshRecentView();
     }
 
     private class RecognizeItem {

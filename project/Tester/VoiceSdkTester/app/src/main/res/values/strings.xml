@@ -11,6 +11,6 @@
     </string-array>
 
     <string name="tab_title_record">Record</string>
-    <string name="tab_title_player">Data List</string>
+    <string name="tab_title_player">Result</string>
 
 </resources>
