@@ -12,7 +12,7 @@ import com.kikatech.voice.util.request.MD5;
 import java.util.List;
 
 /**
- * Created by jason on 2018/1/30.
+ * Created by jason On 2018/1/30.
  */
 
 public class AccessibilityNodeWrapper {
@@ -158,6 +158,10 @@ public class AccessibilityNodeWrapper {
             return new AccessibilityNodeWrapper(parent);
         }
         return null;
+    }
+
+    public AccessibilityNodeInfo getNodeInfo() {
+        return mNodeInfo;
     }
 
     public void recycle() {
