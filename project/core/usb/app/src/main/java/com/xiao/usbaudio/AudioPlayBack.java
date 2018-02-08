@@ -72,7 +72,7 @@ public class AudioPlayBack {
             mRecording = getFile("_USB");
             Logger.d("AudioPlayBack setup mRecording = " + mRecording);
             try {
-                output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(mRecording)));
+                output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(mRecording, true)));
                 Logger.d("AudioPlayBack setup output = " + output);
             } catch (IOException e) {
                 Log.e("Error writing file : ", e.getMessage());
