@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 
 import com.kikatech.voice.util.log.Logger;
@@ -71,9 +72,12 @@ public class ItemShareClickListener implements View.OnClickListener {
     }
 
     private void shareFile(String filePath) {
-        Uri uri = Uri.parse("file:///" + filePath);
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("audio/wav");
+        Uri uri = FileProvider.getUriForFile(
+                mContext,
+                mContext.getPackageName() + ".provider",
+                new File(filePath));
         share.putExtra(Intent.EXTRA_STREAM, uri);
         mContext.startActivity(Intent.createChooser(share, "Share audio File"));
     }
