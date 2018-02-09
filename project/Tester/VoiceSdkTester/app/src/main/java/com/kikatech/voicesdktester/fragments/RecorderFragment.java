@@ -80,6 +80,7 @@ public class RecorderFragment extends PageFragment implements
     private static final int MSG_TIMER = 0;
     private static final int MSG_CHECK_DEBUG = 1;
     private static final int MSG_VAD_TIMER = 2;
+    private static final int MSG_FINAL_RESULT_TIMEOUT = 3;
     private long mTimeInSec = 0;
 
     private int mDebugCount = 0;
@@ -87,7 +88,7 @@ public class RecorderFragment extends PageFragment implements
     private TextView mPrevPlayingView = null;
     private AudioPlayerTask mTask;
 
-    private boolean mStartSpeech = false;
+//    private boolean mStartSpeech = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -301,6 +302,11 @@ public class RecorderFragment extends PageFragment implements
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
+                if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
+                    mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
+                }
+                Logger.w("onMessage 1 send 2000");
+                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 2000);
                 break;
             case R.id.device_button_left:
                 break;
@@ -336,9 +342,14 @@ public class RecorderFragment extends PageFragment implements
 
     private void logResultToFile(Message message) {
         Logger.d("logResultToFile mBufferedWriter = " + mBufferedWriter);
+        if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
+            mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
+            Logger.w("onMessage 2 send 5000");
+            mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 5000);
+        }
         if (mBufferedWriter != null) {
-            long cid = 0;
-            String text = "";
+            long cid;
+            String text;
             if (message instanceof TextMessage) {
                 text = ((TextMessage) message).text[0];
                 cid = ((TextMessage) message).cid;
@@ -407,12 +418,14 @@ public class RecorderFragment extends PageFragment implements
             e.printStackTrace();
         }
         mIsListening = true;
-        mStartSpeech = false;
+//        mStartSpeech = false;
     }
 
     @Override
     public void onStopListening() {
         mStartRecordView.setVisibility(View.VISIBLE);
+        mStartRecordView.setAlpha(0.2f);
+        mStartRecordView.setEnabled(false);
         mStopRecordView.setVisibility(View.GONE);
 
         mTimerHandler.removeMessages(MSG_TIMER);
@@ -463,16 +476,16 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
-        if (mStartSpeech && prob < 0.2) {
-            if (!mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
-                mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_TIMER, 1600);
-            }
-        } else if (prob > 0.2) {
-            mStartSpeech = true;
-            if (mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
-                mTimerHandler.removeMessages(MSG_VAD_TIMER);
-            }
-        }
+//        if (mStartSpeech && prob < 0.2) {
+//            if (!mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
+//                mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_TIMER, 1600);
+//            }
+//        } else if (prob > 0.2) {
+//            mStartSpeech = true;
+//            if (mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
+//                mTimerHandler.removeMessages(MSG_VAD_TIMER);
+//            }
+//        }
     }
 
     @Override
@@ -531,10 +544,13 @@ public class RecorderFragment extends PageFragment implements
                 }
             } else if (msg.what == MSG_CHECK_DEBUG) {
                 mDebugCount = 0;
-            } else if (msg.what == MSG_VAD_TIMER) {
-                if (mVoiceService != null) {
-                    mVoiceService.stop();
-                }
+//            } else if (msg.what == MSG_VAD_TIMER) {
+//                if (mVoiceService != null) {
+//                    mVoiceService.stop();
+//                }
+            } else if (msg.what == MSG_FINAL_RESULT_TIMEOUT) {
+                Logger.w("onMessage MSG_FINAL_RESULT_TIMEOUT");
+                attachService();
             }
         }
     };
