@@ -37,21 +37,21 @@
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity android:name=".ui.KikaPermissionsActivity"
+                  android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
         <activity android:name="com.kikatech.go.ui.KikaGoActivity"
+                  android:icon="@mipmap/ic_launcher_round"
                   android:label="KikaGoDebug"
                   android:launchMode="singleInstance"
-                  android:icon="@mipmap/ic_launcher_round"
                   android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".ui.KikaAccessibilityActivity"
@@ -75,8 +75,8 @@
         <activity android:name=".ui.KikaDialogFlowActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaAlphaUiActivity"
-                  android:launchMode="singleInstance"
                   android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
+                  android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaMusicActivity"
                   android:screenOrientation="portrait"/>
@@ -84,37 +84,33 @@
                   android:screenOrientation="portrait"/>
 
 
-        <activity
-            android:name=".ui.dialog.KikaStopServiceDialogActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:taskAffinity=".Dialog"
-            android:theme="@style/DialogActivityStyle"/>
+        <activity android:name=".ui.dialog.KikaStopServiceDialogActivity"
+                  android:excludeFromRecents="true"
+                  android:launchMode="singleTask"
+                  android:screenOrientation="portrait"
+                  android:taskAffinity=".Dialog"
+                  android:theme="@style/DialogActivityStyle"/>
 
 
-        <service
-            android:name="com.kikatech.go.accessibility.AccessibilityWatchDog"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-
+        <service android:name="com.kikatech.go.accessibility.AccessibilityWatchDog"
+                 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
             </intent-filter>
-
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/detection_service_config" />
+            <meta-data android:name="android.accessibilityservice"
+                       android:resource="@xml/detection_service_config"/>
         </service>
         <service android:name=".notification.NotificationWatchDog"
-            android:label="@string/app_name"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+                 android:label="@string/app_name"
+                 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
+                <action android:name="android.service.notification.NotificationListenerService"/>
             </intent-filter>
         </service>
         <service android:name=".navigation.NavigationService"/>
         <service android:name=".services.DialogFlowForegroundService"/>
         <service android:name=".services.MusicForegroundService"/>
+        <service android:name=".services.OobeService"/>
 
 
         <receiver android:name="com.kikatech.go.dialogflow.telephony.PhoneStateReceiver">
@@ -124,10 +120,11 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".message.sms.SmsBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true" >
+                  android:enabled="true"
+                  android:exported="true">
             <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"
+                <action
+                    android:name="android.provider.Telephony.SMS_RECEIVED"
                     android:priority="999"/>
             </intent-filter>
         </receiver>

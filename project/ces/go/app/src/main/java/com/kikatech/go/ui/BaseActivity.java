@@ -13,35 +13,18 @@ import android.widget.Toast;
 
 public abstract class BaseActivity extends FragmentActivity {
 
-    protected void showToast(final String message) {
-        __showToast(message, Toast.LENGTH_SHORT);
-    }
-
-    protected void showLongToast(final String message) {
-        __showToast(message, Toast.LENGTH_LONG);
-    }
-
-    private void __showToast(final String message, final int len) {
-        BaseActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(BaseActivity.this, message, len).show();
-            }
-        });
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        hideSystemUI();
-    }
-
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             hideSystemUI();
         }
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        hideSystemUI();
     }
 
     private void hideSystemUI() {
@@ -60,6 +43,19 @@ public abstract class BaseActivity extends FragmentActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        KikaMultiDexApplication.onActivityResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        KikaMultiDexApplication.onActivityPause(this);
+    }
+
 
     public void startAnotherActivity(Class<?> cls, boolean isFinishSelf) {
         startAnotherActivity(cls, isFinishSelf, 0, 0);
@@ -87,5 +83,23 @@ public abstract class BaseActivity extends FragmentActivity {
             finish();
         }
         overridePendingTransition(enterAnimRes, finishAnimRes);
+    }
+
+
+    protected void showToast(final String message) {
+        __showToast(message, Toast.LENGTH_SHORT);
+    }
+
+    protected void showLongToast(final String message) {
+        __showToast(message, Toast.LENGTH_LONG);
+    }
+
+    private void __showToast(final String message, final int len) {
+        BaseActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(BaseActivity.this, message, len).show();
+            }
+        });
     }
 }
