@@ -62,6 +62,10 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     public void startAnotherActivity(Class<?> cls, boolean isFinishSelf) {
+        startAnotherActivity(cls, isFinishSelf, 0, 0);
+    }
+
+    public void startAnotherActivity(Class<?> cls, boolean isFinishSelf, int enterAnimRes, int finishAnimRes) {
         Intent startActivityIntent = new Intent(this, cls);
         Intent intent = getIntent();
         if (intent != null) {
@@ -79,9 +83,9 @@ public abstract class BaseActivity extends FragmentActivity {
             }
         }
         startActivity(startActivityIntent);
-        overridePendingTransition(0, 0);
         if (isFinishSelf) {
             finish();
         }
+        overridePendingTransition(enterAnimRes, finishAnimRes);
     }
 }

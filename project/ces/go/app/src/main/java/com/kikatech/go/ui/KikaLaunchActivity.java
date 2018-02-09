@@ -16,6 +16,7 @@ import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.OverlayUtil;
 import com.kikatech.go.util.PermissionUtil;
+import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.util.timer.CountingTimer;
 
 import org.greenrobot.eventbus.EventBus;
@@ -119,7 +120,14 @@ public class KikaLaunchActivity extends BaseActivity {
 
     private void determinePageToGo() {
         Context context = KikaLaunchActivity.this;
-        if (!AccessibilityUtils.isSettingsOn(context)
+        if (GlobalPref.getIns().getIsFirstLaunch()) {
+            AsyncThreadPool.getIns().executeDelay(new Runnable() {
+                @Override
+                public void run() {
+                    startAnotherActivity(KikaFeatureHighlightActivity.class, true);
+                }
+            }, TIME_OUT);
+        } else if (!AccessibilityUtils.isSettingsOn(context)
                 || !NotificationListenerUtil.isPermissionNLEnabled(context)
                 || (DeviceUtil.overM() && !OverlayUtil.isPermissionOverlayEnabled(context))
                 || !PermissionUtil.hasAllKikaPermissions(context)) {

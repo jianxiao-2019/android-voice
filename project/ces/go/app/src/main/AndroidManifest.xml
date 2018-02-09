@@ -80,6 +80,8 @@
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaMusicActivity"
                   android:screenOrientation="portrait"/>
+        <activity android:name=".ui.KikaFeatureHighlightActivity"
+                  android:screenOrientation="portrait"/>
 
 
         <activity

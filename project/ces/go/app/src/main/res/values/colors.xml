@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#307a9f</color>
     <color name="colorAccent">#40c3ff</color>
 
+    <color name="window_bg">#20232c</color>
     <color name="voice_primary_color">#00aefe</color>
 
     <color name="permission_btn_enable">#a7a7a7</color>

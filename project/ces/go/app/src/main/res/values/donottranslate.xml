@@ -2,11 +2,6 @@
 <resources>
     <string name="default_img_content_description">none</string>
 
-    <string name="tmp_permission_title">"Please turn on the settings below,
-then back to this page.
-We will have a full process in beta version,
-it's the alpha version now."</string>
-
     <string name="ui_ask_address">"Where?"</string>
     <string-array name="tts_ask_address">
         <item>"Where do you want to go?"</item>
@@ -164,6 +159,17 @@ it's the alpha version now."</string>
     <string name="dialog_common_confirm">"OK"</string>
     <string name="dialog_common_cancel">"Cancel"</string>
 
+    <string name="feature_highlight_title">"Start using KikaGo"</string>
+    <string name="feature_highlight_subtitle">"A safer, more convenient and effortless way to communicate on the road."</string>
+    <string name="feature_highlight_btn_start">"Get Started"</string>
+
+    <string name="permission_title">"Permissions Required"</string>
+    <string name="permission_subtitle">"In order to execute your voice commands smoothly, you need to enable the permissions below."</string>
+    <string name="permission_overlay">Display over other apps</string>
+    <string name="permission_accessibility">Accessibility</string>
+    <string name="permission_notification">Notification access</string>
+    <string name="permission_app">App permissions</string>
+    <string name="permission_toast">Setup completed</string>
 
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>

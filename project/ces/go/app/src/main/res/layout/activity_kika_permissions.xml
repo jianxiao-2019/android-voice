@@ -3,85 +3,69 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/standby_bg_color"
-    android:orientation="vertical"
-    android:paddingBottom="50dp"
-    android:paddingLeft="30dp"
-    android:paddingRight="30dp"
-    android:paddingTop="10dp">
+    android:background="#20232c"
+    android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="135dp"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical"
+        android:paddingLeft="33dp"
+        android:paddingRight="33dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/permission_title"
+            android:textColor="#eaf1ff"
+            android:textSize="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:gravity="center"
+            android:text="@string/permission_subtitle"
+            android:textColor="#8e94a9"
+            android:textSize="14dp"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/tmp_permission_title"
-        android:textColor="@android:color/white"
-        android:textSize="16dp"/>
+        android:orientation="vertical"
+        android:paddingLeft="33dp"
+        android:paddingRight="33dp">
 
-    <TextView
-        android:id="@+id/btn_permission_accessibility"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/selector_bg_permission_btn"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="Accessibility"
-        android:textColor="@drawable/selector_text_permission_btn"
-        android:textSize="18dp"/>
+        <CheckBox
+            android:id="@+id/btn_permission_overlay"
+            style="@style/PermissionCheckBox"
+            android:text="@string/permission_overlay"/>
 
-    <TextView
-        android:id="@+id/btn_permission_notification_listener"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/selector_bg_permission_btn"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="Notification access"
-        android:textColor="@drawable/selector_text_permission_btn"
-        android:textSize="18dp"/>
+        <View style="@style/PermissionUnderline"/>
 
-    <TextView
-        android:id="@+id/btn_permission_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/selector_bg_permission_btn"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="Draw over other apps"
-        android:textColor="@drawable/selector_text_permission_btn"
-        android:textSize="18dp"/>
+        <CheckBox
+            android:id="@+id/btn_permission_accessibility"
+            style="@style/PermissionCheckBox"
+            android:text="@string/permission_accessibility"/>
 
-    <TextView
-        android:id="@+id/btn_permission_kika_all"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/selector_bg_permission_btn"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="App permissions"
-        android:textColor="@drawable/selector_text_permission_btn"
-        android:textSize="18dp"/>
+        <View style="@style/PermissionUnderline"/>
 
-    <TextView
-        android:id="@+id/btn_permission_start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/selector_bg_permission_start_btn"
-        android:enabled="false"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="Start"
-        android:textColor="@drawable/selector_text_permission_start_btn"
-        android:textSize="18dp"/>
+        <CheckBox
+            android:id="@+id/btn_permission_notification_listener"
+            style="@style/PermissionCheckBox"
+            android:text="@string/permission_notification"/>
+
+        <View style="@style/PermissionUnderline"/>
+
+        <CheckBox
+            android:id="@+id/btn_permission_kika_all"
+            style="@style/PermissionCheckBox"
+            android:text="@string/permission_app"/>
+
+    </LinearLayout>
+
 </LinearLayout>

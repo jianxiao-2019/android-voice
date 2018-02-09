@@ -9,8 +9,6 @@ import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.util.Gson.GsonUtil;
 
-import org.json.JSONArray;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +40,16 @@ public class GlobalPref {
     private void apply() {
         sEditor.apply();
         sEditor.commit();
+    }
+
+
+    public void setIsFirstLaunch(boolean isFirstLaunch) {
+        sEditor.putBoolean(Key.KEY_IS_FIRST_LAUNCH_APPLICATION, isFirstLaunch);
+        apply();
+    }
+
+    public boolean getIsFirstLaunch() {
+        return sPref.getBoolean(Key.KEY_IS_FIRST_LAUNCH_APPLICATION, true);
     }
 
 
@@ -126,7 +134,7 @@ public class GlobalPref {
 
     public boolean isFirstLaunch() {
         boolean isFirst = sPref.getBoolean(Key.KEY_FIRST_LAUNCH, true);
-        if(isFirst) {
+        if (isFirst) {
             sEditor.putBoolean(Key.KEY_FIRST_LAUNCH, false);
             apply();
         }
