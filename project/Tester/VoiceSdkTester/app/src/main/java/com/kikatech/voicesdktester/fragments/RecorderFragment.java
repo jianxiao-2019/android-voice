@@ -118,9 +118,6 @@ public class RecorderFragment extends PageFragment implements
 
                 mUsingKikaGo.setSelected(false);
                 mUsingAndroid.setSelected(true);
-                mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
-                mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
-                mErrorHintText.setVisibility(View.GONE);
 
                 if (mUsbAudioSource != null) {
                     mUsbAudioSource.closeDevice();
@@ -138,9 +135,10 @@ public class RecorderFragment extends PageFragment implements
                 if (mUsbAudioSource == null) {
                     mUsingKikaGo.setSelected(true);
                     mUsingAndroid.setSelected(false);
-                    mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
-                    mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
-                    mErrorHintText.setVisibility(View.GONE);
+                    setViewToDisableState();
+                    if (mErrorHintText != null) {
+                        mErrorHintText.setVisibility(View.GONE);
+                    }
 
                     if (mUsbAudioService != null) {
                         mUsbAudioService.scanDevices();
@@ -216,11 +214,10 @@ public class RecorderFragment extends PageFragment implements
     }
 
     private void attachService() {
-        mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
-        mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
-        mStartRecordView.setAlpha(0.2f);
-        mStartRecordView.setEnabled(false);
-        mErrorHintText.setVisibility(View.GONE);
+        setViewToDisableState();
+        if (mErrorHintText != null) {
+            mErrorHintText.setVisibility(View.GONE);
+        }
 
         if (mVoiceService != null) {
             mVoiceService.destroy();
@@ -253,6 +250,19 @@ public class RecorderFragment extends PageFragment implements
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
+    }
+
+    private void setViewToDisableState() {
+        if (mKikagoSignal != null) {
+            mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
+        }
+        if (mAndroidSignal != null) {
+            mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
+        }
+        if (mStartRecordView != null) {
+            mStartRecordView.setAlpha(0.2f);
+            mStartRecordView.setEnabled(false);
+        }
     }
 
     @UiThread
@@ -428,10 +438,14 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onStopListening() {
-        mStartRecordView.setVisibility(View.VISIBLE);
-        mStartRecordView.setAlpha(0.2f);
-        mStartRecordView.setEnabled(false);
-        mStopRecordView.setVisibility(View.GONE);
+        if (mStartRecordView != null) {
+            mStartRecordView.setVisibility(View.VISIBLE);
+            mStartRecordView.setAlpha(0.2f);
+            mStartRecordView.setEnabled(false);
+        }
+        if (mStopRecordView != null) {
+            mStopRecordView.setVisibility(View.GONE);
+        }
 
         mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
@@ -453,10 +467,7 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onError(int reason) {
         Logger.e("onError reason = " + reason);
-        mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
-        mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
-        mStartRecordView.setAlpha(0.2f);
-        mStartRecordView.setEnabled(false);
+        setViewToDisableState();
         if (mErrorHintText != null) {
             mErrorHintText.setVisibility(View.VISIBLE);
         }
@@ -470,10 +481,7 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onConnectionClosed() {
         Logger.e("onConnectionClosed");
-        mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
-        mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
-        mStartRecordView.setAlpha(0.2f);
-        mStartRecordView.setEnabled(false);
+        setViewToDisableState();
         if (mErrorHintText != null) {
             mErrorHintText.setVisibility(View.VISIBLE);
         }
@@ -531,7 +539,9 @@ public class RecorderFragment extends PageFragment implements
                 if (mErrorHintText != null) {
                     mErrorHintText.setVisibility(View.VISIBLE);
                 }
-                mKikagoSignal.setImageResource(R.drawable.signal_point_red);
+                if (mKikagoSignal != null) {
+                    mKikagoSignal.setImageResource(R.drawable.signal_point_red);
+                }
             }
         }
     };
