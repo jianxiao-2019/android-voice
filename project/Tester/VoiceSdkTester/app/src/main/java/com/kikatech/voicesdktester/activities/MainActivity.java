@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -176,7 +177,11 @@ public class MainActivity extends AppCompatActivity implements
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
-                attachService();
+                if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
+                    mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
+                }
+                Logger.w("onMessage 1.0 send 2adㄎ000");
+                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 2000);
             }
         });
         mStopButton.setEnabled(false);
@@ -740,6 +745,11 @@ public class MainActivity extends AppCompatActivity implements
             if (mTextView != null) {
                 mTextView.setText("Intermediate Result : " + ((IntermediateMessage) message).text);
             }
+            if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
+                mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
+                Logger.w("onMessage 2.0 send 5000");
+                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 5000);
+            }
             return;
         }
         if (mTextView != null) {
@@ -749,6 +759,11 @@ public class MainActivity extends AppCompatActivity implements
         mResultAdapter.notifyDataSetChanged();
 
         logResultToFile(message);
+        if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
+            mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
+            Logger.w("onMessage 3.0 end 3000");
+            mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 3000);
+        }
     }
 
     private void logResultToFile(Message message) {
@@ -953,6 +968,18 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onDeviceError(int errorCode) {
 
+        }
+    };
+
+    private static final int MSG_FINAL_RESULT_TIMEOUT = 3;
+    private Handler mTimerHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == MSG_FINAL_RESULT_TIMEOUT) {
+                Logger.w("onMessage MSG_FINAL_RESULT_TIMEOUT");
+                attachService();
+            }
         }
     };
 }
