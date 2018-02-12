@@ -342,11 +342,6 @@ public class RecorderFragment extends PageFragment implements
 
     private void logResultToFile(Message message) {
         Logger.d("logResultToFile mBufferedWriter = " + mBufferedWriter);
-        if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
-            mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
-            Logger.w("onMessage 2 send 5000");
-            mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 5000);
-        }
         if (mBufferedWriter != null) {
             long cid;
             String text;
@@ -357,6 +352,11 @@ public class RecorderFragment extends PageFragment implements
                 text = ((EditTextMessage) message).text[0];
                 cid = ((EditTextMessage) message).cid;
             } else {
+                if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
+                    mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
+                    Logger.w("onMessage 2 send 5000");
+                    mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 5000);
+                }
                 return;
             }
             Logger.d("logResultToFile cid = " + cid + " text = " + text);
@@ -376,6 +376,11 @@ public class RecorderFragment extends PageFragment implements
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+            if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
+                mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
+                Logger.w("onMessage 3 send 3000");
+                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 3000);
             }
         }
     }
