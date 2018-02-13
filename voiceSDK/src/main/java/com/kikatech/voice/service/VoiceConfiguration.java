@@ -32,9 +32,11 @@ public class VoiceConfiguration {
     private ConnectionConfiguration mConnConf;
 
     private int bosDuration = DEFAULT_BOS_DURATION;
-    private String mDebugFilePath;
     private boolean mSupportWakeUpMode;
     private TtsService.TtsSourceType mTtsSource = TtsService.TtsSourceType.KIKA_WEB;
+
+    private boolean mIsDebugMode = false;
+    private String mDebugFileTag = "Unknown";
 
     public VoiceConfiguration() {
     }
@@ -74,12 +76,20 @@ public class VoiceConfiguration {
         return bosDuration;
     }
 
-    public void setDebugFilePath(String filePath) {
-        mDebugFilePath = filePath;
+    public void setDebugFileTag(String fileTag) {
+        mDebugFileTag = fileTag;
     }
 
-    public String getDebugFilePath() {
-        return mDebugFilePath;
+    public String getDebugFileTag() {
+        return mDebugFileTag;
+    }
+
+    public void setIsDebugMode(boolean isDebugMode) {
+        mIsDebugMode = isDebugMode;
+    }
+
+    public boolean getIsDebugMode() {
+        return mIsDebugMode;
     }
 
     public void setSupportWakeUpMode(boolean supportWakeUpMode) {

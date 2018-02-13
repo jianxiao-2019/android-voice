@@ -16,8 +16,6 @@ import com.kikatech.voice.util.log.Logger;
 
 public class VoicePathConnector {
 
-    public static final boolean IS_DEBUG = true;
-
     public static IDataPath genDataPath(VoiceConfiguration conf,
                                         WakeUpDetector wakeUpDetector, IDataPath finalPath) {
 
@@ -45,8 +43,8 @@ public class VoicePathConnector {
 
     private static IDataPath wrapFileWriter(IDataPath nextPath,
                                             VoiceConfiguration conf, String additional) {
-        if (IS_DEBUG) {
-            return new FileWriter(conf.getDebugFilePath() + additional, nextPath);
+        if (conf.getIsDebugMode()) {
+            return new FileWriter(additional, nextPath);
         }
         return nextPath;
     }

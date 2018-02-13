@@ -11,16 +11,26 @@ import com.kikatech.voice.util.log.Logger;
 
 public class FileWriter extends IDataPath {
 
-    private final String mFilePath;
+    private final String mSuffix;
+    private String mFilePath;
 
-    public FileWriter(String filePath, IDataPath dataPath) {
+    public FileWriter(String suffix, IDataPath dataPath) {
         super(dataPath);
-        mFilePath = filePath;
+        mSuffix = suffix;
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        mFilePath = DebugUtil.getDebugFilePath();
+        if (mFilePath != null) {
+            mFilePath += mSuffix;
+        }
     }
 
     @Override
     public void onData(final byte[] data) {
-        if(Logger.DEBUG) {
+        if(mFilePath != null) {
             FileLoggerUtil.getIns().writeToFile(data, mFilePath);
         }
 
@@ -32,6 +42,6 @@ public class FileWriter extends IDataPath {
 
     @Override
     public String toString() {
-        return super.toString() + mFilePath;
+        return super.toString() + " " + mSuffix;
     }
 }

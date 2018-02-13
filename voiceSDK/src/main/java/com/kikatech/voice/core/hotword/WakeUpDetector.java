@@ -41,9 +41,10 @@ public abstract class WakeUpDetector {
         return mDataPath;
     }
 
+    // TODO : Do not need this method. But need find a timing for init the FileWriter.
     public final void setDebugFilePath(String path) {
-        if (VoicePathConnector.IS_DEBUG && !TextUtils.isEmpty(path)) {
-            mFileWriter = new FileWriter(path + "_COMMAND", null);
+        if (!TextUtils.isEmpty(path)) {
+            mFileWriter = new FileWriter("_COMMAND", null);
         } else {
             mFileWriter = null;
         }
@@ -53,6 +54,14 @@ public abstract class WakeUpDetector {
 
         WakeUpDataPath(IDataPath nextPath) {
             super(nextPath);
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            if (mFileWriter != null) {
+                mFileWriter.start();
+            }
         }
 
         @Override

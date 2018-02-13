@@ -3,6 +3,7 @@ package com.kikatech.voice.service;
 import android.content.Context;
 import android.os.Handler;
 
+import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
@@ -95,9 +96,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         IDataPath finalPath = new VoiceService.VoiceDataSender(null);
         mWakeUpDetector = mConf.isSupportWakeUpMode() ? WakeUpDetector.getDetector(context, this) : null;
-        if (mWakeUpDetector != null) {
-            mWakeUpDetector.setDebugFilePath(mConf.getDebugFilePath());
-        }
         mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath);
     }
@@ -119,6 +117,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         mVoiceRecorder.open();
         EventBus.getDefault().register(this);
+
+        DebugUtil.updateCacheDir(mConf);
     }
 
     public void start() {
@@ -128,9 +128,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             return;
         }
 
+        DebugUtil.updateDebugInfo(mConf);
+
         if (mWakeUpDetector != null) {
+            mWakeUpDetector.setDebugFilePath(DebugUtil.getDebugFilePath());
             mWakeUpDetector.reset();
         }
+
         mDataPath.start();
         mVoiceRecorder.start();
 
@@ -316,6 +320,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                     }
                 });
             }
+            DebugUtil.logResultToFile(message);
         }
 
         @Override
