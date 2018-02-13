@@ -29,12 +29,11 @@ public class DialogFlowConfig {
     public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
         String WEB_SOCKET_URL_DEV = FlavorUtil.isFlavorMain() ? VoiceConfiguration.HostUrl.DEV_MVP : VoiceConfiguration.HostUrl.DEV_KIKA;
 
-        String debugFilePath = getDebugFilePath(ctx);
-        AudioPlayBack.sFilePath = debugFilePath;
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
                 .source(audioSource);
-        conf.setDebugFilePath(debugFilePath);
+        conf.setDebugFileTag(APP_NAME);
+        conf.setIsDebugMode(true);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName(APP_NAME)
                 .setUrl(WEB_SOCKET_URL_DEV)
@@ -45,40 +44,5 @@ public class DialogFlowConfig {
         conf.setBosDuration(BOS_DURATION);
         conf.setSupportWakeUpMode(true);
         return conf;
-    }
-
-    private static String getDebugFilePath(Context context) {
-        if (context == null) {
-            return null;
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", new Locale("en"));
-        Date resultDate = new Date(System.currentTimeMillis());
-        String timeStr = sdf.format(resultDate);
-
-        return getCacheDir(context).toString() + "/kika_voice_" + timeStr;
-    }
-
-    private static void createFolderIfNecessary(File folder) {
-        if (folder != null) {
-            if (!folder.exists() || !folder.isDirectory()) {
-                folder.mkdirs();
-            }
-        }
-    }
-
-    private static File getCacheDir(@NonNull Context context) {
-        try {
-            File[] files = ContextCompat.getExternalCacheDirs(context);
-            if (files != null && files.length > 0) {
-                File file = files[0];
-                if (file != null) {
-                    createFolderIfNecessary(file);
-                    return file;
-                }
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return context.getCacheDir();
     }
 }
