@@ -10,8 +10,8 @@ import android.os.AsyncTask;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 
+import com.kikatech.voice.core.debug.WavHeaderHelper;
 import com.kikatech.voice.util.log.Logger;
-import com.kikatech.voicesdktester.utils.WavHeaderHelper;
 
 import java.io.File;
 

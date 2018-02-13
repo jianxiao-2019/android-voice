@@ -8,34 +8,17 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="path:/sdcard/voiceTester/fromMic/" />
+        android:text="path:/sdcard/kikaVoiceSDK/voiceTester/" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_margin="4dp"
-        android:background="#33333333" />
+        android:background="#FFDDDDDD" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_mic"
         tools:context=".activities.LocalPlayBackActivity"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="path:/sdcard/voiceTester/fromLocal/" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_margin="4dp"
-        android:background="#33333333" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_local"
-        tools:context=".activities.LocalPlayBackActivity"
-        android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="match_parent" />
 </LinearLayout>

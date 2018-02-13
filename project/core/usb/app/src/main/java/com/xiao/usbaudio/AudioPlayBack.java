@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.kikatech.usb.driver.impl.KikaAudioDriver;
+import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
 
 import java.io.BufferedOutputStream;
@@ -11,9 +12,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class AudioPlayBack {
     private static KikaAudioDriver sKikaAudioDriver;
@@ -67,6 +65,7 @@ public class AudioPlayBack {
     public static void setup(KikaAudioDriver kikaAudioDriver) {
         sKikaAudioDriver = kikaAudioDriver;
 
+        sFilePath = DebugUtil.getDebugFilePath();
         Logger.d("AudioPlayBack setup sFilePath = " + sFilePath);
         if (!TextUtils.isEmpty(sFilePath)) {
             mRecording = getFile("_USB");

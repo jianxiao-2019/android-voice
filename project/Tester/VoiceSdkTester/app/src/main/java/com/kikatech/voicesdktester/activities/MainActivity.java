@@ -10,14 +10,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,6 +30,7 @@ import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.usb.nc.KikaNcBuffer;
+import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
@@ -46,15 +45,8 @@ import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
-import com.kikatech.voicesdktester.utils.WavHeaderHelper;
 import com.xiao.usbaudio.AudioPlayBack;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import static com.kikatech.voice.service.VoiceService.ERR_REASON_NOT_CREATED;
@@ -65,9 +57,8 @@ public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceActiveStateListener,
         TtsSource.TtsStateChangedListener {
 
-    public static final String PATH_FROM_MIC = "/sdcard/voiceTester/fromMic/";
-
-    private static final boolean IS_WAKE_UP_MODE = false;
+    private static final boolean IS_WAKE_UP_MODE = true;
+    private static final String DEBUG_FILE_TAG = "voiceTester";
 
     public static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v3/speech";
 
@@ -102,8 +93,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private UsbAudioSource mUsbAudioSource;
 
-    private String mDebugFileName;
-
     private UsbAudioService mUsbAudioService;
 
     private Spinner mSpinner;
@@ -119,9 +108,6 @@ public class MainActivity extends AppCompatActivity implements
     private Button mButtonMode;
 
     private View mNcParamLayout;
-
-    private BufferedWriter mBufferedWriter;
-    private boolean mIsListening = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -555,9 +541,7 @@ public class MainActivity extends AppCompatActivity implements
             mVoiceService = null;
         }
         // Debug
-        mDebugFileName = getDebugFilePath(this);
-        AudioPlayBack.sFilePath = mDebugFileName;       // For debug.
-        mAudioIdText.setText("File : " + mDebugFileName.substring(mDebugFileName.lastIndexOf("/") + 1));
+// TODO :       mAudioIdText.setText("File : " + mDebugFileName.substring(mDebugFileName.lastIndexOf("/") + 1));
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
                 .setAlterEnabled(((CheckBox) findViewById(R.id.check_alter)).isChecked())
@@ -569,7 +553,8 @@ public class MainActivity extends AppCompatActivity implements
                 .setEosPackets(mSpinner.getSelectedItemPosition() + 1)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
-        conf.setDebugFilePath(mDebugFileName);
+        conf.setIsDebugMode(true);
+        conf.setDebugFileTag(DEBUG_FILE_TAG);
         conf.source(mUsbAudioSource);
         conf.setSupportWakeUpMode(IS_WAKE_UP_MODE);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
@@ -632,55 +617,19 @@ public class MainActivity extends AppCompatActivity implements
 
     private class ConvertWavButtonListener implements View.OnClickListener {
 
-        private String mFilePath;
-
-        public ConvertWavButtonListener(String filePath) {
-            mFilePath = filePath;
-        }
-
         @Override
         public void onClick(View v) {
-            addWavHeader(mFilePath);
             mWavButton.setEnabled(false);
-        }
-    }
 
-    private void addWavHeader(String debugFilePath) {
-        // TODO : convert at the other thread.
-        Logger.i("-----addWavHeader mDebugFileName = " + debugFilePath);
-        if (TextUtils.isEmpty(debugFilePath)) {
-            return;
-        }
-        String fileName = debugFilePath.substring(debugFilePath.lastIndexOf("/") + 1);
-        Logger.i("-----addWavHeader fileName = " + fileName);
-        if (TextUtils.isEmpty(fileName)) {
-            return;
-        }
-
-        File folder = new File(debugFilePath.substring(0, debugFilePath.lastIndexOf("/")));
-        if (!folder.exists() || !folder.isDirectory()) {
-            return;
-        }
-
-        Logger.d("addWavHeader folder = " + folder.getPath());
-        boolean isConverted = false;
-        for (final File file : folder.listFiles()) {
-            if (file.isDirectory() || file.getName().contains("wav") || file.getName().contains("txt")) {
-                continue;
-            }
-            if (file.getName().contains(fileName) && !file.getName().contains("speex")) {
-                Logger.d("addWavHeader found file = " + file.getPath());
-                WavHeaderHelper.addWavHeader(file, !file.getName().contains("USB"));
-                isConverted = true;
-            }
-        }
-        if (isConverted) {
-            if (mTextView != null) {
-                mTextView.setText("Convert the file: '" + fileName + "' succeed!");
-            }
-        } else {
-            if (mTextView != null) {
-                mTextView.setText("Some error occurred!");
+            boolean isConverted = DebugUtil.convertCurrentPcmToWav();
+            if (isConverted) {
+                if (mTextView != null) {
+                    mTextView.setText("Convert the file: '" + DebugUtil.getDebugFilePath() + "' succeed!");
+                }
+            } else {
+                if (mTextView != null) {
+                    mTextView.setText("Some error occurred!");
+                }
             }
         }
     }
@@ -694,41 +643,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
         if (!mPermissionToRecordAccepted) finish();
-    }
-
-    @UiThread
-    private String getDebugFilePath(Context context) {
-        if (context == null) {
-            return null;
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", new Locale("en"));
-        Date resultDate = new Date(System.currentTimeMillis());
-        String timeStr = sdf.format(resultDate);
-
-        return getCacheDir(context).toString() + "/kika_voice_" + timeStr;
-    }
-
-    @UiThread
-    private File getCacheDir(@NonNull Context context) {
-        try {
-            File file = new File(PATH_FROM_MIC);
-            createFolderIfNecessary(file);
-            return file;
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return context.getCacheDir();
-    }
-
-    @UiThread
-    private boolean createFolderIfNecessary(File folder) {
-        if (folder != null) {
-            if (!folder.exists() || !folder.isDirectory()) {
-                return folder.mkdirs();
-            }
-            return true;
-        }
-        return false;
     }
 
     public String getCurrentLocale() {
@@ -758,44 +672,10 @@ public class MainActivity extends AppCompatActivity implements
         mResultAdapter.addResult(message);
         mResultAdapter.notifyDataSetChanged();
 
-        logResultToFile(message);
         if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
             mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
             Logger.w("onMessage 3.0 end 3000");
             mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 3000);
-        }
-    }
-
-    private void logResultToFile(Message message) {
-        Logger.d("logResultToFile mBufferedWriter = " + mBufferedWriter);
-        if (mBufferedWriter != null) {
-            long cid = 0;
-            String text = "";
-            if (message instanceof TextMessage) {
-                text = ((TextMessage) message).text[0];
-                cid = ((TextMessage) message).cid;
-            } else if (message instanceof EditTextMessage) {
-                text = ((EditTextMessage) message).text[0];
-                cid = ((EditTextMessage) message).cid;
-            }
-            Logger.d("logResultToFile cid = " + cid + " text = " + text);
-            try {
-                mBufferedWriter.write("cid:" + cid);
-                mBufferedWriter.newLine();
-                mBufferedWriter.write("result:" + text);
-                mBufferedWriter.newLine();
-                mBufferedWriter.write("-----------------------");
-                mBufferedWriter.newLine();
-                Logger.d("logResultToFile mIsListening = " + mIsListening);
-                if (!mIsListening) {
-                    mBufferedWriter.close();
-                    mBufferedWriter = null;
-                } else {
-                    mBufferedWriter.flush();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -841,17 +721,6 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setEnabled(false);
         mStopButton.setEnabled(true);
         mWavButton.setEnabled(false);
-
-        try {
-            if (mBufferedWriter != null) {
-                mBufferedWriter.close();
-            }
-            mBufferedWriter = new BufferedWriter(new FileWriter(mDebugFileName + ".txt", true));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        mIsListening = true;
     }
 
     @Override
@@ -863,9 +732,7 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setEnabled(true);
         mStopButton.setEnabled(false);
         mWavButton.setEnabled(true);
-        mWavButton.setOnClickListener(new ConvertWavButtonListener(mDebugFileName));
-
-        mIsListening = false;
+        mWavButton.setOnClickListener(new ConvertWavButtonListener());
     }
 
     @Override
@@ -877,13 +744,6 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setEnabled(false);
         mStopButton.setEnabled(false);
         mButtonAngle.setEnabled(false);
-        if (mBufferedWriter != null) {
-            try {
-                mBufferedWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
@@ -65,8 +66,6 @@ public class PlayerFragment extends PageFragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(3));
-
-        refreshFiles();
     }
 
     @Override
@@ -79,7 +78,7 @@ public class PlayerFragment extends PageFragment {
 
     public void refreshFiles() {
         mFileNames.clear();
-        mFileNames.addAll(scanRecognizeResultFiles(RecorderFragment.PATH_FROM_MIC));
+        mFileNames.addAll(scanRecognizeResultFiles(DebugUtil.getDebugFolderPath()));
 
         mOpenedIndex = -1;
         if (mAdapter != null) {
@@ -187,6 +186,9 @@ public class PlayerFragment extends PageFragment {
 
     private List<RecognizeItem> scanRecognizeResultFiles(String path) {
         List<RecognizeItem> items = new ArrayList<>();
+        if (TextUtils.isEmpty(path)) {
+            return items;
+        }
         File folder = new File(path);
         if (!folder.exists() || !folder.isDirectory() || folder.listFiles() == null) {
             return items;

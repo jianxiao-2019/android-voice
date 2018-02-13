@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.VoiceConfiguration;
@@ -27,7 +28,6 @@ import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.ui.FileAdapter;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
-import com.kikatech.voicesdktester.utils.WavHeaderHelper;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import static com.kikatech.voicesdktester.activities.MainActivity.PATH_FROM_MIC;
 
 /**
  * Created by ryanlin on 03/01/2018.
@@ -48,6 +46,8 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         VoiceService.VoiceActiveStateListener,
         LocalVoiceSource.EofListener,
         FileAdapter.OnItemCheckedListener {
+
+    private static final String DEBUG_FILE_PATH = "voiceTester";
 
     public static final String PATH_FROM_LOCAL = "/sdcard/voiceTester/fromLocal/";
 
@@ -94,10 +94,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mVoiceService != null) {
                     mVoiceService.start();
-                } else {
-                    if (mTextView != null) {
-                        mTextView.setText("Select an audio source first.");
-                    }
                 }
             }
         });
@@ -107,13 +103,12 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         mWavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addWavHeader();
+                DebugUtil.convertCurrentPcmToWav();
             }
         });
         mWavButton.setEnabled(false);
 
         attachService();
-        scanFiles();
 
         mUiHandler = new Handler();
 
@@ -127,7 +122,11 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     }
 
     private void scanFiles() {
-        File folder = new File(PATH_FROM_MIC);
+        String path = DebugUtil.getDebugFolderPath();
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
+        File folder = new File(path);
         if (!folder.exists() || !folder.isDirectory()) {
             return;
         }
@@ -143,7 +142,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         }
 
         if (mFileAdapter == null) {
-            mFileAdapter = new FileAdapter(PATH_FROM_MIC, fileNames);
+            mFileAdapter = new FileAdapter(path, fileNames);
             mFileAdapter.setOnItemCheckedListener(this);
         } else {
             mFileAdapter.notifyDataSetChanged();
@@ -171,7 +170,8 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
                 .setEosPackets(3)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
-        conf.setDebugFilePath(mDebugFileName);
+        conf.setDebugFileTag(DEBUG_FILE_PATH);
+        conf.setIsDebugMode(true);
         conf.source(mLocalVoiceSource);
         conf.setSupportWakeUpMode(false);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
@@ -252,17 +252,19 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 
     @Override
     public void onCreated() {
-        Logger.d("MainActivity onCreated");
+        Logger.d("LocalPlayBackActivity onCreated");
         if (mTextView != null) {
             mTextView.setText("Created.");
         }
         mIsCreated = true;
         mWavButton.setEnabled(false);
+
+        scanFiles();
     }
 
     @Override
     public void onStartListening() {
-        Logger.d("MainActivity onStartListening");
+        Logger.d("LocalPlayBackActivity onStartListening");
         mResultAdapter.clearResults();
         mResultAdapter.notifyDataSetChanged();
 
@@ -275,7 +277,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 
     @Override
     public void onStopListening() {
-        Logger.d("MainActivity onStopListening");
+        Logger.d("LocalPlayBackActivity onStopListening");
         if (mTextView != null) {
             mTextView.setText("stopped.");
         }
@@ -285,6 +287,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 
     @Override
     public void onDestroyed() {
+        Logger.d("LocalPlayBackActivity onDestroyed");
         if (mTextView != null) {
             mTextView.setText("Disconnected.");
         }
@@ -334,49 +337,14 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         }, 500);
     }
 
-    private void addWavHeader() {
-        Logger.i("-----addWavHeader mDebugFileName = " + mDebugFileName);
-        if (TextUtils.isEmpty(mDebugFileName)) {
-            return;
-        }
-        String fileName = mDebugFileName.substring(mDebugFileName.lastIndexOf("/") + 1);
-        Logger.i("-----addWavHeader fileName = " + fileName);
-        if (TextUtils.isEmpty(fileName)) {
-            return;
-        }
-
-        File folder = new File(mDebugFileName.substring(0, mDebugFileName.lastIndexOf("/")));
-        if (!folder.exists() || !folder.isDirectory()) {
-            return;
-        }
-
-        Logger.d("addWavHeader folder = " + folder.getPath());
-        boolean isConverted = false;
-        for (final File file : folder.listFiles()) {
-            if (file.isDirectory() || file.getName().contains("wav")) {
-                continue;
-            }
-            if (file.getName().contains(fileName) && !file.getName().contains("speex")) {
-                Logger.d("addWavHeader found file = " + file.getPath());
-                WavHeaderHelper.addWavHeader(file, !file.getName().contains("USB"));
-                isConverted = true;
-            }
-        }
-        if (isConverted) {
-            if (mTextView != null) {
-                mTextView.setText("Convert the file: '" + fileName + "' succeed!");
-            }
-        } else {
-            if (mTextView != null) {
-                mTextView.setText("Some error occurred!");
-            }
-        }
-    }
-
     @Override
     public void onItemChecked(String itemStr) {
         if (mLocalVoiceSource != null) {
-            mLocalVoiceSource.selectFile(MainActivity.PATH_FROM_MIC + itemStr);
+            String path = DebugUtil.getDebugFolderPath();
+            if (TextUtils.isEmpty(path)) {
+                return;
+            }
+            mLocalVoiceSource.selectFile(path + itemStr);
         }
         if (mStartButton != null) {
             mStartButton.setEnabled(mIsCreated);
@@ -384,7 +352,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onNothongChecked() {
+    public void onNothingChecked() {
         if (mStartButton != null) {
             mStartButton.setEnabled(false);
         }

@@ -27,7 +27,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public interface OnItemCheckedListener {
         void onItemChecked(String itemStr);
-        void onNothongChecked();
+        void onNothingChecked();
     }
 
     public FileAdapter(String filePath, List<String> fileName) {
@@ -59,7 +59,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                 } else {
                     lastChecked = null;
                     if (mListener != null) {
-                        mListener.onNothongChecked();
+                        mListener.onNothingChecked();
                     }
                 }
             }

@@ -1,12 +1,10 @@
 package com.kikatech.voicesdktester.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +17,7 @@ import android.widget.Toast;
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
@@ -32,15 +31,9 @@ import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
-import com.xiao.usbaudio.AudioPlayBack;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_APP;
 
@@ -55,7 +48,8 @@ public class RecorderFragment extends PageFragment implements
         VoiceService.VoiceActiveStateListener,
         TtsSource.TtsStateChangedListener {
 
-    public static final String PATH_FROM_MIC = "/sdcard/voiceTesterUi/fromMic/";
+    private static final String DEBUG_FILE_TAG = "voiceTesterUi";
+
     public static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev.kikakeyboard.com/v3/speech";
 
     private View mStartRecordView;
@@ -72,10 +66,6 @@ public class RecorderFragment extends PageFragment implements
     private AsrConfiguration mAsrConfiguration;
     private UsbAudioSource mUsbAudioSource;
     private UsbAudioService mUsbAudioService;
-
-    private String mDebugFileName;
-    private BufferedWriter mBufferedWriter;
-    private boolean mIsListening = false;
 
     private static final int MSG_TIMER = 0;
     private static final int MSG_CHECK_DEBUG = 1;
@@ -190,7 +180,6 @@ public class RecorderFragment extends PageFragment implements
         mUsbAudioService = UsbAudioService.getInstance(getActivity());
         mUsbAudioService.setListener(mIUsbAudioListener);
         mUsbAudioService.scanDevices();
-        refreshRecentView();
     }
 
     @Override
@@ -223,8 +212,6 @@ public class RecorderFragment extends PageFragment implements
             mVoiceService.destroy();
             mVoiceService = null;
         }
-        mDebugFileName = getDebugFilePath(getActivity());
-        AudioPlayBack.sFilePath = mDebugFileName;       // For debug.
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
                 .setAlterEnabled(false)
@@ -235,7 +222,8 @@ public class RecorderFragment extends PageFragment implements
                 .setEosPackets(3)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
-        conf.setDebugFilePath(mDebugFileName);
+        conf.setIsDebugMode(true);
+        conf.setDebugFileTag(DEBUG_FILE_TAG);
         conf.source(mUsbAudioSource);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
@@ -263,41 +251,6 @@ public class RecorderFragment extends PageFragment implements
             mStartRecordView.setAlpha(0.2f);
             mStartRecordView.setEnabled(false);
         }
-    }
-
-    @UiThread
-    private String getDebugFilePath(Context context) {
-        if (context == null) {
-            return null;
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss", new Locale("en"));
-        Date resultDate = new Date(System.currentTimeMillis());
-        String timeStr = sdf.format(resultDate);
-
-        return getCacheDir(context).toString() + (mUsbAudioSource == null ? "/Phone_" : "/Kikago_") + timeStr;
-    }
-
-    @UiThread
-    private File getCacheDir(@NonNull Context context) {
-        try {
-            File file = new File(PATH_FROM_MIC);
-            createFolderIfNecessary(file);
-            return file;
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return context.getCacheDir();
-    }
-
-    @UiThread
-    private boolean createFolderIfNecessary(File folder) {
-        if (folder != null) {
-            if (!folder.exists() || !folder.isDirectory()) {
-                return folder.mkdirs();
-            }
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -347,52 +300,6 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onRecognitionResult(Message message) {
-        logResultToFile(message);
-    }
-
-    private void logResultToFile(Message message) {
-        Logger.d("logResultToFile mBufferedWriter = " + mBufferedWriter);
-        if (mBufferedWriter != null) {
-            long cid;
-            String text;
-            if (message instanceof TextMessage) {
-                text = ((TextMessage) message).text[0];
-                cid = ((TextMessage) message).cid;
-            } else if (message instanceof EditTextMessage) {
-                text = ((EditTextMessage) message).text[0];
-                cid = ((EditTextMessage) message).cid;
-            } else {
-                if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
-                    mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
-                    Logger.w("onMessage 2 send 5000");
-                    mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 5000);
-                }
-                return;
-            }
-            Logger.d("logResultToFile cid = " + cid + " text = " + text);
-            try {
-                mBufferedWriter.write("cid:" + cid);
-                mBufferedWriter.newLine();
-                mBufferedWriter.write("result:" + text);
-                mBufferedWriter.newLine();
-                mBufferedWriter.write("-----------------------");
-                mBufferedWriter.newLine();
-                Logger.d("logResultToFile mIsListening = " + mIsListening);
-                if (!mIsListening) {
-                    mBufferedWriter.close();
-                    mBufferedWriter = null;
-                } else {
-                    mBufferedWriter.flush();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
-                mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
-                Logger.w("onMessage 3 send 3000");
-                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 3000);
-            }
-        }
     }
 
     @Override
@@ -414,6 +321,8 @@ public class RecorderFragment extends PageFragment implements
 
         mStartRecordView.setAlpha(1.0f);
         mStartRecordView.setEnabled(true);
+
+        refreshRecentView();
     }
 
     @Override
@@ -423,16 +332,6 @@ public class RecorderFragment extends PageFragment implements
 
         mRecordingTimerText.setText("00:00");
         mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
-
-        try {
-            if (mBufferedWriter != null) {
-                mBufferedWriter.close();
-            }
-            mBufferedWriter = new BufferedWriter(new FileWriter(mDebugFileName + ".txt", true));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mIsListening = true;
 //        mStartSpeech = false;
     }
 
@@ -449,7 +348,6 @@ public class RecorderFragment extends PageFragment implements
 
         mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
-        mIsListening = false;
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -576,7 +474,7 @@ public class RecorderFragment extends PageFragment implements
             if (activity == null || activity.isDestroyed()) {
                 return;
             }
-            RecognizeItem item = scanLatestFile(PATH_FROM_MIC);
+            RecognizeItem item = scanLatestFile(DebugUtil.getDebugFolderPath());
             if (item == null) {
                 return;
             }
@@ -610,6 +508,9 @@ public class RecorderFragment extends PageFragment implements
     }
 
     private RecognizeItem scanLatestFile(String path) {
+        if (TextUtils.isEmpty(path)) {
+            return null;
+        }
         File folder = new File(path);
         if (!folder.exists() || !folder.isDirectory() || folder.listFiles() == null) {
             return null;
