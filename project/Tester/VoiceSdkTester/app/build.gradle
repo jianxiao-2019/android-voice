@@ -10,12 +10,19 @@ android {
         versionCode 42
         versionName "2017_0209_2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        jackOptions {
+            enabled true
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -32,7 +39,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':voice')
     compile project(path: ':usb')
-
 }
 
 android {

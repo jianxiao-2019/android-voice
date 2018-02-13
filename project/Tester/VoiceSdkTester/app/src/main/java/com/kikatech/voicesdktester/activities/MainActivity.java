@@ -688,15 +688,15 @@ public class MainActivity extends AppCompatActivity implements
         }
         if (mUsbAudioSource != null) {
             mNcParamLayout.setVisibility(View.VISIBLE);
-            if (mSeekAngle != null) {
-                mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
-            }
-            if (mSeekNc != null) {
-                mSeekNc.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(1));
-            }
-            if (mSeekMode != null) {
-                mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
-            }
+//            if (mSeekAngle != null) {
+//                mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
+//            }
+//            if (mSeekNc != null) {
+//                mSeekNc.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(1));
+//            }
+//            if (mSeekMode != null) {
+//                mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
+//            }
         } else {
             mNcParamLayout.setVisibility(View.GONE);
         }
