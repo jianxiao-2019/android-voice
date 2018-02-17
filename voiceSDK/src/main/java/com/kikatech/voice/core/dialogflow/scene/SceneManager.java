@@ -140,6 +140,14 @@ public class SceneManager implements DialogObserver, ISceneManager {
     }
 
     @Override
+    public void redirectIntent(Intent intent) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "RedirectIntent from Scene:" + mScene + ", to:" + intent.getScene());
+        }
+        onIntent(intent);
+    }
+
+    @Override
     public void notifyUncaught() {
         if (mScene == null) {
             mScene = Intent.DEFAULT_SCENE;

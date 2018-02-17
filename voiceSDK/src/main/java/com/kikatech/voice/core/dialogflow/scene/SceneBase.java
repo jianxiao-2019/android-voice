@@ -155,4 +155,14 @@ public abstract class SceneBase implements DialogObserver {
             stage.prepareAction(scene(), "", stage);
         }
     }
+
+    /**
+     * Perform cross interactions between different Scene
+     * @param intent re-wrapped Intent to a different Scene
+     */
+    public void redirectIntent(final Intent intent) {
+        if (mSceneManager != null) {
+            mSceneManager.redirectIntent(intent);
+        }
+    }
 }
