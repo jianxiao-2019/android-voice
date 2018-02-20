@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceActiveStateListener,
         TtsSource.TtsStateChangedListener {
 
-    private static final boolean IS_WAKE_UP_MODE = true;
+    private static final boolean IS_WAKE_UP_MODE = false;
     private static final String DEBUG_FILE_TAG = "voiceTester";
 
     public static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v3/speech";
