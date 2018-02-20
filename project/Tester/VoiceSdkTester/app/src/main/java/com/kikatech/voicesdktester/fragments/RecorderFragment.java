@@ -71,7 +71,6 @@ public class RecorderFragment extends PageFragment implements
     private static final int MSG_TIMER = 0;
     private static final int MSG_CHECK_DEBUG = 1;
     private static final int MSG_VAD_TIMER = 2;
-    private static final int MSG_FINAL_RESULT_TIMEOUT = 3;
     private long mTimeInSec = 0;
 
     private int mDebugCount = 0;
@@ -266,11 +265,6 @@ public class RecorderFragment extends PageFragment implements
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
-                if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
-                    mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
-                }
-                Logger.w("onMessage 1 send 2000");
-                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 2000);
                 break;
             case R.id.device_button_left:
                 break;
@@ -340,8 +334,8 @@ public class RecorderFragment extends PageFragment implements
     public void onStopListening() {
         if (mStartRecordView != null) {
             mStartRecordView.setVisibility(View.VISIBLE);
-            mStartRecordView.setAlpha(0.2f);
-            mStartRecordView.setEnabled(false);
+//            mStartRecordView.setAlpha(0.2f);
+//            mStartRecordView.setEnabled(false);
         }
         if (mStopRecordView != null) {
             mStopRecordView.setVisibility(View.GONE);
@@ -469,10 +463,6 @@ public class RecorderFragment extends PageFragment implements
 //            } else if (msg.what == MSG_VAD_TIMER) {
 //                if (mVoiceService != null) {
 //                    mVoiceService.stop();
-//                }
-            } else if (msg.what == MSG_FINAL_RESULT_TIMEOUT) {
-                Logger.w("onMessage MSG_FINAL_RESULT_TIMEOUT");
-                attachService();
             }
         }
     };
@@ -553,7 +543,9 @@ public class RecorderFragment extends PageFragment implements
         if (mTask != null && mTask.isPlaying()) {
             mTask.stop();
         }
-        attachService();
+        if (mVoiceService != null) {
+            mVoiceService.stop();
+        }
     }
 
     @Override

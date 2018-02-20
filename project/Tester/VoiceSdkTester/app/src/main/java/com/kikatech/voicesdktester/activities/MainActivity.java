@@ -168,11 +168,6 @@ public class MainActivity extends AppCompatActivity implements
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
-                if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
-                    mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
-                }
-                Logger.w("onMessage 1.0 send 2adㄎ000");
-                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 2000);
             }
         });
         mStopButton.setEnabled(false);
@@ -272,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements
                                 dialog.dismiss();
 
                                 updateServerButtonText();
+                                attachService();
                             }
                         }).show();
             }
@@ -547,8 +543,6 @@ public class MainActivity extends AppCompatActivity implements
 
         String server = PreferenceUtil.getString(this, PreferenceUtil.KEY_SERVER_LOCATION, WEB_SOCKET_URL_DEV);
         mCurServerButton.setText("Now is : " + server);
-
-        attachService();
     }
 
     private void attachService() {
@@ -663,11 +657,6 @@ public class MainActivity extends AppCompatActivity implements
             if (mTextView != null) {
                 mTextView.setText("Intermediate Result : " + ((IntermediateMessage) message).text);
             }
-            if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
-                mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
-                Logger.w("onMessage 2.0 send 5000");
-                mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 5000);
-            }
             return;
         }
         if (mTextView != null) {
@@ -675,12 +664,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         mResultAdapter.addResult(message);
         mResultAdapter.notifyDataSetChanged();
-
-        if (mTimerHandler.hasMessages(MSG_FINAL_RESULT_TIMEOUT)) {
-            mTimerHandler.removeMessages(MSG_FINAL_RESULT_TIMEOUT);
-            Logger.w("onMessage 3.0 end 3000");
-            mTimerHandler.sendEmptyMessageDelayed(MSG_FINAL_RESULT_TIMEOUT, 3000);
-        }
     }
 
     @Override
@@ -834,23 +817,15 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onDeviceDetached() {
             Logger.d("onDeviceDetached.");
+            mUsbAudioSource = null;
+            attachService();
         }
 
         @Override
         public void onDeviceError(int errorCode) {
+            mUsbAudioSource = null;
+            attachService();
 
-        }
-    };
-
-    private static final int MSG_FINAL_RESULT_TIMEOUT = 3;
-    private Handler mTimerHandler = new Handler() {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == MSG_FINAL_RESULT_TIMEOUT) {
-                Logger.w("onMessage MSG_FINAL_RESULT_TIMEOUT");
-                attachService();
-            }
         }
     };
 }
