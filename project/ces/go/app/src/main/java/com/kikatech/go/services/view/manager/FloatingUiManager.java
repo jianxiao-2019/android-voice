@@ -454,17 +454,15 @@ public class FloatingUiManager extends BaseFloatingManager {
 
 
     public synchronized void hideAllItems() {
-        if (mContainer.isViewAdded(mItemGMap)) {
-            mUiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mItemGMap.setViewVisibility(View.GONE);
-                    mItemTip.setViewVisibility(View.GONE);
-                    mItemAsrResult.setViewVisibility(View.GONE);
-                    mItemMsg.setViewVisibility(View.GONE);
-                }
-            });
-        }
+        mUiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mItemGMap.setViewVisibility(View.GONE);
+                mItemTip.setViewVisibility(View.GONE);
+                mItemAsrResult.setViewVisibility(View.GONE);
+                mItemMsg.setViewVisibility(View.GONE);
+            }
+        });
     }
 
     public synchronized void showAllItems() {
@@ -486,6 +484,7 @@ public class FloatingUiManager extends BaseFloatingManager {
     }
 
     public synchronized void updateGMapVisibility() {
+        LogUtil.logwtf("JASON", "updateGMapVisibility isGMapShown--> " + isGMapShown);
         if (isGMapShown) {
             showGMap();
         } else {

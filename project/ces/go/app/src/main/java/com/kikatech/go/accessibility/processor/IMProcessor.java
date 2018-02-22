@@ -83,7 +83,6 @@ public abstract class IMProcessor extends AccessibilityProcessor {
 
     @Override
     public void stop() {
-        super.stop();
         BackgroundThread.getHandler().removeCallbacks(mActionRunnable);
 
         setRunning(false);
@@ -117,6 +116,7 @@ public abstract class IMProcessor extends AccessibilityProcessor {
                 mIProcessorFlow.onStop(IProcessorFlow.RESULT_FAILED);
             }
         }
+        super.stop();
     }
 
     /**
