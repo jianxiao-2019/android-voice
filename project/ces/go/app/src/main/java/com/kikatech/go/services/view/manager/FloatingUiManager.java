@@ -484,7 +484,6 @@ public class FloatingUiManager extends BaseFloatingManager {
     }
 
     public synchronized void updateGMapVisibility() {
-        LogUtil.logwtf("JASON", "updateGMapVisibility isGMapShown--> " + isGMapShown);
         if (isGMapShown) {
             showGMap();
         } else {
