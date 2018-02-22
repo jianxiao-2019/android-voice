@@ -27,7 +27,7 @@ public class DialogFlowConfig {
     private static final int BOS_DURATION = 6800;
 
     public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
-        String WEB_SOCKET_URL_DEV = FlavorUtil.isFlavorMain() ? VoiceConfiguration.HostUrl.DEV_MVP : VoiceConfiguration.HostUrl.DEV_KIKA;
+        String WEB_SOCKET_URL_DEV = VoiceConfiguration.HostUrl.DEV_KIKA;
 
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
