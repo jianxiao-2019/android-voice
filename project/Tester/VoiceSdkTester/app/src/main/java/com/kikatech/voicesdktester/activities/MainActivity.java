@@ -765,6 +765,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionClosed() {
         Logger.e("MainActivity onConnectionClosed");
+        if (mVoiceService != null) {
+            mVoiceService.stop();
+        }
     }
 
     @Override

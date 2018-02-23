@@ -369,6 +369,11 @@ public class RecorderFragment extends PageFragment implements
         if (mErrorHintText != null) {
             mErrorHintText.setVisibility(View.VISIBLE);
         }
+        if (reason == ERR_CONNECTION_ERROR) {
+            if (mVoiceService != null) {
+                mVoiceService.stop();
+            }
+        }
     }
 
     @Override
@@ -382,6 +387,9 @@ public class RecorderFragment extends PageFragment implements
         setViewToDisableState();
         if (mErrorHintText != null) {
             mErrorHintText.setVisibility(View.VISIBLE);
+        }
+        if (mVoiceService != null) {
+            mVoiceService.stop();
         }
     }
 
