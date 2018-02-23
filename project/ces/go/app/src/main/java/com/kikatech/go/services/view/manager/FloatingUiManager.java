@@ -297,6 +297,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         mItemGMap.updateStatus(mContext, GoLayout.ViewStatus.STAND_BY_SLEEP);
 
         isTipViewShown = false;
+        showAllItems();
     }
 
     public synchronized void removeGMap() {
@@ -411,11 +412,6 @@ public class FloatingUiManager extends BaseFloatingManager {
         }
 
         mItemGMap.updateStatus(mContext, status);
-
-        if (!isTipViewShown) {
-            showTipView();
-            isTipViewShown = true;
-        }
     }
 
     public synchronized void handleAsrResult(String text) {
@@ -466,17 +462,20 @@ public class FloatingUiManager extends BaseFloatingManager {
     }
 
     public synchronized void showAllItems() {
-        if (mContainer.isViewAdded(mItemGMap)) {
-            mUiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mItemGMap.setViewVisibility(View.VISIBLE);
-                    mItemTip.setViewVisibility(View.VISIBLE);
-                    mItemAsrResult.setViewVisibility(View.VISIBLE);
-                    mItemMsg.setViewVisibility(View.VISIBLE);
+        mUiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mItemGMap.setViewVisibility(View.VISIBLE);
+                mItemTip.setViewVisibility(View.VISIBLE);
+                mItemAsrResult.setViewVisibility(View.VISIBLE);
+                mItemMsg.setViewVisibility(View.VISIBLE);
+
+                if (!isTipViewShown) {
+                    showTipView();
+                    isTipViewShown = true;
                 }
-            });
-        }
+            }
+        });
     }
 
     public synchronized void setShowGMap(boolean shown) {
