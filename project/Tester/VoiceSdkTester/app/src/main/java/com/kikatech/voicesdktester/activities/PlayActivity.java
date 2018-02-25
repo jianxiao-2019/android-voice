@@ -12,6 +12,7 @@ import com.kikatech.voicesdktester.ui.FileAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,6 +54,8 @@ public class PlayActivity extends AppCompatActivity {
             }
             fileNames.add(file.getName());
         }
+        Collections.sort(fileNames);
+        Collections.reverse(fileNames);
         return fileNames;
     }
 }

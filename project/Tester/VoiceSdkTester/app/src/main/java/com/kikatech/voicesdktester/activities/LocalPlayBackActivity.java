@@ -32,6 +32,7 @@ import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -139,6 +140,9 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
                 continue;
             }
             fileNames.add(file.getName());
+
+            Collections.sort(fileNames);
+            Collections.reverse(fileNames);
         }
 
         if (mFileAdapter == null) {

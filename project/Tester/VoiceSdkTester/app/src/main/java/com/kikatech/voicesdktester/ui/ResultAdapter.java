@@ -81,6 +81,6 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultItem
     }
 
     public void addResult(Message message) {
-        mCurrentResults.add(message);
+        mCurrentResults.add(0, message);
     }
 }
