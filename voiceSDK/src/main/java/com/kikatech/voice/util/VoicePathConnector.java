@@ -22,8 +22,7 @@ public class VoicePathConnector {
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
         boolean isSupportWakeUpMode = conf.isSupportWakeUpMode() && wakeUpDetector != null;
 
-        int packageInterval = getPacketInterval(conf);
-        IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"), packageInterval);
+        IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"));
         Logger.d("VoicePathConnector isSupportWakeUpMode = " + isSupportWakeUpMode);
         if (isSupportWakeUpMode) {
             wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
@@ -35,10 +34,6 @@ public class VoicePathConnector {
         // TODO : This is for debug.
         dataPath.dump();
         return dataPath;
-    }
-
-    private static int getPacketInterval(VoiceConfiguration conf) {
-        return conf.getConnectionConfiguration().getAsrConfiguration().getPacketInterval();
     }
 
     private static IDataPath wrapFileWriter(IDataPath nextPath,

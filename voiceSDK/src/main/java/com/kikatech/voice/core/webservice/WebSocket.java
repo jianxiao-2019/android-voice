@@ -91,15 +91,14 @@ public class WebSocket {
                     httpHeaders.put("punctuationEnabled", String.valueOf(asrConf.getPunctuationEnabled()));
                     httpHeaders.put("vprEnabled", String.valueOf(asrConf.getVprEnabled()));
                     httpHeaders.put("eosPackets", String.valueOf(asrConf.getEosPackets()));
-                    httpHeaders.put("interval", String.valueOf(asrConf.getPacketInterval()));
                     Logger.d("sign = " + conf.sign + " agent = " + conf.userAgent + " engine = " + conf.engine);
-                    Logger.d("alterEnabled = " + asrConf.getAlterEnabled() +
-                            " spellingEnabled = " + asrConf.getSpellingEnabled() +
-                            " emojiEnabled = " + asrConf.getEmojiEnabled() +
-                            " punctuationEnabled = " + asrConf.getPunctuationEnabled() +
-                            " vprEnabled = " + asrConf.getVprEnabled() +
-                            " eosPackets = " + asrConf.getEosPackets() +
-                            " interval = " + asrConf.getPacketInterval());
+                    Logger.d("alterEnabled = " + asrConf.getAlterEnabled()
+                                    + " spellingEnabled = " + asrConf.getSpellingEnabled()
+                                    + " emojiEnabled = " + asrConf.getEmojiEnabled()
+                                    + " punctuationEnabled = " + asrConf.getPunctuationEnabled()
+                                    + " vprEnabled = " + asrConf.getVprEnabled()
+                                    + " eosPackets = " + asrConf.getEosPackets()
+                            );
                 }
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));

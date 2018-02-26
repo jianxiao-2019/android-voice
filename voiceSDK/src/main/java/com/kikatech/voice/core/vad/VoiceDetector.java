@@ -19,25 +19,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VoiceDetector extends IDataPath {
 
-//    private static final int DEFAULT_FRAME_LENGTH = 6400;
-    private static final int MULTIPAL_OF_INTERVAL_TO_FRAME_LENGTH = 16;
+    private static final int DEFAULT_FRAME_LENGTH = 6400;
 
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mStopped = new AtomicBoolean(false);
 
-    private final int mFrameLength;
-    private final short[] mBuf;
+    private final int mFrameLength = DEFAULT_FRAME_LENGTH;
+    private final short[] mBuf = new short[DEFAULT_FRAME_LENGTH];
     private int mBufLen = 0;
 
     private float mPrevProb = -1;
     private Speex mSpeex;
 
-    public VoiceDetector(IDataPath dataPath, int packetInterval) {
+    public VoiceDetector(IDataPath dataPath) {
         super(dataPath);
-
-        mFrameLength = packetInterval * MULTIPAL_OF_INTERVAL_TO_FRAME_LENGTH;
-        mBuf = new short[mFrameLength];
-        Logger.i("VoiceDetector mFrameLength = " + mFrameLength);
     }
 
     @Override

@@ -14,13 +14,11 @@ public class AsrConfiguration {
     private boolean punctuationEnabled;
     private boolean vprEnabled;
     private int eosPackets;
-    private final int packetInterval; // private attribute.
 
     private AsrConfiguration(boolean spellingEnabled, boolean alterEnabled,
-                             boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets, int packetInterval) {
+                             boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
         setConfig(spellingEnabled, alterEnabled,
                 emojiEnable, punctuationEnabled, vprEnabled, eosPackets);
-        this.packetInterval = packetInterval;
     }
 
     public void copyConfig(AsrConfiguration conf) {
@@ -83,10 +81,6 @@ public class AsrConfiguration {
         this.punctuationEnabled = punctuationEnabled;
     }
 
-    public int getPacketInterval() {
-        return packetInterval;
-    }
-
     public boolean getVprEnabled() {
         return this.vprEnabled;
     }
@@ -119,8 +113,7 @@ public class AsrConfiguration {
         private boolean emojiEnabled = false;
         private boolean punctuationEnabled = false;
         private boolean vprEnabled = false;
-        private int eosPackets = 1;
-        private int packetInterval = 400;
+        private int eosPackets = 3;
 
         public Builder setSpellingEnabled(boolean spellingEnabled) {
             this.spellingEnabled = spellingEnabled;
@@ -152,13 +145,8 @@ public class AsrConfiguration {
             return this;
         }
 
-        public Builder setPacketInterval(int packetInterval) {
-            this.packetInterval = packetInterval;
-            return this;
-        }
-
         public AsrConfiguration build() {
-            return new AsrConfiguration(spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled, eosPackets, packetInterval);
+            return new AsrConfiguration(spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled, eosPackets);
         }
     }
 }
