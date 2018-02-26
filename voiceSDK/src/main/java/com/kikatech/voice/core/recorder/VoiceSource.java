@@ -15,10 +15,12 @@ import com.kikatech.voice.util.log.Logger;
 
 public class VoiceSource implements IVoiceSource {
 
-    public final static int AUDIO_INPUT = MediaRecorder.AudioSource.VOICE_COMMUNICATION;
-    public final static int AUDIO_SAMPLE_RATE = 16000;
+    private final static int AUDIO_INPUT = MediaRecorder.AudioSource.MIC;
+    private final static int AUDIO_SAMPLE_RATE = 16000;
 
-    private final static int AUDIO_FORMAT = AudioFormat.CHANNEL_IN_MONO;
+    private final static int AUDIO_FORMAT_CHANNEL = AudioFormat.CHANNEL_IN_MONO;
+    private static final int AUDIO_FORMAT_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+
 
     private AudioRecord mAudioRecord;
     private final int mBufferSizeInBytes;
@@ -27,7 +29,7 @@ public class VoiceSource implements IVoiceSource {
 
     public VoiceSource() {
         mBufferSizeInBytes = AudioRecord.getMinBufferSize(
-                AUDIO_SAMPLE_RATE, AUDIO_FORMAT, AudioFormat.ENCODING_PCM_16BIT);
+                AUDIO_SAMPLE_RATE, AUDIO_FORMAT_CHANNEL, AUDIO_FORMAT_ENCODING);
     }
 
     @Override
@@ -88,8 +90,8 @@ public class VoiceSource implements IVoiceSource {
             return null;
         }
         try {
-            return new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_FORMAT,
-                    AudioFormat.ENCODING_PCM_16BIT, mBufferSizeInBytes);
+            return new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_FORMAT_CHANNEL,
+                    AUDIO_FORMAT_ENCODING, mBufferSizeInBytes);
         } catch (Exception e) {
             return null;
         }
