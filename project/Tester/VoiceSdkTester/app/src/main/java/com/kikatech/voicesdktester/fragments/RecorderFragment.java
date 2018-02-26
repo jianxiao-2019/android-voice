@@ -35,6 +35,7 @@ import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
+import static com.kikatech.voice.service.VoiceService.ERR_CONNECTION_ERROR;
 import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_APP;
 
 /**
