@@ -549,7 +549,6 @@ public class MainActivity extends AppCompatActivity implements
                 .setPunctuationEnabled(((CheckBox) findViewById(R.id.check_punctuation)).isChecked())
                 .setSpellingEnabled(((CheckBox) findViewById(R.id.check_spelling)).isChecked())
                 .setVprEnabled(((CheckBox) findViewById(R.id.check_vpr)).isChecked())
-                .setPacketInterval(getPacketIntervalViaServer())
                 .setEosPackets(mSpinner.getSelectedItemPosition() + 1)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
@@ -573,17 +572,6 @@ public class MainActivity extends AppCompatActivity implements
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
-    }
-
-    private int getPacketIntervalViaServer() {
-        String serverUrl = PreferenceUtil.getString(
-                MainActivity.this,
-                PreferenceUtil.KEY_SERVER_LOCATION,
-                WEB_SOCKET_URL_DEV);
-        if (serverUrl.contains("poc") || serverUrl.contains("orctom")) {
-            return 120;
-        }
-        return 400;
     }
 
     @Override
