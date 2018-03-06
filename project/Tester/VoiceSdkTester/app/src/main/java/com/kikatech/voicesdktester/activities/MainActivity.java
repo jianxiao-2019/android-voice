@@ -40,6 +40,7 @@ import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.util.ReportUtil;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.R;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mAudioIdText;
     private TextView mTextView;
     private TextView mStatus2TextView;
+    private TextView mVadTextView;
 
     private RecyclerView mResultRecyclerView;
     private ResultAdapter mResultAdapter;
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ReportUtil.getInstance().startTimeStamp("start record");
                 if (mVoiceService != null) {
                     mVoiceService.start();
                 } else {
@@ -160,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ReportUtil.getInstance().logTimeStamp("stop record");
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
@@ -246,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements
         mAudioIdText = (TextView) findViewById(R.id.audio_file_id_text);
         mTextView = (TextView) findViewById(R.id.status_text);
         mStatus2TextView = (TextView) findViewById(R.id.status_right_text);
+        mVadTextView = (TextView) findViewById(R.id.vad_text);
         mResultAdapter = new ResultAdapter(this);
         mResultRecyclerView = (RecyclerView) findViewById(R.id.result_recycler);
         mResultRecyclerView.setAdapter(mResultAdapter);
@@ -309,6 +314,14 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PlayActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.button_report_log).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ReportActivity.class);
                 startActivity(intent);
             }
         });
@@ -644,6 +657,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onRecognitionResult(final Message message) {
         if (message instanceof IntermediateMessage) {
+            ReportUtil.getInstance().logTimeStamp(message.toString());
             if (mTextView != null) {
                 mTextView.setText("Intermediate Result : " + ((IntermediateMessage) message).text);
             }
@@ -654,6 +668,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             return;
         }
+        ReportUtil.getInstance().logTimeStamp(message.toString());
         if (mTextView != null) {
             mTextView.setText("Final Result");
         }
@@ -760,7 +775,9 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
-
+        if (mVadTextView != null) {
+            mVadTextView.setText(String.format("%.1f", prob));
+        }
     }
 
     @Override

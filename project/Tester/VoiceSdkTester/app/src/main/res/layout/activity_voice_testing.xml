@@ -244,12 +244,29 @@
             android:layout_height="200dp"
             tools:context=".activities.LocalPlayBackActivity" />
 
-        <TextView
-            android:id="@+id/status_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true" />
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp">
+
+            <TextView
+                android:id="@+id/status_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/vad_text"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:gravity="right|end"
+                android:text="VAD" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -380,6 +397,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Player Activity" />
+
+        <Button
+            android:id="@+id/button_report_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Report Log" />
 
         <TextView
             android:id="@+id/text_version"
