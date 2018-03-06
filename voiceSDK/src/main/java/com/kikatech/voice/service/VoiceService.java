@@ -10,6 +10,7 @@ import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.util.ReportUtil;
 import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
 
@@ -386,6 +387,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 return;
             }
             if (mWebService != null) {
+                if (ReportUtil.getInstance().isEverDetectedVad() == true && ReportUtil.getInstance().isEverSentDataToWeb() == false) {
+                    ReportUtil.getInstance().sentDataToWeb();
+                    ReportUtil.getInstance().logTimeStamp("send_data_to_web");
+                }
                 mWebService.sendData(data);
             }
         }
