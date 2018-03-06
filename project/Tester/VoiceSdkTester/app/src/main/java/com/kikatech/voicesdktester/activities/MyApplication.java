@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
+import com.squareup.leakcanary.LeakCanary;
 
 import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_APP;
 
@@ -17,6 +18,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        LeakCanary.install(this);
 
         if (PreferenceUtil.getBoolean(this, KEY_ENABLE_DEBUG_APP, false)) {
             Logger.d("MyApplication enable");
