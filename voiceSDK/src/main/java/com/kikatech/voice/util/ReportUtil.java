@@ -12,6 +12,7 @@ public class ReportUtil {
     private static final ReportUtil sInstance = new ReportUtil();
 
     private ArrayList<String> mTsList = new ArrayList<String>();
+    private boolean mStartTimeStamp = false;
     private Long mStartTS = null;
     private boolean mIsEverDetectedVad = false;
     private boolean mIsEverSentDataToWeb = false;
@@ -21,12 +22,17 @@ public class ReportUtil {
     }
 
     public void startTimeStamp(String title) {
+        mStartTimeStamp = true;
         resetValues();
 
         logTimeStamp(title);
     }
 
     public void logTimeStamp(String title) {
+        if (mStartTimeStamp == false) {
+            return;
+        }
+
         Long ts = System.currentTimeMillis();
 
         if (mStartTS != null) {
