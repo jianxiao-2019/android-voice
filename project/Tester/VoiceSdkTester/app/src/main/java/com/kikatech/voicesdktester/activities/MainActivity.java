@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements
     private Button mStartButton;
     private Button mStopButton;
     private Button mWavButton;
+    private Button mReportButton;
     private Button mCurServerButton;
 
     private TextView mAudioIdText;
@@ -164,6 +165,9 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 ReportUtil.getInstance().logTimeStamp("stop record");
+                if (mVadTextView != null) {
+                    mVadTextView.setText("0.0");
+                }
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
@@ -318,13 +322,15 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        findViewById(R.id.button_report_log).setOnClickListener(new View.OnClickListener() {
+        mReportButton = (Button) findViewById(R.id.button_report_log);
+        mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ReportActivity.class);
                 startActivity(intent);
             }
         });
+        mReportButton.setEnabled(false);
 
         mNcParamLayout = findViewById(R.id.nc_parameters_layout);
         mNcParamLayout.setVisibility(View.GONE);
@@ -724,6 +730,7 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setEnabled(false);
         mStopButton.setEnabled(true);
         mWavButton.setEnabled(false);
+        mReportButton.setEnabled(false);
     }
 
     @Override
@@ -736,6 +743,7 @@ public class MainActivity extends AppCompatActivity implements
         mStopButton.setEnabled(false);
         mWavButton.setEnabled(true);
         mWavButton.setOnClickListener(new ConvertWavButtonListener());
+        mReportButton.setEnabled(true);
     }
 
     @Override
