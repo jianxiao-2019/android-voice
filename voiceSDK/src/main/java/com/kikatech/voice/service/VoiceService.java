@@ -99,6 +99,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mWakeUpDetector = mConf.isSupportWakeUpMode() ? WakeUpDetector.getDetector(context, this) : null;
         mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath);
+        ReportUtil.getInstance().setIsDebugMode(mConf.getIsDebugMode());
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {

@@ -12,6 +12,7 @@ public class ReportUtil {
     private static final ReportUtil sInstance = new ReportUtil();
 
     private ArrayList<String> mTsList = new ArrayList<String>();
+    private boolean mIsDebugMode = false;
     private boolean mStartTimeStamp = false;
     private Long mStartTS = null;
     private boolean mIsEverDetectedVad = false;
@@ -21,7 +22,23 @@ public class ReportUtil {
         return sInstance;
     }
 
+    public void setIsDebugMode (boolean isDebugMode) {
+        mIsDebugMode = isDebugMode;
+
+        if (!mIsDebugMode && mTsList.size() == 0) {
+            mTsList.add("DebugMode is false");
+        }
+    }
+
+    public boolean getIsDebugMode () {
+        return mIsDebugMode;
+    }
+
     public void startTimeStamp(String title) {
+        if (!mIsDebugMode) {
+            return;
+        }
+
         resetValues();
 
         mStartTimeStamp = true;
@@ -29,12 +46,16 @@ public class ReportUtil {
     }
 
     public void stopTimeStamp(String title) {
+        if (!mIsDebugMode) {
+            return;
+        }
+
         logTimeStamp(title);
         mStartTimeStamp = false;
     }
 
     public void logTimeStamp(String title) {
-        if (!mStartTimeStamp) {
+        if (!mIsDebugMode || !mStartTimeStamp) {
             return;
         }
 
@@ -57,7 +78,7 @@ public class ReportUtil {
     }
 
     public void logText(String title) {
-        if (!mStartTimeStamp) {
+        if (!mIsDebugMode || !mStartTimeStamp) {
             return;
         }
 
