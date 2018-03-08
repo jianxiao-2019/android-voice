@@ -2,9 +2,12 @@ package com.kikatech.voice.core.debug;
 
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.LongSparseArray;
+import android.util.Pair;
 
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
@@ -15,7 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by ryanlin on 12/02/2018.
@@ -33,6 +38,8 @@ public class DebugUtil {
     private static String sDebugFilepath;
     private static File sCacheDir;
 
+    private static LongSparseArray<String> cidToFilePath = new LongSparseArray<>();
+
     public static void updateCacheDir(VoiceConfiguration conf) {
         sIsDebug = conf.getIsDebugMode();
         if (!sIsDebug) {
@@ -44,6 +51,7 @@ public class DebugUtil {
             sIsDebug = false;
             Logger.i("updateCacheDir sCacheDir == null");
         }
+        cidToFilePath.clear();
     }
 
     public static boolean isDebug () {
@@ -151,29 +159,44 @@ public class DebugUtil {
     }
 
     public static void logResultToFile(Message message) {
-        Logger.d("logResultToFile sDebugFilepath = " + sDebugFilepath);
-        if (!sIsDebug || sDebugFilepath == null) {
+        // TODO : write the log at the other thread.
+        if (!sIsDebug) {
             return;
         }
+
+        long cid;
+        String text;
+        if (message instanceof TextMessage) {
+            text = ((TextMessage) message).text[0];
+            cid = ((TextMessage) message).cid;
+        } else if (message instanceof EditTextMessage) {
+            text = ((EditTextMessage) message).text[0];
+            cid = ((EditTextMessage) message).cid;
+        } else if (message instanceof IntermediateMessage) {
+            IntermediateMessage iMessage = (IntermediateMessage) message;
+            cid = iMessage.cid;
+            if (cidToFilePath.indexOfKey(cid) < 0) {
+                cidToFilePath.put(cid, sDebugFilepath);
+            }
+            return;
+        } else {
+            return;
+        }
+
+        String filePath = cidToFilePath.get(cid);
+        cidToFilePath.remove(cid);
+        Logger.d("logResultToFile filePath = " + filePath);
+        if (TextUtils.isEmpty(filePath)) {
+            return;
+        }
+
         BufferedWriter bufferedWriter = null;
         try {
-            bufferedWriter = new BufferedWriter(new java.io.FileWriter(sDebugFilepath + ".txt", true));
+            bufferedWriter = new BufferedWriter(new java.io.FileWriter(filePath + ".txt", true));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.d("logResultToFile mBufferedWriter = " + bufferedWriter);
         if (bufferedWriter != null) {
-            long cid;
-            String text;
-            if (message instanceof TextMessage) {
-                text = ((TextMessage) message).text[0];
-                cid = ((TextMessage) message).cid;
-            } else if (message instanceof EditTextMessage) {
-                text = ((EditTextMessage) message).text[0];
-                cid = ((EditTextMessage) message).cid;
-            } else {
-                return;
-            }
             Logger.d("logResultToFile cid = " + cid + " text = " + text);
             try {
                 bufferedWriter.write("cid:" + cid);
