@@ -2,8 +2,8 @@ package com.kikatech.voice.core.webservice;
 
 import android.text.TextUtils;
 
-import com.kikatech.voice.service.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.service.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 
@@ -17,6 +17,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,15 +34,18 @@ public class WebSocket {
     private static final int MAX_RECONNECT_TIME = 10;
     private static final int RECONNECT_INTERVAL = 1000;
 
+    private static final int HEARTBEAT_DURATION = 10 * 1000;
+
     private VoiceWebSocketClient mClient;
     private OnWebSocketListener mListener;
 
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mReleased = new AtomicBoolean(false);
     private boolean mOpened = false;
     private int mReconnectTimes = 0;
 
     private ConnectionConfiguration mConf;
+    private Timer mTimer = new Timer();
 
     public static WebSocket openConnection(OnWebSocketListener l) {
         return new WebSocket(l);
@@ -258,6 +263,42 @@ public class WebSocket {
         return null;
     }
 
+    private void startHeartBeatTimer() {
+        mExecutor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if (mOpened) {
+                    if (mTimer != null) {
+                        mTimer.cancel();
+                    }
+                    mTimer = new Timer();
+                    mTimer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            sendCommand("HEART-BEAT", "");
+                        }
+                    }, HEARTBEAT_DURATION, HEARTBEAT_DURATION);
+                }
+            }
+        });
+    }
+
+    private void changeState(final boolean isOpened) {
+        mExecutor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                mOpened = isOpened;
+
+                if (!mOpened) {
+                    mTimer.cancel();
+                    mTimer = null;
+                }
+            }
+        });
+    }
+
     private class VoiceWebSocketClient extends WebSocketClient {
 
         VoiceWebSocketClient(URI serverUri, Draft protocolDraft,
@@ -268,7 +309,8 @@ public class WebSocket {
         @Override
         public void onOpen(ServerHandshake handshakeData) {
             Logger.i("VoiceWebSocketClient onOpen mListener = " + mListener);
-            mOpened = true;
+            changeState(true);
+            startHeartBeatTimer();
             if (mListener != null) {
                 mListener.onOpen();
             }
@@ -287,7 +329,7 @@ public class WebSocket {
         @Override
         public void onClose(int code, String reason, boolean remote) {
             Logger.i("VoiceWebSocketClient onClose code = [" + code + "] Thread = " + Thread.currentThread().getName());
-            mOpened = false;
+            changeState(false);
             reconnect();
             if (mListener != null) {
                 mListener.onWebSocketClosed();
@@ -298,7 +340,7 @@ public class WebSocket {
         public void onError(Exception ex) {
             Logger.w("VoiceWebSocketClient onError ex = " + ex + " Thread = " + Thread.currentThread().getName());
             ex.printStackTrace();
-            mOpened = false;
+            changeState(false);
             reconnect();
             if (mListener != null) {
                 mListener.onWebSocketError();

@@ -35,11 +35,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
 
-    private static final int HEARTBEAT_DURATION = 10 * 1000;
-
-    private static final int MSG_SEND_HEARTBEAT = 1;
-    private static final int MSG_VAD_BOS = 2;
-    private static final int MSG_VAD_EOS = 3;
+    private static final int MSG_VAD_BOS = 1;
+    private static final int MSG_VAD_EOS = 2;
 
     private static final float VAD_PROB_CRITERIA = 0.6f;
 
@@ -343,11 +340,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                         if (mVoiceStateChangedListener != null) {
                             mVoiceStateChangedListener.onCreated();
                         }
-                        if (mTimerHandler != null) {
-                            mTimerHandler.removeMessages(MSG_SEND_HEARTBEAT);
-                            mTimerHandler.sendEmptyMessageDelayed(
-                                    MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
-                        }
                     }
                 });
             }
@@ -380,9 +372,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                         if (mVoiceStateChangedListener != null) {
                             mVoiceStateChangedListener.onConnectionClosed();
                         }
-                        if (mTimerHandler != null) {
-                            mTimerHandler.removeMessages(MSG_SEND_HEARTBEAT);
-                        }
                     }
                 });
             }
@@ -397,9 +386,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                     public void run() {
                         if (mVoiceStateChangedListener != null) {
                             mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
-                        }
-                        if (mTimerHandler != null) {
-                            mTimerHandler.removeMessages(MSG_SEND_HEARTBEAT);
                         }
                     }
                 });
@@ -453,14 +439,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             } else if (msg.what == MSG_VAD_EOS) {
                 if (mVoiceStateChangedListener != null) {
                     mVoiceStateChangedListener.onVadEos();
-                }
-                return;
-            } else if (msg.what == MSG_SEND_HEARTBEAT) {
-                if (mTimerHandler != null && mWebService != null && mWebService.isConnecting()) {
-                    mTimerHandler.sendEmptyMessageDelayed(MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
-                }
-                if (mWebService != null) {
-                    mWebService.sendCommand("HEART-BEAT", "");
                 }
                 return;
             }
