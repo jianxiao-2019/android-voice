@@ -40,7 +40,6 @@ import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
-import com.kikatech.voice.util.ReportUtil;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.R;
@@ -148,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ReportUtil.getInstance().startTimeStamp("start record");
                 if (mVoiceService != null) {
                     mVoiceService.start();
                 } else {
@@ -164,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ReportUtil.getInstance().logTimeStamp("stop record");
                 if (mVadTextView != null) {
                     mVadTextView.setText("0.0");
                 }
@@ -663,7 +660,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onRecognitionResult(final Message message) {
         if (message instanceof IntermediateMessage) {
-            ReportUtil.getInstance().logTimeStamp(message.toString());
             if (mTextView != null) {
                 mTextView.setText("Intermediate Result : " + ((IntermediateMessage) message).text);
             }
@@ -674,7 +670,6 @@ public class MainActivity extends AppCompatActivity implements
             }
             return;
         }
-        ReportUtil.getInstance().logTimeStamp(message.toString());
         if (mTextView != null) {
             mTextView.setText("Final Result");
         }
