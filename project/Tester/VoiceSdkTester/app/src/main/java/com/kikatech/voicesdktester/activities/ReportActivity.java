@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kikatech.voice.util.ReportUtil;
+import com.kikatech.voice.core.debug.ReportUtil;
 import com.kikatech.voicesdktester.R;
 
 import java.util.ArrayList;
