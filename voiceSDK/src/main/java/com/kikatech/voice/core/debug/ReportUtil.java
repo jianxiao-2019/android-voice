@@ -1,4 +1,4 @@
-package com.kikatech.voice.util;
+package com.kikatech.voice.core.debug;
 
 import com.kikatech.voice.util.log.Logger;
 
@@ -12,7 +12,6 @@ public class ReportUtil {
     private static final ReportUtil sInstance = new ReportUtil();
 
     private ArrayList<String> mTsList = new ArrayList<String>();
-    private boolean mIsDebugMode = false;
     private boolean mStartTimeStamp = false;
     private Long mStartTS = null;
     private boolean mIsEverDetectedVad = false;
@@ -22,20 +21,8 @@ public class ReportUtil {
         return sInstance;
     }
 
-    public void setIsDebugMode (boolean isDebugMode) {
-        mIsDebugMode = isDebugMode;
-
-        if (!mIsDebugMode && mTsList.size() == 0) {
-            mTsList.add("DebugMode is false");
-        }
-    }
-
-    public boolean getIsDebugMode () {
-        return mIsDebugMode;
-    }
-
     public void startTimeStamp(String title) {
-        if (!mIsDebugMode) {
+        if (!DebugUtil.isDebug()) {
             return;
         }
 
@@ -46,7 +33,7 @@ public class ReportUtil {
     }
 
     public void stopTimeStamp(String title) {
-        if (!mIsDebugMode) {
+        if (!DebugUtil.isDebug()) {
             return;
         }
 
@@ -55,7 +42,7 @@ public class ReportUtil {
     }
 
     public void logTimeStamp(String title) {
-        if (!mIsDebugMode || !mStartTimeStamp) {
+        if (!DebugUtil.isDebug() || !mStartTimeStamp) {
             return;
         }
 
@@ -78,7 +65,7 @@ public class ReportUtil {
     }
 
     public void logText(String title) {
-        if (!mIsDebugMode || !mStartTimeStamp) {
+        if (!DebugUtil.isDebug() || !mStartTimeStamp) {
             return;
         }
 
@@ -95,6 +82,10 @@ public class ReportUtil {
     }
 
     public ArrayList<String> getTsList() {
+        if (!DebugUtil.isDebug()) {
+            mTsList.clear();
+            mTsList.add("DebugMode is off");
+        }
         return mTsList;
     }
 

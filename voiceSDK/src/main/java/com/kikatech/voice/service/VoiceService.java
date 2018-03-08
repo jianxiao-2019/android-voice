@@ -10,7 +10,7 @@ import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.conf.AsrConfiguration;
-import com.kikatech.voice.util.ReportUtil;
+import com.kikatech.voice.core.debug.ReportUtil;
 import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
 
@@ -99,7 +99,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mWakeUpDetector = mConf.isSupportWakeUpMode() ? WakeUpDetector.getDetector(context, this) : null;
         mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath);
-        ReportUtil.getInstance().setIsDebugMode(mConf.getIsDebugMode());
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
