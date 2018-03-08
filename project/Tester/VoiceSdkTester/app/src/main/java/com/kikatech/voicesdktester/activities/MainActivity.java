@@ -72,11 +72,13 @@ public class MainActivity extends AppCompatActivity implements
     private Button mStartButton;
     private Button mStopButton;
     private Button mWavButton;
+    private Button mReportButton;
     private Button mCurServerButton;
 
     private TextView mAudioIdText;
     private TextView mTextView;
     private TextView mStatus2TextView;
+    private TextView mVadTextView;
 
     private RecyclerView mResultRecyclerView;
     private ResultAdapter mResultAdapter;
@@ -160,6 +162,9 @@ public class MainActivity extends AppCompatActivity implements
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mVadTextView != null) {
+                    mVadTextView.setText("0.0");
+                }
                 if (mVoiceService != null) {
                     mVoiceService.stop();
                 }
@@ -246,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements
         mAudioIdText = (TextView) findViewById(R.id.audio_file_id_text);
         mTextView = (TextView) findViewById(R.id.status_text);
         mStatus2TextView = (TextView) findViewById(R.id.status_right_text);
+        mVadTextView = (TextView) findViewById(R.id.vad_text);
         mResultAdapter = new ResultAdapter(this);
         mResultRecyclerView = (RecyclerView) findViewById(R.id.result_recycler);
         mResultRecyclerView.setAdapter(mResultAdapter);
@@ -312,6 +318,16 @@ public class MainActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+
+        mReportButton = (Button) findViewById(R.id.button_report_log);
+        mReportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+                startActivity(intent);
+            }
+        });
+        mReportButton.setEnabled(false);
 
         mNcParamLayout = findViewById(R.id.nc_parameters_layout);
         mNcParamLayout.setVisibility(View.GONE);
@@ -709,6 +725,7 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton.setEnabled(false);
         mStopButton.setEnabled(true);
         mWavButton.setEnabled(false);
+        mReportButton.setEnabled(false);
     }
 
     @Override
@@ -721,6 +738,7 @@ public class MainActivity extends AppCompatActivity implements
         mStopButton.setEnabled(false);
         mWavButton.setEnabled(true);
         mWavButton.setOnClickListener(new ConvertWavButtonListener());
+        mReportButton.setEnabled(true);
     }
 
     @Override
@@ -760,7 +778,9 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
-
+        if (mVadTextView != null) {
+            mVadTextView.setText(String.format("%.1f", prob));
+        }
     }
 
     @Override
