@@ -92,7 +92,9 @@ public class VoiceDetector extends IDataPath {
             if (prob > 0) {
                 if (ReportUtil.getInstance().isEverDetectedVad() == false) {
                     ReportUtil.getInstance().vadDetected();
-                    ReportUtil.getInstance().logTimeStamp("first_vad_prob = "+String.valueOf(prob));
+                    ReportUtil.getInstance().logTimeStamp("first_vad_prob = " + String.format("%.2f", (double) prob));
+                } else {
+                    ReportUtil.getInstance().logText("vad_prob = " + String.format("%.2f", (double) prob));
                 }
             }
             if (mPrevProb != prob) {

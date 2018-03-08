@@ -22,14 +22,19 @@ public class ReportUtil {
     }
 
     public void startTimeStamp(String title) {
-        mStartTimeStamp = true;
         resetValues();
 
+        mStartTimeStamp = true;
         logTimeStamp(title);
     }
 
+    public void stopTimeStamp(String title) {
+        logTimeStamp(title);
+        mStartTimeStamp = false;
+    }
+
     public void logTimeStamp(String title) {
-        if (mStartTimeStamp == false) {
+        if (!mStartTimeStamp) {
             return;
         }
 
@@ -37,18 +42,28 @@ public class ReportUtil {
 
         if (mStartTS != null) {
             Long costTS = ts - mStartTS;
-            String costTimeStr = String.format("%.3f", (double)costTS/1000) + "s";
-            String titleStr = title!=null? title:"";
+            String costTimeStr = String.format("%.3f", (double) costTS / 1000) + "s";
+            String titleStr = title != null ? title : "";
             mTsList.add(costTimeStr);
             mTsList.add(titleStr);
-            Logger.d("[report] " + titleStr + costTimeStr);
+            Logger.d("[report] " + titleStr + "" + costTimeStr);
         } else {
-            String titleStr = title!=null? title:"Start";
+            String titleStr = title != null ? title : "Start";
             mTsList.add(titleStr);
             Logger.d("[report] " + titleStr);
         }
 
         mStartTS = ts;
+    }
+
+    public void logText(String title) {
+        if (!mStartTimeStamp) {
+            return;
+        }
+
+        if (title != null && title.length() > 0) {
+            mTsList.add("        " + title);
+        }
     }
 
     private void resetValues() {
