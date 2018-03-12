@@ -46,6 +46,10 @@ public class DebugUtil {
         }
     }
 
+    public static boolean isDebug () {
+        return sIsDebug;
+    }
+
     public static void updateDebugInfo(VoiceConfiguration conf) {
         sDebugFilepath = null;
         if (!sIsDebug) {

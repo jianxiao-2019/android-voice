@@ -1,4 +1,4 @@
-package com.kikatech.voice.util;
+package com.kikatech.voice.core.debug;
 
 import com.kikatech.voice.util.log.Logger;
 
@@ -22,6 +22,10 @@ public class ReportUtil {
     }
 
     public void startTimeStamp(String title) {
+        if (!DebugUtil.isDebug()) {
+            return;
+        }
+
         resetValues();
 
         mStartTimeStamp = true;
@@ -29,12 +33,16 @@ public class ReportUtil {
     }
 
     public void stopTimeStamp(String title) {
+        if (!DebugUtil.isDebug()) {
+            return;
+        }
+
         logTimeStamp(title);
         mStartTimeStamp = false;
     }
 
     public void logTimeStamp(String title) {
-        if (!mStartTimeStamp) {
+        if (!DebugUtil.isDebug() || !mStartTimeStamp) {
             return;
         }
 
@@ -57,7 +65,7 @@ public class ReportUtil {
     }
 
     public void logText(String title) {
-        if (!mStartTimeStamp) {
+        if (!DebugUtil.isDebug() || !mStartTimeStamp) {
             return;
         }
 
@@ -74,6 +82,10 @@ public class ReportUtil {
     }
 
     public ArrayList<String> getTsList() {
+        if (!DebugUtil.isDebug()) {
+            mTsList.clear();
+            mTsList.add("DebugMode is off");
+        }
         return mTsList;
     }
 
