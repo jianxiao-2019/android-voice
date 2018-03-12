@@ -55,7 +55,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     private TextView mTextView;
 
     private Button mStartButton;
-    private Button mWavButton;
 
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
@@ -99,15 +98,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             }
         });
         mStartButton.setEnabled(false);
-
-        mWavButton = (Button) findViewById(R.id.button_to_wav);
-        mWavButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DebugUtil.convertCurrentPcmToWav();
-            }
-        });
-        mWavButton.setEnabled(false);
 
         attachService();
 
@@ -261,7 +251,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             mTextView.setText("Created.");
         }
         mIsCreated = true;
-        mWavButton.setEnabled(false);
 
         scanFiles();
     }
@@ -276,7 +265,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             mTextView.setText("starting.");
         }
         mStartButton.setEnabled(false);
-        mWavButton.setEnabled(false);
     }
 
     @Override
@@ -286,7 +274,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             mTextView.setText("stopped.");
         }
         mStartButton.setEnabled(true);
-        mWavButton.setEnabled(true);
     }
 
     @Override
@@ -296,7 +283,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             mTextView.setText("Disconnected.");
         }
         mIsCreated = false;
-        mWavButton.setEnabled(false);
     }
 
     @Override

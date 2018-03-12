@@ -198,7 +198,7 @@ public class PlayerFragment extends PageFragment {
             if (file.isDirectory()) {
                 continue;
             }
-            if (file.getName().contains("_NC")) {
+            if (file.getName().contains("_NC") && !file.getName().contains(".wav")) {
                 String simpleFileName = file.getPath().substring(0, file.getPath().lastIndexOf("_"));
                 RecognizeItem item = new RecognizeItem();
                 item.file = file;
@@ -209,7 +209,7 @@ public class PlayerFragment extends PageFragment {
 
                 items.add(item);
 
-            } else if (file.getName().contains("_SRC")) {
+            } else if (file.getName().contains("_SRC") && !file.getName().contains(".wav")) {
                 String simpleFileName = file.getPath().substring(0, file.getPath().lastIndexOf("_"));
                 RecognizeItem item = new RecognizeItem();
                 item.file = file;

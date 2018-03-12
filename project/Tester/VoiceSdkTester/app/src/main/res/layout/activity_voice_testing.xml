@@ -208,20 +208,11 @@
                 android:text="Stop" />
 
             <Button
-                android:id="@+id/button_to_wav"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Convert wav"
-                android:textSize="10dp" />
-
-            <Button
                 android:id="@+id/button_report_log"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Log"
-                android:textSize="10dp" />
+                android:layout_weight="1"
+                android:text="Log" />
 
         </LinearLayout>
 

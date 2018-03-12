@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private Button mStartButton;
     private Button mStopButton;
-    private Button mWavButton;
     private Button mReportButton;
     private Button mCurServerButton;
 
@@ -171,9 +170,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         mStopButton.setEnabled(false);
-
-        mWavButton = (Button) findViewById(R.id.button_to_wav);
-        mWavButton.setEnabled(false);
 
         if (IS_WAKE_UP_MODE) {
             findViewById(R.id.button_wake).setOnClickListener(new View.OnClickListener() {
@@ -613,25 +609,6 @@ public class MainActivity extends AppCompatActivity implements
         Message.unregisterAll();
     }
 
-    private class ConvertWavButtonListener implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-            mWavButton.setEnabled(false);
-
-            boolean isConverted = DebugUtil.convertCurrentPcmToWav();
-            if (isConverted) {
-                if (mTextView != null) {
-                    mTextView.setText("Convert the file: '" + DebugUtil.getDebugFilePath() + "' succeed!");
-                }
-            } else {
-                if (mTextView != null) {
-                    mTextView.setText("Some error occurred!");
-                }
-            }
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -707,7 +684,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         mStartButton.setEnabled(false);
         mStopButton.setEnabled(true);
-        mWavButton.setEnabled(false);
         mReportButton.setEnabled(false);
     }
 
@@ -719,8 +695,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         mStartButton.setEnabled(true);
         mStopButton.setEnabled(false);
-        mWavButton.setEnabled(true);
-        mWavButton.setOnClickListener(new ConvertWavButtonListener());
         mReportButton.setEnabled(true);
     }
 
