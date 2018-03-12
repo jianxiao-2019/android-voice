@@ -580,6 +580,14 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
+                    public void onVadEos() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onVadEos");
+                        }
+                        mDialogFlowService.forceArsResult();
+                    }
+
+                    @Override
                     public void onASRPause() {
                         mDFServiceStatus.setAsrEnabled(false);
                         String action = DFServiceEvent.ACTION_ON_ASR_PAUSE;

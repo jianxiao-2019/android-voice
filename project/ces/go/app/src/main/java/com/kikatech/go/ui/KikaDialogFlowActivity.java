@@ -97,6 +97,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
+                    public void onVadEos() {
+                    }
+
+                    @Override
                     public void onASRPause() {
                     }
 

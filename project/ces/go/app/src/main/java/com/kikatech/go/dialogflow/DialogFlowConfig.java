@@ -25,6 +25,7 @@ public class DialogFlowConfig {
     private static final String APP_NAME = "KikaGo";
 
     private static final int BOS_DURATION = 6800;
+    private static final int EOS_DURATION = 1000;
 
     public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
         String WEB_SOCKET_URL_DEV = VoiceConfiguration.HostUrl.DEV_KIKA;
@@ -42,6 +43,7 @@ public class DialogFlowConfig {
                 .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))
                 .build());
         conf.setBosDuration(BOS_DURATION);
+        conf.setEosDuration(EOS_DURATION);
         conf.setSupportWakeUpMode(true);
         return conf;
     }
