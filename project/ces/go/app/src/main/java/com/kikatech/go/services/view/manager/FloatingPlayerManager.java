@@ -161,12 +161,13 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         // Init player style according to current scale type
         switch (mItemPlayer.getPlayerSize()) {
             case SkVideoPlayerView.PlayerSize.MINIMUM:
-                int x = (deviceWidth - mItemPlayer.getMeasuredWidth()) / 2;
+                int x = 100;
+                int y = getDeviceHeightByOrientation() - MIN_HEIGHT - 100;
                 layoutParams.width = MIN_WIDTH;
                 layoutParams.height = MIN_HEIGHT;
                 mItemPlayer.setViewWidth(MIN_WIDTH);
                 mItemPlayer.setViewHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-                mItemPlayer.setViewXY(x, 400);
+                mItemPlayer.setViewXY(x, y);
                 mItemPlayer.getLayoutParams().screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
                 break;
             case SkVideoPlayerView.PlayerSize.MEDIUM:
