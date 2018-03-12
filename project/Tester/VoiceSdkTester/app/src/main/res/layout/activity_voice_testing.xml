@@ -377,12 +377,6 @@
                     android:text="Spelling" />
 
                 <CheckBox
-                    android:id="@+id/check_one_shot"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="One Shot" />
-
-                <CheckBox
                     android:id="@+id/check_vpr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
