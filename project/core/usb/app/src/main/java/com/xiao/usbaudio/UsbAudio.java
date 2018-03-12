@@ -23,6 +23,22 @@ public class UsbAudio {
 
     
     /**
+     *  Return result of setup, 
+     *  This function will enumerate and configure usb audio device.    
+     *  After setup(), we should invoke loop() to prepare to receive 
+     *  usb data.
+     * @param      path   usb device path. 
+     *             fd     usb descriptor handle.
+     *             vid    vendor id.
+     *             pid    product id.
+     *
+     * @return     -1   setup failed
+     *             1    mono channel
+     *             2    stereo
+     */
+    public native int setupWithChannelNo(String path, int fd, int vid, int pid);
+
+    /**
      *  Inform device to prepare to capture usb data stream   
      *  and waiting for start() to invoke callback function :          
      *  AudioPlayBack.write()                                      

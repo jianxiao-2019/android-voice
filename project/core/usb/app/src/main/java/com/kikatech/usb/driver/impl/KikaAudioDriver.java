@@ -13,6 +13,8 @@ import com.xiao.usbaudio.UsbAudio;
 
 public class KikaAudioDriver extends UsbHostDriver {
 
+    private static final int RESULT_STEREO = 2;
+
     private UsbAudio mUsbAudio = new UsbAudio();
     private OnDataListener mOnDataListener;
     public KikaAudioDriver(Context context, UsbDevice device) {
@@ -26,11 +28,13 @@ public class KikaAudioDriver extends UsbHostDriver {
                     + " mConnectionFileDes = " + mConnection.getFileDescriptor()
                     + " productId = " + mDevice.getProductId()
                     + " vendorId = " + mDevice.getVendorId());
-            if (mUsbAudio.setup(
+            int result = mUsbAudio.setupWithChannelNo(
                     mDevice.getDeviceName(),
                     mConnection.getFileDescriptor(),
                     mDevice.getProductId(),
-                    mDevice.getVendorId())) {
+                    mDevice.getVendorId());
+            Logger.d("KikaAudioDriver open result = " + result);
+            if (result == RESULT_STEREO) {
                 new Thread(new Runnable() {
 
                     @Override
