@@ -69,12 +69,15 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public interface VoiceStateChangedListener {
+
+        @Deprecated
         void onCreated();
 
         void onStartListening();
 
         void onStopListening();
 
+        @Deprecated
         void onDestroyed();
 
         void onError(int reason);
@@ -83,6 +86,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         void onVadEos();
 
+        @Deprecated
         void onConnectionClosed();
 
         void onSpeechProbabilityChanged(float prob);
@@ -122,16 +126,14 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         EventBus.getDefault().register(this);
 
         DebugUtil.updateCacheDir(mConf);
+
+        if (mVoiceStateChangedListener != null) {
+            mVoiceStateChangedListener.onCreated();
+        }
     }
 
     public void start() {
-        Logger.d("VoiceService start mWebService.isConnecting() = " + mWebService.isConnecting());
         ReportUtil.getInstance().startTimeStamp("start record");
-        if (!mWebService.isConnecting()) {
-            mVoiceStateChangedListener.onError(ERR_REASON_NOT_CREATED);
-            return;
-        }
-
         DebugUtil.updateDebugInfo(mConf);
 
         if (mWakeUpDetector != null) {
@@ -330,20 +332,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
-        @Override
-        public void onOpen() {
-            Logger.d("[WebSocketListener] onOpen mMainThreadHandler = " + mMainThreadHandler);
-            if (mMainThreadHandler != null) {
-                mMainThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mVoiceStateChangedListener != null) {
-                            mVoiceStateChangedListener.onCreated();
-                        }
-                    }
-                });
-            }
-        }
 
         @Override
         public void onMessage(final Message message) {
@@ -370,6 +358,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                     @Override
                     public void run() {
                         if (mVoiceStateChangedListener != null) {
+                            stop();
+                            mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
                             mVoiceStateChangedListener.onConnectionClosed();
                         }
                     }
@@ -385,6 +375,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                     @Override
                     public void run() {
                         if (mVoiceStateChangedListener != null) {
+                            stop();
                             mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
                         }
                     }

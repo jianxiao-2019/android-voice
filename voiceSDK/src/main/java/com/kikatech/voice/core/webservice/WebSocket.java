@@ -2,6 +2,9 @@ package com.kikatech.voice.core.webservice;
 
 import android.text.TextUtils;
 
+import com.kikatech.voice.core.webservice.data.SendingData;
+import com.kikatech.voice.core.webservice.data.SendingDataByte;
+import com.kikatech.voice.core.webservice.data.SendingDataString;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.service.conf.AsrConfiguration;
@@ -11,17 +14,23 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
+import org.java_websocket.util.Charsetfunctions;
 import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.kikatech.voice.core.webservice.WebSocket.SocketState.CONNECTED;
+import static com.kikatech.voice.core.webservice.WebSocket.SocketState.CONNECTING;
+import static com.kikatech.voice.core.webservice.WebSocket.SocketState.DISCONNECTED;
 
 /**
  * Created by tianli on 17-10-28.
@@ -31,8 +40,7 @@ public class WebSocket {
     private static final String VERSION = "3";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
-    private static final int MAX_RECONNECT_TIME = 10;
-    private static final int RECONNECT_INTERVAL = 1000;
+    private static final int MAX_RECONNECT_TIME = 3;
 
     private static final int HEARTBEAT_DURATION = 10 * 1000;
 
@@ -41,19 +49,25 @@ public class WebSocket {
 
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mReleased = new AtomicBoolean(false);
-    private boolean mOpened = false;
     private int mReconnectTimes = 0;
 
+    private final LinkedList<SendingData> mSendBuffer = new LinkedList<>();
+
     private ConnectionConfiguration mConf;
-    private Timer mTimer = new Timer();
+    private Timer mTimer;
+
+    private SocketState mSocketState = DISCONNECTED;
+    enum SocketState {
+        DISCONNECTED,
+        CONNECTING,
+        CONNECTED,
+    }
 
     public static WebSocket openConnection(OnWebSocketListener l) {
         return new WebSocket(l);
     }
 
     public interface OnWebSocketListener {
-        void onOpen();
-
         void onMessage(Message message);
 
         void onWebSocketClosed();
@@ -98,12 +112,12 @@ public class WebSocket {
                     httpHeaders.put("eosPackets", String.valueOf(asrConf.getEosPackets()));
                     Logger.d("sign = " + conf.sign + " agent = " + conf.userAgent + " engine = " + conf.engine);
                     Logger.d("alterEnabled = " + asrConf.getAlterEnabled()
-                                    + " spellingEnabled = " + asrConf.getSpellingEnabled()
-                                    + " emojiEnabled = " + asrConf.getEmojiEnabled()
-                                    + " punctuationEnabled = " + asrConf.getPunctuationEnabled()
-                                    + " vprEnabled = " + asrConf.getVprEnabled()
-                                    + " eosPackets = " + asrConf.getEosPackets()
-                            );
+                            + " spellingEnabled = " + asrConf.getSpellingEnabled()
+                            + " emojiEnabled = " + asrConf.getEmojiEnabled()
+                            + " punctuationEnabled = " + asrConf.getPunctuationEnabled()
+                            + " vprEnabled = " + asrConf.getVprEnabled()
+                            + " eosPackets = " + asrConf.getEosPackets()
+                    );
                 }
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));
@@ -117,44 +131,9 @@ public class WebSocket {
                     e.printStackTrace();
                 }
                 mClient.connect();
+                mSocketState = CONNECTING;
             }
         });
-    }
-
-    private Runnable mReconnectRunnable = null;
-
-    private class ReconnectRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            mReconnectTimes++;
-            Logger.d("reconnect thread = " + Thread.currentThread().getName() + " mReconnectTimes = " + mReconnectTimes);
-            try {
-                Thread.sleep(RECONNECT_INTERVAL);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Logger.d("reconnect thread = " + Thread.currentThread().getName() + " RECONNECT_INTERVAL = " + RECONNECT_INTERVAL);
-            mReconnectRunnable = null;
-            connect(mConf);
-        }
-    }
-
-    private boolean reconnect() {
-        if (mReconnectTimes < MAX_RECONNECT_TIME && !mReleased.get()) {
-            Logger.d("reconnect thread = " + Thread.currentThread().getName() + " mReconnectRunnable = " + mReconnectRunnable);
-            if (mReconnectRunnable == null) {
-                mReconnectRunnable = new ReconnectRunnable();
-                mExecutor.execute(mReconnectRunnable);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isConnecting() {
-        Logger.d("isConnecting mClient = " + mClient + " mOepned = " + mOpened);
-        return mClient != null && mClient.isOpen() && mOpened;
     }
 
     public void release() {
@@ -166,12 +145,12 @@ public class WebSocket {
                         mClient.close();
                     }
                     mClient = null;
+                    mSendBuffer.clear();
                 }
             });
         }
     }
 
-    // TODO : 由sender來保證 在connect() 之後的 sendData or SendCommand都能成功傳送？
     public void sendData(final byte[] data) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");
@@ -180,25 +159,7 @@ public class WebSocket {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final String logMsg;
-                if (mClient != null) {
-                    logMsg = ", isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen();
-                } else {
-                    logMsg = ", mClient is <null>";
-                }
-                Logger.v("WebSocket sendData, data.length = " + data.length + " mOpened = " + mOpened + logMsg);
-                if (mClient != null && mOpened) {
-                    try {
-                        mClient.send(data);
-                    } catch (Exception e) {
-                        // TODO: 17-10-31 how to handle this case?
-                        Logger.e("sendData error: " + e.getMessage());
-                        e.printStackTrace();
-                        mClient = null;
-                    }
-                } else {
-                    Logger.w("Sending data when mWebSocketClient is closed.");
-                }
+                checkConnectionAndSend(new SendingDataByte(data));
             }
         });
     }
@@ -212,28 +173,15 @@ public class WebSocket {
             @Override
             public void run() {
                 String jsonCommand = genCommand(command, payload);
-                if (TextUtils.isEmpty(jsonCommand) || mClient == null) {
+                if (TextUtils.isEmpty(jsonCommand)) {
                     Logger.e("Send command error : generate command failed.");
                     return;
                 }
-                Logger.v("sendCommand, cmd: " + jsonCommand + ", isConnecting = " + mClient.isConnecting() + ", isOpen = " + mClient.isOpen());
-                if (mClient != null && mOpened) {
-                    try {
-                        mClient.send(jsonCommand);
-                    } catch (Exception e) {
-                        Logger.e("sendCommand error: " + e.getMessage());
-                        e.printStackTrace();
-                        // TODO: 17-10-31 how to handle this case?
-                        mClient = null;
-                    }
-                } else {
-                    Logger.w("Send command when mWebSocketClient is closed.");
-                }
+                checkConnectionAndSend(new SendingDataString(jsonCommand));
             }
         });
     }
 
-    // TODO: 17-10-31 命令的json生成放在外面比较好
     private String genCommand(String command, String payload) {
         try {
             JSONObject cmdObj = new JSONObject();
@@ -245,6 +193,7 @@ public class WebSocket {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -268,7 +217,7 @@ public class WebSocket {
 
             @Override
             public void run() {
-                if (mOpened) {
+                if (mSocketState == CONNECTED) {
                     if (mTimer != null) {
                         mTimer.cancel();
                     }
@@ -284,19 +233,53 @@ public class WebSocket {
         });
     }
 
-    private void changeState(final boolean isOpened) {
+    private void changeState(final SocketState socketState) {
         mExecutor.execute(new Runnable() {
 
             @Override
             public void run() {
-                mOpened = isOpened;
+                mSocketState = socketState;
 
-                if (!mOpened) {
-                    mTimer.cancel();
-                    mTimer = null;
+                if (mSocketState == DISCONNECTED) {
+                    if (mTimer != null) {
+                        mTimer.cancel();
+                        mTimer = null;
+                    }
                 }
             }
         });
+    }
+
+    private void sendRemindData() {
+        mExecutor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                while (!mSendBuffer.isEmpty()) {
+                    SendingData sendingData = mSendBuffer.getFirst();
+                    boolean success = sendingData != null && sendingData.send(mClient);
+                    if (success) {
+                        mSendBuffer.pollFirst();
+                    } else {
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    private void checkConnectionAndSend(SendingData data) {
+        boolean success = false;
+        if (mSocketState == CONNECTED) {
+            success = data.send(mClient);
+        }
+
+        if (!success) {
+            mSendBuffer.add(data);
+            if (mSocketState == DISCONNECTED) {
+                connect(mConf);
+            }
+        }
     }
 
     private class VoiceWebSocketClient extends WebSocketClient {
@@ -309,11 +292,10 @@ public class WebSocket {
         @Override
         public void onOpen(ServerHandshake handshakeData) {
             Logger.i("VoiceWebSocketClient onOpen mListener = " + mListener);
-            changeState(true);
+            changeState(CONNECTED);
             startHeartBeatTimer();
-            if (mListener != null) {
-                mListener.onOpen();
-            }
+            sendRemindData();
+
             mReconnectTimes = 0;
         }
 
@@ -328,23 +310,34 @@ public class WebSocket {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            Logger.i("VoiceWebSocketClient onClose code = [" + code + "] Thread = " + Thread.currentThread().getName());
-            changeState(false);
-            reconnect();
-            if (mListener != null) {
-                mListener.onWebSocketClosed();
+            Logger.i("VoiceWebSocketClient onClose code = [" + code + "]");
+            changeState(DISCONNECTED);
+            if (!reconnect() && !mReleased.get()) {
+                if (mListener != null) {
+                    mListener.onWebSocketClosed();
+                }
             }
         }
 
         @Override
         public void onError(Exception ex) {
-            Logger.w("VoiceWebSocketClient onError ex = " + ex + " Thread = " + Thread.currentThread().getName());
+            Logger.w("VoiceWebSocketClient onError ex = " + ex);
             ex.printStackTrace();
-            changeState(false);
-            reconnect();
-            if (mListener != null) {
-                mListener.onWebSocketError();
+            changeState(DISCONNECTED);
+            if (!reconnect() && !mReleased.get()) {
+                if (mListener != null) {
+                    mListener.onWebSocketError();
+                }
             }
+        }
+
+        private boolean reconnect() {
+            if (mReconnectTimes < MAX_RECONNECT_TIME && !mReleased.get()) {
+                mReconnectTimes++;
+                WebSocket.this.connect(mConf);
+                return true;
+            }
+            return false;
         }
     }
 }
