@@ -18,9 +18,6 @@ public class ToDFServiceEvent extends BaseDFServiceEvent {
     public static final String ACTION_DIALOG_FLOW_TALK = "action_dialog_flow_talk";
     public static final String ACTION_DIALOG_FLOW_WAKE_UP = "action_dialog_flow_wake_up";
     public static final String ACTION_PING_VOICE_SOURCE = "action_ping_voice_source";
-    public static final String ACTION_INVERT_WAKE_UP_DETECTOR_ABILITY = "action_invert_wake_up_detector_ability";
-    public static final String ACTION_SWITCH_WAKE_UP_SCENE = "action_switch_wake_up_scene";
-    public static final String ACTION_BLUETOOTH_EVENT = "action_bluetooth_event";
     public static final String ACTION_ACCESSIBILITY_STARTED = "action_accessibility_started";
     public static final String ACTION_ACCESSIBILITY_STOPPED = "action_accessibility_stopped";
 

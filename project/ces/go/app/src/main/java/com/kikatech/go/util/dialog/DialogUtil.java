@@ -132,6 +132,9 @@ public class DialogUtil {
         mDialog.show();
     }
 
+    public static void showDialogAlertUsbInstallation() {
+    }
+
     private static void setDefaultLayout(Window window) {
         try {
             if (window != null) {

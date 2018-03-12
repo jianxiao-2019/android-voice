@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
-import android.view.InputDevice;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -22,7 +20,6 @@ import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
-import com.kikatech.go.util.BluetoothUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.preference.GlobalPref;
@@ -165,15 +162,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                     }
                 }
                 break;
-            case DFServiceEvent.ACTION_ON_WAKE_UP_ABILITY_CHANGE:
-                boolean isEnabled = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_WAKE_UP_ENABLED);
-                mBtnOpenDrawer.setImageResource(isEnabled ? R.drawable.kika_settings_ic_drawer : R.drawable.kika_settings_ic_drawer_open);
-                break;
-            case DFServiceEvent.ACTION_ON_WAKE_UP_MODE_CHANGE:
-                boolean isWakeUpInFunnyMode = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_WAKE_UP_IN_FUNNY_MODE);
-                if (mGoLayout != null) {
-                    mGoLayout.setSleepLayoutIconRes(isWakeUpInFunnyMode ? R.drawable.kika_ic_trigger_switch : R.drawable.kika_ic_trigger);
-                }
         }
     }
 
@@ -243,6 +231,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     protected void onResume() {
         super.onResume();
         DialogFlowForegroundService.processOnAppForeground();
+        checkUsbStatus();
     }
 
     @Override
@@ -259,51 +248,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
         super.onDestroy();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event != null) {
-            InputDevice device = event.getDevice();
-            if (device != null) {
-                String deviceName = device.getName();
-                if (LogUtil.DEBUG) {
-                    LogUtil.logd(TAG, String.format("Device: %1$s, KeyEvent: %2$s", deviceName, event.toString()));
-                }
-                switch (deviceName) {
-                    case BluetoothUtil.Devices.DEVICE_KS:
-                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                            switch (keyCode) {
-                                case KeyEvent.KEYCODE_VOLUME_DOWN:
-                                    DialogFlowForegroundService.processInvertWakeUpDetectorAbility();
-                                    return true;
-                                case KeyEvent.KEYCODE_VOLUME_UP:
-                                    DialogFlowForegroundService.processSwitchWakeUpScene();
-                                    return true;
-                                default:
-                                    return super.onKeyDown(keyCode, event);
-                            }
-                        }
-                        break;
-                    case BluetoothUtil.Devices.DEVICE_MEFOTO:
-                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                            switch (keyCode) {
-                                case KeyEvent.KEYCODE_VOLUME_UP:
-                                    DialogFlowForegroundService.processBluetoothEvent();
-                                    return true;
-                                default:
-                                    return true;
-                            }
-                        }
-                        return true;
-                }
-            } else {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logd(TAG, String.format("KeyEvent: %s", event.toString()));
-                }
-            }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     private void bindView() {
@@ -342,6 +286,20 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private void onConnectionStatusChanged(boolean connected) {
         mIconConnectionStatus.setVisibility(connected ? View.GONE : View.VISIBLE);
         mUiManager.dispatchConnectionStatusChanged(connected);
+    }
+
+    private void checkUsbStatus() {
+//        TODO: Check Usb Status when app went foreground
+//        boolean isAlreadyInUsbSource;
+//        boolean isUsbAttached;
+//        boolean isFirstLaunched;
+//        if (!isAlreadyInUsbSource) {
+//            if (isUsbAttached) {
+//                scanUsbDevices();
+//            } else if (isFirstLaunched) {
+//                DialogUtil.showDialogAlertUsbInstallation();
+//            }
+//        }
     }
 
     @Override
