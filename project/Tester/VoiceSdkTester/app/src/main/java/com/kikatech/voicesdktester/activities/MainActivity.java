@@ -47,6 +47,7 @@ import com.xiao.usbaudio.AudioPlayBack;
 
 import java.util.Locale;
 
+import static com.kikatech.voice.service.VoiceService.ERR_CONNECTION_ERROR;
 import static com.kikatech.voice.service.VoiceService.ERR_REASON_NOT_CREATED;
 
 public class MainActivity extends AppCompatActivity implements
@@ -281,6 +282,9 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 mUsbAudioSource = null;
                 attachService();
+
+                mTextView.setText("Using Android source");
+                mNcParamLayout.setVisibility(View.GONE);
             }
         });
 
@@ -471,6 +475,11 @@ public class MainActivity extends AppCompatActivity implements
         Message.register("INTERMEDIATE", IntermediateMessage.class);
         Message.register("ALTER", EditTextMessage.class);
         Message.register("ASR", TextMessage.class);
+
+        attachService();
+
+        mStartButton.setEnabled(true);
+        mStopButton.setEnabled(false);
     }
 
     private void updatePermissionButtonState() {
@@ -644,32 +653,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onCreated() {
-        Logger.d("MainActivity onCreated");
-        if (mTextView != null) {
-            String text = mUsbAudioSource == null ? "Using Android source" : "Using Usb source";
-            mTextView.setText(text);
-        }
-        if (mUsbAudioSource != null) {
-            mNcParamLayout.setVisibility(View.VISIBLE);
-            if (mSeekAngle != null) {
-                mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
-            }
-            if (mSeekNc != null) {
-                mSeekNc.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(1));
-            }
-            if (mSeekMode != null) {
-                mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
-            }
-        } else {
-            mNcParamLayout.setVisibility(View.GONE);
-        }
-        mStartButton.setEnabled(true);
-        mStopButton.setEnabled(false);
-        if (mUsbAudioSource != null) {
-            mButtonAngle.setEnabled(true);
-            mButtonNc.setEnabled(true);
-            mButtonMode.setEnabled(true);
-        }
     }
 
     @Override
@@ -699,13 +682,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onDestroyed() {
-        Logger.d("MainActivity onDestroyed");
-        if (mTextView != null) {
-            mTextView.setText("Disconnected.");
-        }
-        mStartButton.setEnabled(false);
-        mStopButton.setEnabled(false);
-        mButtonAngle.setEnabled(false);
     }
 
     @Override
@@ -715,6 +691,10 @@ public class MainActivity extends AppCompatActivity implements
             Logger.e("ERR_REASON_NOT_CREATED");
             if (mTextView != null) {
                 mTextView.setText("Select an audio source first.");
+            }
+        } else if (reason == ERR_CONNECTION_ERROR) {
+            if (mTextView != null) {
+                mTextView.setText("Connection error.");
             }
         }
     }
@@ -726,10 +706,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionClosed() {
-        Logger.e("MainActivity onConnectionClosed");
-        if (mVoiceService != null) {
-            mVoiceService.stop();
-        }
     }
 
     @Override
@@ -785,6 +761,27 @@ public class MainActivity extends AppCompatActivity implements
             Logger.d("onDeviceAttached.");
             mUsbAudioSource = audioSource;
             attachService();
+
+            if (mUsbAudioSource == null) {
+                return;
+            }
+
+            mNcParamLayout.setVisibility(View.VISIBLE);
+            if (mSeekAngle != null) {
+                mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
+            }
+            if (mSeekNc != null) {
+                mSeekNc.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(1));
+            }
+            if (mSeekMode != null) {
+                mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
+            }
+
+            mButtonAngle.setEnabled(true);
+            mButtonNc.setEnabled(true);
+            mButtonMode.setEnabled(true);
+
+            mTextView.setText("Using Usb source");
         }
 
         @Override

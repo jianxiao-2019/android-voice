@@ -112,6 +112,13 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        scanFiles();
+    }
+
     private void scanFiles() {
         String path = DebugUtil.getDebugFolderPath();
         if (TextUtils.isEmpty(path)) {
@@ -242,17 +249,9 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         mResultAdapter.notifyDataSetChanged();
     }
 
-    private boolean mIsCreated = false;
-
     @Override
     public void onCreated() {
-        Logger.d("LocalPlayBackActivity onCreated");
-        if (mTextView != null) {
-            mTextView.setText("Created.");
-        }
-        mIsCreated = true;
 
-        scanFiles();
     }
 
     @Override
@@ -278,11 +277,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 
     @Override
     public void onDestroyed() {
-        Logger.d("LocalPlayBackActivity onDestroyed");
-        if (mTextView != null) {
-            mTextView.setText("Disconnected.");
-        }
-        mIsCreated = false;
+
     }
 
     @Override
@@ -337,7 +332,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             mLocalVoiceSource.selectFile(path + itemStr);
         }
         if (mStartButton != null) {
-            mStartButton.setEnabled(mIsCreated);
+            mStartButton.setEnabled(true);
         }
     }
 

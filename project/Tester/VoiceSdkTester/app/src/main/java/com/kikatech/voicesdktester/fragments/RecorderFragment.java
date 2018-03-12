@@ -171,6 +171,9 @@ public class RecorderFragment extends PageFragment implements
                 }
             }
         });
+
+        attachService();
+        refreshRecentView();
     }
 
     @Override
@@ -203,7 +206,6 @@ public class RecorderFragment extends PageFragment implements
     }
 
     private void attachService() {
-        setViewToDisableState();
         if (mErrorHintText != null) {
             mErrorHintText.setVisibility(View.GONE);
         }
@@ -299,31 +301,17 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onCreated() {
-        Log.d("Ryan", "onCreated mUsbAudioSource = " + mUsbAudioSource);
-        if (mUsbAudioSource != null) {
-            if (mKikagoSignal != null) {
-                mKikagoSignal.setImageResource(R.drawable.signal_point_yellow);
-                mUsingKikaGo.setSelected(true);
-                mUsingAndroid.setSelected(false);
-            }
-        } else {
-            if (mAndroidSignal != null) {
-                mAndroidSignal.setImageResource(R.drawable.signal_point_yellow);
-                mUsingKikaGo.setSelected(false);
-                mUsingAndroid.setSelected(true);
-            }
-        }
 
-        mStartRecordView.setAlpha(1.0f);
-        mStartRecordView.setEnabled(true);
-
-        refreshRecentView();
     }
 
     @Override
     public void onStartListening() {
-        mStartRecordView.setVisibility(View.GONE);
-        mStopRecordView.setVisibility(View.VISIBLE);
+        if (mStartRecordView != null) {
+            mStartRecordView.setVisibility(View.GONE);
+        }
+        if (mStopRecordView != null) {
+            mStopRecordView.setVisibility(View.VISIBLE);
+        }
 
         mRecordingTimerText.setText("00:00");
         mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
@@ -334,8 +322,6 @@ public class RecorderFragment extends PageFragment implements
     public void onStopListening() {
         if (mStartRecordView != null) {
             mStartRecordView.setVisibility(View.VISIBLE);
-//            mStartRecordView.setAlpha(0.2f);
-//            mStartRecordView.setEnabled(false);
         }
         if (mStopRecordView != null) {
             mStopRecordView.setVisibility(View.GONE);
@@ -360,14 +346,9 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onError(int reason) {
         Logger.e("onError reason = " + reason);
-        setViewToDisableState();
+        // setViewToDisableState();
         if (mErrorHintText != null) {
             mErrorHintText.setVisibility(View.VISIBLE);
-        }
-        if (reason == ERR_CONNECTION_ERROR) {
-            if (mVoiceService != null) {
-                mVoiceService.stop();
-            }
         }
     }
 
@@ -378,14 +359,7 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onConnectionClosed() {
-        Logger.e("onConnectionClosed");
-        setViewToDisableState();
-        if (mErrorHintText != null) {
-            mErrorHintText.setVisibility(View.VISIBLE);
-        }
-        if (mVoiceService != null) {
-            mVoiceService.stop();
-        }
+
     }
 
     @Override
@@ -419,6 +393,12 @@ public class RecorderFragment extends PageFragment implements
             Logger.d("onDeviceAttached.");
             mUsbAudioSource = audioSource;
             attachService();
+
+            if (mKikagoSignal != null) {
+                mKikagoSignal.setImageResource(R.drawable.signal_point_yellow);
+                mUsingKikaGo.setSelected(true);
+                mUsingAndroid.setSelected(false);
+            }
         }
 
         @Override
@@ -426,6 +406,12 @@ public class RecorderFragment extends PageFragment implements
             Logger.d("onDeviceDetached.");
             mUsbAudioSource = null;
             attachService();
+
+            if (mAndroidSignal != null) {
+                mAndroidSignal.setImageResource(R.drawable.signal_point_yellow);
+                mUsingKikaGo.setSelected(false);
+                mUsingAndroid.setSelected(true);
+            }
         }
 
         @Override
@@ -435,6 +421,12 @@ public class RecorderFragment extends PageFragment implements
                 mUsbAudioSource = null;
                 attachService();
                 Toast.makeText(getContext(), "KikaGo mic isn’t plugged-in.", Toast.LENGTH_SHORT).show();
+
+                if (mAndroidSignal != null) {
+                    mAndroidSignal.setImageResource(R.drawable.signal_point_yellow);
+                    mUsingKikaGo.setSelected(false);
+                    mUsingAndroid.setSelected(true);
+                }
             } else if (errorCode == ERROR_DRIVER_INIT_FAIL) {
                 Logger.d("onDeviceError ERROR_DRIVER_INIT_FAIL");
                 if (mErrorHintText != null) {
