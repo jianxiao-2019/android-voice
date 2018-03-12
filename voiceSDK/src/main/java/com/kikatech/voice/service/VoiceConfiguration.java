@@ -25,6 +25,7 @@ public class VoiceConfiguration {
     private static final String DEFAULT_LOCALE = "en_US";
 
     private static final int DEFAULT_BOS_DURATION = 6000;
+    private static final int DEFAULT_EOS_DURATION = -1;
 
     private IVoiceSource mVoiceSource;
     private AgentCreator mAgentCreator;
@@ -32,6 +33,7 @@ public class VoiceConfiguration {
     private ConnectionConfiguration mConnConf;
 
     private int bosDuration = DEFAULT_BOS_DURATION;
+    private int eosDuration = DEFAULT_EOS_DURATION;
     private boolean mSupportWakeUpMode;
     private TtsService.TtsSourceType mTtsSource = TtsService.TtsSourceType.KIKA_WEB;
 
@@ -74,6 +76,14 @@ public class VoiceConfiguration {
 
     public int getBosDuration() {
         return bosDuration;
+    }
+
+    public void setEosDuration(int eosDuration) {
+        this.eosDuration = eosDuration;
+    }
+
+    int getEosDuration() {
+        return eosDuration;
     }
 
     public void setDebugFileTag(String fileTag) {

@@ -32,6 +32,8 @@ public interface IDialogFlowService {
 
         void onVadBos();
 
+        void onVadEos();
+
         void onASRPause();
 
         void onASRResume();

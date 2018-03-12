@@ -37,8 +37,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     private static final int HEARTBEAT_DURATION = 10 * 1000;
 
-    private static final int MSG_VAD_BOS = 1;
-    private static final int MSG_SEND_HEARTBEAT = 2;
+    private static final int MSG_SEND_HEARTBEAT = 1;
+    private static final int MSG_VAD_BOS = 2;
+    private static final int MSG_VAD_EOS = 3;
+
+    private static final float VAD_PROB_CRITERIA = 0.6f;
 
     private VoiceConfiguration mConf;
     private WebSocket mWebService;
@@ -80,6 +83,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         void onError(int reason);
 
         void onVadBos();
+
+        void onVadEos();
 
         void onConnectionClosed();
 
@@ -155,6 +160,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
+    private void cleanVadEosTimer() {
+        if (mTimerHandler != null) {
+            mTimerHandler.removeMessages(MSG_VAD_EOS);
+        }
+    }
+
     private void startVadBosTimer() {
         startVadBosTimer(mConf.getBosDuration());
     }
@@ -165,6 +176,26 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, bosDuration);
         }
+    }
+
+    private void startVadEosTimer() {
+        startVadEosTimer(mConf.getEosDuration());
+    }
+
+    private void startVadEosTimer(int eosDuration) {
+        if (mTimerHandler != null && eosDuration > 0) {
+            Logger.d("VoiceService startVadEosTimer");
+            mTimerHandler.removeMessages(MSG_VAD_EOS);
+            mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_EOS, eosDuration);
+        }
+    }
+
+    private boolean isBosTimerRunning() {
+        return mTimerHandler != null && mTimerHandler.hasMessages(MSG_VAD_BOS);
+    }
+
+    private boolean isEosTimerRunning() {
+        return mTimerHandler != null && mTimerHandler.hasMessages(MSG_VAD_EOS);
     }
 
     public synchronized void resumeAsr(int bosDuration) {
@@ -184,6 +215,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public synchronized void pauseAsr() {
         mIsAsrPaused = true;
         cleanVadBosTimer();
+        cleanVadEosTimer();
     }
 
     public void stop() {
@@ -198,6 +230,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mVoiceStateChangedListener.onStopListening();
         }
         cleanVadBosTimer();
+        cleanVadEosTimer();
         DebugUtil.convertCurrentPcmToWav();
         ReportUtil.getInstance().stopTimeStamp("stop record");
     }
@@ -210,6 +243,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             }
         }
         cleanVadBosTimer();
+        cleanVadEosTimer();
     }
 
     public void wakeUp() {
@@ -252,8 +286,17 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public void onMessageEvent(EventMsg eventMsg) {
         if (eventMsg.type == EventMsg.Type.VD_VAD_CHANGED) {
             Logger.d("onMessageEvent VD_VAD_CHANGED prob = " + eventMsg.obj);
+            float prob = (float) eventMsg.obj;
+            if (prob > VAD_PROB_CRITERIA) {
+                if (isBosTimerRunning()) {
+                    cleanVadBosTimer();
+                    startVadEosTimer();
+                } else if (isEosTimerRunning()) {
+                    startVadEosTimer();
+                }
+            }
             if (mVoiceStateChangedListener != null) {
-                mVoiceStateChangedListener.onSpeechProbabilityChanged((Float) eventMsg.obj);
+                mVoiceStateChangedListener.onSpeechProbabilityChanged(prob);
             }
         }
     }
@@ -313,7 +356,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         @Override
         public void onMessage(final Message message) {
             Logger.d("[WebSocketListener] onMessage:" + message);
-            cleanVadBosTimer();
             if (mMainThreadHandler != null) {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
@@ -408,6 +450,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                     mVoiceStateChangedListener.onVadBos();
                 }
                 return;
+            } else if (msg.what == MSG_VAD_EOS) {
+                if (mVoiceStateChangedListener != null) {
+                    mVoiceStateChangedListener.onVadEos();
+                }
+                return;
             } else if (msg.what == MSG_SEND_HEARTBEAT) {
                 if (mTimerHandler != null && mWebService != null && mWebService.isConnecting()) {
                     mTimerHandler.sendEmptyMessageDelayed(MSG_SEND_HEARTBEAT, HEARTBEAT_DURATION);
@@ -422,7 +469,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     void setWakeUpDetectorEnable(boolean enable) {
-        if(mWakeUpDetector != null){
+        if (mWakeUpDetector != null) {
             mWakeUpDetector.enableDetector(enable);
         }
     }

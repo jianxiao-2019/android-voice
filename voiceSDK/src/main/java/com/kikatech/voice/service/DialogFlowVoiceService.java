@@ -28,6 +28,8 @@ public abstract class DialogFlowVoiceService {
     private final AsrConfiguration mAsrConfiguration = new AsrConfiguration.Builder().build();
     VoiceService mVoiceService;
 
+    private long discardCid;
+
     DialogFlowVoiceService(@NonNull Context ctx, @NonNull IDialogFlowService.IServiceCallback callback) {
         mContext = ctx;
         mServiceCallback = callback;
@@ -70,6 +72,7 @@ public abstract class DialogFlowVoiceService {
                 mVoiceService.pauseAsr();
             }
             onAsrResult(mIntermediateMessage.text, null, true, null);
+            discardCid = mIntermediateMessage.cid;
             mIntermediateMessage = null;
         }
     }
@@ -114,10 +117,16 @@ public abstract class DialogFlowVoiceService {
 
             if (message instanceof IntermediateMessage) {
                 IntermediateMessage intermediateMessage = (IntermediateMessage) message;
+                if (intermediateMessage.cid == discardCid) {
+                    return;
+                }
                 query = intermediateMessage.text;
                 mIntermediateMessage = (IntermediateMessage) message;
             } else if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
+                if (textMessage.cid == discardCid) {
+                    return;
+                }
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
                 }
@@ -126,7 +135,11 @@ public abstract class DialogFlowVoiceService {
                 queryDialogFlow = true;
                 mIntermediateMessage = null;
             } else if (message instanceof EditTextMessage) {
-                String alter = ((EditTextMessage) message).altered;
+                EditTextMessage editTextMessage = (EditTextMessage) message;
+                if (editTextMessage.cid == discardCid) {
+                    return;
+                }
+                String alter = editTextMessage.altered;
                 if (LogUtil.DEBUG) {
                     LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
                 }
@@ -135,6 +148,9 @@ public abstract class DialogFlowVoiceService {
                 mIntermediateMessage = null;
             } else if (message instanceof EmojiRecommendMessage) {
                 EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
+                if (emoji.cid == discardCid) {
+                    return;
+                }
                 emojiJson = EmojiUtil.composeJsonString(emoji.emoji, emoji.descriptionText);
                 if (LogUtil.DEBUG) LogUtil.logd(TAG, "EmojiRecommendMessage = " + emojiJson);
             }
@@ -202,6 +218,14 @@ public abstract class DialogFlowVoiceService {
                 LogUtil.log(TAG, "[VoiceState] onVadBos");
             }
             mServiceCallback.onVadBos();
+        }
+
+        @Override
+        public void onVadEos() {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "[VoiceState] onVadEos");
+            }
+            mServiceCallback.onVadEos();
         }
 
         @Override
