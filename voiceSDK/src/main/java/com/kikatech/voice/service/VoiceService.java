@@ -198,6 +198,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mVoiceStateChangedListener.onStopListening();
         }
         cleanVadBosTimer();
+        DebugUtil.convertCurrentPcmToWav();
         ReportUtil.getInstance().stopTimeStamp("stop record");
     }
 

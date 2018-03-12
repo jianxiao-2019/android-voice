@@ -121,9 +121,20 @@ public class DebugUtil {
         return false;
     }
 
-    // TODO : 測試
-    public static boolean convertCurrentPcmToWav() {
-        return addWavHeader(sDebugFilepath);
+    public static void convertCurrentPcmToWav() {
+        if (sDebugFilepath == null) {
+            return;
+        }
+
+        final String filePath = sDebugFilepath;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean result = addWavHeader(filePath);
+                Logger.d("convertCurrentPcmToWav result = " + result);
+            }
+        }).start();
+        sDebugFilepath = null;
     }
 
     private static boolean addWavHeader(String debugFilePath) {
