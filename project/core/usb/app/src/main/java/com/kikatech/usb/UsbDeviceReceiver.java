@@ -20,6 +20,7 @@ class UsbDeviceReceiver extends BroadcastReceiver {
     public static final String ACTION_USB_PERMISSION_GRANTED = "com.kikatech.usb.USB_PERMISSION";
 
     private UsbDeviceListener mListener;
+    private boolean mReqPermission = true;
 
     public UsbDeviceReceiver(UsbDeviceListener l) {
         mListener = l;
@@ -31,6 +32,10 @@ class UsbDeviceReceiver extends BroadcastReceiver {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         context.registerReceiver(this, filter);
+    }
+
+    public void setReqPermission(boolean reqPermission) {
+        mReqPermission = reqPermission;
     }
 
     public void unregister(@NonNull Context context) {
@@ -68,7 +73,7 @@ class UsbDeviceReceiver extends BroadcastReceiver {
     }
 
     private void onUsbAttached(UsbDevice device) {
-        mListener.onUsbAttached(device);
+        mListener.onUsbAttached(device, mReqPermission);
     }
 
     private void onUsbDetached(UsbDevice device) {
@@ -81,7 +86,7 @@ class UsbDeviceReceiver extends BroadcastReceiver {
 
     interface UsbDeviceListener {
 
-        void onUsbAttached(UsbDevice device);
+        void onUsbAttached(UsbDevice device, boolean reqPermission);
 
         void onUsbDetached(UsbDevice device);
 

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -30,7 +29,6 @@ import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.usb.nc.KikaNcBuffer;
-import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
@@ -598,6 +596,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         if (mUsbAudioService != null) {
             mUsbAudioService.setListener(null);
+            mUsbAudioService.setReqPermissionOnReceiver(false);
         }
         AudioPlayBack.setListener(null);
     }

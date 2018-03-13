@@ -50,6 +50,12 @@ public class UsbAudioService {
         mDeviceManager.scanDevices();
     }
 
+    public void setReqPermissionOnReceiver(boolean reqPermissionOnReceiver) {
+        if (mDeviceManager != null) {
+            mDeviceManager.setReqPermissionOnReceiver(reqPermissionOnReceiver);
+        }
+    }
+
     private UsbDeviceManager.IUsbAudioDeviceListener mDeviceListener = new UsbDeviceManager.IUsbAudioDeviceListener() {
 
         @Override

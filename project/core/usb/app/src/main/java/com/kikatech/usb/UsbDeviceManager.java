@@ -32,6 +32,12 @@ class UsbDeviceManager {
         mListener = listener;
     }
 
+    public void setReqPermissionOnReceiver(boolean reqPermissionOnReceiver) {
+        if (mDeviceReceiver != null) {
+            mDeviceReceiver.setReqPermission(reqPermissionOnReceiver);
+        }
+    }
+
     public boolean hasPermission(UsbDevice device) {
         UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         return manager.hasPermission(device);
@@ -63,7 +69,7 @@ class UsbDeviceManager {
             return;
         }
         for (UsbDevice device : deviceList.values()) {
-            mDeviceListener.onUsbAttached(device);
+            mDeviceListener.onUsbAttached(device, true);
         }
     }
 
@@ -80,14 +86,14 @@ class UsbDeviceManager {
 
     private UsbDeviceReceiver.UsbDeviceListener mDeviceListener = new UsbDeviceReceiver.UsbDeviceListener() {
         @Override
-        public void onUsbAttached(UsbDevice device) {
+        public void onUsbAttached(UsbDevice device, boolean reqPermission) {
             if (isAudioDevice(device)) {
                 Log.d(TAG, "Audio class device: " + device);
                 Log.d(TAG, "Audio class device name: " + device.getDeviceName());
                 if (hasPermission(device)) {
                     mDevice = device;
                     mListener.onDeviceAttached(mDevice);
-                } else {
+                } else if (reqPermission) {
                     requestPermission(device, mDeviceReceiver);
                 }
             }
