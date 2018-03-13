@@ -1,20 +1,11 @@
 package com.kikatech.go.dialogflow;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
-import com.kikatech.go.util.FlavorUtil;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.util.request.RequestManager;
-import com.xiao.usbaudio.AudioPlayBack;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by bradchang on 2017/11/7.

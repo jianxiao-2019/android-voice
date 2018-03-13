@@ -140,4 +140,14 @@ public class GlobalPref {
         }
         return isFirst;
     }
+
+
+    public void setHasShowDialogUsbIllustration(boolean hasShow) {
+        sEditor.putBoolean(Key.KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION, hasShow);
+        apply();
+    }
+
+    public boolean getHasShowDialogUsbIllustration() {
+        return sPref.getBoolean(Key.KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION, false);
+    }
 }

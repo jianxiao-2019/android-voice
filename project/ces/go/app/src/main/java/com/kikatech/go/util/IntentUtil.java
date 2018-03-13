@@ -3,6 +3,7 @@ package com.kikatech.go.util;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 
@@ -16,6 +17,11 @@ public class IntentUtil {
     public static boolean openKikaGo(Context context) {
         Intent intent = new Intent(context, KikaAlphaUiActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return IntentUtil.sendPendingIntent(context, intent);
+    }
+
+    public static boolean openBrowser(Context context, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         return IntentUtil.sendPendingIntent(context, intent);
     }
 

@@ -136,6 +136,9 @@ public class DrawerMainFragment extends Fragment {
         mView.findViewById(R.id.drawer_item_mic).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemMicClicked();
+                }
             }
         });
         mView.findViewById(R.id.drawer_item_tip).setOnClickListener(new View.OnClickListener() {
@@ -214,6 +217,8 @@ public class DrawerMainFragment extends Fragment {
         void onItemNavigationClick();
 
         void onItemImClicked();
+
+        void onItemMicClicked();
 
         void onItemTipClicked();
 

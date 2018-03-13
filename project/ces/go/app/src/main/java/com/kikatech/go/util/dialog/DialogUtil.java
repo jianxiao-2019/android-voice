@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -11,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.kikatech.go.R;
+import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 
 /**
@@ -132,7 +134,49 @@ public class DialogUtil {
         mDialog.show();
     }
 
-    public static void showDialogAlertUsbInstallation() {
+    public static void showDialogAlertUsbInstallation(final Context context, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(false);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_usb_detached_alert, null);
+
+        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+        View mBtnCancel = dialogView.findViewById(R.id.dialog_btn_cancel);
+
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    listener.onApply(args);
+                }
+                safeDismissDialog();
+            }
+        });
+
+        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentUtil.openBrowser(context, "http://www.kika.ai/#home-section");
+                safeDismissDialog();
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
     }
 
     private static void setDefaultLayout(Window window) {

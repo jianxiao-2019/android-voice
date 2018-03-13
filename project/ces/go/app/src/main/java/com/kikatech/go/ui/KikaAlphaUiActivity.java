@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -22,6 +23,7 @@ import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.StringUtil;
+import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
@@ -45,6 +47,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private ImageView mBtnOpenDrawer;
     private View mIconConnectionStatus;
 
+    private boolean triggerDialogViaClick;
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -71,6 +74,15 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         switch (action) {
             case DFServiceEvent.ACTION_EXIT_APP:
                 finishAffinity();
+                break;
+            case DFServiceEvent.ACTION_ON_USB_NO_DEVICES:
+                if (!GlobalPref.getIns().getHasShowDialogUsbIllustration()) {
+                    GlobalPref.getIns().setHasShowDialogUsbIllustration(true);
+                    DialogUtil.showDialogAlertUsbInstallation(KikaAlphaUiActivity.this, null);
+                } else if (triggerDialogViaClick) {
+                    triggerDialogViaClick = false;
+                    DialogUtil.showDialogAlertUsbInstallation(KikaAlphaUiActivity.this, null);
+                }
                 break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
                 break;
@@ -228,10 +240,15 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        DialogFlowForegroundService.processOnAppForeground();
+        DialogFlowForegroundService.processScanUsbDevices();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        DialogFlowForegroundService.processOnAppForeground();
-        checkUsbStatus();
     }
 
     @Override
@@ -288,20 +305,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mUiManager.dispatchConnectionStatusChanged(connected);
     }
 
-    private void checkUsbStatus() {
-//        TODO: Check Usb Status when app went foreground
-//        boolean isAlreadyInUsbSource;
-//        boolean isUsbAttached;
-//        boolean isFirstLaunched;
-//        if (!isAlreadyInUsbSource) {
-//            if (isUsbAttached) {
-//                scanUsbDevices();
-//            } else if (isFirstLaunched) {
-//                DialogUtil.showDialogAlertUsbInstallation();
-//            }
-//        }
-    }
-
     @Override
     protected DrawerLayout getDrawerLayout() {
         return (DrawerLayout) findViewById(R.id.go_drawer_layout);
@@ -331,6 +334,14 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         @Override
         public void onItemImClicked() {
             updateDrawerContent(mDrawerImFragment);
+        }
+
+        @Override
+        public void onItemMicClicked() {
+            triggerDialogViaClick = true;
+            closeDrawer();
+//            updateDrawerContent(mDrawerMainFragment);
+            DialogFlowForegroundService.processScanUsbDevices();
         }
 
         @Override

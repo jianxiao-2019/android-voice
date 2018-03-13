@@ -8,6 +8,7 @@ package com.kikatech.go.eventbus;
 
 public class DFServiceEvent extends BaseDFServiceEvent {
     public static final String ACTION_ON_PING_SERVICE_STATUS = "action_on_ping_service_status";
+    public static final String ACTION_ON_USB_NO_DEVICES = "action_on_usb_no_device";
     public static final String ACTION_EXIT_APP = "action_exit_app";
     public static final String ACTION_ON_WAKE_UP = "action_on_wake_up";
     public static final String ACTION_ON_SLEEP = "action_on_sleep";
