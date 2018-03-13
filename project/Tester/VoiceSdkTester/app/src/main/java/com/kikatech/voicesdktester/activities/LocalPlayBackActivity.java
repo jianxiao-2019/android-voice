@@ -291,6 +291,11 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onVadEos() {
+        
+    }
+
+    @Override
     public void onConnectionClosed() {
 
     }
