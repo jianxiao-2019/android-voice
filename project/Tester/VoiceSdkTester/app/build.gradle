@@ -7,8 +7,8 @@ android {
         applicationId "com.kikatech.voicesdktester"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 52
-        versionName "2017_0228_1"
+        versionCode 54
+        versionName "2017_0312_1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
