@@ -3,6 +3,7 @@ package com.kikatech.usb;
 import android.support.annotation.NonNull;
 
 import com.kikatech.usb.driver.UsbAudioDriver;
+import com.kikatech.usb.driver.impl.KikaS2MBuff;
 import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.util.log.Logger;
@@ -17,24 +18,26 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
     public static final int READ_FAIL = -99;
 
     private UsbAudioDriver mAudioDriver;
-    private KikaNcBuffer mKikaNcBuffer;
+    private KikaBuffer mKikaBuffer;
+
+    private boolean mIsOpened = false;
 
     public UsbAudioSource(UsbAudioDriver driver) {
         mAudioDriver = driver;
         mAudioDriver.setOnDataListener(this);
-        mKikaNcBuffer = new KikaNcBuffer();
+        mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.TYPE_NOISC_CANCELLATION);
     }
 
     @Override
     public void open() {
-        mKikaNcBuffer.create();
+        mIsOpened = true;
+        mKikaBuffer.create();
     }
 
     @Override
     public void start() {
         if (mAudioDriver != null) {
             mAudioDriver.startRecording();
-            mKikaNcBuffer.start();
         } else {
             Logger.w("Don't call start() after device detached.");
         }
@@ -44,7 +47,6 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
     public void stop() {
         if (mAudioDriver != null) {
             mAudioDriver.stopRecording();
-            mKikaNcBuffer.stop();
         } else {
             Logger.w("Don't call stop() after device detached.");
         }
@@ -52,7 +54,8 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
 
     @Override
     public void close() {
-        mKikaNcBuffer.close();
+        mKikaBuffer.close();
+        mIsOpened = false;
     }
 
     public void closeDevice() {
@@ -68,7 +71,7 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
             Logger.w("Don't call read() after device detached.");
             return READ_FAIL;
         }
-        return mKikaNcBuffer.read(audioData, offsetInBytes, sizeInBytes);
+        return mKikaBuffer.read(audioData, offsetInBytes, sizeInBytes);
     }
 
     @Override
@@ -77,16 +80,16 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
     }
 
     public void setNoiseCancellationParameters(int mode, int value) {
-        mKikaNcBuffer.setNoiseSuppressionParameters(mode, value);
+        KikaNcBuffer.setNoiseSuppressionParameters(mode, value);
     }
 
     public int getNoiseSuppressionParameters(int mode) {
-        return mKikaNcBuffer.getNoiseSuppressionParameters(mode);
+        return KikaNcBuffer.getNoiseSuppressionParameters(mode);
     }
 
     @Override
     public void onData(byte[] data, int length) {
-        mKikaNcBuffer.onData(data, length);
+        mKikaBuffer.onData(data, length);
     }
 
     public int checkVolumeState() {
@@ -108,5 +111,13 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
             return mAudioDriver.volumeDown();
         }
         return -1;
+    }
+
+    public void setKikaBuffer(int tag) {
+        if (!mIsOpened) {
+            mKikaBuffer = KikaBuffer.getKikaBuffer(tag);
+        } else {
+            Logger.e("Can't change the buffer when it has been opened.");
+        }
     }
 }

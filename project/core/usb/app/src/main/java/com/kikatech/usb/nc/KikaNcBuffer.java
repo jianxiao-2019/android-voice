@@ -2,6 +2,7 @@ package com.kikatech.usb.nc;
 
 import android.support.annotation.NonNull;
 
+import com.kikatech.usb.KikaBuffer;
 import com.kikatech.usb.driver.UsbAudioDriver;
 import com.kikatech.usb.driver.impl.AudioBuffer;
 import com.kikatech.voice.util.log.Logger;
@@ -12,7 +13,7 @@ import lib.android.anc.NoiseCancellation;
  * Created by ryanlin on 15/01/2018.
  */
 
-public class KikaNcBuffer {
+public class KikaNcBuffer extends KikaBuffer {
 
     public static final int BUFFER_SIZE = 512;
 
@@ -28,6 +29,7 @@ public class KikaNcBuffer {
         mAudioBuffer = new AudioBuffer(20000);
     }
 
+    @Override
     public void onData(byte[] data, int len) {
         Logger.d("778893 KikaNcBuffer onData len = " + len);
         int tempLen = len;
@@ -54,22 +56,19 @@ public class KikaNcBuffer {
         return ShortToByte(outBuffs);
     }
 
+    @Override
     public void create() {
         Logger.e("KikaNcBuffer create");
         NoiseCancellation.Init();
     }
 
-    public void start() {
-    }
-
-    public void stop() {
-    }
-
+    @Override
     public void close() {
         Logger.e("KikaNcBuffer close");
         NoiseCancellation.Destroy();
     }
 
+    @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
         return mAudioBuffer.read(audioData, offsetInBytes, sizeInBytes);
     }
@@ -93,11 +92,11 @@ public class KikaNcBuffer {
         return bytes;
     }
 
-    public void setNoiseSuppressionParameters(int mode, int value) {
+    public static void setNoiseSuppressionParameters(int mode, int value) {
         NoiseCancellation.SetControl(mode, value);
     }
 
-    public int getNoiseSuppressionParameters(int mode) {
+    public static int getNoiseSuppressionParameters(int mode) {
         return NoiseCancellation.GetControl(mode);
     }
 }

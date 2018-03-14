@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kikatech.usb.IUsbAudioListener;
+import com.kikatech.usb.KikaBuffer;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.core.debug.DebugUtil;
@@ -300,6 +301,7 @@ public class WakeUpTestActivity extends AppCompatActivity implements
         public void onDeviceAttached(UsbAudioSource audioSource) {
             Logger.d("onDeviceAttached.");
             mUsbAudioSource = audioSource;
+            mUsbAudioSource.setKikaBuffer(KikaBuffer.TYPE_STEREO_TO_MONO);
             attachService();
 
             if (mUsbAudioSource == null) {

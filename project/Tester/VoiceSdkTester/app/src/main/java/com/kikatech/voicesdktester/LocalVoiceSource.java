@@ -46,7 +46,6 @@ public class LocalVoiceSource implements IVoiceSource {
             Logger.e("Please select the target file first.");
             return;
         }
-        mKikaNcBuffer.start();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -78,7 +77,6 @@ public class LocalVoiceSource implements IVoiceSource {
     public void stop() {
         try {
             mBuffer.close();
-            mKikaNcBuffer.stop();
         } catch (IOException e) {
             e.printStackTrace();
         }
