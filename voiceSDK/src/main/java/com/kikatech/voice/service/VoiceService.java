@@ -58,8 +58,15 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     @Override
     public void onDetected() {
-        if (mVoiceActiveStateListener != null) {
-            mVoiceActiveStateListener.onWakeUp();
+        if (mMainThreadHandler != null) {
+            mMainThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mVoiceActiveStateListener != null) {
+                        mVoiceActiveStateListener.onWakeUp();
+                    }
+                }
+            });
         }
         startVadBosTimer();
     }
@@ -219,9 +226,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public void stop() {
         Logger.d("VoiceService stop");
-        if (mWakeUpDetector != null) {
-            mWakeUpDetector.close();
-        }
         mVoiceRecorder.stop();
         mDataPath.stop();
 
@@ -278,6 +282,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onDestroyed();
+        }
+
+        if (mWakeUpDetector != null) {
+            mWakeUpDetector.close();
         }
     }
 
