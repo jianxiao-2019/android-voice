@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_enter_local_playback).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LocalPlayBackActivity.class);
+                Intent intent = new Intent(MainActivity.this, AutoTestActivity.class);
                 startActivity(intent);
             }
         });

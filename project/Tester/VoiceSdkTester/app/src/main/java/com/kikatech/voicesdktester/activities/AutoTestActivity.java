@@ -1,6 +1,6 @@
 package com.kikatech.voicesdktester.activities;
 
-import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -8,13 +8,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
 import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
@@ -22,25 +26,25 @@ import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.LocalVoiceSource;
 import com.kikatech.voicesdktester.R;
-import com.kikatech.voicesdktester.ui.FileAdapter;
-import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by ryanlin on 03/01/2018.
  */
 
-public class LocalPlayBackActivity extends AppCompatActivity implements
+public class AutoTestActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceStateChangedListener,
         VoiceService.VoiceActiveStateListener,
-        LocalVoiceSource.EofListener,
-        FileAdapter.OnItemCheckedListener {
+        LocalVoiceSource.EofListener {
 
     private static final String DEBUG_FILE_PATH = "voiceTester";
 
@@ -51,33 +55,31 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
 
+    private File mAudioFile;
+    private File mAnswerFile;
+
     private LocalVoiceSource mLocalVoiceSource;
 
-    private RecyclerView mResultRecyclerView;
-    private ResultAdapter mResultAdapter;
-
+    private AutoTestingAdapter mAutoTestingAdapter;
     private RecyclerView mFileRecyclerView;
-    private FileAdapter mFileAdapter;
 
     private Handler mUiHandler;
+
+    private final List<AutoTestItem> mAutoTestItems = new ArrayList<>();
+    private int mResultIndex = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_local_playback);
+        setContentView(R.layout.activity_auto_test);
 
         mLocalVoiceSource = new LocalVoiceSource();
         mLocalVoiceSource.setEofListener(this);
-//        mLocalVoiceSource.selectFile(MainActivity.PATH_FROM_MIC + "kika_voice_20171230_204859_USB");
 
         mTextView = (TextView) findViewById(R.id.status_text);
-        mFileRecyclerView = (RecyclerView) findViewById(R.id.files_recycler);
+        mFileRecyclerView = (RecyclerView) findViewById(R.id.auto_test_recycler_view);
         mFileRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mResultAdapter = new ResultAdapter(this);
-        mResultRecyclerView = (RecyclerView) findViewById(R.id.result_recycler);
-        mResultRecyclerView.setAdapter(mResultAdapter);
-        mResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mFileRecyclerView.addItemDecoration(new SpacesItemDecoration(3));
 
         mStartButton = (Button) findViewById(R.id.button_start);
         mStartButton.setOnClickListener(new View.OnClickListener() {
@@ -88,19 +90,9 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
                 }
             }
         });
-        mStartButton.setEnabled(false);
-
         attachService();
 
         mUiHandler = new Handler();
-
-        findViewById(R.id.button_enter_play).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LocalPlayBackActivity.this, PlayActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -111,7 +103,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     }
 
     private void scanFiles() {
-        String path = DebugUtil.getDebugFolderPath();
+        String path = DebugUtil.getDebugFolderPath() + "/autoTest";
         if (TextUtils.isEmpty(path)) {
             return;
         }
@@ -122,24 +114,90 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 
         List<String> fileNames = new ArrayList<>();
         for (final File file : folder.listFiles()) {
-            if (file.isDirectory()
-                    || !file.getName().contains("USB")
-                    || file.getName().contains("wav")) {
-                continue;
+            if (!file.isDirectory() && file.getName().contains("_USB")) {
+                mAudioFile = file;
+                mLocalVoiceSource.selectFile(mAudioFile.getPath());
             }
-            fileNames.add(file.getName());
-
-            Collections.sort(fileNames);
-            Collections.reverse(fileNames);
+            if (!file.isDirectory() && file.getName().contains("_ANS")) {
+                mAnswerFile = file;
+            }
         }
 
-        if (mFileAdapter == null) {
-            mFileAdapter = new FileAdapter(path, fileNames);
-            mFileAdapter.setOnItemCheckedListener(this);
-        } else {
-            mFileAdapter.notifyDataSetChanged();
+        parseAnsFile();
+        mAutoTestingAdapter = new AutoTestingAdapter();
+        mFileRecyclerView.setAdapter(mAutoTestingAdapter);
+    }
+
+    private void parseAnsFile() {
+        mAutoTestItems.clear();
+        try {
+            FileReader fr = new FileReader(mAnswerFile);
+            BufferedReader br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                Logger.d("parseAnsFile line = " + line);
+                mAutoTestItems.add(new AutoTestItem(line));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        mFileRecyclerView.setAdapter(mFileAdapter);
+    }
+
+    private class AutoTestItem {
+
+        AutoTestItem(String answer) {
+            this.answer = answer.toLowerCase().trim();
+        }
+
+        String answer;
+        String result;
+    }
+
+    private class AutoTestingAdapter extends RecyclerView.Adapter<AutoTestViewHolder> {
+
+        @Override
+        public AutoTestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new AutoTestViewHolder(LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.item_auto_test, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(AutoTestViewHolder holder, int position) {
+            AutoTestItem item = mAutoTestItems.get(position);
+
+            holder.ansText.setText(item.answer);
+            holder.resText.setText(item.result);
+
+            int resId;
+            if (TextUtils.isEmpty(item.result)) {
+                resId = mResultIndex == position ? R.drawable.signal_point_yellow : R.drawable.signal_point_empty;
+            } else {
+                resId = item.answer.equals(item.result) ? R.drawable.signal_point_green : R.drawable.signal_point_red;
+            }
+            holder.signalImage.setImageResource(resId);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mAutoTestItems.size();
+        }
+    }
+
+    private class AutoTestViewHolder extends RecyclerView.ViewHolder {
+
+        TextView ansText;
+        TextView resText;
+        ImageView signalImage;
+
+        public AutoTestViewHolder(View itemView) {
+            super(itemView);
+
+            ansText = (TextView) itemView.findViewById(R.id.text_ans);
+            resText = (TextView) itemView.findViewById(R.id.text_result);
+            signalImage = (ImageView) itemView.findViewById(R.id.image_signal);
+        }
     }
 
     private void attachService() {
@@ -150,14 +208,11 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         // Debug
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
-//                .setSpeechMode(((CheckBox) findViewById(R.id.check_one_shot)).isChecked()
-//                        ? AsrConfiguration.SpeechMode.ONE_SHOT
-//                        : AsrConfiguration.SpeechMode.CONVERSATION)
-//                .setAlterEnabled(((CheckBox) findViewById(R.id.check_alter)).isChecked())
-//                .setEmojiEnabled(((CheckBox) findViewById(R.id.check_emoji)).isChecked())
-//                .setPunctuationEnabled(((CheckBox) findViewById(R.id.check_punctuation)).isChecked())
-//                .setSpellingEnabled(((CheckBox) findViewById(R.id.check_spelling)).isChecked())
-//                .setVprEnabled(((CheckBox) findViewById(R.id.check_vpr)).isChecked())
+                .setAlterEnabled(false)
+                .setEmojiEnabled(false)
+                .setPunctuationEnabled(false)
+                .setSpellingEnabled(false)
+                .setVprEnabled(false)
                 .setEosPackets(3)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
@@ -168,7 +223,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
                 .setUrl(PreferenceUtil.getString(
-                        LocalPlayBackActivity.this,
+                        AutoTestActivity.this,
                         PreferenceUtil.KEY_SERVER_LOCATION,
                         MainActivity.WEB_SOCKET_URL_DEV))
                 .setLocale("en_US")
@@ -194,8 +249,18 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         if (mTextView != null) {
             mTextView.setText("Final Result");
         }
-        mResultAdapter.addResult(message);
-        mResultAdapter.notifyDataSetChanged();
+
+        if (mResultIndex >= 0 && mResultIndex < mAutoTestItems.size()) {
+            AutoTestItem item = mAutoTestItems.get(mResultIndex);
+            if (message instanceof TextMessage) {
+                item.result = ((TextMessage) message).text[0].toLowerCase().trim();
+//                    ((TextMessage) message).cid));
+            }
+            mResultIndex++;
+        } else {
+            mVoiceService.stop();
+        }
+        mAutoTestingAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -206,13 +271,12 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     @Override
     public void onStartListening() {
         Logger.d("LocalPlayBackActivity onStartListening");
-        mResultAdapter.clearResults();
-        mResultAdapter.notifyDataSetChanged();
-
         if (mTextView != null) {
             mTextView.setText("starting.");
         }
         mStartButton.setEnabled(false);
+        mResultIndex = 0;
+        mAutoTestingAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -276,24 +340,26 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         }, 500);
     }
 
-    @Override
-    public void onItemChecked(String itemStr) {
-        if (mLocalVoiceSource != null) {
-            String path = DebugUtil.getDebugFolderPath();
-            if (TextUtils.isEmpty(path)) {
-                return;
-            }
-            mLocalVoiceSource.selectFile(path + itemStr);
-        }
-        if (mStartButton != null) {
-            mStartButton.setEnabled(true);
-        }
-    }
+    public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
 
-    @Override
-    public void onNothingChecked() {
-        if (mStartButton != null) {
-            mStartButton.setEnabled(false);
+        private int space;
+
+        public SpacesItemDecoration(int space) {
+            this.space = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            outRect.left = space;
+            outRect.right = space;
+            outRect.bottom = space;
+
+            // Add top margin only for the first item to avoid double space between items
+            if (parent.getChildLayoutPosition(view) == 0) {
+                outRect.top = space;
+            } else {
+                outRect.top = 0;
+            }
         }
     }
 }

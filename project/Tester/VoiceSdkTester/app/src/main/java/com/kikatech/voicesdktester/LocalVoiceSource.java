@@ -57,7 +57,7 @@ public class LocalVoiceSource implements IVoiceSource {
                     while ((result = mBuffer.read(audioData, 0, SIZE)) > 0) {
                         mKikaNcBuffer.onData(audioData, result);
                         Logger.i("LocalVoiceSource read from local (d) result = " + result);
-                        Thread.sleep(40);
+                        Thread.sleep(20);
                     }
                     if (mEofListener != null) {
                         mEofListener.onEndOfFile();
