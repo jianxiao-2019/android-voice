@@ -44,6 +44,11 @@
             android:windowSoftInputMode="stateHidden" />
 
         <activity
+            android:name=".activities.WakeUpTestActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
             android:name=".activities.MainActivity"
             android:icon="@mipmap/ic_launcher"
             android:label="Voice tester (dev.)"

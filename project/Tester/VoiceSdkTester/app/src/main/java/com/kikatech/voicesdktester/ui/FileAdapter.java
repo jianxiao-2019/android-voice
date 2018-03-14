@@ -30,9 +30,14 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         void onNothingChecked();
     }
 
-    public FileAdapter(String filePath, List<String> fileName) {
+    public FileAdapter(String filePath, List<String> fileNames) {
         mFilePath = filePath;
-        mFileNames = fileName;
+        mFileNames = fileNames;
+    }
+
+    public void updateContent(String filePath, List<String> fileNames) {
+        mFileNames.clear();
+        mFileNames.addAll(fileNames);
     }
 
     @Override
