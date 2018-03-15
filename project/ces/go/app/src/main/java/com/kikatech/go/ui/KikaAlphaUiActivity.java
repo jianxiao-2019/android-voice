@@ -344,7 +344,15 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     }
 
     private void onUsbAttachedStatusChanged(boolean isUsbAttach) {
-        mIconUsbAttached.setVisibility(isUsbAttach ? View.VISIBLE : View.GONE);
+        if (isUsbAttach) {
+            boolean isStatusChanged = mIconUsbAttached.getVisibility() != View.VISIBLE;
+            if (isStatusChanged) {
+                mIconUsbAttached.setVisibility(View.VISIBLE);
+                showToast("Smart Mic connected");
+            }
+        } else {
+            mIconUsbAttached.setVisibility(View.GONE);
+        }
     }
 
     @Override
