@@ -97,7 +97,7 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onVadEos() {
+                    public void onVadEos(boolean hasIntermediateResult) {
                     }
 
                     @Override

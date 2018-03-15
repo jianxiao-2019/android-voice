@@ -344,6 +344,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onWakeUp, scene:" + scene);
                         }
+                        MusicForegroundService.pauseMusic();
                         mDFServiceStatus.setAwake(true);
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
                         DFServiceEvent event = new DFServiceEvent(action);
@@ -361,6 +362,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSleep");
                         }
+                        MusicForegroundService.resumeMusic();
                         mDFServiceStatus.setAwake(false);
                         String action = DFServiceEvent.ACTION_ON_SLEEP;
                         DFServiceEvent event = new DFServiceEvent(action);
@@ -380,11 +382,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onVadEos() {
+                    public void onVadEos(boolean hasIntermediateResult) {
                         if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "onVadEos");
+                            LogUtil.log(TAG, String.format("onVadEos, hasIntermediateResult: %s", hasIntermediateResult));
                         }
-                        mDialogFlowService.forceArsResult();
+                        if (hasIntermediateResult) {
+                            mDialogFlowService.forceArsResult();
+                        } else {
+                            pauseAsr();
+                            mDialogFlowService.talkUncaught();
+                        }
                     }
 
                     @Override

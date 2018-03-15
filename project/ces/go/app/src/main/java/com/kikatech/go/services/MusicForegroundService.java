@@ -65,6 +65,9 @@ public class MusicForegroundService extends BaseForegroundService {
         if (TextUtils.isEmpty(action)) {
             return;
         }
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("onToMusicServiceEvent, action: %s", action));
+        }
         switch (action) {
             case ToMusicServiceEvent.ACTION_MUSIC_CHANGE:
                 updateNotification();
@@ -72,6 +75,14 @@ public class MusicForegroundService extends BaseForegroundService {
             case ToMusicServiceEvent.ACTION_VOLUME_CONTROL:
                 @MusicSceneUtil.VolumeControlType int volumeControlType = event.getExtras().getInt(ToMusicServiceEvent.PARAM_VOLUME_CONTROL_TYPE);
                 doVolumeControl(volumeControlType);
+                break;
+            case ToMusicServiceEvent.ACTION_PAUSE_MUSIC:
+                mManager.pauseMusic();
+                updateNotification();
+                break;
+            case ToMusicServiceEvent.ACTION_RESUME_MUSIC:
+                mManager.resumeMusic();
+                updateNotification();
                 break;
         }
     }
@@ -123,12 +134,18 @@ public class MusicForegroundService extends BaseForegroundService {
 
     @Override
     protected void onStartForeground() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onStartForeground");
+        }
         registerReceiver();
         doStartMusic(YouTubeExtractorManager.getIns().getPlayingList());
     }
 
     @Override
     protected void onStopForeground() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onStopForeground");
+        }
         unregisterReceiver();
         doStopMusic();
     }
@@ -203,28 +220,46 @@ public class MusicForegroundService extends BaseForegroundService {
 
 
     private void doStartMusic(YouTubeVideoList listToPlay) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "doStartMusic");
+        }
         if (listToPlay != null && !listToPlay.isEmpty()) {
             mManager.showPlayer(listToPlay);
         }
     }
 
     private void doStopMusic() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "doStopMusic");
+        }
         mManager.removePlayer();
     }
 
     private void doPlayPauseMusic() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "doPlayPauseMusic");
+        }
         mManager.pauseOrResume();
     }
 
     private void doPlayPrevSong() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "doPlayPrevSong");
+        }
         mManager.prev();
     }
 
     private void doPlayNextSong() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "doPlayNextSong");
+        }
         mManager.next();
     }
 
     private void doVolumeControl(@MusicSceneUtil.VolumeControlType int type) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "doVolumeControl");
+        }
         mManager.volumeControl(type);
     }
 
@@ -249,12 +284,34 @@ public class MusicForegroundService extends BaseForegroundService {
 
 
     public static synchronized void startMusic(Context context, final YouTubeVideoList listToPlay) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "startMusic");
+        }
         processStart(context, MusicForegroundService.class);
         YouTubeExtractorManager.getIns().bindPlayList(listToPlay);
     }
 
     public static synchronized void stopMusic(Context context) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "stopMusic");
+        }
         processStop(context, MusicForegroundService.class);
+    }
+
+    public static synchronized void pauseMusic() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "pauseMusic");
+        }
+        ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_PAUSE_MUSIC);
+        sendToMusicServiceEvent(event);
+    }
+
+    public static synchronized void resumeMusic() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "resumeMusic");
+        }
+        ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_RESUME_MUSIC);
+        sendToMusicServiceEvent(event);
     }
 
     public static synchronized void processMusicChanged() {
