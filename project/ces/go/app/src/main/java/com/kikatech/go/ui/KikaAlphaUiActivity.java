@@ -46,6 +46,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private ImageView mBtnOpenDrawer;
     private View mIconConnectionStatus;
     private View mIconUsbHardwareStatus;
+    private View mIconUsbAttached;
 
     private boolean triggerDialogViaClick;
 
@@ -141,6 +142,9 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             case DFServiceEvent.ACTION_ON_ASR_CONFIG:
                 break;
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
+                String source = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
+                boolean isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
+                onUsbAttachedStatusChanged(isUsbSource);
                 break;
             case DFServiceEvent.ACTION_ON_CONNECTION_STATUS_CHANGE:
                 connectionStatus = event.getExtras().getByte(DFServiceEvent.PARAM_CONNECTION_STATUS);
@@ -285,6 +289,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mBtnOpenDrawer = (ImageView) findViewById(R.id.go_layout_btn_open_drawer);
         mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
         mIconUsbHardwareStatus = findViewById(R.id.go_layout_ic_hardware_status);
+        mIconUsbAttached = findViewById(R.id.go_layout_ic_usb_attached);
 
         mBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -336,6 +341,10 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         } else if (mIconConnectionStatus.getVisibility() != View.VISIBLE) {
             mIconUsbHardwareStatus.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void onUsbAttachedStatusChanged(boolean isUsbAttach) {
+        mIconUsbAttached.setVisibility(isUsbAttach ? View.VISIBLE : View.GONE);
     }
 
     @Override

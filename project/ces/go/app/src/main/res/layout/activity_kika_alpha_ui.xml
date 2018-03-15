@@ -40,6 +40,15 @@
             android:layout_marginTop="19dp"
             android:src="@drawable/kika_settings_ic_hardware_error"
             android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/go_layout_ic_usb_attached"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:adjustViewBounds="true"
+            android:src="@drawable/kika_ic_plugin_light"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <include
