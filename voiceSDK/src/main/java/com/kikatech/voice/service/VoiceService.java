@@ -9,6 +9,7 @@ import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.WebSocket;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.core.debug.ReportUtil;
 import com.kikatech.voice.util.VoicePathConnector;
@@ -294,14 +295,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (eventMsg.type == EventMsg.Type.VD_VAD_CHANGED) {
             Logger.d("onMessageEvent VD_VAD_CHANGED prob = " + eventMsg.obj);
             float prob = (float) eventMsg.obj;
-            if (prob > VAD_PROB_CRITERIA) {
-                if (isBosTimerRunning()) {
-                    cleanVadBosTimer();
-                    startVadEosTimer();
-                } else if (isEosTimerRunning()) {
-                    startVadEosTimer();
-                }
-            }
             if (mVoiceStateChangedListener != null) {
                 mVoiceStateChangedListener.onSpeechProbabilityChanged(prob);
             }
@@ -348,6 +341,17 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        if (message instanceof TextMessage) {
+                            cleanVadBosTimer();
+                            cleanVadEosTimer();
+                        } else {
+                            if (isBosTimerRunning()) {
+                                cleanVadBosTimer();
+                                startVadEosTimer();
+                            } else if (isEosTimerRunning()) {
+                                startVadEosTimer();
+                            }
+                        }
                         if (mVoiceRecognitionListener != null && !mIsAsrPaused) {
                             mVoiceRecognitionListener.onRecognitionResult(message);
                             ReportUtil.getInstance().logTimeStamp(message.toString());
