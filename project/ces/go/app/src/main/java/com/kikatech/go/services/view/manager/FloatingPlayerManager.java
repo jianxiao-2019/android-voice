@@ -18,6 +18,7 @@ import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.presenter.YouTubeExtractorManager;
 import com.kikatech.go.services.view.item.ItemYouTubePlayer;
+import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.youtube.player.impl.SkVideoPlayerView;
@@ -156,13 +157,14 @@ public class FloatingPlayerManager extends BaseFloatingManager {
     private void initPlayer() {
         View mPlayerView = mItemPlayer.getPlayerView();
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mPlayerView.getLayoutParams();
-        int deviceWidth = getDeviceWidth();
+        int deviceWidth = getDeviceWidthByOrientation();
+        int deviceHeight = getDeviceHeightByOrientation();
 
         // Init player style according to current scale type
         switch (mItemPlayer.getPlayerSize()) {
             case SkVideoPlayerView.PlayerSize.MINIMUM:
-                int x = 100;
-                int y = getDeviceHeightByOrientation() - MIN_HEIGHT - 100;
+                int x = (deviceWidth - mItemPlayer.getMeasuredWidth()) / 2;
+                int y = (deviceHeight - ResolutionUtil.dp2px(mContext, 186));
                 layoutParams.width = MIN_WIDTH;
                 layoutParams.height = MIN_HEIGHT;
                 mItemPlayer.setViewWidth(MIN_WIDTH);
