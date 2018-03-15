@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.kikatech.go.R;
-import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -46,6 +45,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private UiTaskManager mUiManager;
     private ImageView mBtnOpenDrawer;
     private View mIconConnectionStatus;
+    private View mIconUsbHardwareStatus;
 
     private boolean triggerDialogViaClick;
 
@@ -172,7 +172,20 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                             onConnectionStatusChanged(false);
                             break;
                     }
+                    Boolean isDataCorrect = serviceStatus.isUsbDeviceDataCorrect();
+                    boolean isUsbDataCorrect = isDataCorrect == null || isDataCorrect;
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logv(TAG, String.format("ACTION_ON_PING_SERVICE_STATUS, isUsbDataCorrect: %s", isUsbDataCorrect));
+                    }
+                    onUsbHardwareStatusChanged(isUsbDataCorrect);
                 }
+                break;
+            case DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED:
+                boolean isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT);
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED, isUsbDataCorrect: %s", isUsbDataCorrect));
+                }
+                onUsbHardwareStatusChanged(isUsbDataCorrect);
                 break;
         }
     }
@@ -271,6 +284,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
         mBtnOpenDrawer = (ImageView) findViewById(R.id.go_layout_btn_open_drawer);
         mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
+        mIconUsbHardwareStatus = findViewById(R.id.go_layout_ic_hardware_status);
 
         mBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -281,7 +295,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mIconConnectionStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showToast("Network disconnection");
+                DialogUtil.showDialogConnectionError(KikaAlphaUiActivity.this, null);
+            }
+        });
+        mIconUsbHardwareStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogUtil.showDialogUsbHardwareError(KikaAlphaUiActivity.this, null);
             }
         });
     }
@@ -301,8 +321,21 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     }
 
     private void onConnectionStatusChanged(boolean connected) {
-        mIconConnectionStatus.setVisibility(connected ? View.GONE : View.VISIBLE);
+        if (connected) {
+            mIconConnectionStatus.setVisibility(View.GONE);
+        } else {
+            mIconConnectionStatus.setVisibility(View.VISIBLE);
+            mIconUsbHardwareStatus.setVisibility(View.GONE);
+        }
         mUiManager.dispatchConnectionStatusChanged(connected);
+    }
+
+    private void onUsbHardwareStatusChanged(boolean isUsbDataCorrect) {
+        if (isUsbDataCorrect) {
+            mIconUsbHardwareStatus.setVisibility(View.GONE);
+        } else if (mIconConnectionStatus.getVisibility() != View.VISIBLE) {
+            mIconUsbHardwareStatus.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -340,7 +373,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         public void onItemMicClicked() {
             triggerDialogViaClick = true;
             closeDrawer();
-//            updateDrawerContent(mDrawerMainFragment);
             DialogFlowForegroundService.processScanUsbDevices();
         }
 

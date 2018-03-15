@@ -179,6 +179,78 @@ public class DialogUtil {
         mDialog.show();
     }
 
+    public static void showDialogConnectionError(final Context context, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(false);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_connection_status_error, null);
+
+        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    listener.onApply(args);
+                }
+                safeDismissDialog();
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
+    public static void showDialogUsbHardwareError(final Context context, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(false);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_usb_hardware_status_error, null);
+
+        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    listener.onApply(args);
+                }
+                safeDismissDialog();
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
     private static void setDefaultLayout(Window window) {
         try {
             if (window != null) {

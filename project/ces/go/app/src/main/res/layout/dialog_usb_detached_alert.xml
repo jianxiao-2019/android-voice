@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
+        android:paddingBottom="25dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp">
 
@@ -24,65 +25,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="Plug-in KikaGo"
+            android:text="Plug-in KikaGo Smart Mic"
             android:textColor="#575960"
             android:textSize="20dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/ic_dialog_usb_detached_dot_blue"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:text="Make sure your device stay online."
-                android:textColor="#8e94a9"
-                android:textSize="14dp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/ic_dialog_usb_detached_dot_blue"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:text="Connect KikaGO to your mobile phone face-up after installing app"
-                android:textColor="#8e94a9"
-                android:textSize="14dp"/>
-        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="* Adjust kikago faced you to get the proper voice recognition"
-            android:textColor="#3274e6"
-            android:textSize="10dp"/>
+            android:layout_marginTop="15dp"
+            android:text="Connect KikaGo Smart Mic to your phone face-up and adjust the phone faced you to get the proper voice recognition."
+            android:textColor="#8e94a9"
+            android:textSize="14dp"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="25dp"
         android:background="#c4c8d9"/>
 
     <LinearLayout
