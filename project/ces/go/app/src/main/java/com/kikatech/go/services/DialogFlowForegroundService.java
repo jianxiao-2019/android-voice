@@ -753,9 +753,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
                     switch (reason) {
                         case VoiceSourceHelper.ChangedReason.USB_DEVICE_NOT_FOUND:
-                            if (true) {
-                                sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NO_DEVICES));
-                            }
+                            sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NO_DEVICES));
                             if (mIsStarted && mVoiceSourceHelper.getUsbVoiceSource() != null) {
                                 mVoiceSourceHelper.closeUsbVoiceSource();
                                 setupDialogFlowService();
