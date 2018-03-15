@@ -67,13 +67,20 @@ public abstract class DialogFlowVoiceService {
     }
 
     void forceAsrResult() {
+        if (mVoiceService != null) {
+            mVoiceService.pauseAsr();
+        }
         if (mIntermediateMessage != null) {
-            if (mVoiceService != null) {
-                mVoiceService.pauseAsr();
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, String.format("mIntermediateMessage: %s", mIntermediateMessage.text));
             }
             onAsrResult(mIntermediateMessage.text, null, true, null);
             discardCid = mIntermediateMessage.cid;
             mIntermediateMessage = null;
+        } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "mIntermediateMessage: null");
+            }
         }
     }
 
@@ -225,7 +232,7 @@ public abstract class DialogFlowVoiceService {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "[VoiceState] onVadEos");
             }
-            mServiceCallback.onVadEos();
+            mServiceCallback.onVadEos(mIntermediateMessage != null);
         }
 
         @Override

@@ -32,7 +32,7 @@ public interface IDialogFlowService {
 
         void onVadBos();
 
-        void onVadEos();
+        void onVadEos(boolean hasIntermediateResult);
 
         void onASRPause();
 
