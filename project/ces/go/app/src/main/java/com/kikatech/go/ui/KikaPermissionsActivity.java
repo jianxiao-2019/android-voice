@@ -1,7 +1,6 @@
 package com.kikatech.go.ui;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -14,9 +13,9 @@ import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.notification.NotificationListenerUtil;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.services.OobeService;
 import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.DeviceUtil;
+import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.OverlayUtil;
 import com.kikatech.go.util.PermissionUtil;
@@ -52,7 +51,6 @@ public class KikaPermissionsActivity extends BaseActivity {
     private CheckBox mBtnNotificationListener;
     private CheckBox mBtnKikaAllPermission;
 
-    private boolean isServiceOn;
     @PermissionCheckState
     private int mCurrentState = PermissionCheckState.IDLE;
 
@@ -84,7 +82,6 @@ public class KikaPermissionsActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         AsyncThreadPool.getIns().remove(pollingRunnable);
-        OobeService.stopService(KikaPermissionsActivity.this);
     }
 
     private void bindView() {
@@ -164,66 +161,47 @@ public class KikaPermissionsActivity extends BaseActivity {
 
         private void checkPermissions() {
             boolean isAppForeground = KikaMultiDexApplication.isApplicationInForeground();
-
             if (LogUtil.DEBUG) {
                 LogUtil.logd(TAG, String.format("isAppForeground: %s", isAppForeground));
             }
-
-            if (!isServiceOn) {
-                boolean hasPermissionOverlay = DeviceUtil.overM() && OverlayUtil.isPermissionOverlayEnabled(KikaPermissionsActivity.this);
-                if (LogUtil.DEBUG) {
-                    LogUtil.logd(TAG, String.format("Overlay permission: %s", hasPermissionOverlay));
-                }
-                if (hasPermissionOverlay) {
-                    isServiceOn = true;
-                    OobeService.startService(KikaPermissionsActivity.this);
-                }
-            } else {
-                switch (mCurrentState) {
-                    case PermissionCheckState.IDLE:
-                        if (LogUtil.DEBUG) {
-                            LogUtil.logd(TAG, "IDLE");
-                        }
-                        OobeService.hideOobeUi();
-                        break;
-                    case PermissionCheckState.CHECKING_OVERLAY:
-                        boolean hasPermissionOverlay = DeviceUtil.overM() && OverlayUtil.isPermissionOverlayEnabled(KikaPermissionsActivity.this);
-                        if (LogUtil.DEBUG) {
-                            LogUtil.logd(TAG, String.format("Overlay permission: %s", hasPermissionOverlay));
-                        }
-                        if (!isAppForeground && hasPermissionOverlay) {
-                            OobeService.showOobeUi();
-                        } else {
-                            OobeService.hideOobeUi();
-                        }
-                        break;
-                    case PermissionCheckState.CHECKING_ACCESSIBILITY:
-                        boolean hasPermissionAccessibility = AccessibilityUtils.isSettingsOn(KikaPermissionsActivity.this);
-                        if (LogUtil.DEBUG) {
-                            LogUtil.logd(TAG, String.format("Accessibility permission: %s", hasPermissionAccessibility));
-                        }
-                        if (!isAppForeground && hasPermissionAccessibility) {
-                            OobeService.showOobeUi();
-                        } else {
-                            OobeService.hideOobeUi();
-                        }
-                        break;
-                    case PermissionCheckState.CHECKING_NL:
-                        boolean hasPermissionNL = NotificationListenerUtil.isPermissionNLEnabled(KikaPermissionsActivity.this);
-                        if (LogUtil.DEBUG) {
-                            LogUtil.logd(TAG, String.format("NL permission: %s", hasPermissionNL));
-                        }
-                        if (!isAppForeground && hasPermissionNL) {
-                            OobeService.showOobeUi();
-                        } else {
-                            OobeService.hideOobeUi();
-                        }
-                        break;
-                    case PermissionCheckState.DONE:
-                        break;
-                }
+            switch (mCurrentState) {
+                case PermissionCheckState.IDLE:
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logd(TAG, "IDLE");
+                    }
+                    break;
+                case PermissionCheckState.CHECKING_OVERLAY:
+                    boolean hasPermissionOverlay = DeviceUtil.overM() && OverlayUtil.isPermissionOverlayEnabled(KikaPermissionsActivity.this);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logd(TAG, String.format("Overlay permission: %s", hasPermissionOverlay));
+                    }
+                    if (!isAppForeground && hasPermissionOverlay) {
+                        IntentUtil.openPermissionPage(KikaPermissionsActivity.this);
+                    }
+                    break;
+                case PermissionCheckState.CHECKING_ACCESSIBILITY:
+                    boolean hasPermissionAccessibility = AccessibilityUtils.isSettingsOn(KikaPermissionsActivity.this);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logd(TAG, String.format("Accessibility permission: %s", hasPermissionAccessibility));
+                    }
+                    if (!isAppForeground && hasPermissionAccessibility) {
+                        IntentUtil.openPermissionPage(KikaPermissionsActivity.this);
+                    }
+                    break;
+                case PermissionCheckState.CHECKING_NL:
+                    boolean hasPermissionNL = NotificationListenerUtil.isPermissionNLEnabled(KikaPermissionsActivity.this);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logd(TAG, String.format("NL permission: %s", hasPermissionNL));
+                    }
+                    if (!isAppForeground && hasPermissionNL) {
+                        IntentUtil.openPermissionPage(KikaPermissionsActivity.this);
+                    }
+                    break;
+                case PermissionCheckState.DONE:
+                    break;
             }
         }
+//        }
     };
 
     @Override

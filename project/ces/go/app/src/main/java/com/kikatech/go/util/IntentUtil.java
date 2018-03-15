@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.kikatech.go.ui.KikaAlphaUiActivity;
+import com.kikatech.go.ui.KikaPermissionsActivity;
 
 /**
  * @author SkeeterWang Created on 2017/11/29.
@@ -17,6 +18,11 @@ public class IntentUtil {
     public static boolean openKikaGo(Context context) {
         Intent intent = new Intent(context, KikaAlphaUiActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return IntentUtil.sendPendingIntent(context, intent);
+    }
+
+    public static boolean openPermissionPage(Context context) {
+        Intent intent = new Intent(context, KikaPermissionsActivity.class);
         return IntentUtil.sendPendingIntent(context, intent);
     }
 
