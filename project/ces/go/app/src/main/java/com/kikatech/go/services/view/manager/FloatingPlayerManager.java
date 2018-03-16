@@ -236,8 +236,10 @@ public class FloatingPlayerManager extends BaseFloatingManager {
                 }
                 if (mRetryCount > 0) {
                     YouTubeExtractorManager.getIns().loadPlayList(mContext, mClonedList, this);
+                    mRetryCount--;
+                } else {
+                    next();
                 }
-                mRetryCount--;
             }
         });
     }
