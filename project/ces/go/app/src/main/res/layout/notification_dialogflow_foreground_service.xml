@@ -12,10 +12,10 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingBottom="15dp"
+        android:paddingBottom="8dp"
         android:paddingLeft="15.5dp"
         android:paddingRight="13dp"
-        android:paddingTop="15dp">
+        android:paddingTop="8dp">
 
         <ImageView
             android:layout_width="40dp"
@@ -35,7 +35,7 @@
                 android:id="@+id/notification_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="KikaGo is running in the background"
+                android:text="KikaGo is still running"
                 android:textColor="@android:color/black"
                 android:textSize="14.5dp"/>
 
@@ -43,7 +43,7 @@
                 android:id="@+id/video_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap to open KikaGo"
+                android:text="You can say &#034;Hi Kika&#034; to wake up it."
                 android:textColor="#b2000000"
                 android:textSize="13dp"/>
 
