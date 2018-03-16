@@ -307,6 +307,13 @@ public class KikaTtsSource implements TtsSource {
                 if (LogUtil.DEBUG)
                     LogUtil.log(TAG, "fetchTssUrl " + (TextUtils.isEmpty(ttsUrl) ? "Fail" : "OK"));
 
+                if (TextUtils.isEmpty(ttsUrl)) {
+                    if (mListener != null) {
+                        mListener.onTtsError();
+                    }
+                    return;
+                }
+
                 KikaTtsCacheHelper.TaskInfo task = new KikaTtsCacheHelper.TaskInfo(ttsUrl, ttsInfo.jsonString);
                 boolean ret = KikaTtsCacheHelper.downloadWithTask(task);
                 //boolean ret = false;
