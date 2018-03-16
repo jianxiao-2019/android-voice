@@ -74,7 +74,7 @@ public abstract class DialogFlowVoiceService {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, String.format("mIntermediateMessage: %s", mIntermediateMessage.text));
             }
-            onAsrResult(mIntermediateMessage.text, null, true, null);
+            onAsrResult(mIntermediateMessage.text, null, true, new String[]{mIntermediateMessage.text});
             discardCid = mIntermediateMessage.cid;
             mIntermediateMessage = null;
         } else {
