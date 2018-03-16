@@ -40,8 +40,6 @@ import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
-import com.kikatech.go.ui.KikaLaunchActivity;
-import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.IntentUtil;
@@ -49,7 +47,6 @@ import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.StringUtil;
-import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.usb.util.ImageUtil;
@@ -57,6 +54,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.DialogFlowService;
 import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.xiao.usbaudio.AudioPlayBack;
 
@@ -373,28 +371,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onVadBos() {
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "onVadBos");
-                        }
-                        pauseAsr();
-                        mDialogFlowService.talkUncaught();
-                    }
-
-                    @Override
-                    public void onVadEos(boolean hasIntermediateResult) {
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("onVadEos, hasIntermediateResult: %s", hasIntermediateResult));
-                        }
-                        if (hasIntermediateResult) {
-                            mDialogFlowService.forceArsResult();
-                        } else {
-                            pauseAsr();
-                            mDialogFlowService.talkUncaught();
-                        }
-                    }
-
-                    @Override
                     public void onASRPause() {
                         mDFServiceStatus.setAsrEnabled(false);
                         String action = DFServiceEvent.ACTION_ON_ASR_PAUSE;
@@ -453,6 +429,19 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             if (mIsAsrFinished) {
                                 mDbgLogFirstAsrResult = false;
                             }
+                        }
+                    }
+
+                    @Override
+                    public void onError(int reason) {
+                        switch (reason) {
+                            case VoiceService.ERR_NO_SPEECH:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.logw(TAG, "ERR_NO_SPEECH");
+                                }
+                                pauseAsr();
+                                mDialogFlowService.talkUncaught();
+                                break;
                         }
                     }
 

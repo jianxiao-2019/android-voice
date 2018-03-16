@@ -93,14 +93,6 @@ public class KikaDialogFlowActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onVadBos() {
-                    }
-
-                    @Override
-                    public void onVadEos(boolean hasIntermediateResult) {
-                    }
-
-                    @Override
                     public void onASRPause() {
                     }
 
@@ -118,6 +110,10 @@ public class KikaDialogFlowActivity extends BaseActivity {
                                 }
                             });
                         }
+                    }
+
+                    @Override
+                    public void onError(int reason) {
                     }
 
                     @Override
