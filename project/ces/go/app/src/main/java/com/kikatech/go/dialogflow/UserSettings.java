@@ -24,7 +24,7 @@ public class UserSettings {
 
     @IntDef({SETTING_REPLY_MSG_IGNORE, SETTING_REPLY_MSG_READ, SETTING_REPLY_MSG_ASK_USER})
     public @interface ReplyMsgSetting {
-        int DEFAULT = SETTING_REPLY_MSG_READ;
+        int DEFAULT = SETTING_REPLY_MSG_ASK_USER;
     }
 
     public static void saveReplyMsgSetting(String pkgName, @ReplyMsgSetting int setting) {
