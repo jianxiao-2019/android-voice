@@ -15,6 +15,16 @@ public class TextMessage extends Message {
     public String engine;       // asr engine
     public long cid;          // conversation id
 
+    public TextMessage() {
+    }
+
+    public TextMessage(IntermediateMessage intermediateMessage) {
+        this.state = intermediateMessage.state;
+        this.text = new String[]{intermediateMessage.text};
+        this.engine = intermediateMessage.engine;
+        this.cid = intermediateMessage.cid;
+    }
+
     @Override
     protected void parseData(JSONObject dataObj) {
         state = dataObj.optInt("state");

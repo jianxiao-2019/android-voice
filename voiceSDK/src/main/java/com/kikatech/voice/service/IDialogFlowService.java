@@ -30,15 +30,13 @@ public interface IDialogFlowService {
 
         void onSleep();
 
-        void onVadBos();
-
-        void onVadEos(boolean hasIntermediateResult);
-
         void onASRPause();
 
         void onASRResume();
 
         void onASRResult(String speechText, String emojiUnicode, boolean isFinished);
+
+        void onError(int reason);
 
         void onText(String text, Bundle extras);
 
@@ -88,8 +86,6 @@ public interface IDialogFlowService {
     void talkUncaught();
 
     void pauseAsr();
-
-    void forceArsResult();
 
     void resumeAsr(int bosDuration);
 

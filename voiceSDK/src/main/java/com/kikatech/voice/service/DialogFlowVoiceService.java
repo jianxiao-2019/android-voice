@@ -23,12 +23,8 @@ public abstract class DialogFlowVoiceService {
     final Context mContext;
     final IDialogFlowService.IServiceCallback mServiceCallback;
 
-    private IntermediateMessage mIntermediateMessage;
-
     private final AsrConfiguration mAsrConfiguration = new AsrConfiguration.Builder().build();
     VoiceService mVoiceService;
-
-    private long discardCid;
 
     DialogFlowVoiceService(@NonNull Context ctx, @NonNull IDialogFlowService.IServiceCallback callback) {
         mContext = ctx;
@@ -62,24 +58,6 @@ public abstract class DialogFlowVoiceService {
             mVoiceService.updateAsrSettings(mAsrConfiguration);
             if (LogUtil.DEBUG) {
                 mServiceCallback.onAsrConfigChange(mAsrConfiguration);
-            }
-        }
-    }
-
-    void forceAsrResult() {
-        if (mVoiceService != null) {
-            mVoiceService.pauseAsr();
-        }
-        if (mIntermediateMessage != null) {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, String.format("mIntermediateMessage: %s", mIntermediateMessage.text));
-            }
-            onAsrResult(mIntermediateMessage.text, null, true, new String[]{mIntermediateMessage.text});
-            discardCid = mIntermediateMessage.cid;
-            mIntermediateMessage = null;
-        } else {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "mIntermediateMessage: null");
             }
         }
     }
@@ -124,40 +102,25 @@ public abstract class DialogFlowVoiceService {
 
             if (message instanceof IntermediateMessage) {
                 IntermediateMessage intermediateMessage = (IntermediateMessage) message;
-                if (intermediateMessage.cid == discardCid) {
-                    return;
-                }
                 query = intermediateMessage.text;
-                mIntermediateMessage = (IntermediateMessage) message;
             } else if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
-                if (textMessage.cid == discardCid) {
-                    return;
-                }
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
                 }
                 query = textMessage.text[0];
                 nBestQuery = textMessage.text;
                 queryDialogFlow = true;
-                mIntermediateMessage = null;
             } else if (message instanceof EditTextMessage) {
                 EditTextMessage editTextMessage = (EditTextMessage) message;
-                if (editTextMessage.cid == discardCid) {
-                    return;
-                }
                 String alter = editTextMessage.altered;
                 if (LogUtil.DEBUG) {
                     LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
                 }
                 query = alter;
                 queryDialogFlow = true;
-                mIntermediateMessage = null;
             } else if (message instanceof EmojiRecommendMessage) {
                 EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
-                if (emoji.cid == discardCid) {
-                    return;
-                }
                 emojiJson = EmojiUtil.composeJsonString(emoji.emoji, emoji.descriptionText);
                 if (LogUtil.DEBUG) LogUtil.logd(TAG, "EmojiRecommendMessage = " + emojiJson);
             }
@@ -216,23 +179,14 @@ public abstract class DialogFlowVoiceService {
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, "[VoiceState] onError : " + reason);
             }
-            mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT);
-        }
-
-        @Override
-        public void onVadBos() {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "[VoiceState] onVadBos");
+            switch (reason) {
+                case VoiceService.ERR_NO_SPEECH:
+                    mServiceCallback.onError(reason);
+                    break;
+                default:
+                    mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT);
+                    break;
             }
-            mServiceCallback.onVadBos();
-        }
-
-        @Override
-        public void onVadEos() {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "[VoiceState] onVadEos");
-            }
-            mServiceCallback.onVadEos(mIntermediateMessage != null);
         }
 
         @Override
