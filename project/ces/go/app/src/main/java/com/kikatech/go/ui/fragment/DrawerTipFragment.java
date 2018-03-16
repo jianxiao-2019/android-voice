@@ -86,6 +86,7 @@ public class DrawerTipFragment extends Fragment {
         list.add(new Tip("Take me <i>home</i>"));
         list.add(new Tip("Navigate to <i>Starbucks</i>"));
         list.add(new Tip("Find <i>gas stations</i>"));
+        list.add(new Tip("Cancel navigation"));
         list.add(new Tip("<i>More natural commands...</i>"));
         // --------------------------------------------------
         list.add(new TipTitle("Message"));
