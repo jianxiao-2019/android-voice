@@ -6,7 +6,12 @@ package com.kikatech.usb.driver;
 
 public interface UsbAudioDriver {
 
-    boolean open();
+    int RESULT_CONNECTION_FAIL = -2;
+    int RESULT_FAIL = -1;
+    int RESULT_MONO = 1;
+    int RESULT_STEREO = 2;
+
+    int open();
 
     void startRecording();
 

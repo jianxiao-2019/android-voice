@@ -8,6 +8,7 @@ public interface IUsbAudioListener {
 
     int ERROR_NO_DEVICES = 0;
     int ERROR_DRIVER_INIT_FAIL = 1;
+    int ERROR_DRIVER_MONO = 2;
 
     void onDeviceAttached(UsbAudioSource audioSource);
 

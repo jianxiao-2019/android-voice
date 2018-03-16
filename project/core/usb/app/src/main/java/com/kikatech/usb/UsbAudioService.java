@@ -8,6 +8,7 @@ import com.kikatech.usb.driver.impl.KikaAudioDriver;
 import com.kikatech.voice.util.log.Logger;
 
 import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_INIT_FAIL;
+import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_MONO;
 import static com.kikatech.usb.IUsbAudioListener.ERROR_NO_DEVICES;
 
 /**
@@ -66,16 +67,24 @@ public class UsbAudioService {
             }
             mDevice = device;
             UsbAudioDriver driver = new KikaAudioDriver(mContext, mDevice);
-            if (driver.open()) {
+            int openResult = driver.open();
+            if (openResult == UsbAudioDriver.RESULT_STEREO) {
                 mAudioSource = new UsbAudioSource(driver);
                 if (mListener != null) {
                     mListener.onDeviceAttached(mAudioSource);
                 }
             } else {
                 if (mListener != null) {
-                    mListener.onDeviceError(ERROR_DRIVER_INIT_FAIL);
+                    mListener.onDeviceError(getErrorCode(openResult));
                 }
             }
+        }
+
+        private int getErrorCode(int openResult) {
+            if (openResult == UsbAudioDriver.RESULT_MONO) {
+                return ERROR_DRIVER_MONO;
+            }
+            return ERROR_DRIVER_INIT_FAIL;
         }
 
         @Override

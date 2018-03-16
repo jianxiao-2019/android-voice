@@ -13,8 +13,6 @@ import com.xiao.usbaudio.UsbAudio;
 
 public class KikaAudioDriver extends UsbHostDriver {
 
-    private static final int RESULT_STEREO = 2;
-
     private UsbAudio mUsbAudio = new UsbAudio();
     private OnDataListener mOnDataListener;
     public KikaAudioDriver(Context context, UsbDevice device) {
@@ -22,7 +20,7 @@ public class KikaAudioDriver extends UsbHostDriver {
     }
 
     @Override
-    public boolean open() {
+    public int open() {
         if (openConnection()) {
             Logger.d("KikaAudioDriver open openConnection  device name = "+ mDevice.getDeviceName()
                     + " mConnectionFileDes = " + mConnection.getFileDescriptor()
@@ -42,12 +40,11 @@ public class KikaAudioDriver extends UsbHostDriver {
                         mUsbAudio.loop();
                     }
                 }).start();
-                return true;
             }
-            Logger.w("Fail to setup the usb audio device.");
+            return result;
         }
         Logger.w("Fail to connect the usb device.");
-        return false;
+        return RESULT_CONNECTION_FAIL;
     }
 
     @Override
