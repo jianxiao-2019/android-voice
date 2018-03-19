@@ -716,16 +716,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onVadBos() {
-
-    }
-
-    @Override
-    public void onVadEos() {
-
-    }
-
-    @Override
     public void onConnectionClosed() {
     }
 

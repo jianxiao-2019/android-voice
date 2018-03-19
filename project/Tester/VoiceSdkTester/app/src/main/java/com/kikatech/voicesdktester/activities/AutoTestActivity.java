@@ -299,16 +299,6 @@ public class AutoTestActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onVadBos() {
-
-    }
-
-    @Override
-    public void onVadEos() {
-        
-    }
-
-    @Override
     public void onConnectionClosed() {
 
     }

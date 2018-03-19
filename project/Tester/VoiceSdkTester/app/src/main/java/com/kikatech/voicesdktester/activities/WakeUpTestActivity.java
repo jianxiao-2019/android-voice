@@ -212,16 +212,6 @@ public class WakeUpTestActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onVadBos() {
-
-    }
-
-    @Override
-    public void onVadEos() {
-
-    }
-
-    @Override
     public void onConnectionClosed() {
 
     }

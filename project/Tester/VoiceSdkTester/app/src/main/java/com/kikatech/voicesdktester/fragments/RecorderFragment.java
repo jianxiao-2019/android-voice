@@ -353,16 +353,6 @@ public class RecorderFragment extends PageFragment implements
     }
 
     @Override
-    public void onVadBos() {
-
-    }
-
-    @Override
-    public void onVadEos() {
-
-    }
-
-    @Override
     public void onConnectionClosed() {
 
     }
