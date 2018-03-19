@@ -45,15 +45,15 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        KikaMultiDexApplication.onActivityResume(this);
+    protected void onStart() {
+        super.onStart();
+        KikaMultiDexApplication.onActivityStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        KikaMultiDexApplication.onActivityPause(this);
+        KikaMultiDexApplication.onActivityStop(this);
     }
 
     public void startAnotherActivity(Class<?> cls, boolean isFinishSelf) {

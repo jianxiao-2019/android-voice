@@ -1,6 +1,5 @@
 package com.kikatech.go.ui;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
  * Created by brad_chang on 2017/12/8.
  */
 
-public class KikaDebugLogActivity extends Activity {
+public class KikaDebugLogActivity extends BaseActivity {
 
     private static final String LOG_FOLDER = com.kikatech.voice.util.log.LogUtil.LOG_FOLDER;
 

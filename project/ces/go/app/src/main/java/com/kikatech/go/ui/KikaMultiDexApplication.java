@@ -9,7 +9,7 @@ import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
-import com.kikatech.go.services.OobeService;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.LogUtil;
 
 import java.util.Timer;
@@ -60,8 +60,12 @@ public class KikaMultiDexApplication extends MultiDexApplication {
 
     // ---------- Application Background/Foreground Handling ----------
 
-    public static void onActivityResume(Activity activity) {
+    public static void onActivityStart(Activity activity) {
         sActivity = activity;
+
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, activity.getClass().getSimpleName());
+        }
 
         if (wasInBackground) {
             onAppWentForeground();
@@ -70,9 +74,10 @@ public class KikaMultiDexApplication extends MultiDexApplication {
         stopActivityTransitionTimer();
     }
 
-    public static void onActivityPause(Activity activity) {
-        sActivity = activity;
-        startActivityTransitionTimer();
+    public static void onActivityStop(Activity activity) {
+        if (sActivity.getClass().getSimpleName().equals(activity.getClass().getSimpleName())) {
+            startActivityTransitionTimer();
+        }
     }
 
     private static void startActivityTransitionTimer() {
@@ -108,12 +113,14 @@ public class KikaMultiDexApplication extends MultiDexApplication {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "Application went background");
         }
+        DialogFlowForegroundService.processOnAppBackground();
     }
 
     private static void onAppWentForeground() {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "Application went foreground");
         }
+        DialogFlowForegroundService.processOnAppForeground();
     }
 
     public static Activity getCurrentActivity() {

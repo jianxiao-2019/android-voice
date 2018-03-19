@@ -259,19 +259,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        DialogFlowForegroundService.processOnAppForeground();
         DialogFlowForegroundService.processScanUsbDevices();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        DialogFlowForegroundService.processOnAppBackground();
     }
 
     @Override
