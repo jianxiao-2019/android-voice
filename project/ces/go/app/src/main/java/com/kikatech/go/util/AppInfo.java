@@ -20,7 +20,9 @@ public enum AppInfo {
     BETWEEN(AppConstants.PACKAGE_BETWEEN, AppConstants.NAME_BETWEEN, AppConstants.ICON_BETWEEN, AppConstants.SMALL_ICON_BETWEEN),
     PLUS(AppConstants.PACKAGE_PLUS, AppConstants.NAME_PLUS, AppConstants.ICON_PLUS, AppConstants.SMALL_ICON_PLUS),
     WECHAT(AppConstants.PACKAGE_WECHAT, AppConstants.NAME_WECHAT, AppConstants.ICON_WECHAT, AppConstants.SMALL_ICON_WECHAT),
-    SMS(AppConstants.PACKAGE_SMS, AppConstants.NAME_SMS, AppConstants.ICON_SMS, AppConstants.SMALL_ICON_SMS);
+    SMS(AppConstants.PACKAGE_SMS, AppConstants.NAME_SMS, AppConstants.ICON_SMS, AppConstants.SMALL_ICON_SMS),
+
+    PHONE(AppConstants.PACKAGE_PHONE, AppConstants.NAME_PHONE, AppConstants.ICON_PHONE, AppConstants.SMALL_ICON_PHONE);
 
     private final String packageName;
     private final String appName;
@@ -82,6 +84,8 @@ public enum AppInfo {
                 return WECHAT;
             case AppConstants.PACKAGE_SMS:
                 return SMS;
+            case AppConstants.PACKAGE_PHONE:
+                return PHONE;
         }
         return null;
     }

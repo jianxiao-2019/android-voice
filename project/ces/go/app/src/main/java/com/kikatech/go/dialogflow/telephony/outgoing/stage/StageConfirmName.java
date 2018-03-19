@@ -1,12 +1,17 @@
 package com.kikatech.go.dialogflow.telephony.outgoing.stage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.model.ContactOptionList;
+import com.kikatech.go.dialogflow.model.Option;
+import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneActions;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -59,13 +64,23 @@ public class StageConfirmName extends StageOutgoing {
 
     @Override
     public void action() {
-        String[] uiAndTtsText = SceneUtil.getConfirmContact(mSceneBase.getContext(), mContact.displayName);
+        Context context = mSceneBase.getContext();
+        String[] uiAndTtsText = SceneUtil.getConfirmContact(context, mContact.displayName);
         if (uiAndTtsText.length > 0) {
+            String[] options = SceneUtil.getOptionsCommon(context);
+            requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
-            TtsText tText = new TtsText(SceneUtil.ICON_TELEPHONY, uiText);
+            ContactOptionList contactOptionList = new ContactOptionList(OptionList.REQUEST_TYPE_TEXT);
+            contactOptionList.setTitle(uiText);
+            contactOptionList.setAvatar(mContact.photoUri);
+            contactOptionList.setAppInfo(AppInfo.PHONE);
+            contactOptionList.setIconRes(SceneUtil.ICON_MSG);
+            for (String option : options) {
+                contactOptionList.add(new Option(option));
+            }
             Bundle args = new Bundle();
-            args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
+            args.putParcelable(SceneUtil.EXTRA_CONTACT_OPTIONS_LIST, contactOptionList);
             speak(ttsText, args);
         }
     }

@@ -1,6 +1,7 @@
 package com.kikatech.go.util;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.SceneUtil;
 
 /**
  * @author jasonli Created on 2017/10/19.
@@ -23,6 +24,7 @@ public class AppConstants {
     public static final String PACKAGE_BETWEEN = "kr.co.vcnc.android.couple";
     public static final String PACKAGE_PLUS = "org.telegram.plus";
     public static final String PACKAGE_SMS = "com.google.android.apps.messaging";    // not used
+    public static final String PACKAGE_PHONE = "phone"; // not used
 
     public static final String NAME_WECHAT = "WeChat";
     public static final String NAME_LINE = "LINE";
@@ -39,6 +41,7 @@ public class AppConstants {
     public static final String NAME_BETWEEN = "Between";
     public static final String NAME_PLUS = "Plus";
     public static final String NAME_SMS = "SMS";
+    public static final String NAME_PHONE = "Phone"; // not used
 
     public static final int ICON_WECHAT = R.drawable.st_im_wechat;
     public static final int ICON_LINE = R.drawable.st_im_line;
@@ -55,6 +58,7 @@ public class AppConstants {
     public static final int ICON_BETWEEN = R.drawable.st_im_between;
     public static final int ICON_PLUS = R.drawable.st_im_plus_messenger;
     public static final int ICON_SMS = R.drawable.st_icon_sms;
+    public static final int ICON_PHONE = SceneUtil.ICON_TELEPHONY;
 
     public static final int SMALL_ICON_WECHAT = R.drawable.st_icon_wechat_small;
     public static final int SMALL_ICON_LINE = R.drawable.st_im_line_smal;
@@ -71,4 +75,5 @@ public class AppConstants {
     public static final int SMALL_ICON_BETWEEN = R.drawable.st_im_between_smal;
     public static final int SMALL_ICON_PLUS = R.drawable.st_im_plus_messenger_smal;
     public static final int SMALL_ICON_SMS = R.drawable.st_icon_sms_small;
+    public static final int SMALL_ICON_PHONE = SceneUtil.ICON_TELEPHONY;
 }
