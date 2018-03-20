@@ -99,4 +99,9 @@ public class KikaNcBuffer extends KikaBuffer {
     public static int getNoiseSuppressionParameters(int mode) {
         return NoiseCancellation.GetControl(mode);
     }
+
+    public static int getVersion() {
+        return NoiseCancellation.GetVersion();
+    }
+
 }
