@@ -59,11 +59,17 @@ public class MainActivity extends AppCompatActivity implements
     private static final boolean IS_WAKE_UP_MODE = false;
     private static final String DEBUG_FILE_TAG = "voiceTester";
 
-    public static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev-mvp.kikakeyboard.com/v3/speech";
-
     private static final Locale[] LOCALE_LIST = new Locale[]{
             new Locale("en", "US"),
             new Locale("zh", "CN"),
+    };
+
+    private static final String[] mServerList = {
+            VoiceConfiguration.HostUrl.DEV_MVP,
+            VoiceConfiguration.HostUrl.DEV_JINCHENG,
+            VoiceConfiguration.HostUrl.DEV_HAO,
+            VoiceConfiguration.HostUrl.DEV_KIKA,
+            VoiceConfiguration.HostUrl.KIKA_GO,
     };
 
     private Button mPermissionButton;
@@ -252,13 +258,14 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onClick(View v) {
+                int checkedItem = findCheckedServer(PreferenceUtil.getString(MainActivity.this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.DEV_MVP));
                 new AlertDialog.Builder(MainActivity.this)
-                        .setSingleChoiceItems(R.array.hosts, 0, new DialogInterface.OnClickListener() {
+                        .setSingleChoiceItems(mServerList, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 PreferenceUtil.setString(MainActivity.this,
                                         PreferenceUtil.KEY_SERVER_LOCATION,
-                                        getResources().getStringArray(R.array.hosts)[which]);
+                                        mServerList[which]);
                                 dialog.dismiss();
 
                                 updateServerButtonText();
@@ -498,6 +505,15 @@ public class MainActivity extends AppCompatActivity implements
         mStopButton.setEnabled(false);
     }
 
+    private int findCheckedServer(String url) {
+        for (int i = 0; i < mServerList.length; i++) {
+            if (mServerList[i].equals(url)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     private void updatePermissionButtonState() {
         if (mPermissionButton == null) {
             return;
@@ -560,7 +576,7 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
-        String server = PreferenceUtil.getString(this, PreferenceUtil.KEY_SERVER_LOCATION, WEB_SOCKET_URL_DEV);
+        String server = PreferenceUtil.getString(this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.DEV_MVP);
         mCurServerButton.setText("Now is : " + server);
     }
 
@@ -590,7 +606,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setUrl(PreferenceUtil.getString(
                         MainActivity.this,
                         PreferenceUtil.KEY_SERVER_LOCATION,
-                        WEB_SOCKET_URL_DEV))
+                        VoiceConfiguration.HostUrl.DEV_MVP))
                 .setLocale(getCurrentLocale())
                 .setSign(RequestManager.getSign(this))
                 .setUserAgent(RequestManager.generateUserAgent(this))

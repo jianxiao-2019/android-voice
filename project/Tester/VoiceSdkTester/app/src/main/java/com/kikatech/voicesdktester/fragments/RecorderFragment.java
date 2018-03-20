@@ -51,8 +51,6 @@ public class RecorderFragment extends PageFragment implements
 
     private static final String DEBUG_FILE_TAG = "voiceTesterUi";
 
-    public static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev.kikakeyboard.com/v3/speech";
-
     private View mStartRecordView;
     private View mStopRecordView;
     private TextView mRecordingTimerText;
@@ -229,7 +227,7 @@ public class RecorderFragment extends PageFragment implements
         conf.source(mUsbAudioSource);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
-                .setUrl(WEB_SOCKET_URL_DEV)
+                .setUrl(VoiceConfiguration.HostUrl.DEV_KIKA)
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(getActivity()))
                 .setUserAgent(RequestManager.generateUserAgent(getActivity()))

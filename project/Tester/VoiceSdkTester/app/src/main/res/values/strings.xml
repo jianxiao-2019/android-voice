@@ -3,13 +3,6 @@
 
     <string name="cid_text">cid : %d</string>
 
-    <string-array name="hosts">
-        <item name="mvp_dev">ws://speech0-dev-mvp.kikakeyboard.com/v3/speech</item>
-        <item name="jincheng_dev">ws://speech0-poc.kikakeyboard.com/v3/speech</item>
-        <item name="hao_dev">ws://speech.orctom.com:8080/v3/speech</item>
-        <item name="kika_dev">ws://speech0-dev.kikakeyboard.com/v3/speech</item>
-    </string-array>
-
     <string name="tab_title_record">Record</string>
     <string name="tab_title_player">Result</string>
 
