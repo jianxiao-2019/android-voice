@@ -138,7 +138,6 @@ public class DebugUtil {
     }
 
     private static boolean addWavHeader(String debugFilePath) {
-        // TODO : convert at the other thread.
         Logger.i("-----addWavHeader mDebugFileName = " + debugFilePath);
         if (TextUtils.isEmpty(debugFilePath)) {
             return false;

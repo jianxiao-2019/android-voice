@@ -13,28 +13,38 @@ import java.io.IOException;
 
 public class WavHeaderHelper {
 
+    private static final int READ_SIZE = 1024;
+
+    private static final int SAMPLE_RATE = 16000;
+    private static final int BITS_PRE_SAMPLE = 16;
+
     public static void addWavHeader(File file, boolean isMono) {
+        if (file == null) {
+            return;
+        }
+
         try {
-            byte[] bytesArray = new byte[(int) file.length()];
+            long pcmSize = file.length();
             FileInputStream fis = new FileInputStream(file);
-            int readSize = fis.read(bytesArray); //read file into bytes[]
-            Logger.d("addWavHeader readSize = " + readSize);
-            fis.close();
+            byte[] bytesArray = new byte[READ_SIZE];
 
             FileOutputStream fos = new FileOutputStream(file.getPath() + ".wav");
-            fos.write(addHeader(bytesArray, 16000, 16, isMono ? 1 : 2));
+            fos.write(getHeader(pcmSize, SAMPLE_RATE, BITS_PRE_SAMPLE, isMono ? 1 : 2));
+            int readSize;
+            while ((readSize = fis.read(bytesArray, 0, bytesArray.length)) > 0) {
+                fos.write(bytesArray, 0, readSize);
+            }
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static byte[] addHeader(byte[] pcm, int sampleRate, int bitsPerSample, int channel) {
+    private static byte[] getHeader(long dataLen, int sampleRate, int bitsPerSample, int channel) {
         byte[] header = new byte[44];
 
-        long totalDataLen = pcm.length + 36;
+        long totalDataLen = dataLen + 36;
         long bitrate = sampleRate * channel * bitsPerSample;
-        long dataLen = pcm.length;
 
         header[0] = 'R';
         header[1] = 'I';
@@ -81,10 +91,6 @@ public class WavHeaderHelper {
         header[42] = (byte) ((dataLen >> 16) & 0xff);
         header[43] = (byte) ((dataLen >> 24) & 0xff);
 
-        byte[] result = new byte[header.length + pcm.length];
-        System.arraycopy(header, 0, result, 0, header.length);
-        System.arraycopy(pcm, 0, result, header.length, pcm.length);
-
-        return result;
+        return header;
     }
 }
