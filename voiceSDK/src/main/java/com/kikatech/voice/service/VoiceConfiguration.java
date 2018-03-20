@@ -19,6 +19,7 @@ public class VoiceConfiguration {
         public static final String DEV_JINCHENG = "ws://speech0-poc.kikakeyboard.com/v3/speech";
         public static final String DEV_HAO = "ws://speech.orctom.com:8080/v3/speech";
         public static final String DEV_KIKA = "ws://speech0-dev.kikakeyboard.com/v3/speech";
+        public static final String KIKA_GO = "ws://kikago.kikakeyboard.com/v3/speech";
     }
 
     private static final String DEFAULT_ENGINE = "google";
