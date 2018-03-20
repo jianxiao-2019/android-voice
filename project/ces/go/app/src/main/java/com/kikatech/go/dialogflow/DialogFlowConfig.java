@@ -19,7 +19,7 @@ public class DialogFlowConfig {
     private static final int EOS_DURATION = 3000;
 
     public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
-        String WEB_SOCKET_URL_DEV = VoiceConfiguration.HostUrl.DEV_KIKA;
+        String WEB_SOCKET_URL_DEV = VoiceConfiguration.HostUrl.KIKA_GO;
 
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
