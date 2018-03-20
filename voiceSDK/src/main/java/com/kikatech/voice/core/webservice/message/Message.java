@@ -28,7 +28,7 @@ public abstract class Message {
     public void fromJson(JSONObject json) {
         String data = json.optString("data");
         Logger.d("123 Message fromJson data = " + data);
-        if (!TextUtils.isEmpty(data)) {
+        if (!TextUtils.isEmpty(data) && !"null".equals(data)) {
             try {
                 parseData(new JSONObject(data));
             } catch (JSONException e) {
