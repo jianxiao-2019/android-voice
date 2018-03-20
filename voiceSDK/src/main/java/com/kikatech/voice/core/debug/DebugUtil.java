@@ -155,8 +155,13 @@ public class DebugUtil {
         }
 
         Logger.d("addWavHeader folder = " + folder.getPath());
+        File[] files = folder.listFiles();
+        if (files == null) {
+            return false;
+        }
+
         boolean isConverted = false;
-        for (final File file : folder.listFiles()) {
+        for (final File file : files) {
             if (file.isDirectory() || file.getName().contains("wav") || file.getName().contains("txt")) {
                 continue;
             }
