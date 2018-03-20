@@ -14,6 +14,7 @@ import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.EosMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
@@ -56,6 +57,11 @@ public class RecorderFragment extends PageFragment implements
     private static final int MSG_TIMER = 0;
     private long mTimeInSec = 0;
 
+    private long mServerEosTime;
+    private long mEndOfSpeechTime;
+    private float mPreProb;
+    private long receiveFirstResultTime = -1;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,6 +75,7 @@ public class RecorderFragment extends PageFragment implements
         Message.register("INTERMEDIATE", IntermediateMessage.class);
         Message.register("ALTER", EditTextMessage.class);
         Message.register("ASR", TextMessage.class);
+        Message.register("EOS", EosMessage.class);
 
         mStartRecordView = view.findViewById(R.id.start_record);
         mStartRecordView.setOnClickListener(this);
@@ -197,12 +204,27 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onRecognitionResult(Message message) {
         if (message instanceof TextMessage) {
-            mIntermediateView.setText("");
-
             mResultStr.append("\n").append(((TextMessage) message).text[0]);
             mResultsView.setText(mResultStr.toString());
+
+            long end = System.currentTimeMillis();
+            mIntermediateView.setText("Requite " + (end - mEndOfSpeechTime) + "ms");
+
+            Logger.i("5566 First result to final result = " + (end - receiveFirstResultTime) + "ms");
+            Logger.w("5566 Server Eos   to final result = " + (end - mServerEosTime) + "ms");
+            Logger.e("5566 local  Eos   to final result = " + (end - mEndOfSpeechTime) + "ms");
+            receiveFirstResultTime = -1;
         } else if (message instanceof IntermediateMessage) {
             mIntermediateView.setText(((IntermediateMessage) message).text);
+            if (receiveFirstResultTime == -1) {
+                receiveFirstResultTime = System.currentTimeMillis();
+            } else {
+                Logger.i("5566 Intermediate result [" + ((IntermediateMessage) message).text + "] duration = " + (System.currentTimeMillis() - receiveFirstResultTime));
+            }
+        } else if (message instanceof EosMessage) {
+            mServerEosTime = System.currentTimeMillis();
+            Logger.d("5566 Receive Eos message");
+            Logger.i("5566 First result to Eos message = " + (System.currentTimeMillis() - receiveFirstResultTime));
         }
     }
 
@@ -238,8 +260,6 @@ public class RecorderFragment extends PageFragment implements
 
         mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
-
-        mIntermediateView.setText("");
     }
 
     @Override
@@ -253,22 +273,18 @@ public class RecorderFragment extends PageFragment implements
     }
 
     @Override
-    public void onVadBos() {
-
-    }
-
-    @Override
-    public void onVadEos() {
-
-    }
-
-    @Override
     public void onConnectionClosed() {
 
     }
 
     @Override
     public void onSpeechProbabilityChanged(float prob) {
+        Logger.d("55667 onSpeechProbabilityChanged prob = " + prob);
+        if (mPreProb > 0.8 && prob == 0) {
+            mEndOfSpeechTime = System.currentTimeMillis();
+        }
+
+        mPreProb = prob;
     }
 
     @Override
