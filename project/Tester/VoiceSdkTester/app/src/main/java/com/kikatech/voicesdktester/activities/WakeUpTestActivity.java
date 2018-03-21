@@ -1,5 +1,6 @@
 package com.kikatech.voicesdktester.activities;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -30,7 +31,9 @@ import com.xiao.usbaudio.AudioPlayBack;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ryanlin on 03/01/2018.
@@ -58,6 +61,10 @@ public class WakeUpTestActivity extends AppCompatActivity implements
     private RecyclerView mFileRecyclerView;
     private FileAdapter mFileAdapter;
 
+    private boolean mIsUsingNc = true;
+
+    private Map<String,Boolean> mWakeUpResult = new HashMap<String, Boolean>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,34 +74,35 @@ public class WakeUpTestActivity extends AppCompatActivity implements
         mResultText = (TextView) findViewById(R.id.result_text);
 
         mStartButton = (Button) findViewById(R.id.button_start);
-        mStartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVoiceService != null) {
-                    mVoiceService.start();
-                }
+        mStartButton.setOnClickListener(v -> {
+            if (mVoiceService != null) {
+                mVoiceService.start();
             }
         });
 
-        findViewById(R.id.button_source_usb).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUsbAudioService = UsbAudioService.getInstance(WakeUpTestActivity.this);
-                mUsbAudioService.setListener(mIUsbAudioListener);
-                mUsbAudioService.scanDevices();
+        findViewById(R.id.button_source_usb).setOnClickListener(v -> {
+            mTextView.setText("Preparing...");
+            mIsUsingNc = true;
 
-                mTextView.setText("Preparing...");
-            }
+            mUsbAudioService = UsbAudioService.getInstance(WakeUpTestActivity.this);
+            mUsbAudioService.setListener(mIUsbAudioListener);
+            mUsbAudioService.scanDevices();
         });
 
-        findViewById(R.id.button_source_android).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUsbAudioSource = null;
-                attachService();
+        findViewById(R.id.button_source_usb_no_nc).setOnClickListener(v -> {
+            mTextView.setText("Preparing...");
+            mIsUsingNc = false;
 
-                mTextView.setText("Preparing...");
-            }
+            mUsbAudioService = UsbAudioService.getInstance(WakeUpTestActivity.this);
+            mUsbAudioService.setListener(mIUsbAudioListener);
+            mUsbAudioService.scanDevices();
+        });
+
+        findViewById(R.id.button_source_android).setOnClickListener(v -> {
+            mTextView.setText("Preparing...");
+
+            mUsbAudioSource = null;
+            attachService();
         });
 
         mFileRecyclerView = (RecyclerView) findViewById(R.id.files_recycler);
@@ -172,7 +180,7 @@ public class WakeUpTestActivity extends AppCompatActivity implements
         mVoiceService.setVoiceActiveStateListener(this);
         mVoiceService.create();
 
-        mHandler.post(() -> mTextView.setText(mUsbAudioSource == null ? "Using Android" : "Using KikaGO"));
+        mHandler.post(() -> mTextView.setText(mUsbAudioSource == null ? "Using Android" : mIsUsingNc ? "Using KikaGO No NC" : "Using KikaGO with NC"));
     }
 
     @Override
@@ -224,13 +232,35 @@ public class WakeUpTestActivity extends AppCompatActivity implements
     @Override
     public void onWakeUp() {
         Logger.d("onWakeUp");
+        if (mUsbAudioSource != null) {
+            renameSuccessFile("_USB");
+            renameSuccessFile("_COMMAND");
+        }
+        if (mUsbAudioSource != null) {
+            renameSuccessFile("_SRC");
+            renameSuccessFile("_COMMAND");
+        }
         mVoiceService.stop();
         mVoiceService.sleep();
         mTextView.setText("");
         mResultText.setText("SUCCESS!");
+        mResultText.setTextColor(Color.GREEN);
 
         mHandler.removeMessages(MSG_WAKE_UP_BOS);
         scanFiles();
+    }
+
+    private void renameSuccessFile(String pattern) {
+        String path = DebugUtil.getDebugFilePath();
+        Logger.i("renameSuccessFile path = " + path);
+        File oldFile = new File(path + pattern);
+        Logger.i("renameSuccessFile oldFile = " + oldFile);
+        File newFile = new File(path + "_s" + pattern);
+        Logger.i("renameSuccessFile newFile = " + newFile);
+
+        if (oldFile.exists() && !newFile.exists()) {
+            oldFile.renameTo(newFile);
+        }
     }
 
     @Override
@@ -247,6 +277,7 @@ public class WakeUpTestActivity extends AppCompatActivity implements
                 mVoiceService.stop();
                 mTextView.setText("-end-");
                 mResultText.setText("Fail!");
+                mResultText.setTextColor(Color.RED);
                 scanFiles();
             }
         }
@@ -263,24 +294,21 @@ public class WakeUpTestActivity extends AppCompatActivity implements
             return;
         }
 
-        List<String> fileNames = new ArrayList<>();
+        List<File> fileNames = new ArrayList<>();
         for (final File file : folder.listFiles()) {
             if (file.isDirectory()
                     || (!file.getName().contains("USB") && !file.getName().contains("COMMAND"))
                     || file.getName().contains("wav")) {
                 continue;
             }
-            fileNames.add(file.getName());
-
-            Collections.sort(fileNames);
-            Collections.reverse(fileNames);
+            fileNames.add(file);
         }
 
         if (mFileAdapter == null) {
             mFileAdapter = new FileAdapter(path, fileNames);
             mFileRecyclerView.setAdapter(mFileAdapter);
         } else {
-            mFileAdapter.updateContent(path, fileNames);
+            mFileAdapter.updateContent(fileNames);
             mFileAdapter.notifyDataSetChanged();
         }
     }
@@ -289,16 +317,11 @@ public class WakeUpTestActivity extends AppCompatActivity implements
 
         @Override
         public void onDeviceAttached(UsbAudioSource audioSource) {
-            Logger.d("onDeviceAttached.");
+            Logger.d("onDeviceAttached. mIsUsingNc = " + mIsUsingNc);
             mUsbAudioSource = audioSource;
-            mUsbAudioSource.setKikaBuffer(KikaBuffer.TYPE_STEREO_TO_MONO);
+            mUsbAudioSource.setKikaBuffer(mIsUsingNc ? KikaBuffer.TYPE_NOISC_CANCELLATION : KikaBuffer.TYPE_STEREO_TO_MONO);
+
             attachService();
-
-            if (mUsbAudioSource == null) {
-                return;
-            }
-
-            mTextView.setText("Using Usb source");
         }
 
         @Override
@@ -312,7 +335,6 @@ public class WakeUpTestActivity extends AppCompatActivity implements
         public void onDeviceError(int errorCode) {
             mUsbAudioSource = null;
             attachService();
-
         }
     };
 

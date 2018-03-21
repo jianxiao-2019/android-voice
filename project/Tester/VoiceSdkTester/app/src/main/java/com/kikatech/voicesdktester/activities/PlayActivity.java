@@ -37,8 +37,8 @@ public class PlayActivity extends AppCompatActivity {
 //        recyclerViewLocal.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private List<String> scanAvailableFile(String path) {
-        List<String> fileNames = new ArrayList<>();
+    private List<File> scanAvailableFile(String path) {
+        List<File> fileNames = new ArrayList<>();
 
         File folder = new File(path);
         if (!folder.exists() || !folder.isDirectory()) {
@@ -52,10 +52,8 @@ public class PlayActivity extends AppCompatActivity {
                     || file.getName().contains("txt")) {
                 continue;
             }
-            fileNames.add(file.getName());
+            fileNames.add(file);
         }
-        Collections.sort(fileNames);
-        Collections.reverse(fileNames);
         return fileNames;
     }
 }

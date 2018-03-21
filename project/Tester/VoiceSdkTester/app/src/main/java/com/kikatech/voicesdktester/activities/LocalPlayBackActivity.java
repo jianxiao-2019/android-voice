@@ -120,23 +120,21 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             return;
         }
 
-        List<String> fileNames = new ArrayList<>();
+        List<File> fileNames = new ArrayList<>();
         for (final File file : folder.listFiles()) {
             if (file.isDirectory()
                     || !file.getName().contains("USB")
                     || file.getName().contains("wav")) {
                 continue;
             }
-            fileNames.add(file.getName());
-
-            Collections.sort(fileNames);
-            Collections.reverse(fileNames);
+            fileNames.add(file);
         }
 
         if (mFileAdapter == null) {
             mFileAdapter = new FileAdapter(path, fileNames);
             mFileAdapter.setOnItemCheckedListener(this);
         } else {
+            mFileAdapter.updateContent(fileNames);
             mFileAdapter.notifyDataSetChanged();
         }
         mFileRecyclerView.setAdapter(mFileAdapter);

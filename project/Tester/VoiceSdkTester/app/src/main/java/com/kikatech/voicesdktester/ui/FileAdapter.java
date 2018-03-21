@@ -1,5 +1,6 @@
 package com.kikatech.voicesdktester.ui;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,9 @@ import android.widget.CompoundButton;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -20,7 +24,7 @@ import java.util.List;
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
     private CheckBox lastChecked = null;
-    private final List<String> mFileNames;
+    private final List<File> mFiles;
     private final String mFilePath;
 
     private OnItemCheckedListener mListener = null;
@@ -30,14 +34,29 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         void onNothingChecked();
     }
 
-    public FileAdapter(String filePath, List<String> fileNames) {
+    public FileAdapter(String filePath, List<File> fileNames) {
         mFilePath = filePath;
-        mFileNames = fileNames;
+        mFiles = fileNames;
+
+        sortFiles();
     }
 
-    public void updateContent(String filePath, List<String> fileNames) {
-        mFileNames.clear();
-        mFileNames.addAll(fileNames);
+    public void updateContent(List<File> fileNames) {
+        mFiles.clear();
+        mFiles.addAll(fileNames);
+
+        sortFiles();
+    }
+
+    private void sortFiles() {
+        if (mFiles != null) {
+            Collections.sort(mFiles, new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    return (int) (o2.lastModified() - o1.lastModified());
+                }
+            });
+        }
     }
 
     @Override
@@ -49,7 +68,9 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     @Override
     public void onBindViewHolder(FileViewHolder holder, int position) {
-        holder.checkBox.setText(mFileNames.get(position));
+        String fileName = mFiles.get(position).getName();
+        holder.checkBox.setText(fileName);
+        holder.checkBox.setTextColor(fileName.contains("_s") ? Color.GREEN : Color.LTGRAY);
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -69,20 +90,20 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                 }
             }
         });
-        holder.playButton.setOnClickListener(new PlayButtonClickListener(mFilePath + mFileNames.get(position)));
+        holder.playButton.setOnClickListener(new PlayButtonClickListener(mFiles.get(position).getPath()));
     }
 
     @Override
     public int getItemCount() {
-        return mFileNames.size();
+        return mFiles.size();
     }
 
-    public class FileViewHolder extends RecyclerView.ViewHolder {
+    class FileViewHolder extends RecyclerView.ViewHolder {
 
         Button playButton;
         CheckBox checkBox;
 
-        public FileViewHolder(View itemView) {
+        FileViewHolder(View itemView) {
             super(itemView);
             playButton = (Button) itemView.findViewById(R.id.button_play);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
@@ -94,7 +115,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         private String mFilePath;
         private AudioPlayerTask mTask;
 
-        public PlayButtonClickListener(String filePath) {
+        PlayButtonClickListener(String filePath) {
             mFilePath = filePath;
         }
 
