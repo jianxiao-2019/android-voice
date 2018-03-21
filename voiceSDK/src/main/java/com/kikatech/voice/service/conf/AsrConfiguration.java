@@ -8,32 +8,41 @@ import com.google.gson.Gson;
 
 public class AsrConfiguration {
 
+    public interface SupportedLanguage {
+        String EN_US = "en_US";
+        String ZH_TW = "zh_TW";
+    }
+
     private boolean spellingEnabled;
     private boolean alterEnabled;
     private boolean emojiEnabled;
     private boolean punctuationEnabled;
     private boolean vprEnabled;
     private int eosPackets;
+    private String locale;
 
     private AsrConfiguration(boolean spellingEnabled, boolean alterEnabled,
-                             boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
+                             boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled,
+                             int eosPackets, String locale) {
         setConfig(spellingEnabled, alterEnabled,
-                emojiEnable, punctuationEnabled, vprEnabled, eosPackets);
+                emojiEnable, punctuationEnabled, vprEnabled, eosPackets, locale);
     }
 
     public void copyConfig(AsrConfiguration conf) {
         setConfig(conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled,
-                conf.punctuationEnabled, conf.vprEnabled, conf.eosPackets);
+                conf.punctuationEnabled, conf.vprEnabled, conf.eosPackets, conf.locale);
     }
 
     private void setConfig(boolean spellingEnabled, boolean alterEnabled,
-                           boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled, int eosPackets) {
+                           boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled,
+                           int eosPackets, String locale) {
         this.spellingEnabled = spellingEnabled;
         this.alterEnabled = alterEnabled;
         this.emojiEnabled = emojiEnable;
         this.punctuationEnabled = punctuationEnabled;
         this.vprEnabled = vprEnabled;
         this.eosPackets = eosPackets;
+        this.locale = locale;
     }
 
     private boolean sameValue(AsrConfiguration asrConfig) {
@@ -42,7 +51,8 @@ public class AsrConfiguration {
                 punctuationEnabled == asrConfig.punctuationEnabled &&
                 spellingEnabled == asrConfig.spellingEnabled &&
                 vprEnabled == asrConfig.vprEnabled &&
-                eosPackets == asrConfig.eosPackets;
+                eosPackets == asrConfig.eosPackets &&
+                locale.equals(asrConfig.locale);
     }
 
     public void setSpellingEnabled(boolean spellingEnabled) {
@@ -93,6 +103,10 @@ public class AsrConfiguration {
         return this.punctuationEnabled;
     }
 
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
     public String toJsonString() {
         Gson gson = new Gson();
         return gson.toJson(this);
@@ -114,6 +128,7 @@ public class AsrConfiguration {
         private boolean punctuationEnabled = false;
         private boolean vprEnabled = false;
         private int eosPackets = 3;
+        private String locale = SupportedLanguage.EN_US;
 
         public Builder setSpellingEnabled(boolean spellingEnabled) {
             this.spellingEnabled = spellingEnabled;
@@ -145,8 +160,14 @@ public class AsrConfiguration {
             return this;
         }
 
+        public Builder setLocale(String locale) {
+            this.locale = locale;
+            return this;
+        }
+
         public AsrConfiguration build() {
-            return new AsrConfiguration(spellingEnabled, alterEnabled, emojiEnabled, punctuationEnabled, vprEnabled, eosPackets);
+            return new AsrConfiguration(spellingEnabled, alterEnabled, emojiEnabled,
+                    punctuationEnabled, vprEnabled, eosPackets, locale);
         }
     }
 }
