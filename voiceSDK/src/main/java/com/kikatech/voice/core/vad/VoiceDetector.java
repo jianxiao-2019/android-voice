@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VoiceDetector extends IDataPath {
 
-    private static final int DEFAULT_FRAME_LENGTH = 6400;
+    private static final int DEFAULT_FRAME_LENGTH = 1920;
 
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mStopped = new AtomicBoolean(false);
