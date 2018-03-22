@@ -72,6 +72,19 @@ public class MainActivity extends AppCompatActivity implements
             VoiceConfiguration.HostUrl.KIKA_GO,
     };
 
+    private static final String[] VOLUME_TABLE = new String[] {
+            "error",
+            "-16.5",// level 1
+            "-6.5", // level 2
+            "0",    // level 3
+            "5",    // level 4
+            "10",   // level 5
+            "15",   // level 6
+            "20",   // level 7
+            "25",   // level 8
+            "30",   // level 9
+    };
+
     private Button mPermissionButton;
 
     private Button mStartButton;
@@ -461,9 +474,8 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mUsbAudioSource != null) {
                     int volume = mUsbAudioSource.volumeUp();
-                    Logger.d("button_volume_up volume = " + volume);
                     if (mTextView != null) {
-                        mTextView.setText("volume : " + volume);
+                        mTextView.setText("volume : " + VOLUME_TABLE[volume]);
                     }
                 }
             }
@@ -474,9 +486,8 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mUsbAudioSource != null) {
                     int volume = mUsbAudioSource.volumeDown();
-                    Logger.d("button_volume_down volume = " + volume);
                     if (mTextView != null) {
-                        mTextView.setText("volume : " + volume);
+                        mTextView.setText("volume : " + VOLUME_TABLE[volume]);
                     }
                 }
             }
@@ -487,9 +498,8 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mUsbAudioSource != null) {
                     int volume = mUsbAudioSource.checkVolumeState();
-                    Logger.d("button_check_volume volume = " + volume);
                     if (mTextView != null) {
-                        mTextView.setText("volume : " + volume);
+                        mTextView.setText("volume : " + VOLUME_TABLE[volume]);
                     }
                 }
             }
@@ -774,11 +784,13 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onWakeUp() {
         Logger.d("Tts onWakeUp");
+        mTextView.setText("Waking up!");
     }
 
     @Override
     public void onSleep() {
         Logger.d("Tts onSleep");
+        mTextView.setText("Sleeping!");
     }
 
     private IUsbAudioListener mIUsbAudioListener = new IUsbAudioListener() {
