@@ -4,10 +4,10 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.google.gson.JsonElement;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.TimeUtil;
 import com.kikatech.voice.core.dialogflow.Agent;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.util.log.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;

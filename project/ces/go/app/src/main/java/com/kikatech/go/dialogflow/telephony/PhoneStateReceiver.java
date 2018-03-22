@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 
-import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.go.util.LogUtil;
 
 /**
  * @author SkeeterWang Created on 2017/10/16.
