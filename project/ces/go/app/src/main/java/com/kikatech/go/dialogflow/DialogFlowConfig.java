@@ -31,6 +31,7 @@ public class DialogFlowConfig {
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
                 .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))
                 .build());
+        conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
         conf.setBosDuration(BOS_DURATION);
         conf.setEosDuration(EOS_DURATION);
         conf.setSupportWakeUpMode(true);
