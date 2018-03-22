@@ -121,6 +121,11 @@
         <item>"%s is calling. Answer, reject or ignore."</item>
     </string-array>
 
+    <string name="ui_ask_song">"What's the song?"</string>
+    <string-array name="tts_ask_song">
+        <item>"What's the song do you like?"</item>
+    </string-array>
+
     <string name="tts_response_not_get">"I didn't get what you say."</string><!-- previous tts content -->
     <string-array name="tts_intent_unknown">
         <item>"I didn't catch you."</item>

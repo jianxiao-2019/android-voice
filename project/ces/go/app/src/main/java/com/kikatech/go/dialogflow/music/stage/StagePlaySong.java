@@ -3,7 +3,6 @@ package com.kikatech.go.dialogflow.music.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.music.model.YouTubeVideoList;
@@ -26,7 +25,6 @@ class StagePlaySong extends BaseMusicStage {
         mPlayList = playList;
     }
 
-
     @Override
     public SceneStage next(String action, Bundle extra) {
         return null;
@@ -46,7 +44,7 @@ class StagePlaySong extends BaseMusicStage {
             if (uiAndTtsText.length > 0) {
                 String uiText = uiAndTtsText[0];
                 String ttsText = uiAndTtsText[1];
-                TtsText tText = new TtsText(R.drawable.kika_ic_music, uiText);
+                TtsText tText = new TtsText(SceneUtil.ICON_MUSIC, uiText);
                 Bundle args = new Bundle();
                 args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
                 speak(ttsText, args);

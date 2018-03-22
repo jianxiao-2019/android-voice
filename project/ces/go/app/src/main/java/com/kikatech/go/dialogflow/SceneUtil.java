@@ -29,6 +29,7 @@ public class SceneUtil {
     public static final int ICON_MSG = R.drawable.kika_ic_msg;
     public static final int ICON_NAVIGATION = R.drawable.kika_ic_navi;
     public static final int ICON_TELEPHONY = R.drawable.kika_ic_call;
+    public static final int ICON_MUSIC = R.drawable.kika_ic_music;
 
 
     public static final String EXTRA_EVENT = "extra_event";
@@ -194,6 +195,13 @@ public class SceneUtil {
         String ui = resource.getString(R.string.ui_ask_action_for_incoming);
         String[] ttsArray = resource.getStringArray(R.array.tts_ask_action_for_incoming);
         return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(caller)), tryFormat(getStringFromArray(ttsArray), caller)};
+    }
+
+    public static String[] getAskSong(Context context) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_ask_song);
+        String[] ttsArray = resource.getStringArray(R.array.tts_ask_song);
+        return new String[]{ui, getStringFromArray(ttsArray)};
     }
 
     public static String getResponseNotGet(Context context) {

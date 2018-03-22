@@ -33,6 +33,8 @@ public class StageMusicIdle extends BaseMusicStage {
                 case SceneActions.ACTION_MUSIC_START:
                     String songName = MusicSceneUtil.parseSongName(extra);
                     return new StageQuerySong(mSceneBase, mFeedback, songName);
+                case SceneActions.ACTION_MUSIC_SEARCH:
+                    return new StageAskSong(mSceneBase, mFeedback);
                 case SceneActions.ACTION_VOLUME_UP:
                     return new StageVolumeControl(mSceneBase, mFeedback, MusicSceneUtil.VolumeControlType.VOLUME_UP);
                 case SceneActions.ACTION_VOLUME_DOWN:

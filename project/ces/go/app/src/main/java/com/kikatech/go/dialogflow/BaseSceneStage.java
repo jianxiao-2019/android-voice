@@ -9,6 +9,7 @@ import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.core.tts.TtsSource;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
  * @author SkeeterWang Created on 2017/12/12.
@@ -21,6 +22,7 @@ public abstract class BaseSceneStage extends SceneStage {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "init, AsrMode : " + AsrConfigUtil.getAsrModeName(getAsrMode()));
         }
+        updateAsrLocale(getAsrLocale());
         updateAsrConfig(getAsrMode());
     }
 
@@ -28,9 +30,17 @@ public abstract class BaseSceneStage extends SceneStage {
         AsrConfigUtil.getConfig(mAsrConfig, mode);
     }
 
+    protected void updateAsrLocale(String locale) {
+        mAsrConfig.setLocale(locale);
+    }
+
     @AsrConfigUtil.ASRMode
     protected int getAsrMode() {
         return AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT;
+    }
+
+    protected String getAsrLocale() {
+        return AsrConfiguration.SupportedLanguage.EN_US;
     }
 
     @Override

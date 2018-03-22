@@ -19,8 +19,6 @@ public class DialogFlowConfig {
     private static final int EOS_DURATION = 3000;
 
     public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
-        String WEB_SOCKET_URL_DEV = VoiceConfiguration.HostUrl.KIKA_GO;
-
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
                 .source(audioSource);
@@ -28,7 +26,7 @@ public class DialogFlowConfig {
         conf.setIsDebugMode(true);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName(APP_NAME)
-                .setUrl(WEB_SOCKET_URL_DEV)
+                .setUrl(VoiceConfiguration.HostUrl.DEV_JINCHENG)
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
                 .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))

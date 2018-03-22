@@ -5,13 +5,14 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.reply.SceneActions;
 import com.kikatech.go.dialogflow.model.TtsText;
-import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
  * Created by brad_chang on 2017/11/28.
@@ -24,14 +25,26 @@ public class AskMsgBodyReplyImReplyIMStage extends BaseReplyIMStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    @AsrConfigUtil.ASRMode
+    protected int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION;
+    }
+
+    @Override
+    protected String getAsrLocale() {
+        switch (UserSettings.getSettingAsrLocale()) {
+            case UserSettings.AsrLocale.ZH:
+                return AsrConfiguration.SupportedLanguage.ZH_TW;
+            default:
+            case UserSettings.AsrLocale.EN:
+                return AsrConfiguration.SupportedLanguage.EN_US;
+        }
     }
 
     @Override
     public SceneStage getNextStage(String action, Bundle extra) {
         setQueryAnyWords(false);
-        if(action.equals(SceneActions.ACTION_REPLY_IM_MSG_BODY)) {
+        if (action.equals(SceneActions.ACTION_REPLY_IM_MSG_BODY)) {
             String messageBody = SmsUtil.parseTagMessageBody(extra);
             getReplyMessage().updateMsgBody(messageBody);
             return new ConfirmMsgBodyReplyImReplyIMStage(mSceneBase, mFeedback);

@@ -1,12 +1,10 @@
-package com.kikatech.go.dialogflow.im.send.stage;
+package com.kikatech.go.dialogflow.music.stage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.UserSettings;
-import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
@@ -16,19 +14,13 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
- * Created by brad_chang on 2017/11/23.
+ * @author SkeeterWang Created on 2018/3/22.
  */
 
-public class StageAskMsgBody extends BaseSendIMStage {
+public class StageAskSong extends BaseMusicStage {
 
-    StageAskMsgBody(@NonNull SceneBase scene, ISceneFeedback feedback) {
+    StageAskSong(@NonNull SceneBase scene, ISceneFeedback feedback) {
         super(scene, feedback);
-    }
-
-    @Override
-    @AsrConfigUtil.ASRMode
-    protected int getAsrMode() {
-        return AsrConfigUtil.ASR_MODE_CONVERSATION;
     }
 
     @Override
@@ -43,13 +35,13 @@ public class StageAskMsgBody extends BaseSendIMStage {
     }
 
     @Override
-    protected SceneStage getNextStage(String action, Bundle extra) {
+    public SceneStage next(String action, Bundle extra) {
         setQueryAnyWords(false);
         String userSay = Intent.parseUserInput(extra);
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "userSay:" + userSay);
-        IMContent imc = getIMContent();
-        imc.updateMsgBody(userSay);
-        return getCheckIMBodyStage(TAG, imc, mSceneBase, mFeedback);
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "userSay:" + userSay);
+        }
+        return new StageQuerySong(mSceneBase, mFeedback, userSay);
     }
 
     @Override
@@ -61,11 +53,11 @@ public class StageAskMsgBody extends BaseSendIMStage {
     @Override
     public void action() {
         setQueryAnyWords(true);
-        String[] uiAndTtsText = SceneUtil.getAskMsg(mSceneBase.getContext());
+        String[] uiAndTtsText = SceneUtil.getAskSong(mSceneBase.getContext());
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
-            TtsText tText = new TtsText(SceneUtil.ICON_MSG, uiText);
+            TtsText tText = new TtsText(SceneUtil.ICON_MUSIC, uiText);
             Bundle args = new Bundle();
             args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);
             speak(ttsText, args);

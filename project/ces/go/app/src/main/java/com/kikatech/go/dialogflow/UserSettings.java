@@ -27,6 +27,16 @@ public class UserSettings {
         int DEFAULT = SETTING_REPLY_MSG_ASK_USER;
     }
 
+    private final static int SETTING_ASR_LOCALE_EN = 0;
+    private final static int SETTING_ASR_LOCALE_ZH = 1;
+
+    @IntDef({SETTING_ASR_LOCALE_EN, SETTING_ASR_LOCALE_ZH})
+    public @interface AsrLocale {
+        int DEFAULT = SETTING_ASR_LOCALE_EN;
+        int EN = SETTING_ASR_LOCALE_EN;
+        int ZH = SETTING_ASR_LOCALE_ZH;
+    }
+
     public static void saveReplyMsgSetting(String pkgName, @ReplyMsgSetting int setting) {
         switch (pkgName) {
             case AppConstants.PACKAGE_WHATSAPP:
@@ -42,7 +52,7 @@ public class UserSettings {
     }
 
     public static int getReplyMsgSetting(String pkgName) {
-        if(!TextUtils.isEmpty(pkgName)) {
+        if (!TextUtils.isEmpty(pkgName)) {
             switch (pkgName) {
                 case AppConstants.PACKAGE_WHATSAPP:
                     return GlobalPref.getIns().getSettingReplyMsgWhatsApp();
@@ -85,5 +95,14 @@ public class UserSettings {
 
     public static List<SettingDestination> getSettingDestinationList() {
         return GlobalPref.getIns().getSettingDestinationList();
+    }
+
+
+    public static void saveSettingAsrLocale(@UserSettings.AsrLocale int locale) {
+        GlobalPref.getIns().saveSettingAsrLocale(locale);
+    }
+
+    public static int getSettingAsrLocale() {
+        return GlobalPref.getIns().getSettingAsrLocale();
     }
 }

@@ -18,6 +18,8 @@ class Key {
 
     static final String KEY_SETTING_DESTINATION_LIST = "key_setting_destination_list";
 
+    static final String KEY_SETTING_ASR_LOCALE = "key_setting_asr_locale";
+
     static final String KEY_NAVIGATED_ADDR_LIST = "key_navigated_addr_list";
 
     static final String KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION = "key_has_show_dialog_usb_illustration";

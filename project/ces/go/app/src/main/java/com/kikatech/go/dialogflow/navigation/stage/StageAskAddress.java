@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 
 /**
  * Created by bradchang on 2017/11/13.
@@ -25,8 +27,20 @@ public class StageAskAddress extends BaseNaviStage {
     }
 
     @Override
+    @AsrConfigUtil.ASRMode
     protected int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_CONVERSATION_COMMAND;
+    }
+
+    @Override
+    protected String getAsrLocale() {
+        switch (UserSettings.getSettingAsrLocale()) {
+            case UserSettings.AsrLocale.ZH:
+                return AsrConfiguration.SupportedLanguage.ZH_TW;
+            default:
+            case UserSettings.AsrLocale.EN:
+                return AsrConfiguration.SupportedLanguage.EN_US;
+        }
     }
 
     @Override

@@ -61,7 +61,6 @@
             android:text="VoiceMVP"/>
     </RadioGroup>
 
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -79,6 +78,39 @@
             android:layout_height="wrap_content"
             android:text="Send Log To RDs"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Locale Setting: "
+            android:textColor="@android:color/black"/>
+
+        <RadioGroup
+            android:id="@+id/radio_group_asr_locale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/asr_locale_en"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="English"/>
+
+            <RadioButton
+                android:id="@+id/asr_locale_zh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chinese"/>
+        </RadioGroup>
     </LinearLayout>
 
 </LinearLayout>

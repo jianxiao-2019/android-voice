@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
@@ -132,9 +133,36 @@ public class KikaDebugLogActivity extends BaseActivity {
 
         updateVoiceSourceInfo(LogOnViewUtil.getIns().getVoiceSourceInfo());
 
+        loadAsrLocaleSetting();
+
         loadLog();
     }
 
+    private void loadAsrLocaleSetting() {
+        RadioGroup group = ((RadioGroup) findViewById(R.id.radio_group_asr_locale));
+        @UserSettings.AsrLocale int currentSetting = UserSettings.getSettingAsrLocale();
+        switch (currentSetting) {
+            case UserSettings.AsrLocale.EN:
+                group.check(R.id.asr_locale_en);
+                break;
+            case UserSettings.AsrLocale.ZH:
+                group.check(R.id.asr_locale_zh);
+                break;
+        }
+        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.asr_locale_en:
+                        UserSettings.saveSettingAsrLocale(UserSettings.AsrLocale.EN);
+                        break;
+                    case R.id.asr_locale_zh:
+                        UserSettings.saveSettingAsrLocale(UserSettings.AsrLocale.ZH);
+                        break;
+                }
+            }
+        });
+    }
 
     private void registerReceivers() {
         try {

@@ -142,6 +142,16 @@ public class GlobalPref {
     }
 
 
+    public void saveSettingAsrLocale(@UserSettings.AsrLocale int locale) {
+        sEditor.putInt(Key.KEY_SETTING_ASR_LOCALE, locale);
+        apply();
+    }
+
+    public int getSettingAsrLocale() {
+        return sPref.getInt(Key.KEY_SETTING_ASR_LOCALE, UserSettings.AsrLocale.DEFAULT);
+    }
+
+
     public void setHasShowDialogUsbIllustration(boolean hasShow) {
         sEditor.putBoolean(Key.KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION, hasShow);
         apply();
