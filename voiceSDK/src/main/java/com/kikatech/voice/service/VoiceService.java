@@ -109,6 +109,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         void onSleep();
     }
 
+    public interface VoiceDataListener {
+        void onData(byte[] data, int readSize);
+    }
+
     private VoiceService(Context context, VoiceConfiguration conf) {
         mConf = conf;
 
@@ -449,6 +453,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public void setVoiceActiveStateListener(VoiceActiveStateListener listener) {
         mVoiceActiveStateListener = listener;
+    }
+
+    public void setVoiceDataListener(VoiceDataListener listener) {
+        mVoiceRecorder.setVoiceDataListener(listener);
     }
 
     private class VoiceDataSender extends IDataPath {
