@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -43,6 +45,8 @@ import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
+import com.kikatech.voicesdktester.wave.draw.WaveCanvas;
+import com.kikatech.voicesdktester.wave.view.WaveSurfaceView;
 import com.xiao.usbaudio.AudioPlayBack;
 
 import java.util.Locale;
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceStateChangedListener,
         VoiceService.VoiceActiveStateListener,
+        VoiceService.VoiceDataListener,
         TtsSource.TtsStateChangedListener {
 
     private static final boolean IS_WAKE_UP_MODE = false;
@@ -127,6 +132,9 @@ public class MainActivity extends AppCompatActivity implements
     private Button mButtonMode;
 
     private View mNcParamLayout;
+
+    private WaveCanvas mWaveCanvas;
+    private WaveSurfaceView mWavesfv;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -505,6 +513,8 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        waveCreateView();
+
         Message.register("INTERMEDIATE", IntermediateMessage.class);
         Message.register("ALTER", EditTextMessage.class);
         Message.register("ASR", TextMessage.class);
@@ -626,6 +636,7 @@ public class MainActivity extends AppCompatActivity implements
         mVoiceService = VoiceService.getService(this, conf);
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
+        mVoiceService.setVoiceDataListener(this);
         mVoiceService.create();
     }
 
@@ -700,6 +711,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onStartListening() {
         Logger.d("MainActivity onStartListening");
+        waveStartDraw();
         mResultAdapter.clearResults();
         mResultAdapter.notifyDataSetChanged();
 
@@ -714,6 +726,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onStopListening() {
         Logger.d("MainActivity onStopListening");
+        waveStopDraw();
         if (mTextView != null) {
             mTextView.setText("stopped.");
         }
@@ -837,4 +850,41 @@ public class MainActivity extends AppCompatActivity implements
 
         }
     };
+
+    @Override
+    public void onData(byte[] data, int readSize) {
+        if (mWaveCanvas != null) {
+            mWaveCanvas.onData(data, readSize);
+        }
+    }
+
+    private void waveCreateView() {
+        mWavesfv = (WaveSurfaceView) findViewById(R.id.wavesfv);
+        if(mWavesfv != null) {
+            mWavesfv.setLine_off(42);
+            //解决surfaceView黑色闪动效果
+            mWavesfv.setZOrderOnTop(true);
+            mWavesfv.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        }
+    }
+
+    private void waveStartDraw() {
+        if (mWaveCanvas == null) {
+            mWaveCanvas = new WaveCanvas();
+            mWaveCanvas.baseLine = mWavesfv.getHeight() / 2;
+            mWaveCanvas.startDraw(mWavesfv, new Handler.Callback() {
+                @Override
+                public boolean handleMessage(android.os.Message msg) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    private void waveStopDraw() {
+        if (mWaveCanvas != null) {
+            mWaveCanvas.stopDraw();
+            mWaveCanvas = null;
+        }
+    }
 }

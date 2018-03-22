@@ -2,6 +2,7 @@ package com.kikatech.voicesdktester.ui;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.CompoundButton;
 
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
+import com.kikatech.voicesdktester.wave.utils.SoundFile;
+import com.kikatech.voicesdktester.wave.view.WaveformView;
 
 import java.io.File;
 import java.util.Collections;
@@ -91,6 +94,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             }
         });
         holder.playButton.setOnClickListener(new PlayButtonClickListener(mFiles.get(position).getPath()));
+        waveLoadFromFile(holder, mFiles.get(position).getPath());
     }
 
     @Override
@@ -102,11 +106,20 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
         Button playButton;
         CheckBox checkBox;
+        WaveformView waveView;
+
+        File file;
+        Thread loadSoundFileThread;
+        SoundFile soundFile;
+        boolean loadingKeepGoing;
 
         FileViewHolder(View itemView) {
             super(itemView);
             playButton = (Button) itemView.findViewById(R.id.button_play);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
+
+            waveView = (WaveformView) itemView.findViewById(R.id.waveview);
+            waveView.setLine_offset(42);
         }
     }
 
@@ -137,5 +150,53 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public void setOnItemCheckedListener(OnItemCheckedListener listener) {
         mListener = listener;
+    }
+
+    private void waveLoadFromFile(FileViewHolder holder, String filePath) {
+        if (!filePath.contains("_SRC") && !filePath.contains("_NC")) {
+            holder.waveView.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        holder.file = new File(filePath + ".wav");
+        holder.loadingKeepGoing = true;
+        // Load the sound file in a background thread
+        holder.loadSoundFileThread = new Thread() {
+            public void run() {
+                try {
+                    holder.soundFile = SoundFile.create(holder.file.getAbsolutePath(),null);
+                    if (holder.soundFile == null) {
+                        return;
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (holder.loadingKeepGoing) {
+                    Runnable runnable = new Runnable() {
+                        public void run() {
+                            finishOpeningSoundFile(holder);
+                            holder.waveView.setVisibility(View.VISIBLE);
+                        }
+                    };
+                    holder.waveView.post(runnable);
+                }
+            }
+        };
+        holder.loadSoundFileThread.start();
+    }
+
+    float mDensity;
+    private void finishOpeningSoundFile(FileViewHolder holder) {
+        holder.waveView.setSoundFile(holder.soundFile);
+        DisplayMetrics metrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mDensity = metrics.density;
+        holder.waveView.recomputeHeights(mDensity);
     }
 }
