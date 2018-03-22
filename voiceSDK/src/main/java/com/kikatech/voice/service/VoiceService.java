@@ -39,6 +39,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public static final int ERR_NO_SPEECH = 3;
 
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
+    private static final String SERVER_COMMAND_TOKEN = "TOKEN";
 
     private static final int MSG_VAD_BOS = 1;
     private static final int MSG_VAD_EOS = 2;
@@ -146,6 +147,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         ReportUtil.getInstance().startTimeStamp("start record");
         DebugUtil.updateDebugInfo(mConf);
 
+        checkSpeechMode();
+
         if (mWakeUpDetector != null) {
             mWakeUpDetector.setDebugFilePath(DebugUtil.getDebugFilePath());
             mWakeUpDetector.reset();
@@ -160,6 +163,14 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         if (mWakeUpDetector == null || mWakeUpDetector.isAwake()) {
             startVadBosTimer();
+        }
+    }
+
+    private void checkSpeechMode() {
+        if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+            sendCommand(SERVER_COMMAND_TOKEN, "1");
+        } else {
+            sendCommand(SERVER_COMMAND_TOKEN, "-1");
         }
     }
 
@@ -214,6 +225,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public synchronized void resumeAsr(boolean startBosNow) {
         mIsAsrPaused = false;
+        checkSpeechMode();
         if (startBosNow) {
             startVadBosTimer();
         } else {

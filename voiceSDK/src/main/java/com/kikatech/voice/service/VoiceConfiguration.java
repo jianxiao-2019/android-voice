@@ -22,6 +22,11 @@ public class VoiceConfiguration {
         public static final String KIKA_GO = "ws://kikago.kikakeyboard.com/v3/speech";
     }
 
+    public enum SpeechMode {
+        ONE_SHOT,
+        CONVERSATION,
+    }
+
     private static final String DEFAULT_ENGINE = "google";
     private static final String DEFAULT_LOCALE = "en_US";
 
@@ -40,6 +45,8 @@ public class VoiceConfiguration {
 
     private boolean mIsDebugMode = false;
     private String mDebugFileTag = "Unknown";
+
+    private SpeechMode mSpeechMode = SpeechMode.CONVERSATION;
 
     public VoiceConfiguration() {
     }
@@ -109,6 +116,14 @@ public class VoiceConfiguration {
 
     public boolean isSupportWakeUpMode() {
         return mSupportWakeUpMode;
+    }
+
+    public void setSpeechMode(SpeechMode speechMode) {
+        mSpeechMode = speechMode;
+    }
+
+    public SpeechMode getSpeechMode() {
+        return mSpeechMode;
     }
 
     public void setConnectionConfiguration(ConnectionConfiguration connConf) {
