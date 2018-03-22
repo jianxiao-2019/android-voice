@@ -7,7 +7,7 @@ import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
 import com.kikatech.voice.util.fuzzy.FuzzySearchManager;
-import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.voice.util.log.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +34,8 @@ public class ContactManager {
     }
 
     public void init(final Context ctx) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "init ...");
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "init ...");
         }
         int phoneBookCount;
         synchronized (mPhoneBook) {
@@ -43,8 +43,8 @@ public class ContactManager {
         }
 
         if (phoneBookCount == 0) {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "init phone book info");
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "init phone book info");
             }
             new Thread(new Runnable() {
                 @Override
@@ -58,17 +58,17 @@ public class ContactManager {
                                 mPhoneBook.putAll(pb);
                             }
 
-                            if (LogUtil.DEBUG) {
-                                LogUtil.log(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
+                            if (Logger.DEBUG) {
+                                Logger.i(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
                             }
-                        } else if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
+                        } else if (Logger.DEBUG) {
+                            Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
                         }
                     }
                 }
             }).start();
-        } else if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
+        } else if (Logger.DEBUG) {
+            Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
         }
     }
 
@@ -100,15 +100,15 @@ public class ContactManager {
             if (fuzzySearchResult != null) {
                 foundName = fuzzySearchResult.getText();
                 confidence = fuzzySearchResult.getConfidence();
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, String.format("foundName: %1$s, confidence: %2$s", foundName, confidence));
+                if (Logger.DEBUG) {
+                    Logger.i(TAG, String.format("foundName: %1$s, confidence: %2$s", foundName, confidence));
                 }
                 if (!TextUtils.isEmpty(foundName)) {
                     if (confidence > FuzzySearchManager.getIns().getLowConfidenceCriteria()) {
                         return new MatchedContact(MatchedContact.MatchedType.FUZZY_MATCHED, phoneBook.get(foundName));
                     } else {
-                        if (LogUtil.DEBUG) {
-                            LogUtil.logd(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
+                        if (Logger.DEBUG) {
+                            Logger.d(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
                         }
                     }
                 }
@@ -133,10 +133,10 @@ public class ContactManager {
     }
 
     public MatchedContact findContact(final Context ctx, final String[] targetNames) {
-        if (LogUtil.DEBUG) {
+        if (Logger.DEBUG) {
             if (targetNames != null) {
                 for (int i = 0; i < targetNames.length; i++) {
-                    LogUtil.logd(TAG, String.format("target: %1$s. %2$s", i + 1, targetNames[i]));
+                    Logger.d(TAG, String.format("target: %1$s. %2$s", i + 1, targetNames[i]));
                 }
             }
         }
@@ -177,8 +177,8 @@ public class ContactManager {
         try {
             phones = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         } catch (SecurityException se) {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "SecurityException:" + se);
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "SecurityException:" + se);
             }
             return null;
         }
@@ -188,8 +188,8 @@ public class ContactManager {
         }
 
         //phones.moveToFirst();
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "phones count: " + phones.getCount());
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "phones count: " + phones.getCount());
         }
 
         HashMap<String, PhoneBookContact> phoneBook = new HashMap<>();
@@ -216,8 +216,8 @@ public class ContactManager {
                     phoneBook.put(name, new PhoneBookContact(id, name, photoUri, phoneNumber, numberType));
                 }
 
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "number: " + name + ", number: " + phoneNumber + ", numberType:" + numberType);
+                if (Logger.DEBUG) {
+                    Logger.i(TAG, "number: " + name + ", number: " + phoneNumber + ", numberType:" + numberType);
                 }
             }
         }
@@ -353,12 +353,12 @@ public class ContactManager {
         }
 
         private void print() {
-            if (LogUtil.DEBUG) {
-                LogUtil.logd(TAG, "number: " + displayName);
+            if (Logger.DEBUG) {
+                Logger.d(TAG, "number: " + displayName);
                 for (NumberType nt : phoneNumbers) {
-                    LogUtil.logd(TAG, "number: " + nt.number + ", type:" + nt.type);
+                    Logger.d(TAG, "number: " + nt.number + ", type:" + nt.type);
                 }
-                LogUtil.logd(TAG, "------------------------------");
+                Logger.d(TAG, "------------------------------");
             }
         }
     }

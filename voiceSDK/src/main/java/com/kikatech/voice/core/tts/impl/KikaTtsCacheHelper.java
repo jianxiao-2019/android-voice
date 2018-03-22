@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.kikatech.voice.util.log.FileLoggerUtil;
-import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.MD5;
 
 import org.json.JSONArray;
@@ -49,9 +49,9 @@ public class KikaTtsCacheHelper {
             if (assetsCaches != null) {
                 sAssetsCacheList = Arrays.asList(assetsCaches);
             }
-            if (LogUtil.DEBUG) {
+            if (Logger.DEBUG) {
                 for (int i = 0; i < sAssetsCacheList.size(); i++) {
-                    LogUtil.log(TAG, "sAssetsCacheList:" + sAssetsCacheList.get(i));
+                    Logger.i(TAG, "sAssetsCacheList:" + sAssetsCacheList.get(i));
                 }
             }
         }
@@ -87,8 +87,8 @@ public class KikaTtsCacheHelper {
 
         File getFileCache() {
             File cacheFile = FileLoggerUtil.getIns().getLogFullPath(CACHE_FOLDER_PATH, cacheFileName);
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "cache File:" + cacheFile.getAbsolutePath() + ", exist:" + cacheFile.exists());
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "cache File:" + cacheFile.getAbsolutePath() + ", exist:" + cacheFile.exists());
             }
             return cacheFile;
         }
@@ -146,24 +146,24 @@ public class KikaTtsCacheHelper {
             return false;
         }
         if (ti.cacheInfo.hasFileCache()) {
-            if (LogUtil.DEBUG)
-                LogUtil.log(TAG, "Cache hit :" + ti.cacheInfo.speechText + ", return");
+            if (Logger.DEBUG)
+                Logger.i(TAG, "Cache hit :" + ti.cacheInfo.speechText + ", return");
             return true;
         } else {
-            if (LogUtil.DEBUG)
-                LogUtil.log(TAG, "downloadFile ... voiceUrl:" + ti.downloadUrl + ", speechText:" + ti.cacheInfo.speechText);
+            if (Logger.DEBUG)
+                Logger.i(TAG, "downloadFile ... voiceUrl:" + ti.downloadUrl + ", speechText:" + ti.cacheInfo.speechText);
 
             long t = System.currentTimeMillis();
             boolean ret = KikaTtsServerHelper.downloadFile(ti);
             if(ret) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "Download complete, textQuery:" + ti.cacheInfo.speechText + ", hash:" + ti.cacheInfo.speechTextMd5);
+                if (Logger.DEBUG) {
+                    Logger.i(TAG, "Download complete, textQuery:" + ti.cacheInfo.speechText + ", hash:" + ti.cacheInfo.speechTextMd5);
                     writeCacheList(ti.cacheInfo);
                 }
             }
 
-            if (LogUtil.DEBUG)
-                LogUtil.log(TAG, "downloadFile ret:" + ret + ", spend:" + (System.currentTimeMillis() - t) + " ms");
+            if (Logger.DEBUG)
+                Logger.i(TAG, "downloadFile ret:" + ret + ", spend:" + (System.currentTimeMillis() - t) + " ms");
 
             return ret;
         }
@@ -204,8 +204,8 @@ public class KikaTtsCacheHelper {
                 }
             }
 
-            if (LogUtil.DEBUG && assetFile == null && path == null) {
-                LogUtil.log(TAG, "Err, parse error, json:" + json.toString());
+            if (Logger.DEBUG && assetFile == null && path == null) {
+                Logger.i(TAG, "Err, parse error, json:" + json.toString());
             }
         }
 

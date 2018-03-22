@@ -3,7 +3,7 @@ package com.kikatech.voice.core.hotword;
 import android.util.SparseIntArray;
 
 import com.kikatech.voice.util.CustomConfig;
-import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.MD5;
 
 import java.io.File;
@@ -49,11 +49,11 @@ public class SnowBoyDetector extends WakeUpDetector {
         long t = System.currentTimeMillis();
         String sensitivity = CustomConfig.getSnowboySensitivity();
 
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "SnowBoyDetector before new SnowBoyDetector:" + activeModel);
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "SnowBoyDetector before new SnowBoyDetector:" + activeModel);
             String md5 = MD5.getFileMD5(new File(activeModel));
-            LogUtil.log(TAG, "model:" + activeModel + ", md5:" + md5);
-            LogUtil.log(TAG, "sensitivity:" + sensitivity);
+            Logger.i(TAG, "model:" + activeModel + ", md5:" + md5);
+            Logger.i(TAG, "sensitivity:" + sensitivity);
         }
 
         mSnowboyDetect = new SnowboyDetect(commonRes, activeModel);
@@ -61,9 +61,9 @@ public class SnowBoyDetector extends WakeUpDetector {
         //-detector.SetAudioGain(1);
         mSnowboyDetect.ApplyFrontend(true);
 
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "init done, spend :" + (System.currentTimeMillis() - t) + " ms");
-            LogUtil.log(TAG, "hotwords:" + mSnowboyDetect.NumHotwords() + ", Sensitivity:" + mSnowboyDetect.GetSensitivity() +
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "init done, spend :" + (System.currentTimeMillis() - t) + " ms");
+            Logger.i(TAG, "hotwords:" + mSnowboyDetect.NumHotwords() + ", Sensitivity:" + mSnowboyDetect.GetSensitivity() +
                     ", BitsPerSample:" + mSnowboyDetect.BitsPerSample() + ", NumChannels:" + mSnowboyDetect.NumChannels() +
                     ", SampleRate:" + mSnowboyDetect.SampleRate());
         }
@@ -71,12 +71,12 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     @Override
     protected synchronized void checkWakeUpCommand(byte[] data) {
-        //if(LogUtil.DEBUG) LogUtil.log(TAG, "checkWakeUpCommand data len = " + data.length);
+        //if(Logger.DEBUG) Logger.i(TAG, "checkWakeUpCommand data len = " + data.length);
         if (!mEnableDetection) {
             return;
         }
         if (mSnowboyDetect == null) {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "Err, mSnowboyDetect is null");
+            if (Logger.DEBUG) Logger.i(TAG, "Err, mSnowboyDetect is null");
             return;
         }
 
@@ -90,7 +90,7 @@ public class SnowBoyDetector extends WakeUpDetector {
         // Snowboy hotword detection.
         int result = mSnowboyDetect.RunDetection(audioDataBuffer, audioDataBuffer.length);
 
-        //if(LogUtil.DEBUG) LogUtil.log(TAG, "checkWakeUpCommand result = " + result);
+        //if(Logger.DEBUG) Logger.i(TAG, "checkWakeUpCommand result = " + result);
 
         switch (result) {
             case -2:
@@ -109,7 +109,7 @@ public class SnowBoyDetector extends WakeUpDetector {
                     // sendMessage(MsgEnum.MSG_ACTIVE, null);
                     // Log.i("Snowboy: ", "Hotword " + Integer.toString(result) + " detected!");
                     // player.start();
-                    if (LogUtil.DEBUG) LogUtil.log(TAG, "checkWakeUpCommand result wake up");
+                    if (Logger.DEBUG) Logger.i(TAG, "checkWakeUpCommand result wake up");
                     isAwake = true;
                     if (mListener != null) {
                         mListener.onDetected();
@@ -122,7 +122,7 @@ public class SnowBoyDetector extends WakeUpDetector {
     }
 
     private void debugDetectResult(int result) {
-        if (LogUtil.DEBUG) {
+        if (Logger.DEBUG) {
             Integer v = mSnowbpoyLog.get(result);
             mSnowbpoyLog.put(result, v + 1);
             long lll = System.currentTimeMillis() - logTime;
@@ -134,7 +134,7 @@ public class SnowBoyDetector extends WakeUpDetector {
                     detectCount += mSnowbpoyLog.valueAt(i);
                 }
                 log.append("}, Detection count : ").append(detectCount);
-                if (LogUtil.DEBUG) LogUtil.log(TAG, log.toString());
+                if (Logger.DEBUG) Logger.i(TAG, log.toString());
                 logTime = System.currentTimeMillis();
                 mSnowbpoyLog.clear();
             }
@@ -177,7 +177,7 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     @Override
     public synchronized void close() {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "close, mSnowboyDetect:" + mSnowboyDetect);
+        if (Logger.DEBUG) Logger.i(TAG, "close, mSnowboyDetect:" + mSnowboyDetect);
         if (mSnowboyDetect != null) {
             mSnowboyDetect.delete();
             mSnowboyDetect = null;
@@ -192,7 +192,7 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     @Override
     public synchronized void enableDetector(boolean enable) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "enableDetector: " + enable);
+        if (Logger.DEBUG) Logger.i(TAG, "enableDetector: " + enable);
         mEnableDetection = enable;
     }
 

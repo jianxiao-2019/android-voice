@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by tianli on 17-11-2.
@@ -72,18 +72,18 @@ public class Intent {
     }
 
     public void correctScene(String scene) {
-        if (LogUtil.DEBUG)
-            LogUtil.log("Intent", "scene:" + mScene + ", mAction:" + mAction);
+        if (Logger.DEBUG)
+            Logger.i("Intent", "scene:" + mScene + ", mAction:" + mAction);
         if (!TextUtils.isEmpty(scene) && (mScene.equals(AS_PREV_SCENE))) {
-            if (LogUtil.DEBUG)
-                LogUtil.log("Intent", "Find " + mScene + ", correct scene to " + scene);
+            if (Logger.DEBUG)
+                Logger.i("Intent", "Find " + mScene + ", correct scene to " + scene);
             mScene = scene;
         } else if (
                 mScene.equals(Intent.DEFAULT_SCENE) && !TextUtils.isEmpty(scene) &&
                         !mScene.equals(scene) && !TextUtils.isEmpty(mAction) && mAction.equals(ACTION_UNKNOWN)) {
             mScene = scene;
-            if (LogUtil.DEBUG)
-                LogUtil.log("Intent", "Find Default::input.unknown, let the current scene " + mScene + " to handle it");
+            if (Logger.DEBUG)
+                Logger.i("Intent", "Find Default::input.unknown, let the current scene " + mScene + " to handle it");
         }
     }
 

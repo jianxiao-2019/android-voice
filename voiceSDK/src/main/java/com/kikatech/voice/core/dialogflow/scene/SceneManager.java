@@ -5,9 +5,8 @@ import android.text.TextUtils;
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.util.Subscribe;
-import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
-import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.voice.util.log.Logger;
 
 import java.util.List;
 
@@ -48,9 +47,9 @@ public class SceneManager implements DialogObserver, ISceneManager {
     public void onIntent(Intent intent) {
         intent.correctScene(mScene);
         String scene = intent.getScene();
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, String.format("mScene: %s", mScene));
-            LogUtil.log(TAG, String.format("scene: %s", scene));
+        if (Logger.DEBUG) {
+            Logger.i(TAG, String.format("mScene: %s", mScene));
+            Logger.i(TAG, String.format("scene: %s", scene));
         }
         if (!TextUtils.isEmpty(scene)) {
             if (!TextUtils.isEmpty(mScene)) {
@@ -82,8 +81,8 @@ public class SceneManager implements DialogObserver, ISceneManager {
     }
 
     private void prepareSwitchSceneInfo(String targetScene, Intent intent) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "prepareSwitchSceneInfo, current:"+mScene+", target:" + targetScene+ ", intent:" + intent);
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "prepareSwitchSceneInfo, current:"+mScene+", target:" + targetScene+ ", intent:" + intent);
         }
         if (!TextUtils.isEmpty(mScene) && intent != null) {
             SceneBase src = getScene(mScene);
@@ -92,8 +91,8 @@ public class SceneManager implements DialogObserver, ISceneManager {
                 if (json != null) {
                     intent.getExtra().putString(Intent.KEY_SWITCH_SCENE_INFO, json);
                 }
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "prepareSwitchSceneInfo, json:" + json);
+                if (Logger.DEBUG) {
+                    Logger.i(TAG, "prepareSwitchSceneInfo, json:" + json);
                 }
             }
         }
@@ -111,7 +110,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     private void notifyObservers(Intent intent) {
         String scene = intent.getScene();
-        LogUtil.log(TAG, "scene:" + scene + ", intent:" + intent);
+        Logger.i(TAG, "scene:" + scene + ", intent:" + intent);
         boolean isEmojiIntent = intent.isEmoji();
         List<SceneBase> list = mSubscribe.list(scene);
         for (SceneBase subscriber : list) {
@@ -125,8 +124,8 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     @Override
     public void exitScene(SceneBase scene) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "mScene:" + mScene + ", scene:" + scene);
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "mScene:" + mScene + ", scene:" + scene);
         }
         if (!TextUtils.isEmpty(mScene) && mScene.equals(scene.scene())) {
             mScene = null;
@@ -141,8 +140,8 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     @Override
     public void redirectIntent(Intent intent) {
-        if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "RedirectIntent from Scene:" + mScene + ", to:" + intent.getScene());
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "RedirectIntent from Scene:" + mScene + ", to:" + intent.getScene());
         }
         onIntent(intent);
     }

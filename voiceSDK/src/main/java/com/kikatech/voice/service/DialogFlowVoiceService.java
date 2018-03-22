@@ -10,7 +10,7 @@ import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.EmojiUtil;
-import com.kikatech.voice.util.log.LogUtil;
+import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by brad_chang on 2017/12/29.
@@ -50,13 +50,13 @@ public abstract class DialogFlowVoiceService {
         mVoiceService.setVoiceStateChangedListener(mVoiceStateChangedListener);
 
         mVoiceService.create();
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "idle VoiceService ... Done");
+        if (Logger.DEBUG) Logger.i(TAG, "idle VoiceService ... Done");
     }
 
     void updateAsrConfig(AsrConfiguration asrConfig) {
         if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
             mVoiceService.updateAsrSettings(mAsrConfiguration);
-            if (LogUtil.DEBUG) {
+            if (Logger.DEBUG) {
                 mServiceCallback.onAsrConfigChange(mAsrConfiguration);
             }
         }
@@ -65,16 +65,16 @@ public abstract class DialogFlowVoiceService {
     private final VoiceService.VoiceActiveStateListener mVoiceActiveStateListener = new VoiceService.VoiceActiveStateListener() {
         @Override
         public void onWakeUp() {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "onWakeUp");
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "onWakeUp");
             }
             onVoiceWakeUp();
         }
 
         @Override
         public void onSleep() {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "onSleep");
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "onSleep");
             }
             onVoiceSleep();
         }
@@ -91,8 +91,8 @@ public abstract class DialogFlowVoiceService {
         }
 
         private void performOnRecognitionResult(Message message) {
-            if (LogUtil.DEBUG && !(message instanceof IntermediateMessage)) {
-                LogUtil.logd(TAG, "onMessage message = " + message);
+            if (Logger.DEBUG && !(message instanceof IntermediateMessage)) {
+                Logger.d(TAG, "onMessage message = " + message);
             }
 
             boolean queryDialogFlow = false;
@@ -105,8 +105,8 @@ public abstract class DialogFlowVoiceService {
                 query = intermediateMessage.text;
             } else if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
-                if (LogUtil.DEBUG) {
-                    LogUtil.log(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
+                if (Logger.DEBUG) {
+                    Logger.i(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
                 }
                 query = textMessage.text[0];
                 nBestQuery = textMessage.text;
@@ -114,15 +114,15 @@ public abstract class DialogFlowVoiceService {
             } else if (message instanceof EditTextMessage) {
                 EditTextMessage editTextMessage = (EditTextMessage) message;
                 String alter = editTextMessage.altered;
-                if (LogUtil.DEBUG) {
-                    LogUtil.logd(TAG, "EditTextMessage altered = " + alter);
+                if (Logger.DEBUG) {
+                    Logger.d(TAG, "EditTextMessage altered = " + alter);
                 }
                 query = alter;
                 queryDialogFlow = true;
             } else if (message instanceof EmojiRecommendMessage) {
                 EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
                 emojiJson = EmojiUtil.composeJsonString(emoji.emoji, emoji.descriptionText);
-                if (LogUtil.DEBUG) LogUtil.logd(TAG, "EmojiRecommendMessage = " + emojiJson);
+                if (Logger.DEBUG) Logger.d(TAG, "EmojiRecommendMessage = " + emojiJson);
             }
 
             onAsrResult(query, emojiJson, queryDialogFlow, nBestQuery);
@@ -144,8 +144,8 @@ public abstract class DialogFlowVoiceService {
 
         @Override
         public void onCreated() {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
             }
             if (mVoiceService != null) {
                 mVoiceService.start();
@@ -159,25 +159,25 @@ public abstract class DialogFlowVoiceService {
 
         @Override
         public void onStartListening() {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceState] onStartListening");
+            if (Logger.DEBUG) Logger.i(TAG, "[VoiceState] onStartListening");
         }
 
         @Override
         public void onStopListening() {
-            if (LogUtil.DEBUG) LogUtil.log(TAG, "[VoiceState] onStopListening");
+            if (Logger.DEBUG) Logger.i(TAG, "[VoiceState] onStopListening");
         }
 
         @Override
         public void onDestroyed() {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "[VoiceState] onDestroyed");
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "[VoiceState] onDestroyed");
             }
         }
 
         @Override
         public void onError(int reason) {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "[VoiceState] onError : " + reason);
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "[VoiceState] onError : " + reason);
             }
             switch (reason) {
                 case VoiceService.ERR_NO_SPEECH:
@@ -191,8 +191,8 @@ public abstract class DialogFlowVoiceService {
 
         @Override
         public void onConnectionClosed() {
-            if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, "[VoiceState] onConnectionClosed");
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "[VoiceState] onConnectionClosed");
             }
 
             mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED);
