@@ -1,6 +1,7 @@
 package com.kikatech.voice.core.recorder;
 
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.util.log.Logger;
 
 import java.util.Arrays;
@@ -21,9 +22,15 @@ public class VoiceRecorder {
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AudioRecordThread mAudioRecordThread;
 
+    private VoiceService.VoiceDataListener mVoiceDataListener;
+
     public VoiceRecorder(IVoiceSource voiceSource, IDataPath dataPath) {
         mVoiceSource = voiceSource;
         mDataPath = dataPath;
+    }
+
+    public void setVoiceDataListener(VoiceService.VoiceDataListener listener) {
+        mVoiceDataListener = listener;
     }
 
     public void open() {
@@ -104,6 +111,11 @@ public class VoiceRecorder {
             int readSize;
             while (mIsRunning.get()) {
                 readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
+
+                if (mVoiceDataListener != null) {
+                    mVoiceDataListener.onData(audioData, readSize);
+                }
+
 //                if (AudioRecord.ERROR_INVALID_OPERATION != readSize /*&& fos != null*/) {
                 if (readSize > 0) {
                     copy(audioData, readSize);
