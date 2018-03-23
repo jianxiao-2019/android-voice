@@ -1,20 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="CheckBox" />
-
-    <Button
-        android:id="@+id/button_play"
-        android:layout_width="wrap_content"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|center_vertical|end"
-        android:text="PLAY" />
-</FrameLayout>
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="CheckBox" />
+
+        <Button
+            android:id="@+id/button_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical|end"
+            android:text="PLAY" />
+    </FrameLayout>
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true" >
+
+        <com.kikatech.voicesdktester.wave.view.WaveformView
+            android:id="@+id/waveview"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp" />
+
+    </HorizontalScrollView>
+
+</LinearLayout>

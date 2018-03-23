@@ -216,6 +216,11 @@
 
         </LinearLayout>
 
+        <com.kikatech.voicesdktester.wave.view.WaveSurfaceView
+            android:id="@+id/wavesfv"
+            android:layout_width="fill_parent"
+            android:layout_height="80dp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
