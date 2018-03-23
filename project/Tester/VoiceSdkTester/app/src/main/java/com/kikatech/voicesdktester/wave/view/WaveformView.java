@@ -37,7 +37,7 @@ import java.io.File;
  */
 public class WaveformView extends View {
     // Colors
-    private int line_offset = 42;
+    private int line_offset = 42; //上下看溢出的黑线，离最上、最下的距离
     private Paint mGridPaint;
     private Paint mSelectedLinePaint;
     private Paint mUnselectedLinePaint;
