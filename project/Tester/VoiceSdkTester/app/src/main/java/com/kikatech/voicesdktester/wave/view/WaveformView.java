@@ -22,10 +22,13 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.wave.utils.SoundFile;
+
+import java.io.File;
 
 
 /**
@@ -34,7 +37,7 @@ import com.kikatech.voicesdktester.wave.utils.SoundFile;
  */
 public class WaveformView extends View {
     // Colors
-    private int line_offset;
+    private int line_offset = 42;
     private Paint mGridPaint;
     private Paint mSelectedLinePaint;
     private Paint mUnselectedLinePaint;
@@ -148,6 +151,40 @@ public class WaveformView extends View {
         mInitialized = false;
     }
 
+    public void loadFromFile(String filePath) {
+        File file = new File(filePath + ".wav");
+
+        // Load the sound file in a background thread
+        Thread loadSoundFileThread = new Thread() {
+            public void run() {
+                SoundFile soundFile;
+                try {
+                    soundFile = SoundFile.create(file.getAbsolutePath(),null);
+                    if (soundFile == null) {
+                        return;
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        finishOpeningSoundFile(soundFile);
+                        setVisibility(View.VISIBLE);
+                    }
+                };
+                post(runnable);
+            }
+        };
+        loadSoundFileThread.start();
+    }
+
+    private void finishOpeningSoundFile(SoundFile soundFile) {
+        setSoundFile(soundFile);
+        DisplayMetrics metrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        recomputeHeights(metrics.density);
+    }
 
     public boolean hasSoundFile() {
         return mSoundFile != null;
