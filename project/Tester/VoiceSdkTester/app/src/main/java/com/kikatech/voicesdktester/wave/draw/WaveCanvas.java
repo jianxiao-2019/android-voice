@@ -35,7 +35,7 @@ public class WaveCanvas {
     public boolean isRecording = false;// 录音线程控制标记
     private boolean isWriting = false;// 录音线程控制标记
 
-    private int line_off ;//上下边距的距离
+    private int line_off = 42;//上下边距的距离
     public int rateX = 100;//控制多少帧取一帧
     public int rateY = 1; //  Y轴缩小的比例 默认为1
     public int baseLine = 0;// Y轴基线

@@ -185,6 +185,7 @@ public class RecorderFragment extends PageFragment implements
         conf.setIsDebugMode(true);
         conf.setDebugFileTag(DEBUG_FILE_TAG);
         conf.source(mUsbAudioSource);
+        conf.setBosDuration(Integer.MAX_VALUE);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
                 .setUrl(WEB_SOCKET_URL_DEV)
