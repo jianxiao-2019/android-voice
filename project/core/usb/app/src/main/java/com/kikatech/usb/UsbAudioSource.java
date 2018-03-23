@@ -22,6 +22,12 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
 
     private boolean mIsOpened = false;
 
+    private SourceDataCallback mSourceDataCallback;
+
+    public interface SourceDataCallback {
+        void onSource(byte[] leftData, byte[] rightData);
+    }
+
     public UsbAudioSource(UsbAudioDriver driver) {
         mAudioDriver = driver;
         mAudioDriver.setOnDataListener(this);
@@ -89,6 +95,17 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
 
     @Override
     public void onData(byte[] data, int length) {
+        if (mSourceDataCallback != null) {
+            byte[] leftResult = new byte[length / 2];
+            byte[] rightResult = new byte[length / 2];
+            for (int i = 0; i < leftResult.length; i += 2) {
+                leftResult[i] = data[i * 2];
+                leftResult[i + 1] = data[i * 2 + 1];
+                rightResult[i] = data[i * 2 + 2];
+                rightResult[i + 1] = data[i * 2 + 3];
+            }
+            mSourceDataCallback.onSource(leftResult, rightResult);
+        }
         mKikaBuffer.onData(data, length);
     }
 
@@ -119,5 +136,9 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
         } else {
             Logger.e("Can't change the buffer when it has been opened.");
         }
+    }
+
+    public void setSourceDataCallback(SourceDataCallback callback) {
+        mSourceDataCallback = callback;
     }
 }

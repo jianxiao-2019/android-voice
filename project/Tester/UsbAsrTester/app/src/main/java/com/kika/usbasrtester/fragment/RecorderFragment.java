@@ -1,5 +1,6 @@
 package com.kika.usbasrtester.fragment;
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -9,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kika.usbasrtester.R;
+import com.kika.usbasrtester.wave.draw.WaveCanvas;
+import com.kika.usbasrtester.wave.view.WaveSurfaceView;
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
@@ -25,6 +28,9 @@ import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.xiao.usbaudio.AudioPlayBack;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created by ryanlin on 23/01/2018.
  */
@@ -34,6 +40,8 @@ public class RecorderFragment extends PageFragment implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceStateChangedListener,
         VoiceService.VoiceActiveStateListener,
+        VoiceService.VoiceDataListener,
+        UsbAudioSource.SourceDataCallback,
         TtsSource.TtsStateChangedListener {
 
     private static final String DEBUG_FILE_TAG = "UsbTester";
@@ -47,6 +55,7 @@ public class RecorderFragment extends PageFragment implements
     private TextView mIntermediateView;
     private TextView mResultsView;
     private TextView mSizeText;
+    private TextView mVolumeText;
     private final StringBuilder mResultStr = new StringBuilder();
 
     private VoiceService mVoiceService;
@@ -54,13 +63,34 @@ public class RecorderFragment extends PageFragment implements
     private UsbAudioSource mUsbAudioSource;
     private UsbAudioService mUsbAudioService;
 
+    private WaveCanvas mLeftWaveCanvas;
+    private WaveSurfaceView mLeftWaveSurfaceView;
+    private WaveCanvas mRightWaveCanvas;
+    private WaveSurfaceView mRightWaveSurfaceView;
+    private WaveCanvas mWaveCanvas;
+    private WaveSurfaceView mWaveSurfaceView;
+
     private static final int MSG_TIMER = 0;
+    private static final int MSG_CLEAR_READ_SIZE = 1;
     private long mTimeInSec = 0;
 
     private long mServerEosTime;
     private long mEndOfSpeechTime;
     private float mPreProb;
     private long receiveFirstResultTime = -1;
+
+    private static final String[] VOLUME_TABLE = new String[] {
+            "error",
+            "-16.5",// level 1
+            "-6.5", // level 2
+            "0",    // level 3
+            "5",    // level 4
+            "10",   // level 5
+            "15",   // level 6
+            "20",   // level 7
+            "25",   // level 8
+            "30",   // level 9
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -86,8 +116,14 @@ public class RecorderFragment extends PageFragment implements
         mSizeText = view.findViewById(R.id.text_size);
         mIntermediateView = view.findViewById(R.id.intermediate_text);
         mResultsView = view.findViewById(R.id.result_text);
+        mVolumeText = view.findViewById(R.id.text_volume);
 
         mRecordingTimerText = view.findViewById(R.id.recording_timer_text);
+
+        mWaveSurfaceView = view.findViewById(R.id.wave_view_nc);
+        mLeftWaveSurfaceView = view.findViewById(R.id.wave_view_left);
+        mRightWaveSurfaceView = view.findViewById(R.id.wave_view_right);
+        waveCreateView();
 
         setRecordViewEnabled(false);
     }
@@ -113,6 +149,7 @@ public class RecorderFragment extends PageFragment implements
         }
         if (mUsbAudioSource != null) {
             mUsbAudioSource.closeDevice();
+            mUsbAudioSource.setSourceDataCallback(null);
         }
 
         AudioPlayBack.setListener(null);
@@ -160,6 +197,7 @@ public class RecorderFragment extends PageFragment implements
         mVoiceService = VoiceService.getService(getActivity(), conf);
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceStateChangedListener(this);
+        mVoiceService.setVoiceDataListener(this);
         mVoiceService.create();
 
         AudioPlayBack.setListener(mListener);
@@ -247,6 +285,7 @@ public class RecorderFragment extends PageFragment implements
 
         mResultStr.setLength(0);
         mResultsView.setText(mResultStr.toString());
+        waveStartDraw();
     }
 
     @Override
@@ -260,6 +299,7 @@ public class RecorderFragment extends PageFragment implements
 
         mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
+        waveStopDraw();
     }
 
     @Override
@@ -270,6 +310,9 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onError(int reason) {
         Logger.e("onError reason = " + reason);
+        if (mUsbAudioSource != null) {
+            mUsbAudioSource.setSourceDataCallback(null);
+        }
     }
 
     @Override
@@ -303,7 +346,12 @@ public class RecorderFragment extends PageFragment implements
         public void onDeviceAttached(UsbAudioSource audioSource) {
             Logger.d("onDeviceAttached.");
             mUsbAudioSource = audioSource;
+            mUsbAudioSource.setSourceDataCallback(RecorderFragment.this);
             attachService();
+
+            if (mVolumeText != null) {
+                mVolumeText.setText(String.format(getString(R.string.current_volume), VOLUME_TABLE[mUsbAudioSource.checkVolumeState()]));
+            }
 
             mStatusTextView.setText("Usb Device Attached.");
             setRecordViewEnabled(true);
@@ -312,6 +360,9 @@ public class RecorderFragment extends PageFragment implements
         @Override
         public void onDeviceDetached() {
             Logger.d("onDeviceDetached.");
+            if (mUsbAudioSource != null) {
+                mUsbAudioSource.setSourceDataCallback(null);
+            }
 
             mStatusTextView.setText("Usb Device Detached.");
             setRecordViewEnabled(false);
@@ -330,6 +381,9 @@ public class RecorderFragment extends PageFragment implements
                 mStatusTextView.setText("Device is MONO.");
             }
 
+            if (mUsbAudioSource != null) {
+                mUsbAudioSource.setSourceDataCallback(null);
+            }
             setRecordViewEnabled(false);
         }
     };
@@ -344,6 +398,10 @@ public class RecorderFragment extends PageFragment implements
                     String result = String.format("%02d:%02d", mTimeInSec / 60, mTimeInSec % 60);
                     mRecordingTimerText.setText(result);
                     mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
+                }
+            } else if (msg.what == MSG_CLEAR_READ_SIZE) {
+                if (mSizeText != null) {
+                    mSizeText.setText("");
                 }
             }
         }
@@ -369,9 +427,101 @@ public class RecorderFragment extends PageFragment implements
                 public void run() {
                     if (mSizeText != null) {
                         mSizeText.setText(String.valueOf(len));
+                        mTimerHandler.removeMessages(MSG_CLEAR_READ_SIZE);
+                        mTimerHandler.sendEmptyMessageDelayed(MSG_CLEAR_READ_SIZE, 1000);
                     }
                 }
             });
         }
     };
+
+    @Override
+    public void onData(byte[] data, int readSize) {
+//        if (mWaveCanvas != null) {
+//            mWaveCanvas.onData(data, readSize);
+//        }
+    }
+
+    private void waveCreateView() {
+        if (mWaveSurfaceView != null) {
+            mWaveSurfaceView.setLine_off(42);
+            mWaveSurfaceView.setZOrderOnTop(true);
+            mWaveSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+            mWaveSurfaceView.setVisibility(View.GONE);
+        }
+        if (mLeftWaveSurfaceView != null) {
+            mLeftWaveSurfaceView.setLine_off(42);
+            mLeftWaveSurfaceView.setZOrderOnTop(true);
+            mLeftWaveSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        }
+        if (mRightWaveSurfaceView != null) {
+            mRightWaveSurfaceView.setLine_off(42);
+            mRightWaveSurfaceView.setZOrderOnTop(true);
+            mRightWaveSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        }
+    }
+
+    private void waveStartDraw() {
+        if (mWaveCanvas == null) {
+            mWaveCanvas = new WaveCanvas();
+            mWaveCanvas.baseLine = mWaveSurfaceView.getHeight() / 2;
+            mWaveCanvas.startDraw(mWaveSurfaceView, new Handler.Callback() {
+                @Override
+                public boolean handleMessage(android.os.Message msg) {
+                    return true;
+                }
+            });
+        }
+        if (mLeftWaveCanvas == null) {
+            mLeftWaveCanvas = new WaveCanvas();
+            mLeftWaveCanvas.baseLine = mLeftWaveSurfaceView.getHeight() / 2;
+            mLeftWaveCanvas.startDraw(mLeftWaveSurfaceView, new Handler.Callback() {
+                @Override
+                public boolean handleMessage(android.os.Message msg) {
+                    return true;
+                }
+            });
+        }
+        if (mRightWaveCanvas == null) {
+            mRightWaveCanvas = new WaveCanvas();
+            mRightWaveCanvas.baseLine = mRightWaveSurfaceView.getHeight() / 2;
+            mRightWaveCanvas.startDraw(mRightWaveSurfaceView, new Handler.Callback() {
+                @Override
+                public boolean handleMessage(android.os.Message msg) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    private void waveStopDraw() {
+        if (mWaveCanvas != null) {
+            mWaveCanvas.stopDraw();
+            mWaveCanvas = null;
+        }
+        if (mLeftWaveCanvas != null) {
+            mLeftWaveCanvas.stopDraw();
+            mLeftWaveCanvas = null;
+        }
+        if (mRightWaveCanvas != null) {
+            mRightWaveCanvas.stopDraw();
+            mRightWaveCanvas = null;
+        }
+    }
+
+    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    @Override
+    public void onSource(final byte[] leftData, final byte[] rightData) {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mLeftWaveCanvas != null) {
+                    mLeftWaveCanvas.onData(leftData, leftData.length);
+                }
+                if (mRightWaveCanvas != null) {
+                    mRightWaveCanvas.onData(rightData, rightData.length);
+                }
+            }
+        });
+    }
 }
