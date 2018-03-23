@@ -42,7 +42,7 @@ public class WaveCanvas {
     private AudioRecord audioRecord;
     int recBufSize;
     private int marginRight=30;//波形图绘制距离右边的距离
-    private int draw_time = 1000 / 200;//两次绘图间隔的时间
+    private int draw_time = 10000 / 200;//两次绘图间隔的时间
     private float divider = 0.2f;//为了节约绘画时间，每0.2个像素画一个数据
     long c_time;
     private String savePcmPath ;//保存pcm文件路径
