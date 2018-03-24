@@ -141,4 +141,8 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
     public void setSourceDataCallback(SourceDataCallback callback) {
         mSourceDataCallback = callback;
     }
+
+    public int getNcVersion() {
+        return KikaNcBuffer.getVersion();
+    }
 }

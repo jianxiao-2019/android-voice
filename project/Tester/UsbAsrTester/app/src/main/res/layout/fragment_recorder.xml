@@ -194,6 +194,33 @@
         android:layout_alignEnd="@+id/text_size"
         android:layout_alignTop="@+id/status_text"
         android:text=""
-        android:textSize="10dp" />
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/text_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="6dp"
+        android:gravity="end"
+        android:text="ver : 0322_1"
+        android:textSize="10sp" />
+
+    <Button
+        android:id="@+id/button_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wave_view_left"
+        android:layout_alignParentEnd="true"
+        android:text="V. down" />
+
+    <Button
+        android:id="@+id/button_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_down"
+        android:layout_alignParentEnd="true"
+        android:text="V. Up" />
 
 </RelativeLayout>

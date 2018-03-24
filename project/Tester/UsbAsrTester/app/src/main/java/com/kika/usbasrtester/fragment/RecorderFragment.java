@@ -1,5 +1,8 @@
 package com.kika.usbasrtester.fragment;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.kika.usbasrtester.R;
@@ -56,6 +60,7 @@ public class RecorderFragment extends PageFragment implements
     private TextView mResultsView;
     private TextView mSizeText;
     private TextView mVolumeText;
+    private TextView mVersionText;
     private final StringBuilder mResultStr = new StringBuilder();
 
     private VoiceService mVoiceService;
@@ -117,6 +122,31 @@ public class RecorderFragment extends PageFragment implements
         mIntermediateView = view.findViewById(R.id.intermediate_text);
         mResultsView = view.findViewById(R.id.result_text);
         mVolumeText = view.findViewById(R.id.text_volume);
+        mVersionText = view.findViewById(R.id.text_version);
+
+        checkVersion();
+
+        view.findViewById(R.id.button_up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mUsbAudioSource != null) {
+                    mUsbAudioSource.volumeUp();
+
+                    checkVolume();
+                }
+            }
+        });
+
+        view.findViewById(R.id.button_down).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mUsbAudioSource != null) {
+                    mUsbAudioSource.volumeDown();
+
+                    checkVolume();
+                }
+            }
+        });
 
         mRecordingTimerText = view.findViewById(R.id.recording_timer_text);
 
@@ -126,6 +156,14 @@ public class RecorderFragment extends PageFragment implements
         waveCreateView();
 
         setRecordViewEnabled(false);
+    }
+
+    private void checkVersion() {
+        String ncSdkVersion = "";
+        if (mUsbAudioSource != null) {
+            ncSdkVersion = "NC SDK version : " + mUsbAudioSource.getNcVersion();
+        }
+        mVersionText.setText("version : " + getVersionName(getActivity()) + "\n" + ncSdkVersion);
     }
 
     @Override
@@ -243,7 +281,7 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onRecognitionResult(Message message) {
         if (message instanceof TextMessage) {
-            mResultStr.append("\n").append(((TextMessage) message).text[0]);
+            mResultStr.insert(0, "\n").insert(0, ((TextMessage) message).text[0]);
             mResultsView.setText(mResultStr.toString());
 
             long end = System.currentTimeMillis();
@@ -350,9 +388,8 @@ public class RecorderFragment extends PageFragment implements
             mUsbAudioSource.setSourceDataCallback(RecorderFragment.this);
             attachService();
 
-            if (mVolumeText != null) {
-                mVolumeText.setText(String.format(getString(R.string.current_volume), VOLUME_TABLE[mUsbAudioSource.checkVolumeState()]));
-            }
+            checkVolume();
+            checkVersion();
 
             mStatusTextView.setText("Usb Device Attached.");
             setRecordViewEnabled(true);
@@ -388,6 +425,14 @@ public class RecorderFragment extends PageFragment implements
             setRecordViewEnabled(false);
         }
     };
+
+    private void checkVolume() {
+        if (mVolumeText != null) {
+            int volumeLevel = mUsbAudioSource.checkVolumeState();
+            String volume = (volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0) ? "error" : VOLUME_TABLE[volumeLevel];
+            mVolumeText.setText(String.format(getString(R.string.current_volume), volume));
+        }
+    }
 
     private Handler mTimerHandler = new Handler() {
         @Override
@@ -524,5 +569,18 @@ public class RecorderFragment extends PageFragment implements
                 }
             }
         });
+    }
+
+    private String getVersionName(Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(),
+                    PackageManager.GET_CONFIGURATIONS);
+
+            return pi.versionName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

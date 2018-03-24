@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.kika.usbasrtester.AudioPlayerTask;
 import com.kika.usbasrtester.R;
+import com.kika.usbasrtester.listeners.ItemShareClickListener;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -124,6 +125,10 @@ public class PlayerFragment extends PageFragment {
             holder.itemView.setBackgroundColor(isOpenedItem ? 0xFF3B475D : 0xFF2F3A4F);
             holder.recognizeResult.setText(Html.fromHtml(item.recognizeResult));
 
+            holder.shareItem.setOnClickListener(new ItemShareClickListener(
+                    getContext(), item.isSourceUsb, item.filePath));
+
+
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd hh:mm");
             long duration = item.file.length() / 2 / 16000;
             Logger.d("[" + holder.fileName + "] duration = " + duration + " date = " + sdf.format(item.file.lastModified()));
@@ -145,6 +150,7 @@ public class PlayerFragment extends PageFragment {
         TextView controlNc;
         View expendedLayout;
         TextView recognizeResult;
+        View shareItem;
 
         public FileViewHolder(View itemView) {
             super(itemView);
@@ -156,6 +162,8 @@ public class PlayerFragment extends PageFragment {
 
             expendedLayout = itemView.findViewById(R.id.expanded_layout);
             recognizeResult = (TextView) itemView.findViewById(R.id.asr_result_text);
+
+            shareItem = itemView.findViewById(R.id.button_share);
         }
     }
 
