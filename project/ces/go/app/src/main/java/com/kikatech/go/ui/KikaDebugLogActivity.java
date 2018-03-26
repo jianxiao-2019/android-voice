@@ -21,6 +21,7 @@ import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.log.FileLoggerUtil;
+import com.kikatech.voice.util.log.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
 
 public class KikaDebugLogActivity extends BaseActivity {
 
-    private static final String LOG_FOLDER = com.kikatech.voice.util.log.LogUtil.LOG_FOLDER;
+    private static final String LOG_FOLDER = LogUtil.LOG_FOLDER;
 
     private TextView tvLogAppVersion;
     private TextView tvLogContent;
@@ -222,8 +223,10 @@ public class KikaDebugLogActivity extends BaseActivity {
         File[] filePaths = new File[]{
                 FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, LogOnViewUtil.LOG_FILE),
                 FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, LogUtil.LOG_FILE),
-                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE),
-                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, com.kikatech.voice.util.log.Logger.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(com.kikatech.voice.util.log.Logger.LOG_FOLDER,
+                        com.kikatech.voice.util.log.Logger.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(com.kikatech.voice.util.log.Logger.LOG_FOLDER,
+                        com.kikatech.voice.util.log.Logger.LOG_FILE),
         };
         for (File file : filePaths) {
             LogUtil.log("KikaDebugLogActivity", file.getAbsolutePath() + ":" + file.exists());
@@ -259,11 +262,11 @@ public class KikaDebugLogActivity extends BaseActivity {
                         logTitle = "Log Display";
                         break;
                     case R.id.log_voice_sdk:
-                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, com.kikatech.voice.util.log.LogUtil.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(Logger.LOG_FOLDER, Logger.LOG_FILE);
                         logTitle = "Voice SDK Log";
                         break;
                     case R.id.log_voice_mvp:
-                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, com.kikatech.voice.util.log.Logger.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(Logger.LOG_FOLDER, Logger.LOG_FILE);
                         logTitle = "Voice MVP Log";
                         break;
                     default:
