@@ -56,42 +56,42 @@ public class AsrConfigUtil {
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
-                asrConf.setEosPackets(3);
+                asrConf.setEosPackets(10); // 1200 ms
                 break;
             case ASR_MODE_CONVERSATION:
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 asrConf.setSpellingEnabled(false);
-                asrConf.setEosPackets(4);
+                asrConf.setEosPackets(13); // 1560 ms
                 break;
             case ASR_MODE_CONVERSATION_CMD_ALTER:
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
-                asrConf.setEosPackets(2);
+                asrConf.setEosPackets(5); // 600 ms
                 break;
             case ASR_MODE_CONVERSATION_ALTER:
                 asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 asrConf.setSpellingEnabled(false);
-                asrConf.setEosPackets(2);
+                asrConf.setEosPackets(5); // 600 ms
                 break;
             case ASR_MODE_SHORT_COMMAND:
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
-                asrConf.setEosPackets(2);
+                asrConf.setEosPackets(5); // 600 ms
                 break;
             case ASR_MODE_SHORT_COMMAND_SPELLING:
                 asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(true);
-                asrConf.setEosPackets(2);
+                asrConf.setEosPackets(5); // 600 ms
                 break;
         }
 
