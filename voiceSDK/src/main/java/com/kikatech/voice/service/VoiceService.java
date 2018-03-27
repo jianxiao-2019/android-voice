@@ -47,13 +47,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     private static final int RECOGNIZE_STATUS_IDLE = 1;
     private static final int RECOGNIZE_STATUS_RECORDING = 2;
-    private static final int RECOGNIZE_STATUS_RECOGNIZING = 3;
 
-    @IntDef({RECOGNIZE_STATUS_IDLE, RECOGNIZE_STATUS_RECORDING, RECOGNIZE_STATUS_RECOGNIZING})
+    @IntDef({RECOGNIZE_STATUS_IDLE, RECOGNIZE_STATUS_RECORDING})
     private @interface RecognizeStatus {
         int IDLE = RECOGNIZE_STATUS_IDLE;
         int RECORDING = RECOGNIZE_STATUS_RECORDING;
-        int RECOGNIZING = RECOGNIZE_STATUS_RECOGNIZING;
     }
 
     @RecognizeStatus
@@ -257,16 +255,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public synchronized void pauseAsr() {
-        mCurrentStatus = RecognizeStatus.RECOGNIZING;
         mIsAsrPaused = true;
-        cleanVadBosTimer();
+//        cleanVadBosTimer();
         cleanVadEosTimer();
     }
 
     public void stop() {
         Logger.d("VoiceService stop");
-        mCurrentStatus = RecognizeStatus.RECOGNIZING;
-
         mVoiceRecorder.stop();
         mDataPath.stop();
 
@@ -410,20 +405,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                                     if (mVoiceRecognitionListener != null && !mIsAsrPaused) {
                                         mVoiceRecognitionListener.onRecognitionResult(message);
                                         ReportUtil.getInstance().logTimeStamp(message.toString());
-                                    }
-                                    break;
-                                case RecognizeStatus.RECOGNIZING:
-                                    // final recognizing result
-                                    mCurrentStatus = RecognizeStatus.IDLE;
-                                    cleanVadBosTimer();
-                                    cleanVadEosTimer();
-                                    mCurrentSessionCid = newCid;
-                                    mPreSessionCid = mCurrentSessionCid;
-                                    TextMessage finalResult = new TextMessage(mIntermediateMessage);
-                                    mIntermediateMessage = null;
-                                    if (mVoiceRecognitionListener != null && !mIsAsrPaused) {
-                                        mVoiceRecognitionListener.onRecognitionResult(finalResult);
-                                        ReportUtil.getInstance().logTimeStamp(finalResult.toString());
                                     }
                                     break;
                             }
