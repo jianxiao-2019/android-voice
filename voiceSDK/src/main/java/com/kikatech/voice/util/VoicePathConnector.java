@@ -22,8 +22,7 @@ public class VoicePathConnector {
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
         boolean isSupportWakeUpMode = conf.isSupportWakeUpMode() && wakeUpDetector != null;
 
-        IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"),
-                getFrameLengthViaServer(conf));
+        IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"));
         Logger.d("VoicePathConnector isSupportWakeUpMode = " + isSupportWakeUpMode);
         if (isSupportWakeUpMode) {
             wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
@@ -35,10 +34,6 @@ public class VoicePathConnector {
         // TODO : This is for debug.
         dataPath.dump();
         return dataPath;
-    }
-
-    private static int getFrameLengthViaServer(VoiceConfiguration conf) {
-        return conf.getConnectionConfiguration().url.contains("poc") ? 1920 : 6400;
     }
 
     private static IDataPath wrapFileWriter(IDataPath nextPath,
