@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         mSpinner = (Spinner) findViewById(R.id.spinner);
-        final String[] select = {"1", "2", "3", "4", "5"};
+        final String[] select = {"3", "6", "9", "12", "15"};
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, select);
         mSpinner.setAdapter(arrayAdapter);
         mSpinner.setSelection(2);
@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements
                             ((CheckBox) findViewById(R.id.check_spelling)).isChecked());
                     mAsrConfiguration.setVprEnabled(
                             ((CheckBox) findViewById(R.id.check_vpr)).isChecked());
-                    mAsrConfiguration.setEosPackets(mSpinner.getSelectedItemPosition() + 1);
+                    mAsrConfiguration.setEosPackets((mSpinner.getSelectedItemPosition() + 1) * 3);
                     Logger.d("onMessage conf = " + mAsrConfiguration.toJsonString());
                     mVoiceService.updateAsrSettings(mAsrConfiguration);
                 }
@@ -614,7 +614,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setPunctuationEnabled(((CheckBox) findViewById(R.id.check_punctuation)).isChecked())
                 .setSpellingEnabled(((CheckBox) findViewById(R.id.check_spelling)).isChecked())
                 .setVprEnabled(((CheckBox) findViewById(R.id.check_vpr)).isChecked())
-                .setEosPackets(mSpinner.getSelectedItemPosition() + 1)
+                .setEosPackets((mSpinner.getSelectedItemPosition() + 1) * 3)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setIsDebugMode(true);

@@ -219,7 +219,7 @@ public class RecorderFragment extends PageFragment implements
                 .setPunctuationEnabled(false)
                 .setSpellingEnabled(false)
                 .setVprEnabled(false)
-                .setEosPackets(3)
+                .setEosPackets(9)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setIsDebugMode(true);

@@ -156,7 +156,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 //                .setPunctuationEnabled(((CheckBox) findViewById(R.id.check_punctuation)).isChecked())
 //                .setSpellingEnabled(((CheckBox) findViewById(R.id.check_spelling)).isChecked())
 //                .setVprEnabled(((CheckBox) findViewById(R.id.check_vpr)).isChecked())
-                .setEosPackets(3)
+                .setEosPackets(9)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setDebugFileTag(DEBUG_FILE_PATH);

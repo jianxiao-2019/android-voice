@@ -213,7 +213,7 @@ public class AutoTestActivity extends AppCompatActivity implements
                 .setPunctuationEnabled(false)
                 .setSpellingEnabled(false)
                 .setVprEnabled(false)
-                .setEosPackets(3)
+                .setEosPackets(9)
                 .build();
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setDebugFileTag(DEBUG_FILE_PATH);
