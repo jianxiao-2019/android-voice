@@ -26,7 +26,7 @@ public class DialogFlowConfig {
         conf.setIsDebugMode(true);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName(APP_NAME)
-                .setUrl(VoiceConfiguration.HostUrl.DEV_JINCHENG)
+                .setUrl(VoiceConfiguration.HostUrl.DEV_KIKA)
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
                 .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))
