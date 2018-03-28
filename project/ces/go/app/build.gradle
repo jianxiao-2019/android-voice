@@ -105,7 +105,7 @@ dependencies {
     compile 'com.google.apis:google-api-services-youtube:v3-rev189-1.23.0'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
-    compile 'com.kikatech.voice:voice:1.0.2.0'
+    compile 'com.kikatech.voice:voice:1.0.5.6'
 //    compile project(':voice')
 //    compile 'com.amazonaws:aws-android-sdk-polly:2.3.4'
 }
