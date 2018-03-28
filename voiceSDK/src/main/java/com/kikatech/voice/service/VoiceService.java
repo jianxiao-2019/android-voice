@@ -386,7 +386,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                                     mCurrentSessionCid = newCid;
                                     if (message instanceof TextMessage || message instanceof EditTextMessage) {
                                         // final recognizing result
-                                        mCurrentStatus = RecognizeStatus.IDLE;
+                                        if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                                            mCurrentStatus = RecognizeStatus.IDLE;
+                                        }
                                         mIntermediateMessage = null;
                                         mPreSessionCid = mCurrentSessionCid;
                                         cleanVadBosTimer();
