@@ -77,9 +77,12 @@ public class AutoTestActivity extends AppCompatActivity implements
         mLocalVoiceSource.setEofListener(this);
 
         mTextView = (TextView) findViewById(R.id.status_text);
+
+        mAutoTestingAdapter = new AutoTestingAdapter();
         mFileRecyclerView = (RecyclerView) findViewById(R.id.auto_test_recycler_view);
         mFileRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mFileRecyclerView.addItemDecoration(new SpacesItemDecoration(3));
+        mFileRecyclerView.setAdapter(mAutoTestingAdapter);
 
         mStartButton = (Button) findViewById(R.id.button_start);
         mStartButton.setOnClickListener(new View.OnClickListener() {
@@ -124,8 +127,7 @@ public class AutoTestActivity extends AppCompatActivity implements
         }
 
         parseAnsFile();
-        mAutoTestingAdapter = new AutoTestingAdapter();
-        mFileRecyclerView.setAdapter(mAutoTestingAdapter);
+        mAutoTestingAdapter.notifyDataSetChanged();
     }
 
     private void parseAnsFile() {
