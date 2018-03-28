@@ -274,6 +274,15 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         ReportUtil.getInstance().stopTimeStamp("stop record");
     }
 
+    public void cancel() {
+        stop();
+        if (mWebService != null) {
+            mWebService.release();
+            mWebService = WebSocket.openConnection(mWebSocketListener);
+            mWebService.connect(mConf.getConnectionConfiguration());
+        }
+    }
+
     public void sleep() {
         if (mWakeUpDetector != null && mWakeUpDetector.isAwake()) {
             mWakeUpDetector.goSleep();
