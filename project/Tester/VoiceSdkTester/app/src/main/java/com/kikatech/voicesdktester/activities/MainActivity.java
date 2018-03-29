@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         mSpinner = (Spinner) findViewById(R.id.spinner);
-        final String[] select = {"3", "6", "9", "12", "15"};
+        final String[] select = {"3", "6", "9", "12", "15", "18", "21", "24", "27", "30", "33", "36", "39", "42"};
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, select);
         mSpinner.setAdapter(arrayAdapter);
         mSpinner.setSelection(2);
