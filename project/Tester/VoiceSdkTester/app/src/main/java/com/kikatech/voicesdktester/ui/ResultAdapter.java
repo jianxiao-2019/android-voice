@@ -81,6 +81,10 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultItem
     }
 
     public void addResult(Message message) {
-        mCurrentResults.add(0, message);
+        if (message instanceof TextMessage
+                || message instanceof IntermediateMessage
+                || message instanceof EditTextMessage) {
+            mCurrentResults.add(0, message);
+        }
     }
 }
