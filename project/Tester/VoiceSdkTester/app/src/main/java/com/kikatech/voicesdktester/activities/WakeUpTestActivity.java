@@ -232,14 +232,7 @@ public class WakeUpTestActivity extends AppCompatActivity implements
     @Override
     public void onWakeUp() {
         Logger.d("onWakeUp");
-        if (mUsbAudioSource != null) {
-            renameSuccessFile("_USB");
-            renameSuccessFile("_COMMAND");
-        }
-        if (mUsbAudioSource != null) {
-            renameSuccessFile("_SRC");
-            renameSuccessFile("_COMMAND");
-        }
+        String path = DebugUtil.getDebugFilePath();
         mVoiceService.stop();
         mVoiceService.sleep();
         mTextView.setText("");
@@ -247,20 +240,29 @@ public class WakeUpTestActivity extends AppCompatActivity implements
         mResultText.setTextColor(Color.GREEN);
 
         mHandler.removeMessages(MSG_WAKE_UP_BOS);
+        if (mUsbAudioSource != null) {
+            renameSuccessFile(path, "_USB");
+            renameSuccessFile(path, "_COMMAND");
+        }
+        if (mUsbAudioSource == null) {
+            renameSuccessFile(path, "_SRC");
+            renameSuccessFile(path, "_COMMAND");
+        }
         scanFiles();
     }
 
-    private void renameSuccessFile(String pattern) {
-        String path = DebugUtil.getDebugFilePath();
-        Logger.i("renameSuccessFile path = " + path);
-        File oldFile = new File(path + pattern);
-        Logger.i("renameSuccessFile oldFile = " + oldFile);
-        File newFile = new File(path + "_s" + pattern);
-        Logger.i("renameSuccessFile newFile = " + newFile);
+    private void renameSuccessFile(final String path, final String pattern) {
+        new Thread(() -> {
+            Logger.i("renameSuccessFile path = " + path);
+            File oldFile = new File(path + pattern);
+            Logger.i("renameSuccessFile oldFile = " + oldFile);
+            File newFile = new File(path + "_s" + pattern);
+            Logger.i("renameSuccessFile newFile = " + newFile);
 
-        if (oldFile.exists() && !newFile.exists()) {
-            oldFile.renameTo(newFile);
-        }
+            if (oldFile.exists() && !newFile.exists()) {
+                oldFile.renameTo(newFile);
+            }
+        }).start();
     }
 
     @Override

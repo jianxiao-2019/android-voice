@@ -99,7 +99,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             holder.waveView.setVisibility(View.VISIBLE);
             holder.waveView.loadFromFile(filePath);
         } else {
-            holder.waveView.setVisibility(View.INVISIBLE);
+            holder.waveView.setVisibility(View.GONE);
         }
     }
 
