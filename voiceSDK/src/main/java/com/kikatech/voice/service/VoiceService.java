@@ -13,9 +13,11 @@ import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.NBestMessage;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.core.debug.ReportUtil;
+import com.kikatech.voice.util.EmojiUtil;
 import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
 
@@ -158,6 +160,28 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (mVoiceStateChangedListener != null) {
             mVoiceStateChangedListener.onCreated();
         }
+
+        registerMessage();
+    }
+
+    private void registerMessage() {
+        Message.register(Message.MSG_TYPE_INTERMEDIATE, IntermediateMessage.class);
+        Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
+
+        AsrConfiguration asrConfiguration = mConf.getConnectionConfiguration().getAsrConfiguration();
+        if (asrConfiguration.getAlterEnabled()) {
+            Message.register(Message.MSG_TYPE_ALTER, EditTextMessage.class);
+        }
+        if (asrConfiguration.getEmojiEnabled()) {
+            Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
+        }
+        if (mConf.getIsSupportNBest()) {
+            Message.register(Message.MSG_TYPE_NBEST, NBestMessage.class);
+        }
+    }
+
+    private void unregisterMessage() {
+        Message.unregisterAll();
     }
 
     public void start() {
@@ -332,6 +356,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (mWakeUpDetector != null) {
             mWakeUpDetector.close();
         }
+
+        unregisterMessage();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

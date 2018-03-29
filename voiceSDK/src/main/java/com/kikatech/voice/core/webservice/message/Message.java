@@ -21,6 +21,7 @@ public abstract class Message {
     public static final String MSG_TYPE_ALTER = "ALTER";
     public static final String MSG_TYPE_ASR = "ASR";
     public static final String MSG_TYPE_EMOJI = "EMOJI";
+    public static final String MSG_TYPE_NBEST = "NBEST";
 
     public Message() {
     }

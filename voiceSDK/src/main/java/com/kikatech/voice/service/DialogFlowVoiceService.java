@@ -29,11 +29,6 @@ public abstract class DialogFlowVoiceService {
     DialogFlowVoiceService(@NonNull Context ctx, @NonNull IDialogFlowService.IServiceCallback callback) {
         mContext = ctx;
         mServiceCallback = callback;
-
-        Message.register(Message.MSG_TYPE_INTERMEDIATE, IntermediateMessage.class);
-        Message.register(Message.MSG_TYPE_ALTER, EditTextMessage.class);
-        Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
-        Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
     }
 
     void initVoiceService(@NonNull VoiceConfiguration conf) {
@@ -136,8 +131,6 @@ public abstract class DialogFlowVoiceService {
             mVoiceService.stop();
             mVoiceService.destroy();
         }
-
-        Message.unregisterAll();
     }
 
     private final VoiceService.VoiceStateChangedListener mVoiceStateChangedListener = new VoiceService.VoiceStateChangedListener() {

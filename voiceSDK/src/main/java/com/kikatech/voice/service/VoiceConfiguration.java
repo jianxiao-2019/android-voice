@@ -40,8 +40,11 @@ public class VoiceConfiguration {
 
     private int bosDuration = DEFAULT_BOS_DURATION;
     private int eosDuration = DEFAULT_EOS_DURATION;
-    private boolean mSupportWakeUpMode;
+
     private TtsService.TtsSourceType mTtsSource = TtsService.TtsSourceType.KIKA_WEB;
+
+    private boolean mSupportWakeUpMode = false;
+    private boolean mSupportNBest = true;
 
     private boolean mIsDebugMode = false;
     private String mDebugFileTag = "Unknown";
@@ -116,6 +119,14 @@ public class VoiceConfiguration {
 
     public boolean isSupportWakeUpMode() {
         return mSupportWakeUpMode;
+    }
+
+    public void setIsSupportNBest(boolean isNBest) {
+        mSupportNBest = isNBest;
+    }
+
+    public boolean getIsSupportNBest() {
+        return mSupportNBest;
     }
 
     public void setSpeechMode(SpeechMode speechMode) {
