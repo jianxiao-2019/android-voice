@@ -125,6 +125,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
         DFServiceEvent serviceEvent;
         switch (action) {
+            case ToDFServiceEvent.ACTION_CHANGE_SERVER:
+                updateVoiceSource();
+                break;
             case ToDFServiceEvent.ACTION_PING_SERVICE_STATUS:
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS);
                 serviceEvent.putExtra(DFServiceEvent.PARAM_SERVICE_STATUS, mDFServiceStatus);

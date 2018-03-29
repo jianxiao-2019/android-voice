@@ -7,6 +7,7 @@ import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.Gson.GsonUtil;
 import com.kikatech.go.util.preference.GlobalPref;
+import com.kikatech.voice.service.VoiceConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ import java.util.List;
 
 public class UserSettings {
     private static final String TAG = "UserSettings";
+
+    public final static String DEFAULT_DBG_ASR_SERVER = VoiceConfiguration.HostUrl.KIKA_GO;
 
     public final static int SETTING_REPLY_MSG_IGNORE = 0;
     public final static int SETTING_REPLY_MSG_READ = 1;
@@ -36,6 +39,26 @@ public class UserSettings {
         int EN = SETTING_ASR_LOCALE_EN;
         int ZH = SETTING_ASR_LOCALE_ZH;
     }
+
+
+    public static List<String> getDbgAsrServerList() {
+        List<String> serverList = new ArrayList<>();
+        serverList.add(VoiceConfiguration.HostUrl.DEV_HAO);
+        serverList.add(VoiceConfiguration.HostUrl.DEV_JINCHENG);
+        serverList.add(VoiceConfiguration.HostUrl.DEV_KIKA);
+        serverList.add(VoiceConfiguration.HostUrl.DEV_MVP);
+        serverList.add(VoiceConfiguration.HostUrl.KIKA_GO);
+        return serverList;
+    }
+
+    public static void saveDbgAsrServer(String serverUrl) {
+        GlobalPref.getIns().saveDbgAsrServer(serverUrl);
+    }
+
+    public static String getDbgAsrServer() {
+        return GlobalPref.getIns().getDbgAsrServer();
+    }
+
 
     public static void saveReplyMsgSetting(String pkgName, @ReplyMsgSetting int setting) {
         switch (pkgName) {

@@ -17,9 +17,11 @@ import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.eventbus.DFServiceEvent;
+import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -40,6 +42,7 @@ public class KikaDebugLogActivity extends BaseActivity {
 
     private TextView tvLogAppVersion;
     private TextView tvLogContent;
+    private TextView tvDbgAsrServer;
     private int mCurrentCheckedId = R.id.log_display;
 
     private final static String[] MAIL_RECEIVER = new String[]{"brad.chang@kikatech.com", "skeeter.wang@kikatech.com", "daniel.huang@kikatech.com"};
@@ -102,6 +105,7 @@ public class KikaDebugLogActivity extends BaseActivity {
 
         tvLogAppVersion = (TextView) findViewById(R.id.log_app_version);
         tvLogContent = (TextView) findViewById(R.id.log_content);
+        tvDbgAsrServer = (TextView) findViewById(R.id.tv_dbg_asr_server);
 
         ((RadioGroup) findViewById(R.id.radioGroupLog)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -136,6 +140,25 @@ public class KikaDebugLogActivity extends BaseActivity {
 
         loadAsrLocaleSetting();
 
+        loadDbgAsrServer();
+
+        findViewById(R.id.btn_change_server).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogUtil.showDbgAsrServerList(KikaDebugLogActivity.this, new DialogUtil.IDialogListener() {
+                    @Override
+                    public void onApply(Bundle args) {
+                        EventBus.getDefault().post(new ToDFServiceEvent(ToDFServiceEvent.ACTION_CHANGE_SERVER));
+                        loadDbgAsrServer();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                    }
+                });
+            }
+        });
+
         loadLog();
     }
 
@@ -163,6 +186,10 @@ public class KikaDebugLogActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void loadDbgAsrServer() {
+        tvDbgAsrServer.setText(UserSettings.getDbgAsrServer());
     }
 
     private void registerReceivers() {

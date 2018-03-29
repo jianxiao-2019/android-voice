@@ -8,6 +8,7 @@ package com.kikatech.go.eventbus;
 
 public class ToDFServiceEvent extends BaseDFServiceEvent {
 
+    public static final String ACTION_CHANGE_SERVER = "action_change_server";
     public static final String ACTION_PING_SERVICE_STATUS = "action_ping_service_status";
     public static final String ACTION_SCAN_USB_DEVICES = "action_scan_usb_devices";
     public static final String ACTION_ON_APP_FOREGROUND = "action_on_app_foreground";

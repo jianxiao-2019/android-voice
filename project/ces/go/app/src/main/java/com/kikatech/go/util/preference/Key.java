@@ -7,6 +7,8 @@ package com.kikatech.go.util.preference;
 class Key {
     static final String KEY_FIRST_LAUNCH = "key_first_launch";
 
+    static final String KEY_DBG_ASR_SERVER = "key_dbg_asr_server";
+
     static final String KEY_IS_FIRST_LAUNCH_APPLICATION = "key_is_first_launch_application";
 
     static final String KEY_SETTING_REPLY_MSG_WHATSAPP = "key_setting_reply_msg_whatsapp";

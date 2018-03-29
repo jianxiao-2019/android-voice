@@ -43,6 +43,16 @@ public class GlobalPref {
     }
 
 
+    public void saveDbgAsrServer(String serverUrl) {
+        sEditor.putString(Key.KEY_DBG_ASR_SERVER, serverUrl);
+        apply();
+    }
+
+    public String getDbgAsrServer() {
+        return sPref.getString(Key.KEY_DBG_ASR_SERVER, UserSettings.DEFAULT_DBG_ASR_SERVER);
+    }
+
+
     public void setIsFirstLaunch(boolean isFirstLaunch) {
         sEditor.putBoolean(Key.KEY_IS_FIRST_LAUNCH_APPLICATION, isFirstLaunch);
         apply();

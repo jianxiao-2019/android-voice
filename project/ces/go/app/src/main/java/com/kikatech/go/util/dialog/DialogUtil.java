@@ -10,15 +10,21 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
+
+import java.util.List;
 
 /**
  * @author SkeeterWang Created on 2017/12/20.
  */
 
+@SuppressWarnings("SameParameterValue")
 public class DialogUtil {
     private static final String TAG = "DialogUtil";
 
@@ -250,6 +256,68 @@ public class DialogUtil {
 
         mDialog.show();
     }
+
+    public static void showDbgAsrServerList(final Context context, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(true);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_dbg_server_list, null);
+        final RadioGroup group = (RadioGroup) dialogView.findViewById(R.id.server_list_group);
+
+        String currentServer = UserSettings.getDbgAsrServer();
+        List<String> serverList = UserSettings.getDbgAsrServerList();
+        for (String serverUrl : serverList) {
+            RadioButton radioButton = (RadioButton) LayoutInflater.from(context).inflate(R.layout.dialog_dbg_server_list_radiobutton, null);
+            radioButton.setText(serverUrl);
+            group.addView(radioButton);
+            if (currentServer.equals(serverUrl)) {
+                group.check(radioButton.getId());
+            }
+        }
+
+        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+        View mBtnCancel = dialogView.findViewById(R.id.dialog_btn_cancel);
+
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String currentServer = UserSettings.getDbgAsrServer();
+                int checkedRadioBtnId = group.getCheckedRadioButtonId();
+                String newServer = ((RadioButton) group.findViewById(checkedRadioBtnId)).getText().toString();
+                if (!currentServer.equals(newServer)) {
+                    UserSettings.saveDbgAsrServer(newServer);
+                    if (listener != null) {
+                        Bundle args = new Bundle();
+                        listener.onApply(args);
+                    }
+                    safeDismissDialog();
+                }
+            }
+        });
+
+        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onCancel();
+                }
+                safeDismissDialog();
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        setDefaultLayout(window);
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
 
     private static void setDefaultLayout(Window window) {
         try {
