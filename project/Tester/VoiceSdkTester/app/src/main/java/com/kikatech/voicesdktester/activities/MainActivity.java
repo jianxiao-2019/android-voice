@@ -514,11 +514,6 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         waveCreateView();
-
-        Message.register("INTERMEDIATE", IntermediateMessage.class);
-        Message.register("ALTER", EditTextMessage.class);
-        Message.register("ASR", TextMessage.class);
-
         attachService();
 
         mStartButton.setEnabled(true);
@@ -667,7 +662,6 @@ public class MainActivity extends AppCompatActivity implements
     public void onDestroy() {
         super.onDestroy();
         Logger.i("onDestroy");
-        Message.unregisterAll();
     }
 
     @Override

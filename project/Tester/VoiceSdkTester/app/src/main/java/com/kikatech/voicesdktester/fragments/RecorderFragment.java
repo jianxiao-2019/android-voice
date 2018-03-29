@@ -88,10 +88,6 @@ public class RecorderFragment extends PageFragment implements
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Message.register("INTERMEDIATE", IntermediateMessage.class);
-        Message.register("ALTER", EditTextMessage.class);
-        Message.register("ASR", TextMessage.class);
-
         mStartRecordView = view.findViewById(R.id.start_record);
         mStartRecordView.setOnClickListener(this);
         mStopRecordView = view.findViewById(R.id.stop_record);
