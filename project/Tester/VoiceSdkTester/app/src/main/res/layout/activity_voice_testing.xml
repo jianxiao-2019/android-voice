@@ -219,7 +219,7 @@
         <com.kikatech.voicesdktester.wave.view.WaveSurfaceView
             android:id="@+id/wavesfv"
             android:layout_width="fill_parent"
-            android:layout_height="80dp"/>
+            android:layout_height="80dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -243,11 +243,24 @@
                 android:gravity="right|end" />
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/result_recycler"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            tools:context=".activities.LocalPlayBackActivity" />
+            android:layout_height="200dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/result_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/text_volume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                android:layout_marginEnd="6dp"
+                android:text=""
+                android:textSize="10sp" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -276,8 +289,8 @@
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:singleLine="true"
                 android:gravity="right|end"
+                android:singleLine="true"
                 android:text="0.0" />
         </LinearLayout>
 
@@ -424,4 +437,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
+
 </ScrollView>

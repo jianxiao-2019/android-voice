@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements
     private SeekBar mSeekMode;
     private TextView mTextMode;
     private Button mButtonMode;
+    private TextView mVolumeText;
 
     private View mNcParamLayout;
 
@@ -475,6 +476,8 @@ public class MainActivity extends AppCompatActivity implements
         });
         mButtonMode.setEnabled(false);
 
+        mVolumeText = (TextView) findViewById(R.id.text_volume);
+
         checkVersions();
 
         findViewById(R.id.button_volume_up).setOnClickListener(new View.OnClickListener() {
@@ -529,6 +532,18 @@ public class MainActivity extends AppCompatActivity implements
             version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("] ");
         }
         ((TextView) findViewById(R.id.text_version)).setText("version : \n" + version);
+    }
+
+    private void checkVolume() {
+        if (mVolumeText != null) {
+            if (mUsbAudioSource != null) {
+                int volumeLevel = mUsbAudioSource.checkVolumeState();
+                String volume = (volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0) ? "error" : VOLUME_TABLE[volumeLevel];
+                mVolumeText.setText(String.format(getString(R.string.current_volume), volume));
+            } else {
+                mVolumeText.setText("");
+            }
+        }
     }
 
     private int findCheckedServer(String url) {
@@ -841,6 +856,7 @@ public class MainActivity extends AppCompatActivity implements
             mTextView.setText("Using Usb source");
 
             checkVersions();
+            checkVolume();
         }
 
         @Override
@@ -850,6 +866,7 @@ public class MainActivity extends AppCompatActivity implements
             attachService();
 
             checkVersions();
+            checkVolume();
         }
 
         @Override
@@ -858,6 +875,7 @@ public class MainActivity extends AppCompatActivity implements
             attachService();
 
             checkVersions();
+            checkVolume();
         }
     };
 
