@@ -100,4 +100,18 @@ public class KikaAudioDriver extends UsbHostDriver {
         Logger.d("[" + Thread.currentThread().getName() + "] volumeDown mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
         return mUsbAudio.volumeDown();
     }
+
+    public int checkFwVersion() {
+        byte[] result = mUsbAudio.checkFwVersion();
+
+        return result[1] & 0xFF |
+                (result[0] & 0xFF) << 8;
+    }
+
+    public int checkDriverVersion() {
+        byte[] result = mUsbAudio.checkDriverVersion();
+
+        return result[1] & 0xFF |
+                (result[0] & 0xFF) << 8;
+    }
 }

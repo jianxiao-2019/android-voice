@@ -69,6 +69,19 @@ public class UsbAudio {
     public native void stop();
 
     /**
+     *  Return 2 bytes of firmware version
+     * @return        two bytes firmware version, ex. 0x12 0x20
+     *                0xFFFF, means fail to get firmware version
+     */
+    public native byte[] checkFwVersion();
+
+    /**
+     *  Return 2 bytes of driver version, ex. 0x00 0x01
+     * @return        two bytes driver version
+     */
+    public native byte[] checkDriverVersion();
+
+    /**
      *  Return volume level. Max: 9, Min: 1 
      *  1              -16.5 db
      *  2              -6.5 db
