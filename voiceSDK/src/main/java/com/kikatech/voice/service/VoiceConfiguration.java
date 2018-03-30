@@ -249,6 +249,11 @@ public class VoiceConfiguration {
                 return this;
             }
 
+            public Builder putString(String key, String value) {
+                this.bundle.putString(key, value);
+                return this;
+            }
+
             public ConnectionConfiguration build() {
                 if (TextUtils.isEmpty(url) || TextUtils.isEmpty(sign)
                         || TextUtils.isEmpty(userAgent)) {

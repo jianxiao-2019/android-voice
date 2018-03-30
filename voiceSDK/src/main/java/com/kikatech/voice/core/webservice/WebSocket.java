@@ -121,6 +121,7 @@ public class WebSocket {
                 }
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));
+                    Logger.d(key + " = " + conf.bundle.getString(key));
                 }
                 Draft draft = new Draft_6455();
                 try {
