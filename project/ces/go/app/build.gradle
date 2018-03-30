@@ -8,8 +8,8 @@ android {
         applicationId "com.kikatech.go"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 180005060
-        versionName "0.5.6"
+        versionCode 180005070
+        versionName "0.5.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -105,7 +105,7 @@ dependencies {
     compile 'com.google.apis:google-api-services-youtube:v3-rev189-1.23.0'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
-    compile 'com.kikatech.voice:voice:1.0.5.6'
+    compile 'com.kikatech.voice:voice:1.0.5.7'
 //    compile project(':voice')
 //    compile 'com.amazonaws:aws-android-sdk-polly:2.3.4'
 }
