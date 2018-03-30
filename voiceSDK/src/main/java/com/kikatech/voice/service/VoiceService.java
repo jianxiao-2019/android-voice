@@ -281,7 +281,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public synchronized void pauseAsr() {
         mIsAsrPaused = true;
 //        cleanVadBosTimer();
-        cleanVadEosTimer();
+//        cleanVadEosTimer();
     }
 
     public void stop() {
@@ -293,13 +293,15 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mVoiceStateChangedListener.onStopListening();
         }
 //        cleanVadBosTimer();
-        cleanVadEosTimer();
+//        cleanVadEosTimer();
         DebugUtil.convertCurrentPcmToWav();
         ReportUtil.getInstance().stopTimeStamp("stop record");
     }
 
     public void cancel() {
         stop();
+        cleanVadBosTimer();
+        cleanVadEosTimer();
         if (mWebService != null) {
             mWebService.release();
             mWebService = WebSocket.openConnection(mWebSocketListener);
