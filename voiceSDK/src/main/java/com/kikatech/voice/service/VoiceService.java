@@ -417,6 +417,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                         if (newCid != mPreSessionCid) {
                             switch (mCurrentStatus) {
                                 case RecognizeStatus.IDLE:
+                                    if (mVoiceRecognitionListener != null && message instanceof NBestMessage) {
+                                        mVoiceRecognitionListener.onRecognitionResult(message);
+                                        ReportUtil.getInstance().logTimeStamp(message.toString());
+                                    }
                                     break;
                                 case RecognizeStatus.RECORDING:
                                     // new session
