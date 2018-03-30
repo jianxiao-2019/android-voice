@@ -130,6 +130,20 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
         return -1;
     }
 
+    public int checkFwVersion() {
+        if (mAudioDriver != null) {
+            return mAudioDriver.checkFwVersion();
+        }
+        return -1;
+    }
+
+    public int checkDriverVersion() {
+        if (mAudioDriver != null) {
+            return mAudioDriver.checkDriverVersion();
+        }
+        return -1;
+    }
+
     public void setKikaBuffer(int tag) {
         if (!mIsOpened) {
             mKikaBuffer = KikaBuffer.getKikaBuffer(tag);

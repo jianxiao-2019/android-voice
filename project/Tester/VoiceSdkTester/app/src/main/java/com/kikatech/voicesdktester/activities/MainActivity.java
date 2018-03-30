@@ -475,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements
         });
         mButtonMode.setEnabled(false);
 
-        ((TextView) findViewById(R.id.text_version)).setText("version : " + getVersionName(this));
+        checkVersions();
 
         findViewById(R.id.button_volume_up).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -518,6 +518,19 @@ public class MainActivity extends AppCompatActivity implements
 
         mStartButton.setEnabled(true);
         mStopButton.setEnabled(false);
+    }
+
+    private void checkVersions() {
+        StringBuilder version = new StringBuilder();
+        version.append("[app : ").append(getVersionName(this)).append("] ");
+        if (mUsbAudioSource != null) {
+            String fwVersion = mUsbAudioSource.checkFwVersion() == 0xFFFF ? "error"
+                    : String.valueOf(mUsbAudioSource.checkFwVersion());
+            version.append("[fw : ").append(fwVersion).append("] ");
+            version.append("[driver : ").append(mUsbAudioSource.checkDriverVersion()).append("] ");
+            version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("] ");
+        }
+        ((TextView) findViewById(R.id.text_version)).setText("version : \n" + version);
     }
 
     private int findCheckedServer(String url) {
@@ -828,6 +841,8 @@ public class MainActivity extends AppCompatActivity implements
             mButtonMode.setEnabled(true);
 
             mTextView.setText("Using Usb source");
+
+            checkVersions();
         }
 
         @Override
@@ -835,6 +850,8 @@ public class MainActivity extends AppCompatActivity implements
             Logger.d("onDeviceDetached.");
             mUsbAudioSource = null;
             attachService();
+
+            checkVersions();
         }
 
         @Override
@@ -842,6 +859,7 @@ public class MainActivity extends AppCompatActivity implements
             mUsbAudioSource = null;
             attachService();
 
+            checkVersions();
         }
     };
 

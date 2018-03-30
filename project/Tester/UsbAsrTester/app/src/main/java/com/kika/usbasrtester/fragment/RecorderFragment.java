@@ -159,11 +159,16 @@ public class RecorderFragment extends PageFragment implements
     }
 
     private void checkVersion() {
-        String ncSdkVersion = "";
+        StringBuilder version = new StringBuilder();
+        version.append("[app : ").append(getVersionName(getContext())).append("]\n");
         if (mUsbAudioSource != null) {
-            ncSdkVersion = "NC SDK version : " + mUsbAudioSource.getNcVersion();
+            String fwVersion = mUsbAudioSource.checkFwVersion() == 0xFFFF ? "error"
+                    : String.valueOf(mUsbAudioSource.checkFwVersion());
+            version.append("[fw : ").append(fwVersion).append("]\n");
+            version.append("[driver : ").append(mUsbAudioSource.checkDriverVersion()).append("]\n");
+            version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("]\n");
         }
-        mVersionText.setText("version : " + getVersionName(getActivity()) + "\n" + ncSdkVersion);
+        mVersionText.setText("version : \n" + version);
     }
 
     @Override

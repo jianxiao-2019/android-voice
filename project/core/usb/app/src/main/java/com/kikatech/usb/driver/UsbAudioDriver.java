@@ -30,4 +30,8 @@ public interface UsbAudioDriver {
     int volumeUp();
 
     int volumeDown();
+
+    int checkFwVersion();
+
+    int checkDriverVersion();
 }
