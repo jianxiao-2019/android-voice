@@ -524,9 +524,7 @@ public class MainActivity extends AppCompatActivity implements
         StringBuilder version = new StringBuilder();
         version.append("[app : ").append(getVersionName(this)).append("] ");
         if (mUsbAudioSource != null) {
-            String fwVersion = mUsbAudioSource.checkFwVersion() == 0xFFFF ? "error"
-                    : String.valueOf(mUsbAudioSource.checkFwVersion());
-            version.append("[fw : ").append(fwVersion).append("] ");
+            version.append("[fw : 0x").append(Integer.toHexString(mUsbAudioSource.checkFwVersion())).append("] ");
             version.append("[driver : ").append(mUsbAudioSource.checkDriverVersion()).append("] ");
             version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("] ");
         }

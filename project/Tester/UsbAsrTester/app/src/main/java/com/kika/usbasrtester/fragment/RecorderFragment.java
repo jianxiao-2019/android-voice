@@ -162,9 +162,7 @@ public class RecorderFragment extends PageFragment implements
         StringBuilder version = new StringBuilder();
         version.append("[app : ").append(getVersionName(getContext())).append("]\n");
         if (mUsbAudioSource != null) {
-            String fwVersion = mUsbAudioSource.checkFwVersion() == 0xFFFF ? "error"
-                    : String.valueOf(mUsbAudioSource.checkFwVersion());
-            version.append("[fw : ").append(fwVersion).append("]\n");
+            version.append("[fw : 0x").append(Integer.toHexString(mUsbAudioSource.checkFwVersion())).append("]\n");
             version.append("[driver : ").append(mUsbAudioSource.checkDriverVersion()).append("]\n");
             version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("]\n");
         }
