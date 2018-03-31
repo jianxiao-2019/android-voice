@@ -392,6 +392,16 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         }
 
         @Override
+        public void onItemFAQsClicked() {
+            startAnotherActivity(KikaFAQsActivity.class, false);
+        }
+
+        @Override
+        public void onItemReportClicked() {
+            startAnotherActivity(KikaUserReportActivity.class, false);
+        }
+
+        @Override
         public void onItemExitClicked() {
             finishAffinity();
         }

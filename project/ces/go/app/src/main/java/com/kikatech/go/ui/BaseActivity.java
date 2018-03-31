@@ -101,4 +101,21 @@ public abstract class BaseActivity extends FragmentActivity {
             }
         });
     }
+
+    protected void showToastWithApplicationContext(final String message) {
+        __showToastWithApplicationContext(message, Toast.LENGTH_SHORT);
+    }
+
+    protected void showLongToastWithApplicationContext(final String message) {
+        __showToastWithApplicationContext(message, Toast.LENGTH_LONG);
+    }
+
+    private void __showToastWithApplicationContext(final String message, final int len) {
+        BaseActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(BaseActivity.this.getApplicationContext(), message, len).show();
+            }
+        });
+    }
 }

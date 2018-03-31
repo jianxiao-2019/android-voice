@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/drawer_bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:ignore="RtlHardcoded,RtlSymmetry,SpUsage">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_title_area_height"
+        android:background="@color/drawer_title_area"
+        android:gravity="center_vertical"
+        android:paddingLeft="19dp">
+
+        <ImageView
+            android:id="@+id/drawer_title_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/kika_settings_ic_back"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/drawer_item_report"
+            android:textColor="@color/drawer_title_text"
+            android:textSize="@dimen/drawer_title_text_size"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1C1E2C">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="30dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/report_description"
+                android:textColor="#CCFFFFFF"
+                android:textSize="13dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:paddingLeft="10dp"
+                android:text="@string/report_title"
+                android:textColor="@color/drawer_subtitle_text"/>
+
+            <EditText
+                android:id="@+id/report_edt_title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/drawer_bg"
+                android:gravity="top"
+                android:hint="@string/report_title_hint"
+                android:paddingBottom="15dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="15dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="#8D8EB2"
+                android:textSize="14dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:paddingLeft="10dp"
+                android:text="@string/report_details"
+                android:textColor="@color/drawer_subtitle_text"/>
+
+            <EditText
+                android:id="@+id/report_edt_des"
+                android:layout_width="match_parent"
+                android:layout_height="215dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/drawer_bg"
+                android:gravity="top"
+                android:hint="@string/report_details_hint"
+                android:padding="20dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="#8D8EB2"
+                android:textSize="14dp"/>
+
+            <TextView
+                android:id="@+id/report_btn_send"
+                android:layout_width="139dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/selector_bg_report_btn_send"
+                android:enabled="false"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/report_btn_send"
+                android:textColor="@drawable/selector_text_report_btn_send"
+                android:textSize="16dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

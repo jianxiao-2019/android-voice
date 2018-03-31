@@ -164,6 +164,14 @@
     <string name="dialog_common_confirm">"OK"</string>
     <string name="dialog_common_cancel">"Cancel"</string>
 
+    <string-array name="dialog_faq_pager_item_des">
+        <item>"Adjust kikago faced you to get the proper voice recognition1"</item>
+        <item>"Adjust kikago faced you to get the proper voice recognition2"</item>
+        <item>"Adjust kikago faced you to get the proper voice recognition3"</item>
+        <item>"Adjust kikago faced you to get the proper voice recognition4"</item>
+    </string-array>
+
+
     <string name="feature_highlight_title">"Start using KikaGo"</string>
     <string name="feature_highlight_subtitle">"A safer, more convenient and effortless way to communicate on the road."</string>
     <string name="feature_highlight_btn_start">"Get Started"</string>
@@ -176,12 +184,35 @@
     <string name="permission_app">App permissions</string>
     <string name="permission_toast">Setup completed</string>
 
+    <string name="faq_title_general_question">"GENERAL QUESTIONS"</string>
+    <string name="faq_title_useful_tips">"USEFUL TIPS"</string>
+    <string name="faq_q1_title">"How to easily awake Kikago?"</string>
+    <string name="faq_q2_title">"Encounter hardware issue?"</string>
+    <string name="faq_q2_description">"The KikaGo logo is in the front side of KikaGo. When you use KikaGo app with KikaGo Smart Mic, the KikaGo logo needs to face to you."</string>
+    <string name="faq_t1_title">"How to accurately use Kikago?"</string>
+    <string name="faq_t1_description">"You can learn some useful tips from the following topics below:
+1. How to accurately install kikago?
+2. How to adjust kikago to the proper angle?
+3. Adjust kikago faced you
+4. Trigger word"</string>
+
+    <string name="report_description">"Is something not working? Really sorry for the inconvenience. Please let us know what the problem is. Your report is greatly appreciated so we can make the product better!"</string>
+    <string name="report_title">"What is the problem?"</string>
+    <string name="report_title_hint">"Title"</string>
+    <string name="report_details">"Details"</string>
+    <string name="report_details_hint">"Please explain what happened and the steps you took that led to the problem…"</string>
+    <string name="report_btn_send">"Send"</string>
+    <string name="report_toast_sent">"Report sent"</string>
+
+
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>
     <string name="drawer_item_im">"Play messages"</string>
     <string name="drawer_item_mic_status">"KikaGo Smart Mic"</string>
     <string name="drawer_item_tip">"Quick commands"</string>
     <string name="drawer_item_advanced">"Advanced settings"</string>
+    <string name="drawer_item_faq">"FAQs"</string>
+    <string name="drawer_item_report">"Report a Problem"</string>
     <string name="drawer_item_debug">"Debug log"</string>
     <string name="drawer_item_exit">"Exit KikaGo"</string>
     <string name="drawer_item_im_popup_menu_item_yes">"Yes"</string>

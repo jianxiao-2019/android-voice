@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="go_layout_content_padding_top_bottom">30dp</dimen>
-    <dimen name="go_layout_content_padding_left_right">40dp</dimen>
-
     <dimen name="go_layout_sleep_title_text_size">34dp</dimen>
     <dimen name="go_layout_sleep_item_text_size">52dp</dimen>
 
@@ -35,19 +32,4 @@
 
     <dimen name="go_layout_usr_msg_avatar_margin_top">13.5dp</dimen>
     <dimen name="go_layout_usr_msg_avatar_margin_left">17dp</dimen>
-
-    <dimen name="go_layout_gmap_max_width">262dp</dimen>
-
-    <dimen name="dialog_margin_large">40dp</dimen>
-    <dimen name="dialog_margin">22dp</dimen>
-    <dimen name="dialog_padding">18dp</dimen>
-    <dimen name="dialog_padding_left_right">12dp</dimen>
-    <dimen name="dialog_content_margin_space">10dp</dimen>
-    <dimen name="dialog_text_title_size">18sp</dimen>
-    <dimen name="dialog_text_content_size">16sp</dimen>
-    <dimen name="dialog_text_content_padding_left_right">4dp</dimen>
-    <dimen name="dialog_button_text_size">16sp</dimen>
-    <dimen name="dialog_button_height">44dp</dimen>
-
-    <dimen name="underline_width">2px</dimen>
 </resources>

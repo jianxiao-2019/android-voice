@@ -42,6 +42,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!--Item Navigation -->
+
             <LinearLayout
                 android:id="@+id/drawer_item_navigation"
                 android:layout_width="match_parent"
@@ -71,6 +73,9 @@
                 android:layout_height="@dimen/drawer_underline_height"
                 android:background="@color/drawer_underline"/>
 
+
+            <!-- Item Message -->
+
             <LinearLayout
                 android:id="@+id/drawer_item_im"
                 android:layout_width="match_parent"
@@ -98,6 +103,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/drawer_underline_height"
                 android:background="@color/drawer_underline"/>
+
+
+            <!--Item Mic-->
 
             <LinearLayout
                 android:id="@+id/drawer_item_mic"
@@ -156,11 +164,11 @@
                             android:singleLine="true"
                             android:text="@string/drawer_item_mic_usb_data_status_error"
                             android:textColor="#f66b6b"
-                            android:textSize="16dp"
+                            android:textSize="14dp"
                             android:visibility="gone"/>
 
-
                     </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -169,6 +177,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/drawer_underline_height"
                 android:background="@color/drawer_underline"/>
+
+
+            <!-- Item Commands -->
 
             <LinearLayout
                 android:id="@+id/drawer_item_tip"
@@ -198,6 +209,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/drawer_underline_height"
                 android:background="@color/drawer_underline"/>
+
+
+            <!-- Item Advance Settings -->
 
             <LinearLayout
                 android:id="@+id/drawer_item_advanced"
@@ -230,6 +244,75 @@
                 android:background="@color/drawer_underline"
                 android:visibility="gone"/>
 
+
+            <!-- Item FAQs -->
+
+            <LinearLayout
+                android:id="@+id/drawer_item_faq"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_faq"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/drawer_item_faq"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"
+                android:visibility="gone"/>
+
+
+            <!-- Item Report -->
+
+            <LinearLayout
+                android:id="@+id/drawer_item_report"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_report"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/drawer_item_report"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"/>
+
+
+            <!-- Item Debug Logs -->
+
             <LinearLayout
                 android:id="@+id/drawer_item_debug"
                 android:layout_width="match_parent"
@@ -260,6 +343,9 @@
                 android:layout_height="@dimen/drawer_underline_height"
                 android:background="@color/drawer_underline"
                 android:visibility="gone"/>
+
+
+            <!-- Item Exit -->
 
             <LinearLayout
                 android:id="@+id/drawer_item_exit"

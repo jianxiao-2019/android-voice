@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/drawer_bg"
+    android:orientation="vertical"
+    tools:ignore="RtlHardcoded,RtlSymmetry,SpUsage">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_title_area_height"
+        android:background="@color/drawer_title_area"
+        android:gravity="center_vertical"
+        android:paddingLeft="19dp">
+
+        <ImageView
+            android:id="@+id/drawer_title_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/kika_settings_ic_back"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/drawer_item_faq"
+            android:textColor="@color/drawer_title_text"
+            android:textSize="@dimen/drawer_title_text_size"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1C1E2C">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="51dp"
+                android:paddingLeft="@dimen/drawer_submenu_faq_item_padding_left"
+                android:paddingTop="25dp"
+                android:text="@string/faq_title_general_question"
+                android:textColor="@color/drawer_subtitle_text"/>
+
+            <LinearLayout
+                android:id="@+id/faq_q1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_submenu_faq_item_height"
+                android:background="@drawable/selector_bg_faq_item"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/drawer_submenu_faq_item_padding_left"
+                android:paddingRight="@dimen/drawer_submenu_faq_item_padding_right">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/faq_q1_title"
+                    android:textColor="@color/drawer_item_text"
+                    android:textSize="@dimen/drawer_submenu_faq_item_text_size"/>
+
+                <ImageView
+                    android:id="@+id/faq_q1_btn_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/kika_settings_ic_more"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq_q1_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/drawer_submenu_faq_q_content_bg"
+                android:orientation="vertical"
+                android:visibility="gone">
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"/>
+
+            <LinearLayout
+                android:id="@+id/faq_q2"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_submenu_faq_item_height"
+                android:background="@drawable/selector_bg_faq_item"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/drawer_submenu_faq_item_padding_left"
+                android:paddingRight="@dimen/drawer_submenu_faq_item_padding_right">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/faq_q2_title"
+                    android:textColor="@color/drawer_item_text"
+                    android:textSize="@dimen/drawer_submenu_faq_item_text_size"/>
+
+                <ImageView
+                    android:id="@+id/faq_q2_btn_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/kika_settings_ic_more"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faq_q2_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/drawer_submenu_faq_q_content_bg"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="@string/faq_q2_description"
+                    android:textColor="@android:color/white"
+                    android:textSize="12dp"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="161dp"
+                    android:layout_marginBottom="18dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="17dp"
+                    android:src="#3d70ca"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="51dp"
+                android:paddingLeft="@dimen/drawer_submenu_faq_item_padding_left"
+                android:paddingTop="25dp"
+                android:text="@string/faq_title_useful_tips"
+                android:textColor="@color/drawer_subtitle_text"/>
+
+            <TextView
+                android:id="@+id/faq_t1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_submenu_faq_item_height"
+                android:background="@color/drawer_bg"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/drawer_submenu_faq_item_padding_left"
+                android:paddingRight="@dimen/drawer_submenu_faq_item_padding_right"
+                android:text="@string/faq_t1_title"
+                android:textColor="@color/drawer_item_text"
+                android:textSize="@dimen/drawer_submenu_faq_item_text_size"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="sans-serif-light"
+                android:text="@string/faq_t1_description"
+                android:textColor="@android:color/white"
+                android:textSize="12dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
