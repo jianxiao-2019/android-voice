@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,6 +27,9 @@ import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.common.CommonSceneManager;
+import com.kikatech.go.dialogflow.error.ErrorSceneActions;
+import com.kikatech.go.dialogflow.error.ErrorSceneManager;
+import com.kikatech.go.dialogflow.error.SceneError;
 import com.kikatech.go.dialogflow.gotomain.GotoMainSceneManager;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
@@ -46,6 +50,7 @@ import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
+import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.usb.UsbAudioSource;
@@ -237,6 +242,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         }
                         mDialogFlowService.setWakeUpDetectorEnable(true);
                     }
+                    break;
+                case ConnectivityManager.CONNECTIVITY_ACTION:
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, "onConnectivityChanged");
+                    }
+                    if (NetworkUtil.isNetworkAvailable(DialogFlowForegroundService.this)) {
+                        updateVoiceSource();
+                    }
+                    DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED);
+                    sendDFServiceEvent(event);
                     break;
             }
         }
@@ -445,6 +460,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                                 pauseAsr();
                                 mDialogFlowService.talkUncaught();
                                 break;
+                            case VoiceService.ERR_CONNECTION_ERROR:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.logw(TAG, "ERR_NO_SPEECH");
+                                }
+                                pauseAsr(true);
+                                mDialogFlowService.onLocalIntent(SceneError.SCENE, ErrorSceneActions.ACTION_SERVER_CONNECTION_ERROR);
+                                break;
                         }
                     }
 
@@ -616,35 +638,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         }
                         LogOnViewUtil.getIns().updateVoiceSourceInfo(voiceSource);
                     }
-
-                    @Override
-                    public void onConnectionStatusChange(byte status) {
-                        mDFServiceStatus.setConnectionStatus(status);
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, "onConnectionStatusChange:" + status);
-                        }
-                        switch (status) {
-                            case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
-                                if (LogUtil.DEBUG)
-                                    LogUtil.log(TAG, "CONNECTION_STATUS_OPENED");
-                                break;
-                            case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
-                                if (LogUtil.DEBUG)
-                                    LogUtil.log(TAG, "CONNECTION_STATUS_CLOSED");
-                                break;
-                            case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
-                                if (LogUtil.DEBUG)
-                                    LogUtil.log(TAG, "CONNECTION_STATUS_ERR_DISCONNECT");
-                                break;
-                            default:
-                                if (LogUtil.DEBUG)
-                                    LogUtil.log(TAG, "CONNECTION_STATUS_UNKNOWN");
-                                break;
-                        }
-                        DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_CONNECTION_STATUS_CHANGE);
-                        serviceEvent.putExtra(DFServiceEvent.PARAM_CONNECTION_STATUS, status);
-                        sendDFServiceEvent(serviceEvent);
-                    }
                 }, new IDialogFlowService.IAgentQueryStatus() {
                     @Override
                     public void onStart(boolean proactive) {
@@ -684,7 +677,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onError(Exception e) {
-                        if (LogUtil.DEBUG) LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
+                        }
+                        pauseAsr(true);
+                        mDialogFlowService.onLocalIntent(SceneError.SCENE, ErrorSceneActions.ACTION_DF_ENGINE_ERROR);
                         String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
@@ -705,6 +702,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mSceneManagers.add(new CommonSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new GotoMainSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new MusicSceneManager(this, mDialogFlowService));
+        mSceneManagers.add(new ErrorSceneManager(this, mDialogFlowService));
     }
 
     private void setupDialogFlowService() {
@@ -786,9 +784,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private synchronized void pauseAsr() {
+        pauseAsr(false);
+    }
+
+    private synchronized void pauseAsr(boolean cancelTimer) {
         if (mDFServiceStatus.isAsrEnabled()) {
             mDFServiceStatus.setAsrEnabled(false);
-            mDialogFlowService.pauseAsr();
+            mDialogFlowService.pauseAsr(cancelTimer);
         }
     }
 
@@ -816,6 +818,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_USER_PRESENT);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
+            filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(mReceiver, filter);
             EventBus.getDefault().register(this);
         } catch (Exception ignore) {

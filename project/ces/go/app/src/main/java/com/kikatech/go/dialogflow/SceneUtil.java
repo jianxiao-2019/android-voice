@@ -252,6 +252,20 @@ public class SceneUtil {
         return resource.getStringArray(R.array.options_ask_app);
     }
 
+    public static String[] getErrorServerConnection(Context context) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_error_server_connection);
+        String[] ttsArray = resource.getStringArray(R.array.tts_error_server_connection);
+        return new String[]{ui, getStringFromArray(ttsArray)};
+    }
+
+    public static String[] getErrorDFEngine(Context context) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_error_df_engine);
+        String[] ttsArray = resource.getStringArray(R.array.tts_error_df_engine);
+        return new String[]{ui, getStringFromArray(ttsArray)};
+    }
+
     public static String getEmojiAdded(Context context) {
         Resources resource = context.getResources();
         return resource.getString(R.string.tts_emoji_added);

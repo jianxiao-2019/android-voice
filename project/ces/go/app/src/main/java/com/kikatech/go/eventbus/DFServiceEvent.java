@@ -7,6 +7,7 @@ package com.kikatech.go.eventbus;
  */
 
 public class DFServiceEvent extends BaseDFServiceEvent {
+    public static final String ACTION_ON_CONNECTIVITY_CHANGED = "action_on_connectivity_changed";
     public static final String ACTION_ON_PING_SERVICE_STATUS = "action_on_ping_service_status";
     public static final String ACTION_ON_USB_NO_DEVICES = "action_on_usb_no_device";
     public static final String ACTION_EXIT_APP = "action_exit_app";
@@ -27,7 +28,6 @@ public class DFServiceEvent extends BaseDFServiceEvent {
     public static final String ACTION_ON_AGENT_QUERY_ERROR = "action_on_agent_query_error";
     public static final String ACTION_ON_ASR_CONFIG = "action_on_asr_config";
     public static final String ACTION_ON_VOICE_SRC_CHANGE = "action_on_voice_source_change";
-    public static final String ACTION_ON_CONNECTION_STATUS_CHANGE = "action_on_connection_status_change";
     public static final String ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED = "action_on_usb_device_data_status_changed";
 
     public static final String PARAM_WAKE_UP_FROM = "param_wake_up_from";
@@ -40,7 +40,6 @@ public class DFServiceEvent extends BaseDFServiceEvent {
     public static final String PARAM_BOS_DURATION = "param_bos_duration";
     public static final String PARAM_IS_INTERRUPTED = "param_is_interrupted";
     public static final String PARAM_IS_PROACTIVE = "param_is_proactive";
-    public static final String PARAM_CONNECTION_STATUS = "param_connection_status";
     public static final String PARAM_SERVICE_STATUS = "param_service_status";
     public static final String PARAM_IS_USB_DEVICE_DATA_CORRECT = "param_is_usb_device_data_correct";
 

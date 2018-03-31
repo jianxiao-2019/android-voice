@@ -144,6 +144,16 @@
         <item>"SMS"</item>
     </string-array>
 
+    <string name="ui_error_server_connection">"Can not connect to KikaGo service."</string>
+    <string-array name="tts_error_server_connection">
+        <item>"Can not connect to KikaGo service."</item>
+    </string-array>
+
+    <string name="ui_error_df_engine">"Can not connect to language understanding service."</string>
+    <string-array name="tts_error_df_engine">
+        <item>"Can not connect to language understanding service."</item>
+    </string-array>
+
     <string name="tts_emoji_added">"Emoji added"</string>
 
     <string name="ui_option_list_title_common">"Which one?"</string>

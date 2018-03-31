@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.kikatech.go.R;
@@ -20,14 +22,15 @@ import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
+import com.kikatech.go.util.AnimationUtils;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.util.CustomConfig;
 import com.kikatech.voice.util.contact.ContactManager;
 
@@ -71,8 +74,10 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         SceneStage stage;
         boolean isFinished, isInterrupted, proactive;
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
-        byte connectionStatus;
         switch (action) {
+            case DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED:
+                onConnectivityChanged();
+                break;
             case DFServiceEvent.ACTION_EXIT_APP:
                 finishAffinity();
                 break;
@@ -146,18 +151,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 boolean isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
                 onUsbAttachedStatusChanged(isUsbSource);
                 break;
-            case DFServiceEvent.ACTION_ON_CONNECTION_STATUS_CHANGE:
-                connectionStatus = event.getExtras().getByte(DFServiceEvent.PARAM_CONNECTION_STATUS);
-                switch (connectionStatus) {
-                    case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
-                        onConnectionStatusChanged(true);
-                        break;
-                    case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
-                    case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
-                        onConnectionStatusChanged(false);
-                        break;
-                }
-                break;
             case DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS:
                 DFServiceStatus serviceStatus = (DFServiceStatus) event.getExtras().getSerializable(DFServiceEvent.PARAM_SERVICE_STATUS);
                 if (serviceStatus != null && serviceStatus.isInit()) {
@@ -165,16 +158,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                         mUiManager.dispatchWakeUp(null);
                     } else {
                         mUiManager.dispatchSleep();
-                    }
-                    connectionStatus = serviceStatus.getConnectionStatus();
-                    switch (connectionStatus) {
-                        case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED:
-                            onConnectionStatusChanged(true);
-                            break;
-                        case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED:
-                        case IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT:
-                            onConnectionStatusChanged(false);
-                            break;
                     }
                     Boolean isDataCorrect = serviceStatus.isUsbDeviceDataCorrect();
                     boolean isUsbDataCorrect = isDataCorrect == null || isDataCorrect;
@@ -241,6 +224,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         registerReceivers();
         initUiTaskManager();
         DialogFlowForegroundService.processPingDialogFlowStatus();
+        onConnectivityChanged();
 
         if (GlobalPref.getIns().isFirstLaunch()) {
             CustomConfig.removeAllCustomConfigFiles();
@@ -313,14 +297,38 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         }
     }
 
-    private void onConnectionStatusChanged(boolean connected) {
-        if (connected) {
+    private synchronized void onConnectivityChanged() {
+        boolean isNetworkAvailable = NetworkUtil.isNetworkAvailable(KikaAlphaUiActivity.this);
+        if (isNetworkAvailable) {
+            mIconConnectionStatus.clearAnimation();
             mIconConnectionStatus.setVisibility(View.GONE);
         } else {
-            mIconConnectionStatus.setVisibility(View.VISIBLE);
             mIconUsbHardwareStatus.setVisibility(View.GONE);
+            animateNetworkError();
         }
-        mUiManager.dispatchConnectionStatusChanged(connected);
+        mUiManager.dispatchConnectionStatusChanged(isNetworkAvailable);
+    }
+
+    private boolean isAnimating;
+
+    private synchronized void animateNetworkError() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("isAnimating: %s", isAnimating));
+        }
+        if (isAnimating) {
+            return;
+        }
+        isAnimating = true;
+        mIconConnectionStatus.setVisibility(View.VISIBLE);
+        AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
+        animation.setDuration(600);
+        animation.setRepeatCount(2);
+        AnimationUtils.getIns().animate(mIconConnectionStatus, animation, new AnimationUtils.IAnimationEndCallback() {
+            @Override
+            public void onEnd(View view) {
+                isAnimating = false;
+            }
+        });
     }
 
     private void onUsbHardwareStatusChanged(boolean isUsbDataCorrect) {

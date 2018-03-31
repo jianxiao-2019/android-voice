@@ -17,6 +17,7 @@ import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 
 import java.util.LinkedList;
@@ -335,7 +336,9 @@ public class UiTaskManager {
             @Override
             public void run() {
                 layout.sleep();
-                layout.enableTouchWakeUpPanel();
+                if (NetworkUtil.isNetworkAvailable(layout.getContext())) {
+                    layout.enableTouchWakeUpPanel();
+                }
             }
         });
     }
