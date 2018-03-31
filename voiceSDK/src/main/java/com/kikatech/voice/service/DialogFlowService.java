@@ -227,8 +227,13 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         if (Logger.DEBUG) {
             Logger.i(TAG, "pauseAsr");
         }
+        pauseAsr(false);
+    }
+
+    @Override
+    public void pauseAsr(boolean cancelTimer) {
         if (mVoiceService != null) {
-            mVoiceService.pauseAsr();
+            mVoiceService.pauseAsr(cancelTimer);
             if (mServiceCallback != null) {
                 mServiceCallback.onASRPause();
             }

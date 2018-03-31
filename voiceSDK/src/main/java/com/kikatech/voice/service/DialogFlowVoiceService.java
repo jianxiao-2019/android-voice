@@ -147,7 +147,6 @@ public abstract class DialogFlowVoiceService {
             mServiceCallback.onInitComplete();
             mServiceCallback.onAsrConfigChange(mAsrConfiguration);
             mServiceCallback.onRecorderSourceUpdate();
-            mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_OPENED);
         }
 
         @Override
@@ -172,23 +171,7 @@ public abstract class DialogFlowVoiceService {
             if (Logger.DEBUG) {
                 Logger.i(TAG, "[VoiceState] onError : " + reason);
             }
-            switch (reason) {
-                case VoiceService.ERR_NO_SPEECH:
-                    mServiceCallback.onError(reason);
-                    break;
-                default:
-                    mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_ERR_DISCONNECT);
-                    break;
-            }
-        }
-
-        @Override
-        public void onConnectionClosed() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "[VoiceState] onConnectionClosed");
-            }
-
-            mServiceCallback.onConnectionStatusChange(IDialogFlowService.IServiceCallback.CONNECTION_STATUS_CLOSED);
+            mServiceCallback.onError(reason);
         }
 
         @Override

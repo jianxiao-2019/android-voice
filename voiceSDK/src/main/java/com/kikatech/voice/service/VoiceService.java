@@ -112,9 +112,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         void onError(int reason);
 
-        @Deprecated
-        void onConnectionClosed();
-
         void onSpeechProbabilityChanged(float prob);
     }
 
@@ -279,9 +276,15 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public synchronized void pauseAsr() {
+        pauseAsr(false);
+    }
+
+    public synchronized void pauseAsr(boolean cancelTimer) {
         mIsAsrPaused = true;
-//        cleanVadBosTimer();
-//        cleanVadEosTimer();
+        if (cancelTimer) {
+            cleanVadBosTimer();
+            cleanVadEosTimer();
+        }
     }
 
     public void stop() {
@@ -469,7 +472,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                         if (mVoiceStateChangedListener != null) {
                             stop();
                             mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
-                            mVoiceStateChangedListener.onConnectionClosed();
                         }
                     }
                 });

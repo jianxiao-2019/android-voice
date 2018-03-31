@@ -27,7 +27,7 @@ public class DialogFlow {
 
     public DialogFlow(Context context, VoiceConfiguration conf) {
         mAgent = conf.getAgent().create(context.getApplicationContext());
-        if(Logger.DEBUG) {
+        if (Logger.DEBUG) {
             dbgMsg = new String[]{"", ""};
         } else {
             dbgMsg = null;
@@ -43,17 +43,26 @@ public class DialogFlow {
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (callback != null) callback.onStart(proactive);
-                    Intent intent = null;
+                    if (callback != null) {
+                        callback.onStart(proactive);
+                    }
+                    Intent intent;
                     try {
                         intent = mAgent.query(words, nBestWords, entities, queryType);
                     } catch (Exception e) {
-                        if (callback != null) callback.onError(e);
+                        if (callback != null) {
+                            callback.onError(e);
+                        }
+                        return;
                     }
 
-                    if (intent != null) {
+                    if (intent == null) {
                         if (callback != null) {
-                            if(Logger.DEBUG) {
+                            callback.onError(new Exception("DialogFlow engine query intent error."));
+                        }
+                    } else {
+                        if (callback != null) {
+                            if (Logger.DEBUG) {
                                 dbgMsg[0] = intent.getScene() + "-" + intent.getAction();
                                 dbgMsg[1] = intent.getBundleDetail();
                             }
