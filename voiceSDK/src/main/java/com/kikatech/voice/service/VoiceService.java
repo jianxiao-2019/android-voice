@@ -41,8 +41,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public static final int ERR_CONNECTION_ERROR = 2;
     public static final int ERR_NO_SPEECH = 3;
 
-    private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
-    private static final String SERVER_COMMAND_TOKEN = "TOKEN";
+    private static final String SERVER_COMMAND_SETTINGS         = "SETTINGS";
+    private static final String SERVER_COMMAND_TOKEN            = "TOKEN";
+    private static final String SERVER_COMMAND_STOP             = "STOP";           // stop and drop current results
+    private static final String SERVER_COMMAND_RESET            = "RESET";          // stop, drop current results and start new conversation
 
     private static final int MSG_VAD_BOS = 1;
     private static final int MSG_VAD_EOS = 2;
@@ -303,14 +305,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public void cancel() {
+        if (mWebService != null) {
+            mWebService.sendCommand(SERVER_COMMAND_STOP, "");
+        }
         stop();
         cleanVadBosTimer();
         cleanVadEosTimer();
-        if (mWebService != null) {
-            mWebService.release();
-            mWebService = WebSocket.openConnection(mWebSocketListener);
-            mWebService.connect(mConf.getConnectionConfiguration());
-        }
     }
 
     public void sleep() {
