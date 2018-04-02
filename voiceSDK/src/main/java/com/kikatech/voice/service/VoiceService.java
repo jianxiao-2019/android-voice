@@ -41,10 +41,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public static final int ERR_CONNECTION_ERROR = 2;
     public static final int ERR_NO_SPEECH = 3;
 
-    private static final String SERVER_COMMAND_SETTINGS         = "SETTINGS";
-    private static final String SERVER_COMMAND_TOKEN            = "TOKEN";
-    private static final String SERVER_COMMAND_STOP             = "STOP";           // stop and drop current results
-    private static final String SERVER_COMMAND_RESET            = "RESET";          // stop, drop current results and start new conversation
+    private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
+    private static final String SERVER_COMMAND_TOKEN = "TOKEN";
+    private static final String SERVER_COMMAND_STOP = "STOP";           // stop and drop current results
+    private static final String SERVER_COMMAND_RESET = "RESET";          // stop, drop current results and start new conversation
+    private static final String SERVER_COMMAND_COMPLETE = "COMPLETE";       // stop and wait final results
 
     private static final int MSG_VAD_BOS = 1;
     private static final int MSG_VAD_EOS = 2;
@@ -290,6 +291,21 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
+    public void complete() {
+        Logger.d("VoiceService complete");
+        sendCommand(SERVER_COMMAND_COMPLETE, "");
+        mVoiceRecorder.stop();
+        mDataPath.stop();
+
+        if (mVoiceStateChangedListener != null) {
+            mVoiceStateChangedListener.onStopListening();
+        }
+//        cleanVadBosTimer();
+        cleanVadEosTimer();
+        DebugUtil.convertCurrentPcmToWav();
+        ReportUtil.getInstance().stopTimeStamp("stop record");
+    }
+
     public void stop() {
         Logger.d("VoiceService stop");
         mVoiceRecorder.stop();
@@ -305,9 +321,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public void cancel() {
-        if (mWebService != null) {
-            mWebService.sendCommand(SERVER_COMMAND_STOP, "");
-        }
+        sendCommand(SERVER_COMMAND_STOP, "");
         stop();
         cleanVadBosTimer();
         cleanVadEosTimer();
@@ -432,6 +446,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                                     if (message instanceof TextMessage || message instanceof EditTextMessage) {
                                         // final recognizing result
                                         if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                                            sendCommand(SERVER_COMMAND_STOP, "");
                                             mCurrentStatus = RecognizeStatus.IDLE;
                                         }
                                         mIntermediateMessage = null;
@@ -558,12 +573,18 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         @Override
         public void handleMessage(android.os.Message msg) {
             if (msg.what == MSG_VAD_BOS) {
+                if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                    sendCommand(SERVER_COMMAND_STOP, "");
+                }
                 mCurrentStatus = RecognizeStatus.IDLE;
                 if (mVoiceStateChangedListener != null) {
                     mVoiceStateChangedListener.onError(ERR_NO_SPEECH);
                 }
                 return;
             } else if (msg.what == MSG_VAD_EOS) {
+                if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                    sendCommand(SERVER_COMMAND_STOP, "");
+                }
                 mCurrentStatus = RecognizeStatus.IDLE;
                 mPreSessionCid = mCurrentSessionCid;
                 TextMessage finalResult = new TextMessage(mIntermediateMessage);
