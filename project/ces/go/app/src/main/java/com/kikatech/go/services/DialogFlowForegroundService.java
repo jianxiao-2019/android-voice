@@ -403,6 +403,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onASRResume() {
+                        if (LogUtil.DEBUG) {
+                            LogUtil.log(TAG, "onASRResume");
+                        }
                         mDFServiceStatus.setAsrEnabled(true);
                         String action = DFServiceEvent.ACTION_ON_ASR_RESUME;
                         DFServiceEvent event = new DFServiceEvent(action);
@@ -464,7 +467,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                                 if (LogUtil.DEBUG) {
                                     LogUtil.logw(TAG, "ERR_NO_SPEECH");
                                 }
-                                pauseAsr(true);
+                                pauseAsr();
                                 mDialogFlowService.onLocalIntent(SceneError.SCENE, ErrorSceneActions.ACTION_SERVER_CONNECTION_ERROR);
                                 break;
                         }
@@ -680,7 +683,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "IAgentQueryStatus::onError" + e);
                         }
-                        pauseAsr(true);
+                        pauseAsr();
                         mDialogFlowService.onLocalIntent(SceneError.SCENE, ErrorSceneActions.ACTION_DF_ENGINE_ERROR);
                         String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR;
                         DFServiceEvent event = new DFServiceEvent(action);
@@ -784,13 +787,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private synchronized void pauseAsr() {
-        pauseAsr(false);
-    }
-
-    private synchronized void pauseAsr(boolean cancelTimer) {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "pauseAsr");
+        }
         if (mDFServiceStatus.isAsrEnabled()) {
             mDFServiceStatus.setAsrEnabled(false);
-            mDialogFlowService.pauseAsr(cancelTimer);
+            mDialogFlowService.pauseAsr(true);
         }
     }
 
@@ -799,6 +801,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private synchronized void resumeAsr(int bosDuration) {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("resumeAsr, bosDuration: %s", bosDuration));
+        }
         if (!mDFServiceStatus.isAsrEnabled()) {
             mDialogFlowService.resumeAsr(bosDuration);
             mDFServiceStatus.setAsrEnabled(true);
@@ -806,6 +811,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     private synchronized void resumeAsr(boolean startBosNow) {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("resumeAsr, startBosNow: %s", startBosNow));
+        }
         if (!mDFServiceStatus.isAsrEnabled()) {
             mDialogFlowService.resumeAsr(startBosNow);
             mDFServiceStatus.setAsrEnabled(true);
