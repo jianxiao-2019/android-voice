@@ -1,6 +1,7 @@
 package com.kikatech.voice.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.IntDef;
 
@@ -36,6 +37,9 @@ import java.util.Arrays;
  */
 
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
+    // TODO: refactor latter
+    static private SharedPreferences sPref;
+    static private SharedPreferences.Editor sEditor;
 
     public static final int ERR_REASON_NOT_CREATED = 1;
     public static final int ERR_CONNECTION_ERROR = 2;
@@ -129,6 +133,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     private VoiceService(Context context, VoiceConfiguration conf) {
+        sPref = context.getSharedPreferences("voiceSDK", Context.MODE_PRIVATE);
+        sEditor = sPref.edit();
+
         mConf = conf;
 
         IDataPath finalPath = new VoiceService.VoiceDataSender(null);
@@ -378,6 +385,25 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
 
         unregisterMessage();
+
+        checkFiles();
+    }
+
+    private synchronized void checkFiles() {
+        final String KEY_CHECK_FILE_TIME = "KEY_CHECK_FILE_TIME";
+        long lastCheckedTime = sPref.getLong(KEY_CHECK_FILE_TIME, 0);
+        long millisecond = (System.currentTimeMillis() - lastCheckedTime);
+        boolean shouldCheckFile = lastCheckedTime == 0 || millisecond >= 24 * 60 * 60 * 1000;
+        if (Logger.DEBUG) {
+            Logger.d(String.format("Last check time is %s ms ago.", millisecond));
+            Logger.d(String.format("Should Check And Delete Files? %s", shouldCheckFile));
+        }
+        if (shouldCheckFile) {
+            DebugUtil.checkFiles(mConf);
+            sEditor.putLong(KEY_CHECK_FILE_TIME, System.currentTimeMillis());
+            sEditor.apply();
+            sEditor.commit();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

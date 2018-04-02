@@ -3,7 +3,6 @@ package com.kikatech.voice.core.debug;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.LongSparseArray;
-import android.util.Pair;
 
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
@@ -11,6 +10,9 @@ import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.conf.FolderConfig;
+import com.kikatech.voice.util.BackgroundThread;
+import com.kikatech.voice.util.CalendarUtil;
 import com.kikatech.voice.util.log.Logger;
 
 import java.io.BufferedWriter;
@@ -18,9 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Created by ryanlin on 12/02/2018.
@@ -28,9 +28,9 @@ import java.util.Map;
 
 public class DebugUtil {
 
-    private static final String PRE_PHONE   = "Phone_";
+    private static final String PRE_PHONE = "Phone_";
     private static final String PRE_KIKA_GO = "Kikago_";
-    private static final String PRE_LOCAL   = "Local_";
+    private static final String PRE_LOCAL = "Local_";
     private static final String PRE_UNKNOWN = "Unknown_";
 
     private static boolean sIsDebug = false;
@@ -54,7 +54,7 @@ public class DebugUtil {
         cidToFilePath.clear();
     }
 
-    public static boolean isDebug () {
+    public static boolean isDebug() {
         return sIsDebug;
     }
 
@@ -82,7 +82,7 @@ public class DebugUtil {
     }
 
     private static String getFilePrefix(VoiceConfiguration conf) {
-        IVoiceSource source =  conf.getVoiceSource();
+        IVoiceSource source = conf.getVoiceSource();
         if (source == null) {
             return PRE_PHONE;
         } else if (source.getClass().getSimpleName().contains("Usb")) {
@@ -224,6 +224,71 @@ public class DebugUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+
+    public static void checkFiles(VoiceConfiguration conf) {
+        VoiceConfiguration.ExternalConfig externalConfig = conf.getExternalConfig();
+        if (externalConfig == null) {
+            return;
+        }
+        checkAndDeleteFile(getCacheDir(conf), externalConfig.getDebugLogAliveDays());
+        for (FolderConfig config : externalConfig.getFolderConfigs()) {
+            checkAndDeleteFile(config.getFolderDir(), config.getAliveDays());
+        }
+    }
+
+    private static void checkAndDeleteFile(String path, long aliveDays) {
+        checkAndDeleteFile(new File(Environment.getExternalStorageDirectory() + "/" + path), aliveDays);
+    }
+
+    private static void checkAndDeleteFile(final File dir, final long aliveDays) {
+        BackgroundThread.post(new Runnable() {
+            @Override
+            public void run() {
+                if (aliveDays < 0) {
+                    return;
+                }
+                if (dir != null && dir.exists()) {
+                    File[] files = dir.listFiles();
+                    if (files == null) {
+                        return;
+                    }
+                    for (File file : files) {
+                        long daysBetween = CalendarUtil.daysBetweenTodayAnd(file.lastModified());
+                        if (daysBetween >= aliveDays) {
+                            boolean isDeleted = file.delete();
+                            Logger.v(String.format("Sktest, isDeleted: %1$s, file: %2$s", isDeleted, file.getAbsolutePath()));
+                        }
+                    }
+                } else {
+                    Logger.w("Sktest, cacheDir not existed");
+                }
+            }
+        });
+    }
+
+    private static void printFileList(String path) {
+        printFileList(new File(Environment.getExternalStorageDirectory() + "/" + path));
+    }
+
+    private static void printFileList(File dir) {
+        if (dir != null && dir.exists()) {
+            File[] files = dir.listFiles();
+
+            if (files == null) {
+                Logger.w("Sktest, cacheDir is empty");
+                return;
+            }
+            for (File file : files) {
+                Logger.d("Sktest, file: " + file.getAbsolutePath());
+                Logger.d("Sktest, file.lastModified: " + file.lastModified());
+                long daysBetween = CalendarUtil.daysBetweenTodayAnd(file.lastModified());
+                Logger.d("Sktest, file.daysBetween: " + daysBetween);
+            }
+        } else {
+            Logger.w("Sktest, cacheDir not existed");
         }
     }
 }
