@@ -22,7 +22,6 @@ import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.dialog.DialogUtil;
-import com.kikatech.go.util.firebase.RemoteConfigUtil;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -146,23 +145,17 @@ public class KikaDebugLogActivity extends BaseActivity {
         findViewById(R.id.btn_change_server).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RemoteConfigUtil.getIns().fetchConfigs(new RemoteConfigUtil.IFetchListener() {
+                DialogUtil.showDbgAsrServerList(KikaDebugLogActivity.this, new DialogUtil.IDialogListener() {
                     @Override
-                    public void onFetchComplete() {
+                    public void onApply(Bundle args) {
+                        EventBus.getDefault().post(new ToDFServiceEvent(ToDFServiceEvent.ACTION_CHANGE_SERVER));
+                        loadDbgAsrServer();
+                    }
 
+                    @Override
+                    public void onCancel() {
                     }
                 });
-//                DialogUtil.showDbgAsrServerList(KikaDebugLogActivity.this, new DialogUtil.IDialogListener() {
-//                    @Override
-//                    public void onApply(Bundle args) {
-//                        EventBus.getDefault().post(new ToDFServiceEvent(ToDFServiceEvent.ACTION_CHANGE_SERVER));
-//                        loadDbgAsrServer();
-//                    }
-//
-//                    @Override
-//                    public void onCancel() {
-//                    }
-//                });
             }
         });
 
