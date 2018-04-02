@@ -38,8 +38,6 @@ import java.util.ArrayList;
 
 public class KikaDebugLogActivity extends BaseActivity {
 
-    private static final String LOG_FOLDER = LogUtil.LOG_FOLDER;
-
     private TextView tvLogAppVersion;
     private TextView tvLogContent;
     private TextView tvDbgAsrServer;
@@ -58,7 +56,6 @@ public class KikaDebugLogActivity extends BaseActivity {
             R.id.log_display,
             R.id.log_kikago,
             R.id.log_voice_sdk,
-            R.id.log_voice_mvp,
 
             R.id.button_copy,
             R.id.button_send
@@ -248,12 +245,9 @@ public class KikaDebugLogActivity extends BaseActivity {
         ArrayList<Uri> uris = new ArrayList<>();
         //convert from paths to Android friendly Parcelable Uri's
         File[] filePaths = new File[]{
-                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, LogOnViewUtil.LOG_FILE),
-                FileLoggerUtil.getIns().getLogFullPath(LOG_FOLDER, LogUtil.LOG_FILE),
-                FileLoggerUtil.getIns().getLogFullPath(com.kikatech.voice.util.log.Logger.LOG_FOLDER,
-                        com.kikatech.voice.util.log.Logger.LOG_FILE),
-                FileLoggerUtil.getIns().getLogFullPath(com.kikatech.voice.util.log.Logger.LOG_FOLDER,
-                        com.kikatech.voice.util.log.Logger.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(LogUtil.LOG_FOLDER, LogOnViewUtil.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(LogUtil.LOG_FOLDER, LogUtil.LOG_FILE),
+                FileLoggerUtil.getIns().getLogFullPath(Logger.LOG_FOLDER, Logger.LOG_FILE),
         };
         for (File file : filePaths) {
             LogUtil.log("KikaDebugLogActivity", file.getAbsolutePath() + ":" + file.exists());
@@ -281,20 +275,16 @@ public class KikaDebugLogActivity extends BaseActivity {
                 final String logTitle;
                 switch (mCurrentCheckedId) {
                     case R.id.log_display:
-                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, LogOnViewUtil.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(LogUtil.LOG_FOLDER, LogOnViewUtil.LOG_FILE);
                         logTitle = "Log Display";
                         break;
                     case R.id.log_kikago:
-                        log = FileLoggerUtil.getIns().loadLogFile(LOG_FOLDER, com.kikatech.go.util.LogUtil.LOG_FILE);
+                        log = FileLoggerUtil.getIns().loadLogFile(LogUtil.LOG_FOLDER, com.kikatech.go.util.LogUtil.LOG_FILE);
                         logTitle = "Log Display";
                         break;
                     case R.id.log_voice_sdk:
                         log = FileLoggerUtil.getIns().loadLogFile(Logger.LOG_FOLDER, Logger.LOG_FILE);
                         logTitle = "Voice SDK Log";
-                        break;
-                    case R.id.log_voice_mvp:
-                        log = FileLoggerUtil.getIns().loadLogFile(Logger.LOG_FOLDER, Logger.LOG_FILE);
-                        logTitle = "Voice MVP Log";
                         break;
                     default:
                         logTitle = "<Id Error : " + mCurrentCheckedId + ">";
