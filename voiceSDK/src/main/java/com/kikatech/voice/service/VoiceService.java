@@ -261,6 +261,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public synchronized void resumeAsr(int bosDuration) {
         mCurrentStatus = RecognizeStatus.RECORDING;
         mIsAsrPaused = false;
+        checkSpeechMode();
         startVadBosTimer(bosDuration);
     }
 
