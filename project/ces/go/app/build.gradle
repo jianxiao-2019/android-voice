@@ -104,11 +104,14 @@ dependencies {
     compile 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
     // Youtube Data API v3
     compile 'com.google.apis:google-api-services-youtube:v3-rev189-1.23.0'
+    // Polly
+    compile 'com.amazonaws:aws-android-sdk-polly:2.3.4'
+    // Firebase
+    compile 'com.google.firebase:firebase-core:9.2.0'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
     compile 'com.kikatech.voice:voice:1.0.5.7'
 //    compile project(':voice')
-    compile 'com.amazonaws:aws-android-sdk-polly:2.3.4'
 }
 
 crashlytics {
@@ -117,3 +120,4 @@ crashlytics {
     androidNdkLibsOut 'jniLibs'
 }
 
+apply plugin: 'com.google.gms.google-services'

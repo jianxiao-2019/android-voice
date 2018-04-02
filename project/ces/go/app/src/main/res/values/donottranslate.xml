@@ -252,4 +252,6 @@ Step"</string>
 
     <string name="launch_page_slogan">"Powering Hands-Free Communications"</string>
 
+
+    <string name="remote_config_config_version">"0"</string>
 </resources>

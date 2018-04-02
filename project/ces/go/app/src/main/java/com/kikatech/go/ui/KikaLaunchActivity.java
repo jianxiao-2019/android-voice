@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.animation.AlphaAnimation;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.kikatech.go.R;
 import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.eventbus.DFServiceEvent;
@@ -16,6 +18,7 @@ import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.OverlayUtil;
 import com.kikatech.go.util.PermissionUtil;
+import com.kikatech.go.util.firebase.RemoteConfigUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.util.timer.CountingTimer;
 
@@ -88,7 +91,14 @@ public class KikaLaunchActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_launch);
         animate();
-        determinePageToGo();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        // #NOTICE issue:
+        // https://stackoverflow.com/questions/37501124/firebaseremoteconfig-fetch-does-not-trigger-oncompletelistener-every-time
+        performPreload();
     }
 
     @Override
@@ -116,6 +126,39 @@ public class KikaLaunchActivity extends BaseActivity {
         alphaAnimation.setDuration(1000);
         findViewById(R.id.launch_page_logo).startAnimation(alphaAnimation);
         findViewById(R.id.launch_page_slogan).startAnimation(alphaAnimation);
+    }
+
+    private void performPreload() {
+        boolean isGooglePlayServicesAvailable = checkGooglePlayServices();
+        if (isGooglePlayServicesAvailable) {
+            fetchRemoteConfig();
+        } else {
+            determinePageToGo();
+        }
+    }
+
+    private boolean checkGooglePlayServices() {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (LogUtil.DEBUG) LogUtil.logd(TAG, googleApiAvailability.getErrorString(status));
+        switch (status) {
+            case ConnectionResult.SUCCESS:
+                // google play services is updated.
+                // your code goes here...
+                return true;
+            default:
+                // ask user to update google play services.
+                return false;
+        }
+    }
+
+    private void fetchRemoteConfig() {
+        RemoteConfigUtil.getIns().fetchConfigs(new RemoteConfigUtil.IFetchListener() {
+            @Override
+            public void onFetchComplete() {
+                determinePageToGo();
+            }
+        });
     }
 
     private void determinePageToGo() {

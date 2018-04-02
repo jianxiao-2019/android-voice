@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.reflect.TypeToken;
+import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.ui.KikaMultiDexApplication;
@@ -169,5 +170,15 @@ public class GlobalPref {
 
     public boolean getHasShowDialogUsbIllustration() {
         return sPref.getBoolean(Key.KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION, false);
+    }
+
+
+    public void saveRemoteConfigConfigVersion(long version) {
+        sEditor.putLong(Key.KEY_REMOTE_CONFIG_CONFIG_VERSION, version);
+        apply();
+    }
+
+    public long getRemoteConfigVersion() {
+        return sPref.getLong(Key.KEY_REMOTE_CONFIG_CONFIG_VERSION, Long.valueOf(KikaMultiDexApplication.getAppContext().getString(R.string.remote_config_config_version)));
     }
 }
