@@ -20,15 +20,15 @@ import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
-import com.kikatech.voicesdktester.LocalVoiceSource;
+import com.kikatech.voicesdktester.source.LocalNcVoiceSource;
 import com.kikatech.voicesdktester.R;
+import com.kikatech.voicesdktester.source.LocalVoiceSource;
 import com.kikatech.voicesdktester.ui.FileAdapter;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,7 +51,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
 
-    private LocalVoiceSource mLocalVoiceSource;
+    private LocalNcVoiceSource mLocalNcVoiceSource;
 
     private RecyclerView mResultRecyclerView;
     private ResultAdapter mResultAdapter;
@@ -66,9 +66,9 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_playback);
 
-        mLocalVoiceSource = new LocalVoiceSource();
-        mLocalVoiceSource.setEofListener(this);
-//        mLocalVoiceSource.selectFile(MainActivity.PATH_FROM_MIC + "kika_voice_20171230_204859_USB");
+        mLocalNcVoiceSource = new LocalNcVoiceSource();
+        mLocalNcVoiceSource.setEofListener(this);
+//        mLocalNcVoiceSource.setTargetFile(MainActivity.PATH_FROM_MIC + "kika_voice_20171230_204859_USB");
 
         mTextView = (TextView) findViewById(R.id.status_text);
         mFileRecyclerView = (RecyclerView) findViewById(R.id.files_recycler);
@@ -161,7 +161,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setDebugFileTag(DEBUG_FILE_PATH);
         conf.setIsDebugMode(true);
-        conf.source(mLocalVoiceSource);
+        conf.source(mLocalNcVoiceSource);
         conf.setSupportWakeUpMode(false);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
@@ -266,12 +266,12 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
 
     @Override
     public void onItemChecked(String itemStr) {
-        if (mLocalVoiceSource != null) {
+        if (mLocalNcVoiceSource != null) {
             String path = DebugUtil.getDebugFolderPath();
             if (TextUtils.isEmpty(path)) {
                 return;
             }
-            mLocalVoiceSource.selectFile(path + itemStr);
+            mLocalNcVoiceSource.setTargetFile(path + itemStr);
         }
         if (mStartButton != null) {
             mStartButton.setEnabled(true);

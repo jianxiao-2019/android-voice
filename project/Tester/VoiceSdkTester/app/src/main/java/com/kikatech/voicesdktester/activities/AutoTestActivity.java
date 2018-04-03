@@ -24,7 +24,7 @@ import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
-import com.kikatech.voicesdktester.LocalVoiceSource;
+import com.kikatech.voicesdktester.source.LocalNcVoiceSource;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 
@@ -44,7 +44,7 @@ public class AutoTestActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceStateChangedListener,
         VoiceService.VoiceActiveStateListener,
-        LocalVoiceSource.EofListener {
+        LocalNcVoiceSource.EofListener {
 
     private static final String DEBUG_FILE_PATH = "voiceTester";
 
@@ -58,7 +58,7 @@ public class AutoTestActivity extends AppCompatActivity implements
     private File mAudioFile;
     private File mAnswerFile;
 
-    private LocalVoiceSource mLocalVoiceSource;
+    private LocalNcVoiceSource mLocalNcVoiceSource;
 
     private AutoTestingAdapter mAutoTestingAdapter;
     private RecyclerView mFileRecyclerView;
@@ -73,8 +73,8 @@ public class AutoTestActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_test);
 
-        mLocalVoiceSource = new LocalVoiceSource();
-        mLocalVoiceSource.setEofListener(this);
+        mLocalNcVoiceSource = new LocalNcVoiceSource();
+        mLocalNcVoiceSource.setEofListener(this);
 
         mTextView = (TextView) findViewById(R.id.status_text);
 
@@ -119,7 +119,7 @@ public class AutoTestActivity extends AppCompatActivity implements
         for (final File file : folder.listFiles()) {
             if (!file.isDirectory() && file.getName().contains("_USB")) {
                 mAudioFile = file;
-                mLocalVoiceSource.selectFile(mAudioFile.getPath());
+                mLocalNcVoiceSource.setTargetFile(mAudioFile.getPath());
             }
             if (!file.isDirectory() && file.getName().contains("_ANS")) {
                 mAnswerFile = file;
@@ -220,7 +220,7 @@ public class AutoTestActivity extends AppCompatActivity implements
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setDebugFileTag(DEBUG_FILE_PATH);
         conf.setIsDebugMode(true);
-        conf.source(mLocalVoiceSource);
+        conf.source(mLocalNcVoiceSource);
         conf.setSupportWakeUpMode(false);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
