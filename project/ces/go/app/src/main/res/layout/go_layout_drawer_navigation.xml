@@ -7,7 +7,7 @@
     android:layout_gravity="start"
     android:background="@color/drawer_bg"
     android:orientation="vertical"
-    tools:ignore="RtlHardcoded,RtlSymmetry,SpUsage">
+    tools:ignore="RtlHardcoded,RtlSymmetry,SpUsage,UseCompoundDrawables">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,20 +55,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/drawer_navigation_btn_add"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/drawer_item_area_height"
+                android:background="@drawable/selector_bg_drawer_item"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:paddingLeft="35dp"
-                android:text="Add Places"
-                android:textColor="#8e94a9"
-                android:textSize="21dp"/>
+                android:paddingRight="20dp">
+
+                <ImageView
+                    android:id="@+id/go_layout_drawer_navigation_list_item_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_settings_ic_place"/>
+
+                <TextView
+                    android:id="@+id/go_layout_drawer_navigation_list_item_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-light"
+                    android:singleLine="true"
+                    android:text="Add Places"
+                    android:textColor="@drawable/selector_text_drawer_item"
+                    android:textSize="@dimen/drawer_item_text_size"/>
+
+                <ImageView
+                    android:id="@+id/go_layout_drawer_navigation_list_item_btn_delete"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/setting_ic_add"/>
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/drawer_underline_height"
                 android:background="@color/drawer_underline"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_item_area_height"
+                android:gravity="center_vertical"
+                android:paddingLeft="35dp"
+                android:text="Advanced Settings"
+                android:textColor="#8e94a9"
+                android:textSize="21dp"/>
 
             <LinearLayout
                 android:id="@+id/drawer_navigation_confirm"

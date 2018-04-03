@@ -1,6 +1,7 @@
 package com.kikatech.go.ui.fragment;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -177,8 +178,6 @@ public class DrawerNavigationFragment extends Fragment {
             final String address = mDestination.getAddress();
             if (!TextUtils.isEmpty(address)) {
                 mDestinationHolder.mItemAddress.setText(address);
-                mDestinationHolder.mItemBtnEdit.setVisibility(View.VISIBLE);
-            } else {
                 mDestinationHolder.mItemBtnDelete.setVisibility(View.VISIBLE);
                 mDestinationHolder.mItemBtnDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -191,6 +190,10 @@ public class DrawerNavigationFragment extends Fragment {
                         saveSettings();
                     }
                 });
+            } else {
+                mDestinationHolder.mItemAddress.setText("Tap to edit...");
+                mDestinationHolder.mItemAddress.setTextColor(mContext.getResources().getColor(R.color.drawer_submenu_navigation_item_address_hint));
+                mDestinationHolder.mItemBtnEdit.setVisibility(View.VISIBLE);
             }
 
             mDestinationHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -226,6 +229,7 @@ public class DrawerNavigationFragment extends Fragment {
             Glide.clear(mDestinationHolder.mItemIcon);
             mDestinationHolder.mItemName.setText("");
             mDestinationHolder.mItemAddress.setText("");
+            mDestinationHolder.mItemAddress.setTextColor(mContext.getResources().getColor(R.color.drawer_submenu_navigation_item_address));
             mDestinationHolder.mItemBtnEdit.setVisibility(View.GONE);
             mDestinationHolder.mItemBtnDelete.setVisibility(View.GONE);
             mDestinationHolder.mItemBtnDelete.setOnClickListener(null);

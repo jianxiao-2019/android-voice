@@ -2,6 +2,7 @@ package com.kikatech.go.util;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,7 +109,20 @@ public class PopupMenuUtil {
 
         menuView.measure(0, 0);
 
-        popupWindow.showAsDropDown(anchorView, 0 - menuView.getMeasuredWidth(), ResolutionUtil.dp2px(context, 10), Gravity.RIGHT);
+        int menuWidth = menuView.getMeasuredWidth();
+        int menuHeight = menuView.getMeasuredHeight();
+
+        int extraOff = ResolutionUtil.dp2px(context, 10);
+        int deviceHeight = context.getResources().getDisplayMetrics().heightPixels;
+        int xOff = 0 - menuWidth;
+        int yOff;
+        if (location[1] + menuHeight + extraOff > deviceHeight) {
+            yOff = 0 - menuHeight - anchorView.getMeasuredHeight() - extraOff;
+        } else {
+            yOff = extraOff;
+        }
+
+        popupWindow.showAsDropDown(anchorView, xOff, yOff, Gravity.RIGHT);
     }
 
 

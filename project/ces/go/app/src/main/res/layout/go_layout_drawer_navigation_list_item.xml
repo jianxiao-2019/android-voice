@@ -42,7 +42,7 @@
             android:fontFamily="sans-serif-light"
             android:singleLine="true"
             android:text="55 State St. New York Center"
-            android:textColor="#0aa2b4"
+            android:textColor="@color/drawer_submenu_navigation_item_address"
             android:textSize="18dp"/>
     </LinearLayout>
 
