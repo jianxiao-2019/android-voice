@@ -31,7 +31,7 @@ public class IMUtil {
 
     public static final String KEY_SWITCH_SCENE_NAME = "user_name";
 
-    public static final AppInfo[] SUPPORTED_IM = {AppInfo.SMS, AppInfo.WHATSAPP, AppInfo.MESSENGER};
+    public static final AppInfo[] SUPPORTED_IM = {AppInfo.WHATSAPP, AppInfo.MESSENGER, AppInfo.SMS};
 
     public static IMContent parse(@NonNull Bundle parm) {
         if (LogUtil.DEBUG) LogUtil.log("IMContent", "parm:" + parm);
@@ -86,6 +86,9 @@ public class IMUtil {
     public static boolean isIMAppSupported(Context ctx, String pkgName) {
         if (TextUtils.isEmpty(pkgName)) {
             return false;
+        }
+        if (AppInfo.SMS.getPackageName().equals(pkgName)) {
+            return true;
         }
         // Check if package is supported
         for (AppInfo appInfo : SUPPORTED_IM) {

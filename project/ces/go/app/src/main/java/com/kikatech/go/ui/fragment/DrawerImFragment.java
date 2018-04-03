@@ -119,24 +119,29 @@ public class DrawerImFragment extends Fragment {
                     .dontTransform()
                     .into(mAppHolder.mItemIcon);
 
-            switch (UserSettings.getReplyMsgSetting(mAppInfo.getPackageName())) {
-                case UserSettings.SETTING_REPLY_MSG_READ:
-                    mAppHolder.mItemText.setText(mContext.getString(R.string.drawer_item_im_popup_menu_item_yes));
-                    break;
-                case UserSettings.SETTING_REPLY_MSG_IGNORE:
-                    mAppHolder.mItemText.setText(mContext.getString(R.string.drawer_item_im_popup_menu_item_no));
-                    break;
-                case UserSettings.SETTING_REPLY_MSG_ASK_USER:
-                    mAppHolder.mItemText.setText(mContext.getString(R.string.drawer_item_im_popup_menu_item_ask));
-                    break;
-            }
-
-            mAppHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showPopUpMenu(mAppHolder.mItemBtnMore, mAppInfo.getPackageName());
+            if (IMUtil.isIMAppSupported(mContext, mAppInfo.getPackageName())) {
+                switch (UserSettings.getReplyMsgSetting(mAppInfo.getPackageName())) {
+                    case UserSettings.SETTING_REPLY_MSG_READ:
+                        mAppHolder.mItemText.setText(mContext.getString(R.string.drawer_item_im_popup_menu_item_yes));
+                        break;
+                    case UserSettings.SETTING_REPLY_MSG_IGNORE:
+                        mAppHolder.mItemText.setText(mContext.getString(R.string.drawer_item_im_popup_menu_item_no));
+                        break;
+                    case UserSettings.SETTING_REPLY_MSG_ASK_USER:
+                        mAppHolder.mItemText.setText(mContext.getString(R.string.drawer_item_im_popup_menu_item_ask));
+                        break;
                 }
-            });
+
+                mAppHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showPopUpMenu(mAppHolder.mItemBtnMore, mAppInfo.getPackageName());
+                    }
+                });
+            } else {
+                mAppHolder.mItemText.setText("Not installed");
+                mAppHolder.mItemBtnMore.setVisibility(View.GONE);
+            }
         }
 
         private void showPopUpMenu(View anchorView, final String packageName) {
@@ -189,6 +194,7 @@ public class DrawerImFragment extends Fragment {
             AppHolder mAppHolder = (AppHolder) holder;
             mAppHolder.mItemText.setText("");
             Glide.clear(mAppHolder.mItemIcon);
+            mAppHolder.mItemBtnMore.setVisibility(View.VISIBLE);
             mAppHolder.itemView.setOnClickListener(null);
         }
 

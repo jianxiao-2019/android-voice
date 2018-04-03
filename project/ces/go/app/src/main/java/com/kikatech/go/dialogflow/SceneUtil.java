@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import com.kikatech.go.R;
+import com.kikatech.go.dialogflow.im.IMUtil;
+import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -248,8 +252,15 @@ public class SceneUtil {
     }
 
     public static String[] getAskAppOptions(Context context) {
-        Resources resource = context.getResources();
-        return resource.getStringArray(R.array.options_ask_app);
+        List<String> list = new ArrayList<>();
+        for (AppInfo appInfo : IMUtil.SUPPORTED_IM) {
+            if (IMUtil.isIMAppSupported(context, appInfo.getPackageName())) {
+                list.add(appInfo.getAppName());
+            }
+        }
+        return list.toArray(new String[0]);
+//        Resources resource = context.getResources();
+//        return resource.getStringArray(R.array.options_ask_app);
     }
 
     public static String[] getErrorServerConnection(Context context) {
