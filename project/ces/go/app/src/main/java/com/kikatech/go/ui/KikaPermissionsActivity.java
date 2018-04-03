@@ -147,7 +147,7 @@ public class KikaPermissionsActivity extends BaseActivity {
                     DialogFlowForegroundService.processStart(KikaPermissionsActivity.this, DialogFlowForegroundService.class);
                     startAnotherActivity(KikaAlphaUiActivity.class, true, R.anim.activity_no_anim, R.anim.activity_slide_out_left);
                 }
-            }, 1500);
+            }, 800);
         }
     }
 
