@@ -7,7 +7,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.kikatech.go.R;
@@ -321,8 +320,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         isAnimating = true;
         mIconConnectionStatus.setVisibility(View.VISIBLE);
         AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
-        animation.setDuration(600);
-        animation.setRepeatCount(2);
+        animation.setDuration(750);
+        animation.setRepeatCount(1);
         AnimationUtils.getIns().animate(mIconConnectionStatus, animation, new AnimationUtils.IAnimationEndCallback() {
             @Override
             public void onEnd(View view) {
