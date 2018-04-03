@@ -80,7 +80,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     public static final String VOICE_SOURCE_ANDROID = "Android";
     public static final String VOICE_SOURCE_USB = "USB";
 
-    private static final long TTS_DELAY_ASR_RESUME = 500;
+    private static final long TTS_DELAY_ASR_RESUME = 250;
 
     private static class Commands extends BaseForegroundService.Commands {
         private static final String DIALOG_FLOW_SERVICE = "dialog_flow_service_";

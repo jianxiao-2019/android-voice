@@ -168,6 +168,7 @@
     <string-array name="options_common">
         <item>"Yes"</item>
         <item>"No"</item>
+        <item>"Cancel"</item>
     </string-array>
 
 
