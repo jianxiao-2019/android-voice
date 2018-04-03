@@ -218,7 +218,7 @@
 
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>
-    <string name="drawer_item_im">"Play messages"</string>
+    <string name="drawer_item_im">"Messaging"</string>
     <string name="drawer_item_mic_status">"KikaGo Smart Mic"</string>
     <string name="drawer_item_tip">"Quick commands"</string>
     <string name="drawer_item_advanced">"Advanced settings"</string>
