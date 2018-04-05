@@ -24,5 +24,6 @@ public abstract class KikaBuffer {
     public abstract void onData(byte[] data, int len);
     public abstract void create();
     public abstract void close();
+    public abstract void reset();
     public abstract int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes);
 }

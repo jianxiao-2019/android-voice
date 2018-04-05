@@ -21,15 +21,14 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layout_select_source"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/button_source_usb"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Source Usb + NC"
             android:textAllCaps="false" />
@@ -37,7 +36,7 @@
         <Button
             android:id="@+id/button_source_usb_no_nc"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Source Usb NO NC"
             android:textAllCaps="false" />
@@ -45,7 +44,7 @@
         <Button
             android:id="@+id/button_source_android"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Source Android"
             android:textAllCaps="false" />
@@ -81,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Start" />
+            android:text="Playback" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

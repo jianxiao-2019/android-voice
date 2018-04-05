@@ -32,6 +32,11 @@ public class KikaSimpleBuff extends KikaBuffer {
     }
 
     @Override
+    public void reset() {
+        mAudioBuffer.clear();
+    }
+
+    @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
         return mAudioBuffer.read(audioData, offsetInBytes, sizeInBytes);
     }

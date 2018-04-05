@@ -70,4 +70,14 @@ public class AudioBuffer {
             mLock.unlock();
         }
     }
+
+    public void clear() {
+        try {
+            mLock.lock();
+            mReadIndex = 0;
+            mWriteIndex = 0;
+        } finally {
+            mLock.unlock();
+        }
+    }
 }

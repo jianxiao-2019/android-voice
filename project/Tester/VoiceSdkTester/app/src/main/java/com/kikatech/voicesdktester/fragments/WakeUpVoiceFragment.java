@@ -18,6 +18,8 @@ import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.presenter.wakeup.AndroidWakeUpPresenter;
+import com.kikatech.voicesdktester.presenter.wakeup.LocalWakeUpMonoPresenter;
+import com.kikatech.voicesdktester.presenter.wakeup.LocalWakeUpNcPresenter;
 import com.kikatech.voicesdktester.presenter.wakeup.UsbMonoInputWakeUpPresenter;
 import com.kikatech.voicesdktester.presenter.wakeup.UsbNcInputWakeUpPresenter;
 import com.kikatech.voicesdktester.presenter.wakeup.WakeUpPresenter;
@@ -28,11 +30,31 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kikatech.voicesdktester.fragments.WakeUpVoiceFragment.FragmentType.LOCAL_MONO;
+import static com.kikatech.voicesdktester.fragments.WakeUpVoiceFragment.FragmentType.LOCAL_NC;
+import static com.kikatech.voicesdktester.fragments.WakeUpVoiceFragment.FragmentType.VOICE;
+
 /**
  * Created by ryanlin on 02/04/2018.
  */
 
-public class WakeUpVoiceFragment extends Fragment implements WakeUpPresenter.PresenterCallback {
+public class WakeUpVoiceFragment extends Fragment implements
+        WakeUpPresenter.PresenterCallback,
+        FileAdapter.OnItemCheckedListener {
+
+    public enum FragmentType {
+        VOICE,
+        LOCAL_NC,
+        LOCAL_MONO,
+    }
+
+    private static final int WAKE_UP_MODE_ANDROID = 1;
+    private static final int WAKE_UP_MODE_USB_NC = 2;
+    private static final int WAKE_UP_MODE_USB_MONO = 3;
+    private static final int WAKE_UP_MODE_LOCAL_NC = 4;
+    private static final int WAKE_UP_MODE_LOCAL_MONO = 5;
+
+    private FragmentType mFragmentType;
 
     private TextView mTextView;
     private TextView mResultText;
@@ -43,6 +65,16 @@ public class WakeUpVoiceFragment extends Fragment implements WakeUpPresenter.Pre
     private FileAdapter mFileAdapter;
 
     private WakeUpPresenter mWakeUpPresenter;
+
+    public static WakeUpVoiceFragment getInstance(FragmentType fragmentType) {
+        WakeUpVoiceFragment fragment = new WakeUpVoiceFragment();
+        fragment.setFragmentType(fragmentType);
+        return fragment;
+    }
+
+    private void setFragmentType(FragmentType fragmentType) {
+        mFragmentType = fragmentType;
+    }
 
     @Nullable
     @Override
@@ -64,6 +96,7 @@ public class WakeUpVoiceFragment extends Fragment implements WakeUpPresenter.Pre
             }
             mResultText.setText("");
         });
+        mStartButton.setText(isVoiceInput() ? "Start" : "PlayBack");
 
         view.findViewById(R.id.button_source_usb).setOnClickListener(v -> {
             mTextView.setText("Preparing...");
@@ -86,16 +119,33 @@ public class WakeUpVoiceFragment extends Fragment implements WakeUpPresenter.Pre
             mWakeUpPresenter.prepare();
         });
 
+        view.findViewById(R.id.layout_select_source).setVisibility(
+                isVoiceInput() ? View.VISIBLE : View.GONE);
+
         mFileRecyclerView = (RecyclerView) view.findViewById(R.id.files_recycler);
         mFileRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        Logger.d("WakeUpVoiceFragment onViewCreated mFragmentType = " + mFragmentType);
+        if (isVoiceInput()) {
+            mWakeUpPresenter = getWakeUpPresenter(WAKE_UP_MODE_ANDROID);
+            mWakeUpPresenter.prepare();
+        } else if (mFragmentType.equals(LOCAL_NC)) {
+            mWakeUpPresenter = getWakeUpPresenter(WAKE_UP_MODE_LOCAL_NC);
+            mWakeUpPresenter.prepare();
+        } else if (mFragmentType.equals(LOCAL_MONO)) {
+            mWakeUpPresenter = getWakeUpPresenter(WAKE_UP_MODE_LOCAL_MONO);
+            mWakeUpPresenter.prepare();
+        }
+    }
+
+    private boolean isVoiceInput() {
+        return mFragmentType.equals(VOICE);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        mWakeUpPresenter = getWakeUpPresenter(WAKE_UP_MODE_ANDROID);
-        mWakeUpPresenter.prepare();
         scanFiles();
     }
 
@@ -134,6 +184,7 @@ public class WakeUpVoiceFragment extends Fragment implements WakeUpPresenter.Pre
 
         if (mFileAdapter == null) {
             mFileAdapter = new FileAdapter(path, fileNames);
+            mFileAdapter.setOnItemCheckedListener(this);
             mFileRecyclerView.setAdapter(mFileAdapter);
         } else {
             mFileAdapter.updateContent(fileNames);
@@ -165,9 +216,6 @@ public class WakeUpVoiceFragment extends Fragment implements WakeUpPresenter.Pre
         new Handler().postDelayed(this::scanFiles, 500);
     }
 
-    private static final int WAKE_UP_MODE_ANDROID = 1;
-    private static final int WAKE_UP_MODE_USB_NC = 2;
-    private static final int WAKE_UP_MODE_USB_MONO = 3;
     private WakeUpPresenter getWakeUpPresenter(int mode) {
         WakeUpPresenter presenter = null;
         switch (mode) {
@@ -183,8 +231,34 @@ public class WakeUpVoiceFragment extends Fragment implements WakeUpPresenter.Pre
                 presenter = new UsbMonoInputWakeUpPresenter(getContext());
                 presenter.setPresenterCallback(this);
                 break;
+            case WAKE_UP_MODE_LOCAL_NC:
+                presenter = new LocalWakeUpNcPresenter(getContext());
+                presenter.setPresenterCallback(this);
+                break;
+            case WAKE_UP_MODE_LOCAL_MONO:
+                presenter = new LocalWakeUpMonoPresenter(getContext());
+                presenter.setPresenterCallback(this);
+                break;
         }
 
         return presenter;
+    }
+
+    @Override
+    public void onItemChecked(String itemStr) {
+        if (mWakeUpPresenter != null) {
+            String path = DebugUtil.getDebugFolderPath();
+            if (TextUtils.isEmpty(path)) {
+                return;
+            }
+            mWakeUpPresenter.setFilePath(path + itemStr);
+        }
+    }
+
+    @Override
+    public void onNothingChecked() {
+        if (mWakeUpPresenter != null) {
+            mWakeUpPresenter.setFilePath(null);
+        }
     }
 }

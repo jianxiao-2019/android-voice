@@ -23,7 +23,7 @@ public abstract class WakeUpPresenter implements
 
     private static final String DEBUG_FILE_PATH = "voiceTesterWakeUp";
 
-    private VoiceService mVoiceService;
+    protected VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
 
     protected IVoiceSource mVoiceSource;
@@ -45,6 +45,7 @@ public abstract class WakeUpPresenter implements
         if (mVoiceService != null) {
             mVoiceService.start();
         }
+        Logger.d("r5r5 WakeUpPresenter mVoiceSource = " + mVoiceSource);
     }
 
     public void close() {
@@ -116,12 +117,12 @@ public abstract class WakeUpPresenter implements
     @Override
     public void onWakeUp() {
         Logger.d("onWakeUp");
+        mVoiceService.stop();
+        mVoiceService.sleep();
+
         if (mCallback != null) {
             mCallback.onWakeUpResult(true);
         }
-
-        mVoiceService.stop();
-        mVoiceService.sleep();
 
         mHandler.removeMessages(MSG_WAKE_UP_BOS);
     }
@@ -165,6 +166,7 @@ public abstract class WakeUpPresenter implements
     }
 
     public abstract void prepare();
+    public abstract void setFilePath(String filePath);
 
     public void setPresenterCallback(PresenterCallback callback) {
         mCallback = callback;

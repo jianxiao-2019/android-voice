@@ -11,6 +11,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by ryanlin on 02/04/2018.
@@ -25,12 +26,15 @@ public abstract class LocalVoiceSource implements IVoiceSource {
 
     private EofListener mEofListener;
 
+    private AtomicBoolean mIsStopped = new AtomicBoolean(false);
+
     public interface EofListener {
         void onEndOfFile();
     }
 
     public LocalVoiceSource() {
         mKikaBuffer = getKikaBuffer();
+        Logger.i("r5r5 LocalVoiceSource mKikaBuffer = " + mKikaBuffer);
     }
 
     @Override
@@ -44,13 +48,15 @@ public abstract class LocalVoiceSource implements IVoiceSource {
             Logger.e("Please select the target file first.");
             return;
         }
+        mKikaBuffer.reset();
+        mIsStopped.set(false);
         new Thread(() -> {
             try {
                 int bufferSize = getBufferSize();
                 byte[] audioData = new byte[bufferSize];
                 mBuffer = new BufferedInputStream(new FileInputStream(mTargetFilePath));
                 int result;
-                while ((result = mBuffer.read(audioData, 0, bufferSize)) > 0) {
+                while (!mIsStopped.get() &&(result = mBuffer.read(audioData, 0, bufferSize)) > 0) {
                     mKikaBuffer.onData(audioData, result);
                     Logger.i("LocalVoiceSource read from local (d) result = " + result);
                     Thread.sleep(20);
@@ -76,6 +82,7 @@ public abstract class LocalVoiceSource implements IVoiceSource {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mIsStopped.set(true);
         mBuffer = null;
     }
 

@@ -24,8 +24,9 @@ public class WakeUpTestActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
 
-    private WakeUpVoiceFragment mWakeUpVoiceFragment = new WakeUpVoiceFragment();
-//    private PlayerFragment mPlayerFragment = new PlayerFragment();
+    private WakeUpVoiceFragment mWakeUpVoiceFragment = WakeUpVoiceFragment.getInstance(WakeUpVoiceFragment.FragmentType.VOICE);
+    private WakeUpVoiceFragment mWakeUpLocalNcFragment = WakeUpVoiceFragment.getInstance(WakeUpVoiceFragment.FragmentType.LOCAL_NC);
+    private WakeUpVoiceFragment mWakeUpLocalMonoFragment = WakeUpVoiceFragment.getInstance(WakeUpVoiceFragment.FragmentType.LOCAL_MONO);
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private String[] mPermissions = {Manifest.permission.RECORD_AUDIO,
@@ -50,8 +51,10 @@ public class WakeUpTestActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_title_record));
-        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_title_player));
+        mTabLayout.addTab(mTabLayout.newTab().setText("Voice Input"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("PlayBack with NC"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("PlayBack without NC"));
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(new ContentPagerAdapter(getSupportFragmentManager()));
 
         mViewPager.addOnPageChangeListener(
@@ -93,13 +96,15 @@ public class WakeUpTestActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if (position == 0) {
                 return mWakeUpVoiceFragment;
+            } else if (position == 1) {
+                return mWakeUpLocalNcFragment;
             }
-            return mWakeUpVoiceFragment;
+            return mWakeUpLocalMonoFragment;
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return 3;
         }
     }
 }

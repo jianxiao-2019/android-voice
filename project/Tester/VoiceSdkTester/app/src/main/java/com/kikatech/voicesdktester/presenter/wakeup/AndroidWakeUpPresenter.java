@@ -20,6 +20,10 @@ public class AndroidWakeUpPresenter extends WakeUpPresenter {
     }
 
     @Override
+    public void setFilePath(String filePath) {
+    }
+
+    @Override
     public void onWakeUp() {
         String path = DebugUtil.getDebugFilePath();
         super.onWakeUp();

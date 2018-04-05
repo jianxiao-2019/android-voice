@@ -31,6 +31,10 @@ public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
         mUsbAudioService.scanDevices();
     }
 
+    @Override
+    public void setFilePath(String filePath) {
+    }
+
     private IUsbAudioListener mIUsbAudioListener = new IUsbAudioListener() {
 
         @Override
