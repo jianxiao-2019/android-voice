@@ -4,8 +4,9 @@ import android.content.Context;
 import android.os.Handler;
 
 import com.kikatech.voice.core.recorder.IVoiceSource;
-import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.service.VoiceService;
+import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
@@ -18,8 +19,8 @@ import java.io.File;
  */
 
 public abstract class WakeUpPresenter implements
-        VoiceService.VoiceStateChangedListener,
-        VoiceService.VoiceActiveStateListener {
+        VoiceService.VoiceRecognitionListener,
+        VoiceService.VoiceWakeUpListener {
 
     private static final String DEBUG_FILE_PATH = "voiceTesterWakeUp";
 
@@ -44,6 +45,13 @@ public abstract class WakeUpPresenter implements
     public void start() {
         if (mVoiceService != null) {
             mVoiceService.start();
+
+            if (mCallback != null) {
+                mCallback.onUpdateStatus("Start recording");
+                mCallback.onReadyStateChanged(false);
+            }
+
+            mHandler.sendEmptyMessageDelayed(MSG_WAKE_UP_BOS, 3000);
         }
         Logger.d("r5r5 WakeUpPresenter mVoiceSource = " + mVoiceSource);
     }
@@ -88,36 +96,19 @@ public abstract class WakeUpPresenter implements
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
         mVoiceService = VoiceService.getService(mContext, conf);
-        mVoiceService.setVoiceStateChangedListener(this);
-        mVoiceService.setVoiceActiveStateListener(this);
+        mVoiceService.setVoiceRecognitionListener(this);
+        mVoiceService.setVoiceWakeUpListener(this);
         mVoiceService.create();
-    }
-
-    @Override
-    public void onStartListening() {
-        Logger.d("WakeUpTestActivity onStartListening");
-
-        if (mCallback != null) {
-            mCallback.onUpdateStatus("Start recording");
-            mCallback.onReadyStateChanged(false);
-        }
-
-        mHandler.sendEmptyMessageDelayed(MSG_WAKE_UP_BOS, 3000);
-    }
-
-    @Override
-    public void onStopListening() {
-        Logger.d("WakeUpTestActivity onStopListening");
-        if (mCallback != null) {
-            mCallback.onUpdateStatus("Stop recording");
-            mCallback.onReadyStateChanged(true);
-        }
     }
 
     @Override
     public void onWakeUp() {
         Logger.d("onWakeUp");
-        mVoiceService.stop();
+        mVoiceService.stop(VoiceService.StopType.NORMAL);
+        if (mCallback != null) {
+            mCallback.onUpdateStatus("Stop recording");
+            mCallback.onReadyStateChanged(true);
+        }
         mVoiceService.sleep();
 
         if (mCallback != null) {
@@ -138,9 +129,11 @@ public abstract class WakeUpPresenter implements
         public void handleMessage(android.os.Message msg) {
             super.handleMessage(msg);
             if (msg.what == MSG_WAKE_UP_BOS) {
-                mVoiceService.stop();
+                mVoiceService.stop(VoiceService.StopType.NORMAL);
                 if (mCallback != null) {
                     mCallback.onWakeUpResult(false);
+                    mCallback.onUpdateStatus("Stop recording");
+                    mCallback.onReadyStateChanged(true);
                 }
             }
         }
@@ -173,22 +166,12 @@ public abstract class WakeUpPresenter implements
     }
 
     @Override
-    public void onCreated() {
-
-    }
-
-    @Override
-    public void onDestroyed() {
-
-    }
-
-    @Override
     public void onError(int reason) {
 
     }
 
     @Override
-    public void onSpeechProbabilityChanged(float prob) {
+    public void onRecognitionResult(Message message) {
 
     }
 }

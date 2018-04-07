@@ -33,12 +33,10 @@ import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSource;
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.core.webservice.message.TextMessage;
-import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.service.VoiceService;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
@@ -51,13 +49,13 @@ import com.xiao.usbaudio.AudioPlayBack;
 
 import java.util.Locale;
 
-import static com.kikatech.voice.service.VoiceService.ERR_CONNECTION_ERROR;
-import static com.kikatech.voice.service.VoiceService.ERR_REASON_NOT_CREATED;
+import static com.kikatech.voice.service.voice.VoiceService.ERR_CONNECTION_ERROR;
+import static com.kikatech.voice.service.voice.VoiceService.ERR_NO_SPEECH;
+import static com.kikatech.voice.service.voice.VoiceService.ERR_REASON_NOT_CREATED;
 
 public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
-        VoiceService.VoiceStateChangedListener,
-        VoiceService.VoiceActiveStateListener,
+        VoiceService.VoiceWakeUpListener,
         VoiceService.VoiceDataListener,
         TtsSource.TtsStateChangedListener {
 
@@ -137,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements
     private WaveCanvas mWaveCanvas;
     private WaveSurfaceView mWavesfv;
 
+    private VoiceConfiguration.SpeechMode mSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,6 +175,18 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mVoiceService != null) {
                     mVoiceService.start();
+
+                    Logger.d("MainActivity onStartListening");
+                    waveStartDraw();
+                    mResultAdapter.clearResults();
+                    mResultAdapter.notifyDataSetChanged();
+
+                    if (mTextView != null) {
+                        mTextView.setText("starting.");
+                    }
+                    mStartButton.setEnabled(false);
+                    mStopButton.setEnabled(true);
+                    mReportButton.setEnabled(false);
                 } else {
                     if (mTextView != null) {
                         mTextView.setText("Select an audio source first.");
@@ -192,7 +204,16 @@ public class MainActivity extends AppCompatActivity implements
                     mVadTextView.setText("0.0");
                 }
                 if (mVoiceService != null) {
-                    mVoiceService.stop();
+                    mVoiceService.stop(VoiceService.StopType.NORMAL);
+
+                    Logger.d("MainActivity onStopListening");
+                    waveStopDraw();
+                    if (mTextView != null) {
+                        mTextView.setText("stopped.");
+                    }
+                    mStartButton.setEnabled(true);
+                    mStopButton.setEnabled(false);
+                    mReportButton.setEnabled(true);
                 }
             }
         });
@@ -642,6 +663,9 @@ public class MainActivity extends AppCompatActivity implements
         conf.setDebugFileTag(DEBUG_FILE_TAG);
         conf.source(mUsbAudioSource);
         conf.setSupportWakeUpMode(IS_WAKE_UP_MODE);
+        conf.setBosDuration(14500);
+        conf.setEosDuration(10000);
+        conf.setSpeechMode(mSpeechMode);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
                 .setUrl(PreferenceUtil.getString(
@@ -655,8 +679,8 @@ public class MainActivity extends AppCompatActivity implements
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
         mVoiceService = VoiceService.getService(this, conf);
+        mVoiceService.setVoiceDataListener(this);
         mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.setVoiceDataListener(this);
         mVoiceService.create();
     }
@@ -722,41 +746,16 @@ public class MainActivity extends AppCompatActivity implements
         }
         mResultAdapter.addResult(message);
         mResultAdapter.notifyDataSetChanged();
-    }
 
-    @Override
-    public void onCreated() {
-    }
-
-    @Override
-    public void onStartListening() {
-        Logger.d("MainActivity onStartListening");
-        waveStartDraw();
-        mResultAdapter.clearResults();
-        mResultAdapter.notifyDataSetChanged();
-
-        if (mTextView != null) {
-            mTextView.setText("starting.");
+        if (mSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+            waveStopDraw();
+            if (mTextView != null) {
+                mTextView.setText("stopped.");
+            }
+            mStartButton.setEnabled(true);
+            mStopButton.setEnabled(false);
+            mReportButton.setEnabled(true);
         }
-        mStartButton.setEnabled(false);
-        mStopButton.setEnabled(true);
-        mReportButton.setEnabled(false);
-    }
-
-    @Override
-    public void onStopListening() {
-        Logger.d("MainActivity onStopListening");
-        waveStopDraw();
-        if (mTextView != null) {
-            mTextView.setText("stopped.");
-        }
-        mStartButton.setEnabled(true);
-        mStopButton.setEnabled(false);
-        mReportButton.setEnabled(true);
-    }
-
-    @Override
-    public void onDestroyed() {
     }
 
     @Override
@@ -771,7 +770,15 @@ public class MainActivity extends AppCompatActivity implements
             if (mTextView != null) {
                 mTextView.setText("Connection error.");
             }
+        } else if (reason == ERR_NO_SPEECH) {
+            if (mTextView != null) {
+                mTextView.setText("No Speech timeout.");
+            }
         }
+        waveStopDraw();
+        mStartButton.setEnabled(true);
+        mStopButton.setEnabled(false);
+        mReportButton.setEnabled(true);
     }
 
     @Override

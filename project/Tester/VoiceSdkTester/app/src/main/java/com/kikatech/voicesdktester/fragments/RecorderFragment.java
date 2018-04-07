@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +18,9 @@ import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsSource;
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
-import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.core.webservice.message.TextMessage;
-import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.service.VoiceService;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
@@ -35,7 +31,6 @@ import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
-import static com.kikatech.voice.service.VoiceService.ERR_CONNECTION_ERROR;
 import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_APP;
 
 /**
@@ -45,8 +40,7 @@ import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_
 public class RecorderFragment extends PageFragment implements
         View.OnClickListener,
         VoiceService.VoiceRecognitionListener,
-        VoiceService.VoiceStateChangedListener,
-        VoiceService.VoiceActiveStateListener,
+        VoiceService.VoiceWakeUpListener,
         TtsSource.TtsStateChangedListener {
 
     private static final String DEBUG_FILE_TAG = "voiceTesterUi";
@@ -232,7 +226,6 @@ public class RecorderFragment extends PageFragment implements
                 .build());
         mVoiceService = VoiceService.getService(getActivity(), conf);
         mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
     }
 
@@ -255,12 +248,38 @@ public class RecorderFragment extends PageFragment implements
             case R.id.start_record:
                 if (mVoiceService != null) {
                     mVoiceService.start();
+
+                    if (mStartRecordView != null) {
+                        mStartRecordView.setVisibility(View.GONE);
+                    }
+                    if (mStopRecordView != null) {
+                        mStopRecordView.setVisibility(View.VISIBLE);
+                    }
+
+                    mRecordingTimerText.setText("00:00");
+                    mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
                 }
                 break;
             case R.id.stop_record:
                 if (mVoiceService != null) {
-                    mVoiceService.stop();
+                    mVoiceService.stop(VoiceService.StopType.NORMAL);
                 }
+                if (mStartRecordView != null) {
+                    mStartRecordView.setVisibility(View.VISIBLE);
+                }
+                if (mStopRecordView != null) {
+                    mStopRecordView.setVisibility(View.GONE);
+                }
+
+                mTimerHandler.removeMessages(MSG_TIMER);
+                mTimeInSec = 0;
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshRecentView();
+                    }
+                }, 1000);
                 break;
             case R.id.device_button_left:
                 break;
@@ -294,70 +313,12 @@ public class RecorderFragment extends PageFragment implements
     }
 
     @Override
-    public void onCreated() {
-
-    }
-
-    @Override
-    public void onStartListening() {
-        if (mStartRecordView != null) {
-            mStartRecordView.setVisibility(View.GONE);
-        }
-        if (mStopRecordView != null) {
-            mStopRecordView.setVisibility(View.VISIBLE);
-        }
-
-        mRecordingTimerText.setText("00:00");
-        mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
-//        mStartSpeech = false;
-    }
-
-    @Override
-    public void onStopListening() {
-        if (mStartRecordView != null) {
-            mStartRecordView.setVisibility(View.VISIBLE);
-        }
-        if (mStopRecordView != null) {
-            mStopRecordView.setVisibility(View.GONE);
-        }
-
-        mTimerHandler.removeMessages(MSG_TIMER);
-        mTimeInSec = 0;
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refreshRecentView();
-            }
-        }, 1000);
-    }
-
-    @Override
-    public void onDestroyed() {
-
-    }
-
-    @Override
     public void onError(int reason) {
         Logger.e("onError reason = " + reason);
         // setViewToDisableState();
         if (mErrorHintText != null) {
             mErrorHintText.setVisibility(View.VISIBLE);
         }
-    }
-
-    @Override
-    public void onSpeechProbabilityChanged(float prob) {
-//        if (mStartSpeech && prob < 0.2) {
-//            if (!mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
-//                mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_TIMER, 1600);
-//            }
-//        } else if (prob > 0.2) {
-//            mStartSpeech = true;
-//            if (mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
-//                mTimerHandler.removeMessages(MSG_VAD_TIMER);
-//            }
-//        }
     }
 
     @Override
@@ -520,7 +481,7 @@ public class RecorderFragment extends PageFragment implements
             mTask.stop();
         }
         if (mVoiceService != null) {
-            mVoiceService.stop();
+            mVoiceService.stop(VoiceService.StopType.NORMAL);
         }
     }
 

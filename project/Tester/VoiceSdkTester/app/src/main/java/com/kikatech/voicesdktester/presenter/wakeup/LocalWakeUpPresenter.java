@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.source.LocalVoiceSource;
 
@@ -56,7 +57,7 @@ public abstract class LocalWakeUpPresenter extends WakeUpPresenter implements Lo
     @Override
     public void onEndOfFile() {
         Logger.d("LocalWakeUpPresenter onEndOfFile");
-        mUiHandler.postDelayed(() -> mVoiceService.stop(), 500);
+        mUiHandler.postDelayed(() -> mVoiceService.stop(VoiceService.StopType.NORMAL), 500);
     }
 
     protected abstract LocalVoiceSource getLocalVoiceSource();

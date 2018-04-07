@@ -15,8 +15,8 @@ import android.widget.TextView;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.service.VoiceService;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
@@ -37,8 +37,7 @@ import java.util.List;
 
 public class LocalPlayBackActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
-        VoiceService.VoiceStateChangedListener,
-        VoiceService.VoiceActiveStateListener,
+        VoiceService.VoiceWakeUpListener,
         LocalVoiceSource.EofListener,
         FileAdapter.OnItemCheckedListener {
 
@@ -85,6 +84,14 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mVoiceService != null) {
                     mVoiceService.start();
+
+                    mResultAdapter.clearResults();
+                    mResultAdapter.notifyDataSetChanged();
+
+                    if (mTextView != null) {
+                        mTextView.setText("starting.");
+                    }
+                    mStartButton.setEnabled(false);
                 }
             }
         });
@@ -177,7 +184,6 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
                 .build());
         mVoiceService = VoiceService.getService(this, conf);
         mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.create();
     }
 
@@ -197,43 +203,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCreated() {
-
-    }
-
-    @Override
-    public void onStartListening() {
-        Logger.d("LocalPlayBackActivity onStartListening");
-        mResultAdapter.clearResults();
-        mResultAdapter.notifyDataSetChanged();
-
-        if (mTextView != null) {
-            mTextView.setText("starting.");
-        }
-        mStartButton.setEnabled(false);
-    }
-
-    @Override
-    public void onStopListening() {
-        Logger.d("LocalPlayBackActivity onStopListening");
-        if (mTextView != null) {
-            mTextView.setText("stopped.");
-        }
-        mStartButton.setEnabled(true);
-    }
-
-    @Override
-    public void onDestroyed() {
-
-    }
-
-    @Override
     public void onError(int reason) {
-
-    }
-
-    @Override
-    public void onSpeechProbabilityChanged(float prob) {
 
     }
 
@@ -254,7 +224,12 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
         mUiHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mVoiceService.stop();
+                mVoiceService.stop(VoiceService.StopType.NORMAL);
+
+                if (mTextView != null) {
+                    mTextView.setText("stopped.");
+                }
+                mStartButton.setEnabled(true);
             }
         }, 500);
     }
