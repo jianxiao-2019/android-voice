@@ -9,7 +9,7 @@ import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
-import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.conf.FolderConfig;
 import com.kikatech.voice.util.BackgroundThread;
 import com.kikatech.voice.util.CalendarUtil;

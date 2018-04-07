@@ -4,7 +4,7 @@ import com.kikatech.androidspeex.Speex;
 import com.kikatech.voice.VadUtil;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.service.EventMsg;
+import com.kikatech.voice.service.event.EventMsg;
 import com.kikatech.voice.core.debug.ReportUtil;
 import com.kikatech.voice.util.log.Logger;
 

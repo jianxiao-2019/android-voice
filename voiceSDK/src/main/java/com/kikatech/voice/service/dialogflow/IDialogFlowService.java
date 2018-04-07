@@ -1,4 +1,4 @@
-package com.kikatech.voice.service;
+package com.kikatech.voice.service.dialogflow;
 
 import android.os.Bundle;
 import android.util.Pair;
@@ -7,6 +7,7 @@ import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 
 /**
  * Created by bradchang on 2017/11/7.

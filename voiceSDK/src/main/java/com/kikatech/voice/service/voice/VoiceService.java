@@ -1,4 +1,4 @@
-package com.kikatech.voice.service;
+package com.kikatech.voice.service.voice;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,7 +18,8 @@ import com.kikatech.voice.core.webservice.message.NBestMessage;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.core.debug.ReportUtil;
-import com.kikatech.voice.util.EmojiUtil;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.service.event.EventMsg;
 import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
 
@@ -627,13 +628,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
-    void setWakeUpDetectorEnable(boolean enable) {
+    public void setWakeUpDetectorEnable(boolean enable) {
         if (mWakeUpDetector != null) {
             mWakeUpDetector.enableDetector(enable);
         }
     }
 
-    boolean isWakeUpDetectorEnabled() {
+    public boolean isWakeUpDetectorEnabled() {
         return mWakeUpDetector != null && mWakeUpDetector.isEnabled();
     }
 }

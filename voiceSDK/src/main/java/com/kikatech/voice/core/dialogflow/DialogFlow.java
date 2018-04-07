@@ -4,8 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.service.IDialogFlowService;
-import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.log.Logger;
 
 import java.util.List;

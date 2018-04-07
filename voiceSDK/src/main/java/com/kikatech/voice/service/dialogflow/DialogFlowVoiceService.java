@@ -1,4 +1,4 @@
-package com.kikatech.voice.service;
+package com.kikatech.voice.service.dialogflow;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,7 +8,9 @@ import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.EmojiUtil;
 import com.kikatech.voice.util.log.Logger;
 

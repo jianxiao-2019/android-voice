@@ -1,7 +1,7 @@
 package com.kikatech.voice.core.recorder;
 
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.service.VoiceService;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.util.log.Logger;
 
 import java.util.Arrays;

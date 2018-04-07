@@ -6,7 +6,7 @@ import com.kikatech.voice.core.webservice.data.SendingData;
 import com.kikatech.voice.core.webservice.data.SendingDataByte;
 import com.kikatech.voice.core.webservice.data.SendingDataString;
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.service.VoiceConfiguration.ConnectionConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 
@@ -14,7 +14,6 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
-import org.java_websocket.util.Charsetfunctions;
 import org.json.JSONObject;
 
 import java.net.URI;

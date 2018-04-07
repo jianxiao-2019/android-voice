@@ -1,4 +1,4 @@
-package com.kikatech.voice.service;
+package com.kikatech.voice.service.event;
 
 /**
  * Created by ryanlin on 11/01/2018.

@@ -1,4 +1,4 @@
-package com.kikatech.voice.service;
+package com.kikatech.voice.service.conf;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -6,8 +6,6 @@ import android.text.TextUtils;
 import com.kikatech.voice.core.dialogflow.AgentCreator;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.tts.TtsService;
-import com.kikatech.voice.service.conf.AsrConfiguration;
-import com.kikatech.voice.service.conf.FolderConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +105,7 @@ public class VoiceConfiguration {
         this.eosDuration = eosDuration;
     }
 
-    int getEosDuration() {
+    public int getEosDuration() {
         return eosDuration;
     }
 

@@ -1,4 +1,4 @@
-package com.kikatech.voice.service;
+package com.kikatech.voice.service.dialogflow;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,6 +16,7 @@ import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.log.Logger;
 
