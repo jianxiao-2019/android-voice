@@ -59,29 +59,28 @@ public class WakeUpTestActivity extends AppCompatActivity {
 
         mViewPager.addOnPageChangeListener(
                 new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                if (position == 1) {
-//                    mPlayerFragment.refreshFiles();
-//                    mPlayerFragment.onPageResume();
-//                    mWakeUpVoiceFragment.onPagePause();
-//                } else {
-//                    mWakeUpVoiceFragment.onPageResume();
-//                    mPlayerFragment.onPagePause();
-//                }
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        });
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    mWakeUpVoiceFragment.scanFiles();
+                } else if (position == 1) {
+                    mWakeUpLocalNcFragment.scanFiles();
+                } else {
+                    mWakeUpLocalMonoFragment.scanFiles();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         mTabLayout.addOnTabSelectedListener(
                 new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
     }

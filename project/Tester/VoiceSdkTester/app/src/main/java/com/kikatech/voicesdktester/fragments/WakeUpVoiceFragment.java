@@ -161,7 +161,7 @@ public class WakeUpVoiceFragment extends Fragment implements
         AudioPlayBack.setListener(null);
     }
 
-    private void scanFiles() {
+    public void scanFiles() {
         String path = DebugUtil.getDebugFolderPath();
         Logger.d("WakeUpTestActivity scanFiles path = " + path);
         if (TextUtils.isEmpty(path)) {
@@ -174,9 +174,7 @@ public class WakeUpVoiceFragment extends Fragment implements
 
         List<File> fileNames = new ArrayList<>();
         for (final File file : folder.listFiles()) {
-            if (file.isDirectory()
-                    || (!file.getName().contains("USB") && !file.getName().contains("COMMAND"))
-                    || file.getName().contains("wav")) {
+            if (file.isDirectory() || fileFilter(file)) {
                 continue;
             }
             fileNames.add(file);
@@ -190,6 +188,18 @@ public class WakeUpVoiceFragment extends Fragment implements
             mFileAdapter.updateContent(fileNames);
             mFileAdapter.notifyDataSetChanged();
         }
+    }
+
+    private boolean fileFilter(File file) {
+        if (mFragmentType == FragmentType.VOICE) {
+            return (!file.getName().contains("USB") && !file.getName().contains("COMMAND"))
+                    || file.getName().contains("wav");
+        } else if (mFragmentType == FragmentType.LOCAL_NC) {
+            return !file.getName().contains("USB") || file.getName().contains("wav");
+        } else if (mFragmentType == FragmentType.LOCAL_MONO) {
+            return !file.getName().contains("COMMAND") || file.getName().contains("wav");
+        }
+        return false;
     }
 
     @Override
