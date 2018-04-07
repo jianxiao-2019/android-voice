@@ -38,7 +38,7 @@ public class VoiceConfiguration {
     private static final String DEFAULT_ENGINE = Engine.KIKA_GOOGLE;
     private static final String DEFAULT_LOCALE = "en_US";
 
-    private static final int DEFAULT_BOS_DURATION = 6000;
+    private static final int DEFAULT_BOS_DURATION = -1;
     private static final int DEFAULT_EOS_DURATION = -1;
 
     private IVoiceSource mVoiceSource;

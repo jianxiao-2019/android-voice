@@ -173,6 +173,7 @@ public class WebSocket {
             @Override
             public void run() {
                 String jsonCommand = genCommand(command, payload);
+                Logger.i("1qaz sendCommand " + jsonCommand);
                 if (TextUtils.isEmpty(jsonCommand)) {
                     Logger.e("Send command error : generate command failed.");
                     return;

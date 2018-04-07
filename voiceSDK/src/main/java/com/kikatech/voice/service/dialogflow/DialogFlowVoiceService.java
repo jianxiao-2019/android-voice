@@ -42,9 +42,8 @@ public abstract class DialogFlowVoiceService {
         mAsrConfiguration.copyConfig(asrConfig);
         mVoiceService = VoiceService.getService(mContext, conf);
 
-        mVoiceService.setVoiceActiveStateListener(mVoiceActiveStateListener);
+        mVoiceService.setVoiceWakeUpListener(mVoiceWakeUpListener);
         mVoiceService.setVoiceRecognitionListener(mVoiceRecognitionListener);
-        mVoiceService.setVoiceStateChangedListener(mVoiceStateChangedListener);
 
         mVoiceService.create();
         if (Logger.DEBUG) Logger.i(TAG, "idle VoiceService ... Done");
@@ -59,7 +58,7 @@ public abstract class DialogFlowVoiceService {
         }
     }
 
-    private final VoiceService.VoiceActiveStateListener mVoiceActiveStateListener = new VoiceService.VoiceActiveStateListener() {
+    private final VoiceService.VoiceWakeUpListener mVoiceWakeUpListener = new VoiceService.VoiceWakeUpListener() {
         @Override
         public void onWakeUp() {
             if (Logger.DEBUG) {
@@ -81,7 +80,29 @@ public abstract class DialogFlowVoiceService {
 
     abstract void onVoiceWakeUp();
 
+    abstract void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery);
+
+    void quitVoiceService() {
+        if (mVoiceService != null) {
+            mVoiceService.destroy();
+        }
+    }
+
     private final VoiceService.VoiceRecognitionListener mVoiceRecognitionListener = new VoiceService.VoiceRecognitionListener() {
+
+        public void onCreated() {
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
+            }
+            if (mVoiceService != null) {
+                mVoiceService.start();
+            }
+
+            mServiceCallback.onInitComplete();
+            mServiceCallback.onAsrConfigChange(mAsrConfiguration);
+            mServiceCallback.onRecorderSourceUpdate();
+        }
+
         @Override
         public void onRecognitionResult(Message message) {
             performOnRecognitionResult(message);
@@ -124,49 +145,6 @@ public abstract class DialogFlowVoiceService {
 
             onAsrResult(query, emojiJson, queryDialogFlow, nBestQuery);
         }
-    };
-
-    abstract void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery);
-
-    void quitVoiceService() {
-        if (mVoiceService != null) {
-            mVoiceService.stop();
-            mVoiceService.destroy();
-        }
-    }
-
-    private final VoiceService.VoiceStateChangedListener mVoiceStateChangedListener = new VoiceService.VoiceStateChangedListener() {
-
-        @Override
-        public void onCreated() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
-            }
-            if (mVoiceService != null) {
-                mVoiceService.start();
-            }
-
-            mServiceCallback.onInitComplete();
-            mServiceCallback.onAsrConfigChange(mAsrConfiguration);
-            mServiceCallback.onRecorderSourceUpdate();
-        }
-
-        @Override
-        public void onStartListening() {
-            if (Logger.DEBUG) Logger.i(TAG, "[VoiceState] onStartListening");
-        }
-
-        @Override
-        public void onStopListening() {
-            if (Logger.DEBUG) Logger.i(TAG, "[VoiceState] onStopListening");
-        }
-
-        @Override
-        public void onDestroyed() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "[VoiceState] onDestroyed");
-            }
-        }
 
         @Override
         public void onError(int reason) {
@@ -174,11 +152,6 @@ public abstract class DialogFlowVoiceService {
                 Logger.i(TAG, "[VoiceState] onError : " + reason);
             }
             mServiceCallback.onError(reason);
-        }
-
-        @Override
-        public void onSpeechProbabilityChanged(float prob) {
-
         }
     };
 }

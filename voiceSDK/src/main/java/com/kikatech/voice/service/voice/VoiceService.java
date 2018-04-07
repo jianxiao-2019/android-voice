@@ -3,7 +3,6 @@ package com.kikatech.voice.service.voice;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.support.annotation.IntDef;
 
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.framework.IDataPath;
@@ -57,18 +56,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private static final int MSG_VAD_BOS = 1;
     private static final int MSG_VAD_EOS = 2;
 
-    private static final int RECOGNIZE_STATUS_IDLE = 1;
-    private static final int RECOGNIZE_STATUS_RECORDING = 2;
-
-    @IntDef({RECOGNIZE_STATUS_IDLE, RECOGNIZE_STATUS_RECORDING})
-    private @interface RecognizeStatus {
-        int IDLE = RECOGNIZE_STATUS_IDLE;
-        int RECORDING = RECOGNIZE_STATUS_RECORDING;
-    }
-
-    @RecognizeStatus
-    private int mCurrentStatus = RecognizeStatus.IDLE;
-
     private VoiceConfiguration mConf;
     private WebSocket mWebService;
 
@@ -77,17 +64,22 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private final VoiceRecorder mVoiceRecorder;
 
     private VoiceRecognitionListener mVoiceRecognitionListener;
-    private VoiceStateChangedListener mVoiceStateChangedListener;
-    private VoiceActiveStateListener mVoiceActiveStateListener;
+    private VoiceWakeUpListener mVoiceWakeUpListener;
+    private VoiceDataListener mVoiceDataListener;
 
     private Handler mMainThreadHandler;
     private TimerHandler mTimerHandler;
 
-    private boolean mIsAsrPaused = false;
+    private IntermediateMessage mLastIntermediateMessage;
+    private long mSkippedCid = -1;
 
-    private long mPreSessionCid;
-    private long mCurrentSessionCid;
-    private IntermediateMessage mIntermediateMessage;
+    private VoiceConfiguration.SpeechMode mCurrentSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
+
+    public enum StopType {
+        NORMAL,
+        COMPLETE,
+        CANCEL,
+    }
 
     @Override
     public void onDetected() {
@@ -95,8 +87,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
             mMainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (mVoiceActiveStateListener != null) {
-                        mVoiceActiveStateListener.onWakeUp();
+                    if (mVoiceWakeUpListener != null) {
+                        mVoiceWakeUpListener.onWakeUp();
                     }
                 }
             });
@@ -105,34 +97,24 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public interface VoiceRecognitionListener {
+
         void onRecognitionResult(Message message);
-    }
-
-    public interface VoiceStateChangedListener {
-
-        @Deprecated
-        void onCreated();
-
-        void onStartListening();
-
-        void onStopListening();
-
-        @Deprecated
-        void onDestroyed();
 
         void onError(int reason);
-
-        void onSpeechProbabilityChanged(float prob);
     }
 
-    public interface VoiceActiveStateListener {
+    public interface VoiceWakeUpListener {
+
         void onWakeUp();
 
         void onSleep();
     }
 
     public interface VoiceDataListener {
+
         void onData(byte[] data, int readSize);
+
+        void onSpeechProbabilityChanged(float prob);
     }
 
     private VoiceService(Context context, VoiceConfiguration conf) {
@@ -167,10 +149,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         DebugUtil.updateCacheDir(mConf);
 
-        if (mVoiceStateChangedListener != null) {
-            mVoiceStateChangedListener.onCreated();
-        }
-
         registerMessage();
     }
 
@@ -195,12 +173,16 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public void start() {
+        Logger.i("1qaz start");
         ReportUtil.getInstance().startTimeStamp("start record");
         DebugUtil.updateDebugInfo(mConf);
 
-        mCurrentStatus = RecognizeStatus.RECORDING;
-
-        checkSpeechMode();
+        mCurrentSpeechMode = mConf.getSpeechMode();
+        if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+            sendCommand(SERVER_COMMAND_TOKEN, "1");
+        } else {
+            sendCommand(SERVER_COMMAND_TOKEN, "-1");
+        }
 
         if (mWakeUpDetector != null) {
             mWakeUpDetector.setDebugFilePath(DebugUtil.getDebugFilePath());
@@ -210,21 +192,31 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mDataPath.start();
         mVoiceRecorder.start();
 
-        if (mVoiceStateChangedListener != null) {
-            mVoiceStateChangedListener.onStartListening();
-        }
-
         if (mWakeUpDetector == null || mWakeUpDetector.isAwake()) {
             startVadBosTimer();
         }
     }
 
-    private void checkSpeechMode() {
-        if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
-            sendCommand(SERVER_COMMAND_TOKEN, "1");
-        } else {
-            sendCommand(SERVER_COMMAND_TOKEN, "-1");
+    public void stop(StopType stopType) {
+        Logger.i("1qaz stopType = " + stopType);
+        if (stopType == StopType.COMPLETE) {
+            sendCommand(SERVER_COMMAND_COMPLETE, "");
+            cleanVadEosTimer();
         }
+        if (stopType == StopType.CANCEL) {
+            sendCommand(SERVER_COMMAND_STOP, "");
+            cleanVadBosTimer();
+            cleanVadEosTimer();
+            if (mLastIntermediateMessage != null) {
+                mSkippedCid = mLastIntermediateMessage.cid;
+            }
+        }
+
+        mVoiceRecorder.stop();
+        mDataPath.stop();
+
+        DebugUtil.convertCurrentPcmToWav();
+        ReportUtil.getInstance().stopTimeStamp("stop record");
     }
 
     private void cleanVadBosTimer() {
@@ -240,24 +232,18 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     private void startVadBosTimer() {
-        startVadBosTimer(mConf.getBosDuration());
-    }
-
-    private void startVadBosTimer(int bosDuration) {
-        if (mTimerHandler != null) {
-            Logger.d("VoiceService startVadBosTimer");
+        int bosDuration = mConf.getBosDuration();
+        Logger.d("1qaz VoiceService startVadBosTimer bosDuration = " + bosDuration);
+        if (mTimerHandler != null && bosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, bosDuration);
         }
     }
 
     private void startVadEosTimer() {
-        startVadEosTimer(mConf.getEosDuration());
-    }
-
-    private void startVadEosTimer(int eosDuration) {
+        int eosDuration = mConf.getEosDuration();
+        Logger.d("1qaz VoiceService startVadEosTimer eosDuration = " + eosDuration);
         if (mTimerHandler != null && eosDuration > 0) {
-            Logger.d("VoiceService startVadEosTimer");
             mTimerHandler.removeMessages(MSG_VAD_EOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_EOS, eosDuration);
         }
@@ -271,17 +257,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         return mTimerHandler != null && mTimerHandler.hasMessages(MSG_VAD_EOS);
     }
 
-    public synchronized void resumeAsr(int bosDuration) {
-        mCurrentStatus = RecognizeStatus.RECORDING;
-        mIsAsrPaused = false;
-        checkSpeechMode();
-        startVadBosTimer(bosDuration);
-    }
-
+    @Deprecated
     public synchronized void resumeAsr(boolean startBosNow) {
-        mCurrentStatus = RecognizeStatus.RECORDING;
-        mIsAsrPaused = false;
-        checkSpeechMode();
+        start();
         if (startBosNow) {
             startVadBosTimer();
         } else {
@@ -289,59 +267,31 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         }
     }
 
+    @Deprecated
+    public synchronized void resumeAsr(int bosDuration) {
+        mConf.setBosDuration(bosDuration);
+        start();
+    }
+
+    @Deprecated
     public synchronized void pauseAsr() {
         pauseAsr(false);
     }
 
+    @Deprecated
     public synchronized void pauseAsr(boolean cancelTimer) {
-        mIsAsrPaused = true;
+        stop(StopType.CANCEL);
         if (cancelTimer) {
             cleanVadBosTimer();
             cleanVadEosTimer();
         }
     }
 
-    public void complete() {
-        Logger.d("VoiceService complete");
-        sendCommand(SERVER_COMMAND_COMPLETE, "");
-        mVoiceRecorder.stop();
-        mDataPath.stop();
-
-        if (mVoiceStateChangedListener != null) {
-            mVoiceStateChangedListener.onStopListening();
-        }
-//        cleanVadBosTimer();
-        cleanVadEosTimer();
-        DebugUtil.convertCurrentPcmToWav();
-        ReportUtil.getInstance().stopTimeStamp("stop record");
-    }
-
-    public void stop() {
-        Logger.d("VoiceService stop");
-        mVoiceRecorder.stop();
-        mDataPath.stop();
-
-        if (mVoiceStateChangedListener != null) {
-            mVoiceStateChangedListener.onStopListening();
-        }
-//        cleanVadBosTimer();
-//        cleanVadEosTimer();
-        DebugUtil.convertCurrentPcmToWav();
-        ReportUtil.getInstance().stopTimeStamp("stop record");
-    }
-
-    public void cancel() {
-        sendCommand(SERVER_COMMAND_STOP, "");
-        stop();
-        cleanVadBosTimer();
-        cleanVadEosTimer();
-    }
-
     public void sleep() {
         if (mWakeUpDetector != null && mWakeUpDetector.isAwake()) {
             mWakeUpDetector.goSleep();
-            if (mVoiceActiveStateListener != null) {
-                mVoiceActiveStateListener.onSleep();
+            if (mVoiceWakeUpListener != null) {
+                mVoiceWakeUpListener.onSleep();
             }
         }
         cleanVadBosTimer();
@@ -351,8 +301,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public void wakeUp() {
         if (mWakeUpDetector != null && !mWakeUpDetector.isAwake()) {
             mWakeUpDetector.wakeUp();
-            if (mVoiceActiveStateListener != null) {
-                mVoiceActiveStateListener.onWakeUp();
+            if (mVoiceWakeUpListener != null) {
+                mVoiceWakeUpListener.onWakeUp();
             }
         }
         startVadBosTimer();
@@ -361,7 +311,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public void destroy() {
         Logger.d("VoiceService mWebService.release()");
 
-        stop();
+        stop(StopType.CANCEL);
         EventBus.getDefault().unregister(this);
         mVoiceRecorder.close();
         if (mWebService == null) {
@@ -377,10 +327,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (mTimerHandler != null) {
             mTimerHandler.removeCallbacksAndMessages(null);
             mTimerHandler = null;
-        }
-
-        if (mVoiceStateChangedListener != null) {
-            mVoiceStateChangedListener.onDestroyed();
         }
 
         if (mWakeUpDetector != null) {
@@ -414,8 +360,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         if (eventMsg.type == EventMsg.Type.VD_VAD_CHANGED) {
             Logger.d("onMessageEvent VD_VAD_CHANGED prob = " + eventMsg.obj);
             float prob = (float) eventMsg.obj;
-            if (mVoiceStateChangedListener != null) {
-                mVoiceStateChangedListener.onSpeechProbabilityChanged(prob);
+            if (mVoiceDataListener != null) {
+                mVoiceDataListener.onSpeechProbabilityChanged(prob);
             }
         }
     }
@@ -455,51 +401,40 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         @Override
         public void onMessage(final Message message) {
-            Logger.d("[WebSocketListener] onMessage:" + message);
+            Logger.d("[WebSocketListener] 1qaz onMessage:" + message);
             if (mMainThreadHandler != null) {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        long newCid = getMessageCid(message);
-                        if (newCid != mPreSessionCid) {
-                            switch (mCurrentStatus) {
-                                case RecognizeStatus.IDLE:
-                                    if (mVoiceRecognitionListener != null && message instanceof NBestMessage) {
-                                        mVoiceRecognitionListener.onRecognitionResult(message);
-                                        ReportUtil.getInstance().logTimeStamp(message.toString());
-                                    }
-                                    break;
-                                case RecognizeStatus.RECORDING:
-                                    // new session
-                                    mCurrentSessionCid = newCid;
-                                    if (message instanceof TextMessage || message instanceof EditTextMessage) {
-                                        // final recognizing result
-                                        if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
-                                            sendCommand(SERVER_COMMAND_STOP, "");
-                                            mCurrentStatus = RecognizeStatus.IDLE;
-                                        }
-                                        mIntermediateMessage = null;
-                                        mPreSessionCid = mCurrentSessionCid;
-                                        cleanVadBosTimer();
-                                        cleanVadEosTimer();
-                                    } else {
-                                        if (message instanceof IntermediateMessage) {
-                                            mIntermediateMessage = (IntermediateMessage) message;
-                                        }
-                                        if (isBosTimerRunning()) {
-                                            cleanVadBosTimer();
-                                            startVadEosTimer();
-                                        } else if (isEosTimerRunning()) {
-                                            startVadEosTimer();
-                                        }
-                                    }
-                                    if (mVoiceRecognitionListener != null && !mIsAsrPaused) {
-                                        mVoiceRecognitionListener.onRecognitionResult(message);
-                                        ReportUtil.getInstance().logTimeStamp(message.toString());
-                                    }
-                                    break;
+                        if (message instanceof TextMessage) {
+                            mLastIntermediateMessage = null;
+
+                            cleanVadBosTimer();
+                            cleanVadEosTimer();
+                            if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                                stop(StopType.CANCEL);
+                            }
+                        } else {
+                            if (isBosTimerRunning()) {
+                                cleanVadBosTimer();
+                                if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                                    startVadEosTimer();
+                                }
+                            } else if (isEosTimerRunning()) {
+                                startVadEosTimer();
                             }
                         }
+                        if (message instanceof IntermediateMessage) {
+                            mLastIntermediateMessage = (IntermediateMessage) message;
+                        }
+
+                        Logger.d("1qaz mSkippedCid = " + mSkippedCid + " message.cid = " + getMessageCid(message));
+                        if (mSkippedCid != getMessageCid(message) &&
+                                mVoiceRecognitionListener != null) {
+                            mVoiceRecognitionListener.onRecognitionResult(message);
+                            ReportUtil.getInstance().logTimeStamp(message.toString());
+                        }
+
                     }
                 });
             }
@@ -513,11 +448,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mCurrentStatus = RecognizeStatus.IDLE;
-                        if (mVoiceStateChangedListener != null) {
-                            stop();
-                            mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
-                        }
+                        handleError(ERR_CONNECTION_ERROR);
                     }
                 });
             }
@@ -530,11 +461,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mCurrentStatus = RecognizeStatus.IDLE;
-                        if (mVoiceStateChangedListener != null) {
-                            stop();
-                            mVoiceStateChangedListener.onError(ERR_CONNECTION_ERROR);
-                        }
+                        handleError(ERR_CONNECTION_ERROR);
                     }
                 });
             }
@@ -542,7 +469,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     };
 
     private long getMessageCid(Message message) {
-        long cid = -1;
+        long cid = Long.MIN_VALUE;
         if (message instanceof IntermediateMessage) {
             IntermediateMessage intermediateMessage = (IntermediateMessage) message;
             cid = intermediateMessage.cid;
@@ -563,15 +490,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mVoiceRecognitionListener = listener;
     }
 
-    public void setVoiceStateChangedListener(VoiceStateChangedListener listener) {
-        mVoiceStateChangedListener = listener;
-    }
-
-    public void setVoiceActiveStateListener(VoiceActiveStateListener listener) {
-        mVoiceActiveStateListener = listener;
+    public void setVoiceWakeUpListener(VoiceWakeUpListener listener) {
+        mVoiceWakeUpListener = listener;
     }
 
     public void setVoiceDataListener(VoiceDataListener listener) {
+        mVoiceDataListener = listener;
         mVoiceRecorder.setVoiceDataListener(listener);
     }
 
@@ -584,10 +508,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         @Override
         public void onData(byte[] data) {
             Logger.i("VoiceDataSender onData");
-            if (mIsAsrPaused) {
-                Logger.i("VoiceDataSender onData is pausing, drop data.");
-                return;
-            }
             if (mWebService != null) {
                 if (ReportUtil.getInstance().isEverDetectedVad() == true && ReportUtil.getInstance().isEverSentDataToWeb() == false) {
                     ReportUtil.getInstance().sentDataToWeb();
@@ -602,23 +522,16 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         @Override
         public void handleMessage(android.os.Message msg) {
             if (msg.what == MSG_VAD_BOS) {
-                if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
-                    sendCommand(SERVER_COMMAND_STOP, "");
-                }
-                mCurrentStatus = RecognizeStatus.IDLE;
-                if (mVoiceStateChangedListener != null) {
-                    mVoiceStateChangedListener.onError(ERR_NO_SPEECH);
-                }
+                Logger.i("1qaz onBos");
+                handleError(ERR_NO_SPEECH);
                 return;
             } else if (msg.what == MSG_VAD_EOS) {
-                if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.ONE_SHOT) {
-                    sendCommand(SERVER_COMMAND_STOP, "");
-                }
-                mCurrentStatus = RecognizeStatus.IDLE;
-                mPreSessionCid = mCurrentSessionCid;
-                TextMessage finalResult = new TextMessage(mIntermediateMessage);
-                mIntermediateMessage = null;
-                if (mVoiceRecognitionListener != null && !mIsAsrPaused) {
+                Logger.i("1qaz onEos");
+                stop(StopType.CANCEL);
+                mSkippedCid = mLastIntermediateMessage.cid;
+                TextMessage finalResult = new TextMessage(mLastIntermediateMessage);
+                mLastIntermediateMessage = null;
+                if (mVoiceRecognitionListener != null) {
                     mVoiceRecognitionListener.onRecognitionResult(finalResult);
                     ReportUtil.getInstance().logTimeStamp(finalResult.toString());
                 }
@@ -636,5 +549,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public boolean isWakeUpDetectorEnabled() {
         return mWakeUpDetector != null && mWakeUpDetector.isEnabled();
+    }
+
+    private void handleError(int errorCode) {
+        stop(StopType.CANCEL);
+        if (mVoiceRecognitionListener != null) {
+            mVoiceRecognitionListener.onError(errorCode);
+        }
     }
 }
