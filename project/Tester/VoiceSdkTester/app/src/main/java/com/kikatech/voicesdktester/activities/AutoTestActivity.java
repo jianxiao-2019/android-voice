@@ -301,11 +301,6 @@ public class AutoTestActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionClosed() {
-
-    }
-
-    @Override
     public void onSpeechProbabilityChanged(float prob) {
 
     }

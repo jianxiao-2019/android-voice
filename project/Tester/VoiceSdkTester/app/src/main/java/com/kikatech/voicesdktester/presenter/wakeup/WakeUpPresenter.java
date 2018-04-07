@@ -188,11 +188,6 @@ public abstract class WakeUpPresenter implements
     }
 
     @Override
-    public void onConnectionClosed() {
-
-    }
-
-    @Override
     public void onSpeechProbabilityChanged(float prob) {
 
     }

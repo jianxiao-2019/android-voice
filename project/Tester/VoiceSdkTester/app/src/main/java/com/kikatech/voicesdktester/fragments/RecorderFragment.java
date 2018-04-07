@@ -347,11 +347,6 @@ public class RecorderFragment extends PageFragment implements
     }
 
     @Override
-    public void onConnectionClosed() {
-
-    }
-
-    @Override
     public void onSpeechProbabilityChanged(float prob) {
 //        if (mStartSpeech && prob < 0.2) {
 //            if (!mTimerHandler.hasMessages(MSG_VAD_TIMER)) {
