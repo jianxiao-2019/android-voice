@@ -6,7 +6,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 
@@ -72,32 +71,27 @@ public class RemoteConfigUtil {
      * Fetch Version from server.
      **/
     public void fetchConfigs(final IFetchListener listener) {
-        AsyncThreadPool.getIns().execute(new Runnable() {
+        // cacheExpirationSeconds is set to cacheExpiration here, indicating that any previously
+        // fetched and cached config would be considered expired because it would have been fetched
+        // more than cacheExpiration seconds ago. Thus the next fetch would go to the server unless
+        // throttling is in progress. The default expiration duration is 43200 (12 hours).
+        mFirebaseRemoteConfig.fetch(CACHE_EXPIRATION).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void run() {
-                // cacheExpirationSeconds is set to cacheExpiration here, indicating that any previously
-                // fetched and cached config would be considered expired because it would have been fetched
-                // more than cacheExpiration seconds ago. Thus the next fetch would go to the server unless
-                // throttling is in progress. The default expiration duration is 43200 (12 hours).
-                mFirebaseRemoteConfig.fetch(CACHE_EXPIRATION).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        final boolean isSuccess = task.isSuccessful();
-                        if (LogUtil.DEBUG) {
-                            LogUtil.log(TAG, String.format("onComplete, isSuccess: %s", isSuccess));
-                        }
-                        if (isSuccess) {
-                            // Once the config is successfully fetched it must be activated before newly fetched
-                            // values are returned.
-                            mFirebaseRemoteConfig.activateFetched();
-                        }
-                        saveConfigs();
+            public void onComplete(@NonNull Task<Void> task) {
+                final boolean isSuccess = task.isSuccessful();
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, String.format("onComplete, isSuccess: %s", isSuccess));
+                }
+                if (isSuccess) {
+                    // Once the config is successfully fetched it must be activated before newly fetched
+                    // values are returned.
+                    mFirebaseRemoteConfig.activateFetched();
+                }
+                saveConfigs();
 
-                        if (listener != null) {
-                            listener.onFetchComplete();
-                        }
-                    }
-                });
+                if (listener != null) {
+                    listener.onFetchComplete();
+                }
             }
         });
     }
