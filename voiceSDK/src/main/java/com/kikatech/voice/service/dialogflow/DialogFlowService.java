@@ -34,7 +34,6 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     private DialogFlow mDialogFlow;
     private boolean mQueryAnyWords = false;
-    private String mWakeupFrom = "";
 
     private SceneManager mSceneManager;
 
@@ -75,26 +74,6 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
             mTtsSource.init(mContext, null);
             mTtsSource.setTtsStateChangedListener(mTtsListener);
         }
-    }
-
-    public void updateTtsSource(@NonNull VoiceConfiguration conf) {
-        if (mTtsSource != null) {
-            mTtsSource.close();
-            mTtsSource = null;
-        }
-        initTts(conf);
-    }
-
-    @Override
-    public void setWakeUpDetectorEnable(boolean enable) {
-        if (mVoiceService != null) {
-            mVoiceService.setWakeUpDetectorEnable(enable);
-        }
-    }
-
-    @Override
-    public boolean isWakeUpDetectorEnabled() {
-        return mVoiceService != null && mVoiceService.isWakeUpDetectorEnabled();
     }
 
     private void tts(Pair<String, Integer>[] pairs, ISceneStageFeedback listener) {
@@ -179,28 +158,6 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     @Override
-    public void wakeUp(String wakeupFrom) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "wakeupFrom " + wakeupFrom);
-        }
-        mWakeupFrom = wakeupFrom;
-        if (mVoiceService != null) {
-            mVoiceService.wakeUp();
-        }
-    }
-
-    @Override
-    public void sleep() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "sleep");
-        }
-        mWakeupFrom = "";
-        if (mVoiceService != null) {
-            mVoiceService.sleep();
-        }
-    }
-
-    @Override
     public void talk(String words, boolean proactive) {
         stopTts(true);
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
@@ -224,57 +181,48 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     @Override
-    public void pauseAsr() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "pauseAsr");
-        }
-        pauseAsr(false);
-    }
-
-    @Override
-    public void pauseAsr(boolean cancelTimer) {
-        if (mVoiceService != null) {
-            mVoiceService.pauseAsr(cancelTimer);
-            if (mServiceCallback != null) {
-                mServiceCallback.onASRPause();
-            }
+    public synchronized void startListening() {
+        super.startListening();
+        if (mServiceCallback != null) {
+            mServiceCallback.onASRResume();
         }
     }
 
     @Override
-    public void resumeAsr(int bosDuration) {
-        if (mVoiceService != null) {
-            mVoiceService.resumeAsr(bosDuration);
-            if (mServiceCallback != null) {
-                mServiceCallback.onASRResume();
-            }
+    public synchronized void startListening(int bosDuration) {
+        super.startListening(bosDuration);
+        if (mServiceCallback != null) {
+            mServiceCallback.onASRResume();
         }
     }
 
     @Override
-    public void resumeAsr(boolean startBosNow) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "resumeAsr");
-        }
-        if (mVoiceService != null) {
-            mVoiceService.resumeAsr(startBosNow);
-            if (mServiceCallback != null) {
-                mServiceCallback.onASRResume();
-            }
+    public synchronized void stopListening() {
+        super.stopListening();
+        if (mServiceCallback != null) {
+            mServiceCallback.onASRPause();
         }
     }
 
     @Override
-    public void cancelAsrAlignment() {
-        if (mVoiceService != null) {
-            mVoiceService.cancelAlignment();
+    public synchronized void completeListening() {
+        super.completeListening();
+        if (mServiceCallback != null) {
+            mServiceCallback.onASRPause();
         }
     }
 
     @Override
-    public void quitService() {
-        quitVoiceService();
+    public synchronized void cancelListening() {
+        super.cancelListening();
+        if (mServiceCallback != null) {
+            mServiceCallback.onASRPause();
+        }
+    }
 
+    @Override
+    public synchronized void quitService() {
+        super.releaseVoiceService();
         if (mTtsSource != null) {
             mTtsSource.close();
             mTtsSource = null;
@@ -332,16 +280,12 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
         @Override
         public void onStageRequestAsrAlignment(String[] alignment) {
-            if (mVoiceService != null) {
-                mVoiceService.sendAlignment(alignment);
-            }
+            requestAsrAlignment(alignment);
         }
 
         @Override
         public void onStageCancelAsrAlignment() {
-            if (mVoiceService != null) {
-                mVoiceService.cancelAlignment();
-            }
+            cancelAsrAlignment();
         }
 
     };
@@ -349,7 +293,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     private TtsStateDispatchListener mTtsListener = new TtsStateDispatchListener();
 
     @Override
-    void onVoiceSleep() {
+    protected void onVoiceSleep() {
         mServiceCallback.onSleep();
         if (mSceneManager != null) {
             mSceneManager.exitCurrentScene();
@@ -357,12 +301,12 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     @Override
-    void onVoiceWakeUp() {
-        mServiceCallback.onWakeUp(mWakeupFrom);
+    protected void onVoiceWakeUp(String scene) {
+        mServiceCallback.onWakeUp(scene);
     }
 
     @Override
-    void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery) {
+    protected void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery) {
         if (!TextUtils.isEmpty(query)) {
             mServiceCallback.onASRResult(query, emojiJson, queryDialogFlow);
             if (queryDialogFlow && mDialogFlow != null) {

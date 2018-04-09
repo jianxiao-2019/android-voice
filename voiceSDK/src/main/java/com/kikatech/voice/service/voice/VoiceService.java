@@ -38,8 +38,8 @@ import java.util.Arrays;
 
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     // TODO: refactor latter
-    static private SharedPreferences sPref;
-    static private SharedPreferences.Editor sEditor;
+    private SharedPreferences sPref;
+    private SharedPreferences.Editor sEditor;
 
     public static final int ERR_REASON_NOT_CREATED = 1;
     public static final int ERR_CONNECTION_ERROR = 2;
@@ -173,6 +173,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     public void start() {
+        start(mConf.getBosDuration());
+    }
+
+    public void start(int bosDuration) {
         Logger.i("1qaz start");
         ReportUtil.getInstance().startTimeStamp("start record");
         DebugUtil.updateDebugInfo(mConf);
@@ -193,7 +197,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         mVoiceRecorder.start();
 
         if (mWakeUpDetector == null || mWakeUpDetector.isAwake()) {
-            startVadBosTimer();
+            startVadBosTimer(bosDuration);
         }
     }
 
@@ -232,7 +236,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     private void startVadBosTimer() {
-        int bosDuration = mConf.getBosDuration();
+        startVadBosTimer(mConf.getBosDuration());
+    }
+
+    private void startVadBosTimer(int bosDuration) {
         Logger.d("1qaz VoiceService startVadBosTimer bosDuration = " + bosDuration);
         if (mTimerHandler != null && bosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
@@ -255,36 +262,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     private boolean isEosTimerRunning() {
         return mTimerHandler != null && mTimerHandler.hasMessages(MSG_VAD_EOS);
-    }
-
-    @Deprecated
-    public synchronized void resumeAsr(boolean startBosNow) {
-        start();
-        if (startBosNow) {
-            startVadBosTimer();
-        } else {
-            Logger.w("VoiceService BOS is NOT starting now !!");
-        }
-    }
-
-    @Deprecated
-    public synchronized void resumeAsr(int bosDuration) {
-        mConf.setBosDuration(bosDuration);
-        start();
-    }
-
-    @Deprecated
-    public synchronized void pauseAsr() {
-        pauseAsr(false);
-    }
-
-    @Deprecated
-    public synchronized void pauseAsr(boolean cancelTimer) {
-        stop(StopType.CANCEL);
-        if (cancelTimer) {
-            cleanVadBosTimer();
-            cleanVadEosTimer();
-        }
     }
 
     public void sleep() {
@@ -398,7 +375,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
-
         @Override
         public void onMessage(final Message message) {
             Logger.d("[WebSocketListener] 1qaz onMessage:" + message);
@@ -406,35 +382,34 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (message instanceof TextMessage) {
-                            mLastIntermediateMessage = null;
-
-                            cleanVadBosTimer();
-                            cleanVadEosTimer();
-                            if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
-                                stop(StopType.CANCEL);
-                            }
-                        } else {
-                            if (isBosTimerRunning()) {
+                        if (mSkippedCid != getMessageCid(message)) {
+                            if (message instanceof TextMessage) {
+                                mLastIntermediateMessage = null;
                                 cleanVadBosTimer();
+                                cleanVadEosTimer();
                                 if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                                    stop(StopType.CANCEL);
+                                }
+                            } else {
+                                if (isBosTimerRunning()) {
+                                    cleanVadBosTimer();
+                                    if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
+                                        startVadEosTimer();
+                                    }
+                                } else if (isEosTimerRunning()) {
                                     startVadEosTimer();
                                 }
-                            } else if (isEosTimerRunning()) {
-                                startVadEosTimer();
+                            }
+                            if (message instanceof IntermediateMessage) {
+                                mLastIntermediateMessage = (IntermediateMessage) message;
+                            }
+
+                            Logger.d("1qaz mSkippedCid = " + mSkippedCid + " message.cid = " + getMessageCid(message));
+                            if (mVoiceRecognitionListener != null) {
+                                mVoiceRecognitionListener.onRecognitionResult(message);
+                                ReportUtil.getInstance().logTimeStamp(message.toString());
                             }
                         }
-                        if (message instanceof IntermediateMessage) {
-                            mLastIntermediateMessage = (IntermediateMessage) message;
-                        }
-
-                        Logger.d("1qaz mSkippedCid = " + mSkippedCid + " message.cid = " + getMessageCid(message));
-                        if (mSkippedCid != getMessageCid(message) &&
-                                mVoiceRecognitionListener != null) {
-                            mVoiceRecognitionListener.onRecognitionResult(message);
-                            ReportUtil.getInstance().logTimeStamp(message.toString());
-                        }
-
                     }
                 });
             }

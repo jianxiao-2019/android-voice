@@ -18,45 +18,16 @@ import com.kikatech.voice.util.log.Logger;
  * Created by brad_chang on 2017/12/29.
  */
 
-public abstract class DialogFlowVoiceService {
-
+abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
     private static final String TAG = "DialogFlowVoiceService";
 
-    final Context mContext;
-    final IDialogFlowService.IServiceCallback mServiceCallback;
 
-    private final AsrConfiguration mAsrConfiguration = new AsrConfiguration.Builder().build();
-    VoiceService mVoiceService;
+    protected abstract void onVoiceSleep();
 
-    DialogFlowVoiceService(@NonNull Context ctx, @NonNull IDialogFlowService.IServiceCallback callback) {
-        mContext = ctx;
-        mServiceCallback = callback;
-    }
+    protected abstract void onVoiceWakeUp(String scene);
 
-    void initVoiceService(@NonNull VoiceConfiguration conf) {
-        if (mVoiceService != null) {
-            mVoiceService.destroy();
-            mVoiceService = null;
-        }
-        AsrConfiguration asrConfig = conf.getConnectionConfiguration().getAsrConfiguration();
-        mAsrConfiguration.copyConfig(asrConfig);
-        mVoiceService = VoiceService.getService(mContext, conf);
+    protected abstract void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery);
 
-        mVoiceService.setVoiceWakeUpListener(mVoiceWakeUpListener);
-        mVoiceService.setVoiceRecognitionListener(mVoiceRecognitionListener);
-
-        mVoiceService.create();
-        if (Logger.DEBUG) Logger.i(TAG, "idle VoiceService ... Done");
-    }
-
-    void updateAsrConfig(AsrConfiguration asrConfig) {
-        if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
-            mVoiceService.updateAsrSettings(mAsrConfiguration);
-            if (Logger.DEBUG) {
-                mServiceCallback.onAsrConfigChange(mAsrConfiguration);
-            }
-        }
-    }
 
     private final VoiceService.VoiceWakeUpListener mVoiceWakeUpListener = new VoiceService.VoiceWakeUpListener() {
         @Override
@@ -64,7 +35,7 @@ public abstract class DialogFlowVoiceService {
             if (Logger.DEBUG) {
                 Logger.i(TAG, "onWakeUp");
             }
-            onVoiceWakeUp();
+            onVoiceWakeUp(mWakeupFrom);
         }
 
         @Override
@@ -76,33 +47,7 @@ public abstract class DialogFlowVoiceService {
         }
     };
 
-    abstract void onVoiceSleep();
-
-    abstract void onVoiceWakeUp();
-
-    abstract void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery);
-
-    void quitVoiceService() {
-        if (mVoiceService != null) {
-            mVoiceService.destroy();
-        }
-    }
-
     private final VoiceService.VoiceRecognitionListener mVoiceRecognitionListener = new VoiceService.VoiceRecognitionListener() {
-
-        public void onCreated() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "[VoiceState] onCreated, mVoiceService:" + mVoiceService);
-            }
-            if (mVoiceService != null) {
-                mVoiceService.start();
-            }
-
-            mServiceCallback.onInitComplete();
-            mServiceCallback.onAsrConfigChange(mAsrConfiguration);
-            mServiceCallback.onRecorderSourceUpdate();
-        }
-
         @Override
         public void onRecognitionResult(Message message) {
             performOnRecognitionResult(message);
@@ -114,20 +59,20 @@ public abstract class DialogFlowVoiceService {
             }
 
             boolean queryDialogFlow = false;
-            String query = "";
-            String[] nBestQuery = null;
+            String asrResult = "";
+            String[] asrNbestResult = null;
             String emojiJson = "";
 
             if (message instanceof IntermediateMessage) {
                 IntermediateMessage intermediateMessage = (IntermediateMessage) message;
-                query = intermediateMessage.text;
+                asrResult = intermediateMessage.text;
             } else if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
                 if (Logger.DEBUG) {
                     Logger.i(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
                 }
-                query = textMessage.text[0];
-                nBestQuery = textMessage.text;
+                asrResult = textMessage.text[0];
+                asrNbestResult = textMessage.text;
                 queryDialogFlow = true;
             } else if (message instanceof EditTextMessage) {
                 EditTextMessage editTextMessage = (EditTextMessage) message;
@@ -135,7 +80,7 @@ public abstract class DialogFlowVoiceService {
                 if (Logger.DEBUG) {
                     Logger.d(TAG, "EditTextMessage altered = " + alter);
                 }
-                query = alter;
+                asrResult = alter;
                 queryDialogFlow = true;
             } else if (message instanceof EmojiRecommendMessage) {
                 EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
@@ -143,7 +88,7 @@ public abstract class DialogFlowVoiceService {
                 if (Logger.DEBUG) Logger.d(TAG, "EmojiRecommendMessage = " + emojiJson);
             }
 
-            onAsrResult(query, emojiJson, queryDialogFlow, nBestQuery);
+            onAsrResult(asrResult, emojiJson, queryDialogFlow, asrNbestResult);
         }
 
         @Override
@@ -154,4 +99,155 @@ public abstract class DialogFlowVoiceService {
             mServiceCallback.onError(reason);
         }
     };
+
+
+    protected final Context mContext;
+    final IDialogFlowService.IServiceCallback mServiceCallback;
+
+    private final AsrConfiguration mAsrConfiguration = new AsrConfiguration.Builder().build();
+    private VoiceService mVoiceService;
+
+    private String mWakeupFrom = "";
+
+
+    DialogFlowVoiceService(@NonNull Context ctx, @NonNull IDialogFlowService.IServiceCallback callback) {
+        mContext = ctx;
+        mServiceCallback = callback;
+    }
+
+
+    void initVoiceService(@NonNull VoiceConfiguration conf) {
+        if (mVoiceService != null) {
+            mVoiceService.destroy();
+            mVoiceService = null;
+        }
+
+        AsrConfiguration asrConfig = conf.getConnectionConfiguration().getAsrConfiguration();
+        mAsrConfiguration.copyConfig(asrConfig);
+        mVoiceService = VoiceService.getService(mContext, conf);
+
+        mVoiceService.setVoiceWakeUpListener(mVoiceWakeUpListener);
+        mVoiceService.setVoiceRecognitionListener(mVoiceRecognitionListener);
+
+        mVoiceService.create();
+
+        if (mVoiceService != null) {
+            mVoiceService.start();
+        }
+
+        mServiceCallback.onInitComplete();
+        mServiceCallback.onAsrConfigChange(mAsrConfiguration);
+        mServiceCallback.onRecorderSourceUpdate();
+
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "idle VoiceService ... Done");
+        }
+    }
+
+    void updateAsrConfig(AsrConfiguration asrConfig) {
+        if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
+            mVoiceService.updateAsrSettings(mAsrConfiguration);
+            if (Logger.DEBUG) {
+                mServiceCallback.onAsrConfigChange(mAsrConfiguration);
+            }
+        }
+    }
+
+
+    @Override
+    public synchronized void wakeUp(String wakeupFrom) {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "wakeupFrom " + wakeupFrom);
+        }
+        mWakeupFrom = wakeupFrom;
+        if (mVoiceService != null) {
+            mVoiceService.wakeUp();
+        }
+    }
+
+    @Override
+    public synchronized void sleep() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "sleep");
+        }
+        mWakeupFrom = "";
+        if (mVoiceService != null) {
+            mVoiceService.sleep();
+        }
+    }
+
+
+    @Override
+    public synchronized void startListening() {
+        if (mVoiceService != null) {
+            mVoiceService.start();
+        }
+    }
+
+    @Override
+    public void startListening(int bosDuration) {
+        if (mVoiceService != null) {
+            mVoiceService.start(bosDuration);
+        }
+    }
+
+    @Override
+    public synchronized void stopListening() {
+        if (mVoiceService != null) {
+            mVoiceService.stop(VoiceService.StopType.NORMAL);
+        }
+    }
+
+    @Override
+    public synchronized void completeListening() {
+        if (mVoiceService != null) {
+            mVoiceService.stop(VoiceService.StopType.COMPLETE);
+        }
+    }
+
+    @Override
+    public synchronized void cancelListening() {
+        if (mVoiceService != null) {
+            mVoiceService.stop(VoiceService.StopType.CANCEL);
+        }
+    }
+
+
+    @Override
+    public synchronized void enableWakeUpDetector() {
+        if (mVoiceService != null) {
+            mVoiceService.setWakeUpDetectorEnable(true);
+        }
+    }
+
+    @Override
+    public synchronized void disableWakeUpDetector() {
+        if (mVoiceService != null) {
+            mVoiceService.setWakeUpDetectorEnable(false);
+        }
+    }
+
+
+    @Override
+    public synchronized void requestAsrAlignment(String[] alignment) {
+        if (mVoiceService != null) {
+            mVoiceService.sendAlignment(alignment);
+        }
+    }
+
+    @Override
+    public synchronized void cancelAsrAlignment() {
+        if (mVoiceService != null) {
+            mVoiceService.cancelAlignment();
+        }
+    }
+
+
+    @Override
+    public synchronized void releaseVoiceService() {
+        if (mVoiceService != null) {
+            mVoiceService.stop(VoiceService.StopType.CANCEL);
+            mVoiceService.destroy();
+        }
+    }
 }

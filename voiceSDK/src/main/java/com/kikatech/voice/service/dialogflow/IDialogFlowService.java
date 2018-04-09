@@ -13,7 +13,7 @@ import com.kikatech.voice.service.conf.VoiceConfiguration;
  * Created by bradchang on 2017/11/7.
  */
 
-public interface IDialogFlowService {
+public interface IDialogFlowService extends IDialogFlowVoiceService {
 
     byte QUERY_TYPE_SERVER = 1;
     byte QUERY_TYPE_LOCAL = 2;
@@ -66,12 +66,6 @@ public interface IDialogFlowService {
 
     void unregisterScene(SceneBase scene);
 
-    ISceneFeedback getTtsFeedback();
-
-    void wakeUp(String wakeupFrom);
-
-    void sleep();
-
     void resetContexts();
 
     void talk(final String words, boolean proactive);
@@ -80,23 +74,9 @@ public interface IDialogFlowService {
 
     void talkUncaught();
 
-    void pauseAsr();
-
-    void pauseAsr(boolean cancelTimer);
-
-    void resumeAsr(int bosDuration);
-
-    void resumeAsr(boolean startBosNow);
-
-    void cancelAsrAlignment();
+    ISceneFeedback getTtsFeedback();
 
     void quitService();
 
     void updateRecorderSource(VoiceConfiguration config);
-
-    void updateTtsSource(VoiceConfiguration config);
-
-    void setWakeUpDetectorEnable(boolean enable);
-
-    boolean isWakeUpDetectorEnabled();
 }
