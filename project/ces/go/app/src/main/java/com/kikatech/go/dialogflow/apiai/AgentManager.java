@@ -5,7 +5,7 @@ import android.content.Context;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.Agent;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
 import java.util.List;
 import java.util.Map;

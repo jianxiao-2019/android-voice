@@ -8,7 +8,7 @@ import com.kikatech.go.dialogflow.telephony.incoming.SceneActions;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
 import com.kikatech.go.telephony.TelephonyServiceManager;
-import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
 /**
  * Created by tianli on 17-11-12.

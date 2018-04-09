@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.BaseSceneManager;
-import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
 /**
  * @author SkeeterWang Created on 2018/3/31.

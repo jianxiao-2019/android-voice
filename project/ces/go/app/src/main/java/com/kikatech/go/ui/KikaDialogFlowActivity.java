@@ -20,9 +20,9 @@ import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
-import com.kikatech.voice.service.DialogFlowService;
-import com.kikatech.voice.service.IDialogFlowService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.service.dialogflow.DialogFlowService;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
 import java.util.ArrayList;
 import java.util.List;

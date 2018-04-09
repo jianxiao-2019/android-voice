@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 public class DFServiceStatus implements Serializable {
     private boolean isInit;
-    private boolean isAsrEnabled;
     private boolean isAwake;
     private boolean isUsbDeviceAvailable;
     private Boolean isUsbDeviceDataCorrect = null; // using Boolean to check if the status set or not
@@ -19,14 +18,6 @@ public class DFServiceStatus implements Serializable {
 
     public void setInit(boolean init) {
         isInit = init;
-    }
-
-    public boolean isAsrEnabled() {
-        return isAsrEnabled;
-    }
-
-    public void setAsrEnabled(boolean asrEnabled) {
-        isAsrEnabled = asrEnabled;
     }
 
     public boolean isAwake() {

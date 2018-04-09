@@ -13,7 +13,7 @@ import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.message.sms.SmsManager;
 import com.kikatech.go.message.sms.SmsObject;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
 import java.util.Locale;
 

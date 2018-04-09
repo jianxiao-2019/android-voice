@@ -7,7 +7,7 @@ import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.Gson.GsonUtil;
 import com.kikatech.go.util.preference.GlobalPref;
-import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;

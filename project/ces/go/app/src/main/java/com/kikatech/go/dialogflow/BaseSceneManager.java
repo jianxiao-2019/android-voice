@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
-import com.kikatech.voice.service.IDialogFlowService;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +30,13 @@ public abstract class BaseSceneManager {
     protected abstract void initScenes();
 
     private void registerScenes() {
-        for(SceneBase sb : mSceneBaseList) {
+        for (SceneBase sb : mSceneBaseList) {
             mService.registerScene(sb);
         }
     }
 
     private void unregisterScenes() {
-        for(SceneBase sb : mSceneBaseList) {
+        for (SceneBase sb : mSceneBaseList) {
             mService.unregisterScene(sb);
         }
         mSceneBaseList.clear();

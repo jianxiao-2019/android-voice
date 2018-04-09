@@ -5,7 +5,7 @@ import android.content.Context;
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.usb.UsbAudioSource;
-import com.kikatech.voice.service.VoiceConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 
