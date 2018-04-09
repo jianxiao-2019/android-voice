@@ -8,6 +8,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
+import com.kikatech.go.util.timer.CountingTimer;
 
 import java.util.HashMap;
 
@@ -23,6 +24,8 @@ public class RemoteConfigUtil {
      * cacheExpiration is set to 0 so each fetch will retrieve values from the server.
      **/
     private static final long CACHE_EXPIRATION = 600; // seconds
+
+    private static final long TIME_OUT = 5000;
 
 
     private static RemoteConfigUtil sIns;
@@ -71,13 +74,38 @@ public class RemoteConfigUtil {
      * Fetch Version from server.
      **/
     public void fetchConfigs(final IFetchListener listener) {
+        final CountingTimer mTimeoutTimer = new CountingTimer(TIME_OUT, new CountingTimer.ICountingListener() {
+            @Override
+            public void onTimeTickStart() {
+            }
+
+            @Override
+            public void onTimeTick(long millis) {
+            }
+
+            @Override
+            public void onTimeTickEnd() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logw(TAG, "fetching timeout");
+                }
+                if (listener != null) {
+                    listener.onFetchComplete();
+                }
+            }
+
+            @Override
+            public void onInterrupted(long stopMillis) {
+            }
+        });
         // cacheExpirationSeconds is set to cacheExpiration here, indicating that any previously
         // fetched and cached config would be considered expired because it would have been fetched
         // more than cacheExpiration seconds ago. Thus the next fetch would go to the server unless
         // throttling is in progress. The default expiration duration is 43200 (12 hours).
+        mTimeoutTimer.start();
         mFirebaseRemoteConfig.fetch(CACHE_EXPIRATION).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                mTimeoutTimer.stop();
                 final boolean isSuccess = task.isSuccessful();
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, String.format("onComplete, isSuccess: %s", isSuccess));
