@@ -39,6 +39,7 @@ public class VoiceSource implements IVoiceSource {
     @Override
     public void start() {
         if (mAudioRecord != null) {
+            releaseAec();
             mAudioRecord.release();
         }
         mAudioRecord = createAudioRecord();
@@ -53,11 +54,7 @@ public class VoiceSource implements IVoiceSource {
 
     @Override
     public void stop() {
-        if (mCanceler != null) {
-            mCanceler.setEnabled(false);
-            mCanceler.release();
-            mCanceler = null;
-        }
+        releaseAec();
         if (mAudioRecord != null) {
 //            if (mAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
 //                mAudioRecord.stop();
@@ -107,4 +104,11 @@ public class VoiceSource implements IVoiceSource {
         }
     }
 
+    private void releaseAec() {
+        if (mCanceler != null) {
+            mCanceler.setEnabled(false);
+            mCanceler.release();
+            mCanceler = null;
+        }
+    }
 }
