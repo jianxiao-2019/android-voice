@@ -146,6 +146,8 @@ public class WebSocket {
                     }
                     mClient = null;
                     mSendBuffer.clear();
+
+                    mSocketState = DISCONNECTED;
                 }
             });
         }
@@ -154,6 +156,9 @@ public class WebSocket {
     public void sendData(final byte[] data) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");
+            if (mListener != null) {
+                mListener.onWebSocketClosed();
+            }
             return;
         }
         mExecutor.execute(new Runnable() {
@@ -167,6 +172,9 @@ public class WebSocket {
     public void sendCommand(final String command, final String payload) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");
+            if (mListener != null) {
+                mListener.onWebSocketClosed();
+            }
             return;
         }
         mExecutor.execute(new Runnable() {
@@ -181,6 +189,10 @@ public class WebSocket {
                 checkConnectionAndSend(new SendingDataString(jsonCommand));
             }
         });
+    }
+
+    public boolean isConnected() {
+        return mSocketState == CONNECTED;
     }
 
     private String genCommand(String command, String payload) {

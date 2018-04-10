@@ -73,10 +73,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private IntermediateMessage mLastIntermediateMessage;
     private long mSkippedCid = -1;
 
+    private boolean mIsStarting = false;
+
     private VoiceConfiguration.SpeechMode mCurrentSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
 
     public enum StopType {
         NORMAL,
+        ERROR,
         COMPLETE,
         CANCEL,
     }
@@ -178,6 +181,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public void start(int bosDuration) {
         Logger.i("1qaz start");
+        mIsStarting = true;
+
         ReportUtil.getInstance().startTimeStamp("start record");
         DebugUtil.updateDebugInfo(mConf);
 
@@ -203,17 +208,21 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
     public void stop(StopType stopType) {
         Logger.i("1qaz stopType = " + stopType);
+        mIsStarting = false;
+
         if (stopType == StopType.COMPLETE) {
             sendCommand(SERVER_COMMAND_COMPLETE, "");
             cleanVadEosTimer();
-        }
-        if (stopType == StopType.CANCEL) {
+        } else if (stopType == StopType.CANCEL) {
             sendCommand(SERVER_COMMAND_STOP, "");
             cleanVadBosTimer();
             cleanVadEosTimer();
             if (mLastIntermediateMessage != null) {
                 mSkippedCid = mLastIntermediateMessage.cid;
             }
+        } else if (stopType == StopType.ERROR) {
+            cleanVadBosTimer();
+            cleanVadEosTimer();
         }
 
         mVoiceRecorder.stop();
@@ -423,7 +432,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        handleError(ERR_CONNECTION_ERROR);
+                        if (mIsStarting) {
+                            handleError(ERR_CONNECTION_ERROR);
+                        }
                     }
                 });
             }
@@ -436,7 +447,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        handleError(ERR_CONNECTION_ERROR);
+                        if (mIsStarting) {
+                            handleError(ERR_CONNECTION_ERROR);
+                        }
                     }
                 });
             }
@@ -498,7 +511,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         public void handleMessage(android.os.Message msg) {
             if (msg.what == MSG_VAD_BOS) {
                 Logger.i("1qaz onBos");
-                handleError(ERR_NO_SPEECH);
+                if (mWebService != null && !mWebService.isConnected()) {
+                    handleError(ERR_CONNECTION_ERROR);
+                } else {
+                    handleError(ERR_NO_SPEECH);
+                }
                 return;
             } else if (msg.what == MSG_VAD_EOS) {
                 Logger.i("1qaz onEos");
@@ -527,7 +544,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     }
 
     private void handleError(int errorCode) {
-        stop(StopType.CANCEL);
+        stop(errorCode == ERR_NO_SPEECH ? StopType.CANCEL : StopType.ERROR);
         if (mVoiceRecognitionListener != null) {
             mVoiceRecognitionListener.onError(errorCode);
         }
