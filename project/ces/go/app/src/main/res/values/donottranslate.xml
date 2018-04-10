@@ -183,9 +183,33 @@
     </string-array>
 
 
-    <string name="feature_highlight_title">"Start using KikaGo"</string>
-    <string name="feature_highlight_subtitle">"A safer, more convenient and effortless way to communicate on the road."</string>
-    <string name="feature_highlight_btn_start">"Get Started"</string>
+    <string-array name="feature_highlight_titles">
+        <item>"KikaGo"</item>
+        <item>"Voice Command
+Navigation"</item>
+        <item>"Listen and Answer
+Messages"</item>
+        <item>"Answer and Make Calls"</item>
+        <item>"Play Any Music You Like"</item>
+    </string-array>
+
+    <string-array name="feature_highlight_subtitles">
+        <item>"A safer, more convenient and effortless way
+to communicate on the road."</item>
+        <item>"Start you navigation instantly and change your destination anytime without touching your phone."</item>
+        <item>"Send or reply messages to Facebook Messenger,
+WhatsApp, and SMS."</item>
+        <item>"Answer and make phone calls by voice
+control, for easier and safer communication."</item>
+        <item>"Give voice commands of the song name or
+its music genre, and KikaGo will play it for you
+immediately"</item>
+    </string-array>
+
+    <string name="feature_highlight_btn_skip">"Skip"</string>
+    <string name="feature_highlight_btn_next">"Next"</string>
+    <string name="feature_highlight_btn_start">"Start"</string>
+
 
     <string name="permission_title">"Permissions Required"</string>
     <string name="permission_subtitle">"In order to execute your voice commands smoothly, you need to enable the permissions below."</string>

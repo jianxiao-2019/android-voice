@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,55 +9,79 @@
     android:orientation="vertical"
     tools:ignore="SpUsage">
 
+    <com.kikatech.go.view.widget.WrapContentHeightViewPager
+        android:id="@+id/feature_highlight_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:overScrollMode="never"/>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/feature_highlight_pager_indicators"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_below="@+id/feature_highlight_pager"
+        android:layout_marginTop="20dp"
+        app:tabBackground="@drawable/selector_feature_highlight_indicator"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp"
+        app:tabMaxWidth="13dp"
+        app:tabMinWidth="13dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="135dp"
-        android:layout_marginTop="100dp"
-        android:orientation="vertical"
-        android:paddingLeft="33dp"
-        android:paddingRight="33dp">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="59dp"
+        android:gravity="center">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/feature_highlight_btn_next"
+            android:layout_width="139dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_kika_feature_highlight_btn_next"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="@string/feature_highlight_title"
-            android:textColor="#eaf1ff"
-            android:textSize="24dp"/>
+            android:text="@string/feature_highlight_btn_next"
+            android:textColor="#3274e6"
+            android:textSize="16dp"/>
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
+            android:id="@+id/feature_highlight_btn_start"
+            android:layout_width="139dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_kika_feature_highlight_btn_done"
+            android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="@string/feature_highlight_subtitle"
-            android:textColor="#8e94a9"
-            android:textSize="14dp"/>
+            android:text="@string/feature_highlight_btn_start"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
+    <LinearLayout
+        android:id="@+id/feature_highlight_btn_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="14dp"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/kika_oobe_graphic_started"/>
+            android:gravity="center"
+            android:text="@string/feature_highlight_btn_skip"
+            android:textColor="#99ffffff"
+            android:textSize="16dp"/>
 
-    </FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#99ffffff"/>
 
-    <TextView
-        android:id="@+id/feature_highlight_btn_start"
-        android:layout_width="290dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/selector_kika_feature_highlight_btn"
-        android:gravity="center"
-        android:text="@string/feature_highlight_btn_start"
-        android:textColor="#20232c"
-        android:textSize="16dp"/>
+    </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
