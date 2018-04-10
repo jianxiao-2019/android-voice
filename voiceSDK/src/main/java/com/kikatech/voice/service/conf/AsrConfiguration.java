@@ -11,6 +11,7 @@ public class AsrConfiguration {
     public interface SupportedLanguage {
         String EN_US = "en_US";
         String ZH_TW = "zh_TW";
+        String ZH_CN = "zh_CN";
     }
 
     private boolean spellingEnabled;
