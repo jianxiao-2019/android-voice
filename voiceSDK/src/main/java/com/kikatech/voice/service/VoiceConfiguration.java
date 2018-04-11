@@ -19,11 +19,12 @@ import java.util.List;
 public class VoiceConfiguration {
 
     public static final class HostUrl {
-        public static final String DEV_MVP = "ws://speech0-dev-mvp.kikakeyboard.com/v3/speech";
-        public static final String DEV_JINCHENG = "ws://speech0-poc.kikakeyboard.com/v3/speech";
-        public static final String DEV_HAO = "ws://speech.orctom.com:8080/v3/speech";
-        public static final String DEV_KIKA = "ws://speech0-dev.kikakeyboard.com/v3/speech";
-        public static final String KIKA_GO = "ws://kikago.kikakeyboard.com/v3/speech";
+        public static final String DEV_HAO              = "ws://speech.orctom.com:8080/v3/speech";  // for Hao dev testing
+        public static final String DEV_ASR              = "ws://api-dev.kika.ai/v3/speech";         // the dev environment for server team
+        public static final String DEV_KIKAGO           = "ws://kikago-sq.kika.ai/v3/speech";       // for KikaGo client dev
+        public static final String DEV_KEYBOARD         = "ws://api-sq.kika.ai/v3/speech";          // for Kika keyboard client dev
+        public static final String PRODUCTION_KIKAGO    = "ws://kikago.kika.ai/v3/speech";          // final KikaGo release production server
+        public static final String PRODUCTION_KEYBOARD  = "";   // final Kika keyboard release production server
     }
 
     public interface Engine {
