@@ -26,12 +26,17 @@ public class VoiceConfiguration {
         public static final String KIKA_GO = "ws://kikago.kikakeyboard.com/v3/speech";
     }
 
+    public interface Engine {
+        String KIKA_KIKA = "kika";
+        String KIKA_GOOGLE = "google";
+    }
+
     public enum SpeechMode {
         ONE_SHOT,
         CONVERSATION,
     }
 
-    private static final String DEFAULT_ENGINE = "google";
+    private static final String DEFAULT_ENGINE = Engine.KIKA_GOOGLE;
     private static final String DEFAULT_LOCALE = "en_US";
 
     private static final int DEFAULT_BOS_DURATION = 6000;
