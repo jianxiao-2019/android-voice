@@ -542,10 +542,8 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 if (mUsbAudioSource != null) {
-                    int volume = mUsbAudioSource.volumeUp();
-                    if (mTextView != null) {
-                        mTextView.setText("volume : " + VOLUME_TABLE[volume]);
-                    }
+                    mUsbAudioSource.volumeUp();
+                    checkVolume();
                 }
             }
         });
@@ -554,10 +552,8 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 if (mUsbAudioSource != null) {
-                    int volume = mUsbAudioSource.volumeDown();
-                    if (mTextView != null) {
-                        mTextView.setText("volume : " + VOLUME_TABLE[volume]);
-                    }
+                    mUsbAudioSource.volumeDown();
+                    checkVolume();
                 }
             }
         });
@@ -565,12 +561,7 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_check_volume).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource != null) {
-                    int volume = mUsbAudioSource.checkVolumeState();
-                    if (mTextView != null) {
-                        mTextView.setText("volume : " + VOLUME_TABLE[volume]);
-                    }
-                }
+                checkVolume();
             }
         });
 
