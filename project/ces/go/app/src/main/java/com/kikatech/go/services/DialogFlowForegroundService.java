@@ -32,13 +32,16 @@ import com.kikatech.go.dialogflow.error.ErrorSceneManager;
 import com.kikatech.go.dialogflow.error.SceneError;
 import com.kikatech.go.dialogflow.gotomain.GotoMainSceneManager;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
+import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.music.MusicSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
+import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
+import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
@@ -334,6 +337,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
+    // TODO: implement a dialogFlowService presenter for physical isolation?
     private void initDialogFlowService() {
         VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, mVoiceSourceHelper.getUsbVoiceSource());
 
@@ -355,7 +359,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onWakeUp(String scene) {
+                    public void onWakeUp(final String scene) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onWakeUp, scene:" + scene);
                         }
@@ -365,7 +369,25 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, scene);
                         sendDFServiceEvent(event);
-                        startAsr();
+                        switch (scene) {
+                            case SceneReplyIM.SCENE:
+                            case SceneReplySms.SCENE:
+                            case SceneIncoming.SCENE:
+                                startAsr();
+                                break;
+                            default:
+                                MediaPlayerUtil.playAlert(DialogFlowForegroundService.this, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
+                                    @Override
+                                    public void onStart() {
+                                    }
+
+                                    @Override
+                                    public void onStop() {
+                                        startAsr();
+                                    }
+                                });
+                                break;
+                        }
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Hi Kika Wake Up");
                             LogOnViewUtil.getIns().addLog("ASR listening");
@@ -373,6 +395,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
+
                     public void onSleep() {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSleep");
@@ -527,37 +550,50 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-                    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume, final Integer overrideAsrBos) {
+                    public void onStageActionDone(final boolean isInterrupted, final boolean delayAsrResume, final Integer overrideAsrBos) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("isInterrupted: %1$s, delayAsrResume: %2$s", isInterrupted, delayAsrResume));
                         }
-                        if (delayAsrResume) {
-                            AsyncThreadPool.getIns().executeDelay(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (overrideAsrBos != null) {
-                                        startAsr(overrideAsrBos);
-                                    } else {
-                                        startAsr();
-                                    }
-                                }
-                            }, TTS_DELAY_ASR_RESUME);
-                        } else {
-                            if (overrideAsrBos != null) {
-                                startAsr(overrideAsrBos);
-                            } else {
-                                startAsr();
-                            }
-                        }
+
                         String action = DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE;
                         DFServiceEvent event = new DFServiceEvent(action);
-                        event.putExtra(DFServiceEvent.PARAM_IS_INTERRUPTED, isInterrupted);
                         if (overrideAsrBos != null) {
                             event.putExtra(DFServiceEvent.PARAM_BOS_DURATION, overrideAsrBos);
                         }
                         sendDFServiceEvent(event);
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "isInterrupted:" + isInterrupted);
+                        }
+
+                        if (!isInterrupted) {
+                            MediaPlayerUtil.playAlert(DialogFlowForegroundService.this, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
+                                @Override
+                                public void onStart() {
+                                }
+
+                                @Override
+                                public void onStop() {
+                                    doStartAsrOnStageActionDone(delayAsrResume, overrideAsrBos);
+                                }
+                            });
+                        } else {
+                            doStartAsrOnStageActionDone(delayAsrResume, overrideAsrBos);
+                        }
+                    }
+
+                    private void doStartAsrOnStageActionDone(boolean delayAsrResume, Integer overrideAsrBos) {
+                        if (delayAsrResume) {
+                            if (overrideAsrBos != null) {
+                                startAsrDelay(overrideAsrBos);
+                            } else {
+                                startAsrDelay();
+                            }
+                        } else {
+                            if (overrideAsrBos != null) {
+                                startAsr(overrideAsrBos);
+                            } else {
+                                startAsr();
+                            }
                         }
                     }
 
@@ -790,6 +826,24 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         if (mDialogFlowService != null) {
             mDialogFlowService.startListening(bosDuration);
         }
+    }
+
+    private synchronized void startAsrDelay() {
+        AsyncThreadPool.getIns().executeDelay(new Runnable() {
+            @Override
+            public void run() {
+                startAsr();
+            }
+        }, TTS_DELAY_ASR_RESUME);
+    }
+
+    private synchronized void startAsrDelay(final int bosDuration) {
+        AsyncThreadPool.getIns().executeDelay(new Runnable() {
+            @Override
+            public void run() {
+                startAsr(bosDuration);
+            }
+        }, TTS_DELAY_ASR_RESUME);
     }
 
     private synchronized void cancelAsr() {

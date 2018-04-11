@@ -71,7 +71,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         Bundle extras;
         String text, scene, sceneAction;
         SceneStage stage;
-        boolean isFinished, isInterrupted, proactive;
+        boolean isFinished, proactive;
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
         switch (action) {
             case DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED:
@@ -123,9 +123,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 mUiManager.dispatchStageTask(stage);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE:
-                isInterrupted = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_INTERRUPTED, false);
                 int bosDuration = event.getExtras().getInt(DFServiceEvent.PARAM_BOS_DURATION, 0);
-                mUiManager.onStageActionDone(isInterrupted, bosDuration);
+                mUiManager.onStageActionDone(bosDuration);
                 break;
             case DFServiceEvent.ACTION_ON_STAGE_EVENT:
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);

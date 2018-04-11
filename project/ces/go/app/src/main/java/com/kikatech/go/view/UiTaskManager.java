@@ -70,22 +70,13 @@ public class UiTaskManager {
                 }
                 switch (mode) {
                     case AWAKE:
-                        boolean alert = true;
-                        if (!TextUtils.isEmpty(wakeUpFrom)) {
-                            switch (wakeUpFrom) {
-                                case SceneReplyIM.SCENE:
-                                case SceneReplySms.SCENE:
-                                case SceneIncoming.SCENE:
-                                    alert = false;
-                                    break;
-                                default:
-                                    displayOptions(mDefaultOptionList);
-                                    break;
-                            }
-                        } else {
+                        boolean toDisplayDefaultOptionList = !SceneReplyIM.SCENE.equals(wakeUpFrom)
+                                && !SceneReplySms.SCENE.equals(wakeUpFrom)
+                                && !SceneIncoming.SCENE.equals(wakeUpFrom);
+                        if (toDisplayDefaultOptionList) {
                             displayOptions(mDefaultOptionList);
                         }
-                        unlock(alert);
+                        unlock();
                         break;
                     case SLEEP:
                         break;
@@ -261,15 +252,8 @@ public class UiTaskManager {
         }
     }
 
-    public synchronized void dispatchDefaultOptionsTask() {
-        if (!isLayoutPerformTask()) {
-            displayOptions(mDefaultOptionList);
-            unlock(true);
-        }
-    }
-
-    public synchronized void onStageActionDone(boolean isInterrupted, int bosDuration) {
-        unlock(!isInterrupted);
+    public synchronized void onStageActionDone(int bosDuration) {
+        unlock();
         if (bosDuration > 0) {
             startOptionProgress(bosDuration);
         }
@@ -282,7 +266,7 @@ public class UiTaskManager {
         clearQueue();
         if (proactive) {
             displayOptions(mDefaultOptionList);
-            unlock(false);
+            unlock();
         }
     }
 
@@ -488,7 +472,7 @@ public class UiTaskManager {
         layout.onStatusChanged(status, listener);
     }
 
-    private void unlock(final boolean withAlert) {
+    private void unlock() {
         final GoLayout layout = mLayout;
         if (layout == null) {
             return;
@@ -497,9 +481,6 @@ public class UiTaskManager {
             @Override
             public void run() {
                 layout.unlock();
-                if (withAlert) {
-                    MediaPlayerUtil.playAlert(layout.getContext(), R.raw.alert_dot, null);
-                }
                 onStatusChanged(GoLayout.ViewStatus.LISTEN_1);
             }
         });
