@@ -15,6 +15,7 @@ import com.kikatech.voice.util.log.Logger;
 
 public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListener {
 
+    public static final int VOLUME_ERROR = 255;
     public static final int READ_FAIL = -99;
 
     private UsbAudioDriver mAudioDriver;
@@ -113,21 +114,21 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
         if (mAudioDriver != null) {
             return mAudioDriver.checkVolumeState();
         }
-        return -1;
+        return VOLUME_ERROR;
     }
 
     public int volumeUp() {
         if (mAudioDriver != null) {
             return mAudioDriver.volumeUp();
         }
-        return -1;
+        return VOLUME_ERROR;
     }
 
     public int volumeDown() {
         if (mAudioDriver != null) {
             return mAudioDriver.volumeDown();
         }
-        return -1;
+        return VOLUME_ERROR;
     }
 
     public int checkFwVersion() {

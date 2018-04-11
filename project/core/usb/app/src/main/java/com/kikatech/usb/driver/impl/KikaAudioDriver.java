@@ -13,7 +13,7 @@ import com.xiao.usbaudio.UsbAudio;
 
 public class KikaAudioDriver extends UsbHostDriver {
 
-    private static final int INIT_VOLUEM = 6;
+    private static final int INIT_VOLUME = 6;
 
     private UsbAudio mUsbAudio = new UsbAudio();
     private OnDataListener mOnDataListener;
@@ -44,10 +44,10 @@ public class KikaAudioDriver extends UsbHostDriver {
                 }).start();
             }
             int volume = mUsbAudio.checkVolumeState();
-            while (volume != INIT_VOLUEM) {
-                if (volume > INIT_VOLUEM) {
+            while (volume != INIT_VOLUME) {
+                if (volume > INIT_VOLUME) {
                     volume = mUsbAudio.volumeDown();
-                } else if (volume < INIT_VOLUEM) {
+                } else if (volume < INIT_VOLUME) {
                     volume = mUsbAudio.volumeUp();
                 }
             }
