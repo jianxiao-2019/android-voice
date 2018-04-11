@@ -453,7 +453,7 @@ public class SkPlayerController extends FrameLayout implements IVideoPlayerContr
         if (mVideoPlayer.isPlaying()) {
             mVideoPlayer.pause();
         } else {
-            mVideoPlayer.start();
+            mVideoPlayer.resume();
         }
         updatePausePlay();
     }

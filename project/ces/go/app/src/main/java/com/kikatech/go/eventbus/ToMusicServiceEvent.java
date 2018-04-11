@@ -6,7 +6,7 @@ package com.kikatech.go.eventbus;
  * @author jason Created on 2018/1/10.
  */
 
-public class ToMusicServiceEvent extends BaseDFServiceEvent {
+public class ToMusicServiceEvent extends BaseEvent {
 
     public static final String ACTION_MUSIC_CHANGE = "action_music_change";
     public static final String ACTION_VOLUME_CONTROL = "action_volume_control";

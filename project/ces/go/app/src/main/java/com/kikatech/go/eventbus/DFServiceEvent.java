@@ -6,7 +6,7 @@ package com.kikatech.go.eventbus;
  * @author SkeeterWang Created on 2017/12/1.
  */
 
-public class DFServiceEvent extends BaseDFServiceEvent {
+public class DFServiceEvent extends BaseEvent {
     public static final String ACTION_ON_CONNECTIVITY_CHANGED = "action_on_connectivity_changed";
     public static final String ACTION_ON_PING_SERVICE_STATUS = "action_on_ping_service_status";
     public static final String ACTION_ON_USB_NO_DEVICES = "action_on_usb_no_device";

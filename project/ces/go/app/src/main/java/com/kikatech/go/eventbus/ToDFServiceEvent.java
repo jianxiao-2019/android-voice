@@ -6,7 +6,7 @@ package com.kikatech.go.eventbus;
  * @author SkeeterWang Created on 2017/12/1.
  */
 
-public class ToDFServiceEvent extends BaseDFServiceEvent {
+public class ToDFServiceEvent extends BaseEvent {
 
     public static final String ACTION_CHANGE_SERVER = "action_change_server";
     public static final String ACTION_PING_SERVICE_STATUS = "action_ping_service_status";

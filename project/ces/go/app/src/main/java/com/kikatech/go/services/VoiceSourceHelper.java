@@ -139,6 +139,37 @@ public class VoiceSourceHelper {
         return mUsbVoiceSource;
     }
 
+    public synchronized void usbVolumeUp() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "usbVolumeUp");
+        }
+        setUsbVolume(6); // default volume level is 6
+    }
+
+    public synchronized void usbVolumeDown() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "usbVolumeDown");
+        }
+        setUsbVolume(3); // min volume level is 3
+    }
+
+    private synchronized void setUsbVolume(int TARGET_VOLUME_LEVEL) {
+        boolean isUsbVoiceExist = mUsbVoiceSource != null;
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("isUsbVoiceExist: %s", isUsbVoiceExist));
+        }
+        if (isUsbVoiceExist) {
+            int currentVolumeLevel = mUsbVoiceSource.checkVolumeState();
+            while (UsbAudioSource.VOLUME_ERROR != currentVolumeLevel && TARGET_VOLUME_LEVEL != currentVolumeLevel) {
+                if (currentVolumeLevel > TARGET_VOLUME_LEVEL) {
+                    currentVolumeLevel = mUsbVoiceSource.volumeDown();
+                } else if (currentVolumeLevel < TARGET_VOLUME_LEVEL) {
+                    currentVolumeLevel = mUsbVoiceSource.volumeUp();
+                }
+            }
+        }
+    }
+
     private synchronized void startScanTimer() {
         BackgroundThread.postDelayed(mUsbScanTimeoutTask, USB_SCAN_TIME_OUT_MS);
     }

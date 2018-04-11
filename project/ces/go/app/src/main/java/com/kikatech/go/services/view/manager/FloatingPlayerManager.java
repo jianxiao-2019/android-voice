@@ -425,20 +425,14 @@ public class FloatingPlayerManager extends BaseFloatingManager {
         if (!mContainer.isViewAdded(mItemPlayer)) {
             return;
         }
-        MusicManager musicManager = MusicManager.getIns();
-        if (musicManager.isPlaying(MusicManager.ProviderType.YOUTUBE)) {
-            musicManager.pause(MusicManager.ProviderType.YOUTUBE);
-        }
+        MusicManager.getIns().pause(MusicManager.ProviderType.YOUTUBE);
     }
 
     public synchronized void resumeMusic() {
         if (!mContainer.isViewAdded(mItemPlayer)) {
             return;
         }
-        MusicManager musicManager = MusicManager.getIns();
-        if (!musicManager.isPlaying(MusicManager.ProviderType.YOUTUBE)) {
-            musicManager.resume(MusicManager.ProviderType.YOUTUBE);
-        }
+        MusicManager.getIns().resume(MusicManager.ProviderType.YOUTUBE);
     }
 
     public synchronized String getCurrentVideoTitle() {

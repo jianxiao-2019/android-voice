@@ -135,7 +135,7 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
     public void resume() {
-        mPlayer.start();
+        mPlayer.resume();
         mPlayerController.updatePausePlay();
     }
 

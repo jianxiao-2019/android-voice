@@ -43,6 +43,7 @@ import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
+import com.kikatech.go.eventbus.MusicEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
@@ -207,6 +208,41 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
+    /**
+     * <p>Reflection subscriber method used by EventBus,
+     * <p>do not remove this except the subscriber is no longer needed.
+     */
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMusicEvent(MusicEvent event) {
+        if (event == null) {
+            return;
+        }
+        String action = event.getAction();
+        if (TextUtils.isEmpty(action)) {
+            return;
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("action: %s", action));
+        }
+        switch (action) {
+            case MusicEvent.ACTION_ON_START:
+            case MusicEvent.ACTION_ON_RESUME:
+                if (!mDFServiceStatus.isAwake()) {
+                    if (mVoiceSourceHelper != null) {
+                        mVoiceSourceHelper.usbVolumeDown();
+                    }
+                }
+                break;
+            case MusicEvent.ACTION_ON_PAUSE:
+            case MusicEvent.ACTION_ON_STOP:
+                if (mVoiceSourceHelper != null) {
+                    mVoiceSourceHelper.usbVolumeUp();
+                }
+                break;
+        }
+    }
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -363,8 +399,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onWakeUp, scene:" + scene);
                         }
-                        MusicForegroundService.pauseMusic();
                         mDFServiceStatus.setAwake(true);
+                        MusicForegroundService.pauseMusic();
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, scene);
@@ -400,11 +436,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSleep");
                         }
+                        mDFServiceStatus.setAwake(false);
                         if (mDialogFlowService != null) {
                             mDialogFlowService.startListening(-1);
                         }
                         MusicForegroundService.resumeMusic();
-                        mDFServiceStatus.setAwake(false);
                         String action = DFServiceEvent.ACTION_ON_SLEEP;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
