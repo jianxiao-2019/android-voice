@@ -26,7 +26,7 @@ public class CustomConfig {
 
     // Kika tts server timeout config
     private static final String CONFIG_FILE_TTS_SERVER = "tts_server_config.txt";
-    private static final int DEFAULT_TTS_SERVER_TIMEOUT = 375 * 2; // ConnectTimeout & ReadTimeout
+    private static final int DEFAULT_TTS_SERVER_TIMEOUT = 2000 * 2; // ConnectTimeout & ReadTimeout
     private static final String TAG_TIMEOUT = "timeout";
     private static int TIMEOUT = -1;
 
