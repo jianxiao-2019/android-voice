@@ -33,7 +33,7 @@ public class CustomConfig {
     // Snowboy sensitivity config
     private static final String CONFIG_FILE_SNOWBOY = "snowboy_config.txt";
     private static final String TAG_SNOWBOY_SENSITIVITY = "sensitivity";
-    private static final String DEFAULT_SNOWBOY_SENSITIVITY = "0.9";
+    private static final String DEFAULT_SNOWBOY_SENSITIVITY = "0.8";
     private static String SNOWBOY_SENSITIVITY = null;
 
 
