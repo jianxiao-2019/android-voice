@@ -863,8 +863,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
 
     private CountingTimer mAsrMaxDurationTimer = new CountingTimer(20000, new CountingTimer.ICountingListener() {
-        private static final String TAG = "SkTest";
-
         @Override
         public void onTimeTickStart() {
             if (LogUtil.DEBUG) {
