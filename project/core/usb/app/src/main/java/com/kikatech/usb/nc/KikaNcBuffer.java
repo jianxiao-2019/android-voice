@@ -31,7 +31,6 @@ public class KikaNcBuffer extends KikaBuffer {
 
     @Override
     public void onData(byte[] data, int len) {
-        Logger.v("778893 KikaNcBuffer onData len = " + len);
         int tempLen = len;
         int tempIdx = 0;
         int length;

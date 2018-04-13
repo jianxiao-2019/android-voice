@@ -56,6 +56,7 @@ import java.util.Locale;
 import static com.kikatech.voice.service.voice.VoiceService.ERR_CONNECTION_ERROR;
 import static com.kikatech.voice.service.voice.VoiceService.ERR_NO_SPEECH;
 import static com.kikatech.voice.service.voice.VoiceService.ERR_REASON_NOT_CREATED;
+import static com.kikatech.voice.service.voice.VoiceService.ERR_RECORD_DATA_FAIL;
 
 public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
@@ -570,6 +571,8 @@ public class MainActivity extends AppCompatActivity implements
 
         mStartButton.setEnabled(true);
         mStopButton.setEnabled(false);
+        mTextView.setText("Using Android source");
+        mNcParamLayout.setVisibility(View.GONE);
     }
 
     private void checkVersions() {
@@ -828,6 +831,10 @@ public class MainActivity extends AppCompatActivity implements
             if (mTextView != null) {
                 mTextView.setText("No Speech timeout.");
             }
+        } else if (reason == ERR_RECORD_DATA_FAIL) {
+            if (mTextView != null) {
+                mTextView.setText("Record data fail.");
+            }
         }
         waveStopDraw();
         mStartButton.setEnabled(true);
@@ -921,15 +928,22 @@ public class MainActivity extends AppCompatActivity implements
 
             checkVersions();
             checkVolume();
+
+            mTextView.setText("Using Android source");
+            mNcParamLayout.setVisibility(View.GONE);
         }
 
         @Override
         public void onDeviceError(int errorCode) {
+            Logger.d("onDeviceError errorCode = " + errorCode);
             mUsbAudioSource = null;
             attachService();
 
             checkVersions();
             checkVolume();
+
+            mTextView.setText("Using Android source");
+            mNcParamLayout.setVisibility(View.GONE);
         }
     };
 

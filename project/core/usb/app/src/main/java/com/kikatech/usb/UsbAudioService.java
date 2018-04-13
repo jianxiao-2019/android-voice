@@ -70,10 +70,11 @@ public class UsbAudioService {
         @Override
         public void onDeviceAttached(UsbDevice device) {
             Logger.i("UsbAudioService onDeviceAttached");
-            mDevice = device;
             if (mUsbAudioDriver != null) {
                 mUsbAudioDriver.close();
             }
+
+            mDevice = device;
             mUsbAudioDriver = new UsbAudioDriver(mContext, mDevice);
             if (mUsbAudioDriver.open()) {
                 mAudioSource = new UsbAudioSource(mUsbAudioDriver);

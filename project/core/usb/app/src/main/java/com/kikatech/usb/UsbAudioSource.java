@@ -87,7 +87,7 @@ public class UsbAudioSource implements IVoiceSource {
             }
         }
 
-        return result == OPEN_RESULT_STEREO;
+        return mIsOpened.get();
     }
 
     private void setToDefaultVolume() {
