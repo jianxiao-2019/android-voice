@@ -1,257 +1,96 @@
 package com.kikatech.voicesdktester.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.kikatech.voice.core.debug.DebugUtil;
-import com.kikatech.voice.core.webservice.message.IntermediateMessage;
-import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.service.conf.VoiceConfiguration;
-import com.kikatech.voice.service.voice.VoiceService;
-import com.kikatech.voice.service.conf.AsrConfiguration;
-import com.kikatech.voice.util.log.Logger;
-import com.kikatech.voice.util.request.RequestManager;
-import com.kikatech.voicesdktester.source.LocalNcVoiceSource;
 import com.kikatech.voicesdktester.R;
-import com.kikatech.voicesdktester.source.LocalVoiceSource;
-import com.kikatech.voicesdktester.ui.FileAdapter;
-import com.kikatech.voicesdktester.ui.ResultAdapter;
-import com.kikatech.voicesdktester.utils.PreferenceUtil;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import com.kikatech.voicesdktester.fragments.LocalPlayBackFragment;
 
 /**
  * Created by ryanlin on 03/01/2018.
  */
 
-public class LocalPlayBackActivity extends AppCompatActivity implements
-        VoiceService.VoiceRecognitionListener,
-        VoiceService.VoiceWakeUpListener,
-        LocalVoiceSource.EofListener,
-        FileAdapter.OnItemCheckedListener {
+public class LocalPlayBackActivity extends AppCompatActivity {
 
-    private static final String DEBUG_FILE_PATH = "voiceTester";
+    private ViewPager mViewPager;
+    private TabLayout mTabLayout;
 
-    private TextView mTextView;
-
-    private Button mStartButton;
-
-    private VoiceService mVoiceService;
-    private AsrConfiguration mAsrConfiguration;
-
-    private LocalNcVoiceSource mLocalNcVoiceSource;
-
-    private RecyclerView mResultRecyclerView;
-    private ResultAdapter mResultAdapter;
-
-    private RecyclerView mFileRecyclerView;
-    private FileAdapter mFileAdapter;
-
-    private Handler mUiHandler;
+    private LocalPlayBackFragment mPlayBackUSBFragment = LocalPlayBackFragment.getInstance(LocalPlayBackFragment.FragmentType.LOCAL_USB);
+    private LocalPlayBackFragment mPlayBackNCFragment = LocalPlayBackFragment.getInstance(LocalPlayBackFragment.FragmentType.LOCAL_NC);
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_local_playback);
+        setContentView(R.layout.activity_tester);
 
-        mLocalNcVoiceSource = new LocalNcVoiceSource();
-        mLocalNcVoiceSource.setEofListener(this);
-//        mLocalNcVoiceSource.setTargetFile(MainActivity.PATH_FROM_MIC + "kika_voice_20171230_204859_USB");
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-        mTextView = (TextView) findViewById(R.id.status_text);
-        mFileRecyclerView = (RecyclerView) findViewById(R.id.files_recycler);
-        mFileRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mTabLayout.addTab(mTabLayout.newTab().setText("USB"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("NC/SRC"));
+        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setAdapter(new LocalPlayBackActivity.ContentPagerAdapter(getSupportFragmentManager()));
 
-        mResultAdapter = new ResultAdapter(this);
-        mResultRecyclerView = (RecyclerView) findViewById(R.id.result_recycler);
-        mResultRecyclerView.setAdapter(mResultAdapter);
-        mResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mStartButton = (Button) findViewById(R.id.button_start);
-        mStartButton.setOnClickListener(new View.OnClickListener() {
+        mViewPager.addOnPageChangeListener(
+                new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
             @Override
-            public void onClick(View v) {
-                if (mVoiceService != null) {
-                    mVoiceService.start();
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                    mResultAdapter.clearResults();
-                    mResultAdapter.notifyDataSetChanged();
+            }
 
-                    if (mTextView != null) {
-                        mTextView.setText("starting.");
-                    }
-                    mStartButton.setEnabled(false);
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    mPlayBackUSBFragment.scanFiles();
+                } else if (position == 1) {
+                    mPlayBackNCFragment.scanFiles();
+                } else {
+                    mPlayBackUSBFragment.scanFiles();
                 }
             }
-        });
-        mStartButton.setEnabled(false);
 
-        attachService();
-
-        mUiHandler = new Handler();
-
-        findViewById(R.id.button_enter_play).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LocalPlayBackActivity.this, PlayActivity.class);
-                startActivity(intent);
+            public void onPageScrollStateChanged(int state) {
+
             }
-        });
-    }
+        };
+        mViewPager.addOnPageChangeListener(pageChangeListener);
+        mTabLayout.addOnTabSelectedListener(
+                new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        scanFiles();
-    }
-
-    private void scanFiles() {
-        String path = DebugUtil.getDebugFolderPath();
-        if (TextUtils.isEmpty(path)) {
-            return;
-        }
-        File folder = new File(path);
-        if (!folder.exists() || !folder.isDirectory()) {
-            return;
-        }
-
-        List<File> fileNames = new ArrayList<>();
-        for (final File file : folder.listFiles()) {
-            if (file.isDirectory()
-                    || !file.getName().contains("USB")
-                    || file.getName().contains("wav")) {
-                continue;
-            }
-            fileNames.add(file);
-        }
-
-        if (mFileAdapter == null) {
-            mFileAdapter = new FileAdapter(path, fileNames);
-            mFileAdapter.setOnItemCheckedListener(this);
-        } else {
-            mFileAdapter.updateContent(fileNames);
-            mFileAdapter.notifyDataSetChanged();
-        }
-        mFileRecyclerView.setAdapter(mFileAdapter);
-    }
-
-    private void attachService() {
-        if (mVoiceService != null) {
-            mVoiceService.destroy();
-            mVoiceService = null;
-        }
-        // Debug
-        AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
-        mAsrConfiguration = builder
-//                .setSpeechMode(((CheckBox) findViewById(R.id.check_one_shot)).isChecked()
-//                        ? AsrConfiguration.SpeechMode.ONE_SHOT
-//                        : AsrConfiguration.SpeechMode.CONVERSATION)
-//                .setAlterEnabled(((CheckBox) findViewById(R.id.check_alter)).isChecked())
-//                .setEmojiEnabled(((CheckBox) findViewById(R.id.check_emoji)).isChecked())
-//                .setPunctuationEnabled(((CheckBox) findViewById(R.id.check_punctuation)).isChecked())
-//                .setSpellingEnabled(((CheckBox) findViewById(R.id.check_spelling)).isChecked())
-//                .setVprEnabled(((CheckBox) findViewById(R.id.check_vpr)).isChecked())
-                .setEosPackets(9)
-                .build();
-        VoiceConfiguration conf = new VoiceConfiguration();
-        conf.setDebugFileTag(DEBUG_FILE_PATH);
-        conf.setIsDebugMode(true);
-        conf.source(mLocalNcVoiceSource);
-        conf.setSupportWakeUpMode(false);
-        conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
-                .setAppName("KikaGoTest")
-                .setUrl(PreferenceUtil.getString(
-                        LocalPlayBackActivity.this,
-                        PreferenceUtil.KEY_SERVER_LOCATION,
-                        VoiceConfiguration.HostUrl.DEV_MVP))
-                .setLocale("en_US")
-                .setSign(RequestManager.getSign(this))
-                .setUserAgent(RequestManager.generateUserAgent(this))
-                .setEngine("google")
-                .setAsrConfiguration(mAsrConfiguration)
-                .build());
-        mVoiceService = VoiceService.getService(this, conf);
-        mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.create();
-    }
-
-    @Override
-    public void onRecognitionResult(final Message message) {
-        if (message instanceof IntermediateMessage) {
-            if (mTextView != null) {
-                mTextView.setText("Intermediate Result : " + ((IntermediateMessage) message).text);
-            }
-            return;
-        }
-        if (mTextView != null) {
-            mTextView.setText("Final Result");
-        }
-        mResultAdapter.addResult(message);
-        mResultAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onError(int reason) {
-
-    }
-
-    @Override
-    public void onWakeUp() {
-
-    }
-
-    @Override
-    public void onSleep() {
-
-    }
-
-    @Override
-    public void onEndOfFile() {
-        Logger.d("LocalPlayBackActivity onEndOfFile");
-
-        mUiHandler.postDelayed(new Runnable() {
+        mViewPager.post(new Runnable() {
             @Override
             public void run() {
-                mVoiceService.stop(VoiceService.StopType.NORMAL);
-
-                if (mTextView != null) {
-                    mTextView.setText("stopped.");
-                }
-                mStartButton.setEnabled(true);
+                pageChangeListener.onPageSelected(mViewPager.getCurrentItem());
             }
-        }, 500);
+        });
     }
 
-    @Override
-    public void onItemChecked(String itemStr) {
-        if (mLocalNcVoiceSource != null) {
-            String path = DebugUtil.getDebugFolderPath();
-            if (TextUtils.isEmpty(path)) {
-                return;
-            }
-            mLocalNcVoiceSource.setTargetFile(path + itemStr);
-        }
-        if (mStartButton != null) {
-            mStartButton.setEnabled(true);
-        }
-    }
+    private class ContentPagerAdapter extends FragmentPagerAdapter {
 
-    @Override
-    public void onNothingChecked() {
-        if (mStartButton != null) {
-            mStartButton.setEnabled(false);
+        public ContentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                return mPlayBackUSBFragment;
+            } else if (position == 1) {
+                return mPlayBackNCFragment;
+            }
+            return mPlayBackUSBFragment;
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
         }
     }
 }
