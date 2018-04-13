@@ -15,6 +15,7 @@ import java.util.List;
 public class OptionList extends UiModel {
     public static final byte REQUEST_TYPE_ORDINAL = 0x01;
     public static final byte REQUEST_TYPE_TEXT = 0x02;
+    public static final byte REQUEST_TYPE_ORDINAL_TO_TEXT = 0x03;
 
     private byte requestType;
     private String title;
