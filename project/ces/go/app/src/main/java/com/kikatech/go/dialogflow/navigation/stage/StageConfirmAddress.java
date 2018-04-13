@@ -71,7 +71,7 @@ public class StageConfirmAddress extends BaseNaviStage {
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmAddress(context, mUserInput);
         if (uiAndTtsText.length > 0) {
-            String[] options = SceneUtil.getOptionsCommon(context);
+            String[] options = SceneUtil.getOptionsCommon2(context);
             requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];

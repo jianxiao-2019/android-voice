@@ -26,7 +26,7 @@ public class SceneUtil {
 
     public static final long OUTGOING_CALL_PAGE_DELAY = 2500;
     public static final long MSG_SENT_PAGE_DELAY = 2500;
-    public static final int CONFIRM_BOS_DURATION = 5400;
+    public static final int CONFIRM_BOS_DURATION = 5500;
 
     public static final int ICON_TRIGGER = R.drawable.kika_ic_trigger;
     public static final int ICON_COMMON = R.drawable.kika_ic_error;
@@ -300,6 +300,11 @@ public class SceneUtil {
     public static String[] getOptionsCommon(Context context) {
         Resources resource = context.getResources();
         return resource.getStringArray(R.array.options_common);
+    }
+
+    public static String[] getOptionsCommon2(Context context) {
+        Resources resource = context.getResources();
+        return resource.getStringArray(R.array.options_common_2);
     }
 
     private static String tryFormat(String string, Object... variables) {
