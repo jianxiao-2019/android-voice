@@ -175,7 +175,7 @@ public class LocalPlayBackActivity extends AppCompatActivity implements
                 .setUrl(PreferenceUtil.getString(
                         LocalPlayBackActivity.this,
                         PreferenceUtil.KEY_SERVER_LOCATION,
-                        VoiceConfiguration.HostUrl.DEV_MVP))
+                        VoiceConfiguration.HostUrl.DEV_KIKAGO))
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(this))
                 .setUserAgent(RequestManager.generateUserAgent(this))
