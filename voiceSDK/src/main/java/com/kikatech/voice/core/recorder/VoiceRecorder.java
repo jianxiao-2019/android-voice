@@ -45,6 +45,7 @@ public class VoiceRecorder {
             @Override
             public void run() {
                 if (mVoiceSource != null) {
+                    Logger.i(this + " [open] mVoiceSource = " + mVoiceSource + " Thread = " + Thread.currentThread().getName());
                     mVoiceSource.open();
                 }
             }
@@ -52,7 +53,7 @@ public class VoiceRecorder {
     }
 
     public void start() {
-        Logger.d("[VoiceRecorder] start mAudioRecordThread = " + mAudioRecordThread);
+        Logger.d(this + " start mAudioRecordThread = " + mAudioRecordThread + " Thread = " + Thread.currentThread().getName());
         if (mAudioRecordThread != null) {
             mAudioRecordThread.stop();
         }
@@ -61,7 +62,7 @@ public class VoiceRecorder {
     }
 
     public void stop() {
-        Logger.d("[VoiceRecorder] stopRecording mAudioRecordThread = " + mAudioRecordThread);
+        Logger.d(this + " stopRecording mAudioRecordThread = " + mAudioRecordThread + " Thread = " + Thread.currentThread().getName());
         if (mAudioRecordThread != null) {
             mAudioRecordThread.stop();
             mAudioRecordThread = null;
@@ -75,6 +76,7 @@ public class VoiceRecorder {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
+                Logger.i(this + " [close] mVoiceSource = " + mVoiceSource + " Thread = " + Thread.currentThread().getName());
                 if (mVoiceSource != null) {
                     mVoiceSource.close();
                 }
@@ -95,17 +97,17 @@ public class VoiceRecorder {
         private int mFailCount = 0;
 
         public void stop() {
-            Logger.d("[VoiceRecorder] AudioRecordThread stop");
+            Logger.d(this + " stop Thread = " + Thread.currentThread().getName());
             mIsRunning.set(false);
         }
 
         @Override
         public void run() {
-            Logger.i("[VoiceRecorder] AudioRecordThread prepare");
+            Logger.i(this + " [prepare] Thread = " + Thread.currentThread().getName());
             mIsRunning.set(true);
             mVoiceSource.start();
 
-            Logger.i("[VoiceRecorder] AudioRecordThread record bufferSize = " + mVoiceSource.getBufferSize());
+            Logger.i(this + " [record] bufferSize = " + mVoiceSource.getBufferSize() + " Thread = " + Thread.currentThread().getName());
             byte[] audioData = new byte[mVoiceSource.getBufferSize()];
             int readSize;
             while (mIsRunning.get()) {
@@ -120,24 +122,24 @@ public class VoiceRecorder {
                     copy(audioData, readSize);
                     mFailCount = 0;
                 } else {
-                    Logger.e("[VoiceRecorder][AudioRecordThread][Err] readSize = " + readSize + " mVoiceSource:" + mVoiceSource);
+                    Logger.e("AudioRecordThread[Err] readSize = " + readSize + " mVoiceSource:" + mVoiceSource);
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     if (mListener != null && ++mFailCount == FAIL_COUNT_THRESHOLD) {
-                        Logger.e("[AudioRecordThread][Err] FAIL_COUNT_THRESHOLD");
+                        Logger.e("AudioRecordThread[Err] FAIL_COUNT_THRESHOLD");
                         mListener.onRecorderError(0);
                         break;
                     }
                 }
             }
 
-            Logger.i("[VoiceRecorder] AudioRecordThread release");
+            Logger.i(this + " [release] Thread = " + Thread.currentThread().getName());
             if (mBufLen > 0 && mDataPath != null) {
                 byte[] lastData = Arrays.copyOf(mBuf, mBufLen);
-                Logger.d("[VoiceRecorder] release lastData.length = " + lastData.length);
+                Logger.d("release lastData.length = " + lastData.length);
                 mDataPath.onData(lastData);
             }
             mVoiceSource.stop();
