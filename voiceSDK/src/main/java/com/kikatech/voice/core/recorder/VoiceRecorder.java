@@ -91,18 +91,10 @@ public class VoiceRecorder {
 
         @Override
         public void run() {
-            prepare();
-            record();
-            release();
-        }
-
-        private void prepare() {
             Logger.i("[VoiceRecorder] AudioRecordThread prepare");
             mIsRunning.set(true);
             mVoiceSource.start();
-        }
 
-        private void record() {
             Logger.i("[VoiceRecorder] AudioRecordThread record bufferSize = " + mVoiceSource.getBufferSize());
             byte[] audioData = new byte[mVoiceSource.getBufferSize()];
             int readSize;
@@ -125,9 +117,7 @@ public class VoiceRecorder {
                     }
                 }
             }
-        }
 
-        private void release() {
             Logger.i("[VoiceRecorder] AudioRecordThread release");
             if (mBufLen > 0 && mDataPath != null) {
                 byte[] lastData = Arrays.copyOf(mBuf, mBufLen);
