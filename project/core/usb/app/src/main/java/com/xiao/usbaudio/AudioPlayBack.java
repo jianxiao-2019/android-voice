@@ -31,6 +31,7 @@ public class AudioPlayBack {
     }
 
     public static void write(byte[] decodedAudio, int len) {
+        Logger.v("AudioPlayBack write len = " + len);
         if (mListener != null) {
             mListener.onWrite(len);
         }
@@ -42,7 +43,7 @@ public class AudioPlayBack {
             sKikaAudioDriver.onData(decodedAudio, len);
         }
 
-        Logger.d("sFilePath = " + sFilePath + " output = " + output);
+//        Logger.d("sFilePath = " + sFilePath + " output = " + output);
         if (sFilePath != null) {
             try {
                 for (int i = 0; i < len; i++) {
