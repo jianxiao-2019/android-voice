@@ -36,7 +36,8 @@ import java.util.Arrays;
  * Update by ryanlin on 25/12/2017.
  */
 
-public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
+public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
+        VoiceRecorder.OnRecorderErrorListener {
     // TODO: refactor latter
     private SharedPreferences sPref;
     private SharedPreferences.Editor sEditor;
@@ -44,6 +45,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     public static final int ERR_REASON_NOT_CREATED = 1;
     public static final int ERR_CONNECTION_ERROR = 2;
     public static final int ERR_NO_SPEECH = 3;
+    public static final int ERR_RECORD_DATA_FAIL = 4;
 
     public static final String SERVER_COMMAND_NBEST = "NBEST";
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
@@ -76,6 +78,18 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
     private boolean mIsStarting = false;
 
     private VoiceConfiguration.SpeechMode mCurrentSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
+
+    @Override
+    public void onRecorderError(int errorCode) {
+        if (mMainThreadHandler != null) {
+            mMainThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    handleError(ERR_RECORD_DATA_FAIL);
+                }
+            });
+        }
+    }
 
     public enum StopType {
         NORMAL,
@@ -129,7 +143,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
         IDataPath finalPath = new VoiceService.VoiceDataSender(null);
         mWakeUpDetector = mConf.isSupportWakeUpMode() ? WakeUpDetector.getDetector(context, this) : null;
         mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
-        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath);
+        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath, this);
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {

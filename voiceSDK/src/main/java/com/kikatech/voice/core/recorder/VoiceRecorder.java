@@ -23,10 +23,17 @@ public class VoiceRecorder {
     private AudioRecordThread mAudioRecordThread;
 
     private VoiceService.VoiceDataListener mVoiceDataListener;
+    private OnRecorderErrorListener mListener;
 
-    public VoiceRecorder(IVoiceSource voiceSource, IDataPath dataPath) {
+    public interface OnRecorderErrorListener {
+        void onRecorderError(int errorCode);
+    }
+
+    public VoiceRecorder(IVoiceSource voiceSource, IDataPath dataPath,
+                         OnRecorderErrorListener listener) {
         mVoiceSource = voiceSource;
         mDataPath = dataPath;
+        mListener = listener;
     }
 
     public void setVoiceDataListener(VoiceService.VoiceDataListener listener) {
@@ -77,12 +84,15 @@ public class VoiceRecorder {
 
     private class AudioRecordThread implements Runnable {
 
+        private static final int FAIL_COUNT_THRESHOLD = 10;
         private static final int S_BYTE_LEN = (int) (4096 * 1.5);//vad中的输入是一段4096字节的音频
 
         private AtomicBoolean mIsRunning = new AtomicBoolean(false);
 
         private byte[] mBuf = new byte[S_BYTE_LEN];
         private int mBufLen = 0;
+
+        private int mFailCount = 0;
 
         public void stop() {
             Logger.d("[VoiceRecorder] AudioRecordThread stop");
@@ -108,12 +118,18 @@ public class VoiceRecorder {
 //                if (AudioRecord.ERROR_INVALID_OPERATION != readSize /*&& fos != null*/) {
                 if (readSize > 0) {
                     copy(audioData, readSize);
+                    mFailCount = 0;
                 } else {
                     Logger.e("[VoiceRecorder][AudioRecordThread][Err] readSize = " + readSize + " mVoiceSource:" + mVoiceSource);
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                    }
+                    if (mListener != null && ++mFailCount == FAIL_COUNT_THRESHOLD) {
+                        Logger.e("[AudioRecordThread][Err] FAIL_COUNT_THRESHOLD");
+                        mListener.onRecorderError(0);
+                        break;
                     }
                 }
             }
