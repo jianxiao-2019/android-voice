@@ -89,7 +89,7 @@ public class VoiceDetector extends IDataPath {
             final byte[] data = mData;
             float[] sample = ByteToFloat(data, data.length / 2);
             float prob = VadUtil.speechProbability(sample, 0, sample.length, VadUtil.sConf);
-            Logger.d("VoiceDetector prob = " + prob);
+            Logger.v("VoiceDetector prob = " + prob);
             if (DebugUtil.isDebug() && prob > 0) {
                 if (ReportUtil.getInstance().isEverDetectedVad() == false) {
                     ReportUtil.getInstance().vadDetected();

@@ -66,7 +66,7 @@ public abstract class WakeUpDetector {
 
         @Override
         public final void onData(byte[] data) {
-            Logger.d("WakeUpDataPath onData data.length = " + data.length + " isAwake = " + isAwake());
+            Logger.v("WakeUpDataPath onData data.length = " + data.length + " isAwake = " + isAwake());
             if (isAwake()) {
                 if (mNextPath != null) {
                     mNextPath.onData(data);

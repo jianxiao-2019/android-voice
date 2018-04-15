@@ -495,7 +495,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener {
 
         @Override
         public void onData(byte[] data) {
-            Logger.i("VoiceDataSender onData");
+            Logger.v("VoiceDataSender onData");
             if (mWebService != null) {
                 if (ReportUtil.getInstance().isEverDetectedVad() == true && ReportUtil.getInstance().isEverSentDataToWeb() == false) {
                     ReportUtil.getInstance().sentDataToWeb();
