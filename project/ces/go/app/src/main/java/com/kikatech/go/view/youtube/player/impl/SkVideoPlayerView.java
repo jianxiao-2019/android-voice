@@ -20,12 +20,15 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.MediaController;
 
 import com.kikatech.go.R;
+import com.kikatech.go.eventbus.MusicEvent;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.TimeUtil;
 import com.kikatech.go.view.youtube.model.VideoInfo;
 import com.kikatech.go.view.youtube.player.interfaces.IVideoPlayer;
 import com.kikatech.go.view.youtube.player.interfaces.IVideoStatusListener;
 import com.kikatech.go.view.youtube.playercontroller.interfaces.IVideoPlayerController;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 
@@ -542,6 +545,7 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
             mMediaPlayer.start();
             setKeepScreenOn(true);
             mCurrentState = PlayerState.PLAYING;
+            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_START));
         }
         mTargetState = PlayerState.PLAYING;
     }
@@ -557,13 +561,22 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
                     mVideoStatusListener.onPause();
                 }
             }
+            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_PAUSE));
         }
         mTargetState = PlayerState.PAUSED;
     }
 
     @Override
     public void resume() {
-        openVideo();
+        if (isInPlaybackState()) {
+            if (!mMediaPlayer.isPlaying()) {
+                mMediaPlayer.start();
+                setKeepScreenOn(true);
+                mCurrentState = PlayerState.PLAYING;
+            }
+            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_RESUME));
+        }
+        mTargetState = PlayerState.PLAYING;
     }
 
     @Override
@@ -575,6 +588,7 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
             setKeepScreenOn(false);
             mCurrentState = PlayerState.IDLE;
             mTargetState = PlayerState.IDLE;
+            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_STOP));
         }
     }
 
@@ -839,6 +853,10 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
 
     public void unmute() {
         mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
+    }
+
+    private synchronized void sendMusicEvent(MusicEvent event) {
+        EventBus.getDefault().post(event);
     }
 
 

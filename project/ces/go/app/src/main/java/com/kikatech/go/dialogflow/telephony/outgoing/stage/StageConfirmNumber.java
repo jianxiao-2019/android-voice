@@ -100,7 +100,7 @@ public class StageConfirmNumber extends StageOutgoing {
                     extras = new Bundle();
                     String uiText = uiAndTtsText[0];
                     String ttsText = uiAndTtsText[1];
-                    OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL);
+                    OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_ORDINAL_TO_TEXT);
                     optionList.setTitle(uiText);
                     optionList.setIconRes(SceneUtil.ICON_TELEPHONY);
                     int iteratorSize = mContact.phoneNumbers.size() > 2 ? 2 : mContact.phoneNumbers.size();

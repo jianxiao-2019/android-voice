@@ -96,6 +96,7 @@ public class DrawerTipFragment extends Fragment {
         list.add(new Tip("<i>More natural commands...</i>"));
         // --------------------------------------------------
         list.add(new TipTitle("Music"));
+        list.add(new Tip("Search music"));
         list.add(new Tip("Play <i>See you again</i>."));
         list.add(new Tip("Play <i>Jazz music</i>."));
         list.add(new Tip("Play <i>Sorry</i> by <i>Justin Bieber</i>"));

@@ -43,6 +43,7 @@ import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
+import com.kikatech.go.eventbus.MusicEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
@@ -55,6 +56,7 @@ import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.usb.util.ImageUtil;
@@ -203,6 +205,41 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 setDoingAccessibility(false);
                 // resume to its original visibility
                 mManager.updateGMapVisibility();
+                break;
+        }
+    }
+
+    /**
+     * <p>Reflection subscriber method used by EventBus,
+     * <p>do not remove this except the subscriber is no longer needed.
+     */
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMusicEvent(MusicEvent event) {
+        if (event == null) {
+            return;
+        }
+        String action = event.getAction();
+        if (TextUtils.isEmpty(action)) {
+            return;
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("action: %s", action));
+        }
+        switch (action) {
+            case MusicEvent.ACTION_ON_START:
+            case MusicEvent.ACTION_ON_RESUME:
+                if (!mDFServiceStatus.isAwake()) {
+                    if (mVoiceSourceHelper != null) {
+                        mVoiceSourceHelper.usbVolumeDown();
+                    }
+                }
+                break;
+            case MusicEvent.ACTION_ON_PAUSE:
+            case MusicEvent.ACTION_ON_STOP:
+                if (mVoiceSourceHelper != null) {
+                    mVoiceSourceHelper.usbVolumeUp();
+                }
                 break;
         }
     }
@@ -363,8 +400,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onWakeUp, scene:" + scene);
                         }
-                        MusicForegroundService.pauseMusic();
                         mDFServiceStatus.setAwake(true);
+                        MusicForegroundService.pauseMusic();
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, scene);
@@ -400,11 +437,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSleep");
                         }
+                        mDFServiceStatus.setAwake(false);
                         if (mDialogFlowService != null) {
                             mDialogFlowService.startListening(-1);
                         }
                         MusicForegroundService.resumeMusic();
-                        mDFServiceStatus.setAwake(false);
                         String action = DFServiceEvent.ACTION_ON_SLEEP;
                         DFServiceEvent event = new DFServiceEvent(action);
                         sendDFServiceEvent(event);
@@ -446,6 +483,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             LogUtil.log(TAG, String.format("speechText: %1$s, emoji: %2%s, isFinished: %3$s", speechText, emojiUnicode, isFinished));
                         }
 
+                        if (isFinished) {
+                            if (mAsrMaxDurationTimer.isCounting()) {
+                                mAsrMaxDurationTimer.stop();
+                            }
+                        }
+
                         mManager.handleAsrResult(StringUtil.upperCaseFirstWord(speechText));
 
                         String action = DFServiceEvent.ACTION_ON_ASR_RESULT;
@@ -474,6 +517,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
                     @Override
                     public void onError(int reason) {
+                        if (mAsrMaxDurationTimer.isCounting()) {
+                            mAsrMaxDurationTimer.stop();
+                        }
                         switch (reason) {
                             case VoiceService.ERR_NO_SPEECH:
                                 if (LogUtil.DEBUG) {
@@ -816,15 +862,47 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
 
+    private CountingTimer mAsrMaxDurationTimer = new CountingTimer(20000, new CountingTimer.ICountingListener() {
+        @Override
+        public void onTimeTickStart() {
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "onTimeTickStart");
+            }
+        }
+
+        @Override
+        public void onTimeTick(long millis) {
+        }
+
+        @Override
+        public void onTimeTickEnd() {
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, "onTimeTickEnd");
+            }
+            if (mDialogFlowService != null) {
+                mDialogFlowService.completeListening();
+            }
+        }
+
+        @Override
+        public void onInterrupted(long stopMillis) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "onInterrupted");
+            }
+        }
+    });
+
     private synchronized void startAsr() {
         if (mDialogFlowService != null) {
             mDialogFlowService.startListening();
+            mAsrMaxDurationTimer.start();
         }
     }
 
     private synchronized void startAsr(int bosDuration) {
         if (mDialogFlowService != null) {
             mDialogFlowService.startListening(bosDuration);
+            mAsrMaxDurationTimer.start();
         }
     }
 
@@ -849,6 +927,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private synchronized void cancelAsr() {
         if (mDialogFlowService != null) {
             mDialogFlowService.cancelListening();
+            if (mAsrMaxDurationTimer.isCounting()) {
+                mAsrMaxDurationTimer.stop();
+            }
         }
     }
 

@@ -31,7 +31,7 @@ public class KikaNcBuffer extends KikaBuffer {
 
     @Override
     public void onData(byte[] data, int len) {
-        Logger.d("778893 KikaNcBuffer onData len = " + len);
+        Logger.v("778893 KikaNcBuffer onData len = " + len);
         int tempLen = len;
         int tempIdx = 0;
         int length;
@@ -45,11 +45,9 @@ public class KikaNcBuffer extends KikaBuffer {
         }
         System.arraycopy(data, tempIdx, mAudioBytes, mOffset, tempLen);
         mOffset += tempLen;
-        Logger.d("778893 KikaNcBuffer onData final mOffset = " + mOffset);
     }
 
     private byte[] doNoiseCancellation() {
-        Logger.d("778893 KikaNcBuffer doNoiseCancellation");
         short[] outBuffs = new short[mAudioBytes.length / 2];
         NoiseCancellation.NoiseMask(ByteToShort(mAudioBytes), outBuffs);
 

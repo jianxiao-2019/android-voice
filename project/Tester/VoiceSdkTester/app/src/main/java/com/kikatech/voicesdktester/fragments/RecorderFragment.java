@@ -217,7 +217,7 @@ public class RecorderFragment extends PageFragment implements
         conf.source(mUsbAudioSource);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
-                .setUrl(VoiceConfiguration.HostUrl.DEV_KIKA)
+                .setUrl(VoiceConfiguration.HostUrl.DEV_KIKAGO)
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(getActivity()))
                 .setUserAgent(RequestManager.generateUserAgent(getActivity()))

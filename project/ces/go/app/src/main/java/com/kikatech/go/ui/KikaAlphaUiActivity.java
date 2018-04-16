@@ -182,17 +182,35 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mUiManager = new UiTaskManager(mGoLayout, new UiTaskManager.IUiManagerFeedback() {
             @Override
             public void onOptionSelected(byte requestType, int index, Option option) {
-                String textToSend;
+                String textToSend = null;
                 switch (requestType) {
                     case OptionList.REQUEST_TYPE_ORDINAL:
                         textToSend = String.valueOf(index + 1);
-                        DialogFlowForegroundService.processDialogFlowTalk(textToSend);
-                        mUiManager.dispatchSpeechTask(textToSend);
+                        if (!TextUtils.isEmpty(textToSend)) {
+                            DialogFlowForegroundService.processDialogFlowTalk(textToSend);
+                            mUiManager.dispatchSpeechTask(textToSend);
+                        }
                         break;
                     case OptionList.REQUEST_TYPE_TEXT:
                         textToSend = option.getActionText();
-                        DialogFlowForegroundService.processDialogFlowTalk(textToSend);
-                        mUiManager.dispatchSpeechTask(textToSend);
+                        if (!TextUtils.isEmpty(textToSend)) {
+                            DialogFlowForegroundService.processDialogFlowTalk(textToSend);
+                            mUiManager.dispatchSpeechTask(textToSend);
+                        }
+                        break;
+                    case OptionList.REQUEST_TYPE_ORDINAL_TO_TEXT:
+                        switch (index) {
+                            case 0:
+                                textToSend = "The first one";
+                                break;
+                            case 1:
+                                textToSend = "The second one";
+                                break;
+                        }
+                        if (!TextUtils.isEmpty(textToSend)) {
+                            DialogFlowForegroundService.processDialogFlowTalk(textToSend);
+                            mUiManager.dispatchSpeechTask(textToSend);
+                        }
                         break;
                 }
             }

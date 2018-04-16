@@ -9,11 +9,9 @@
         <item>"What's your destination?"</item>
     </string-array>
 
-    <string name="ui_confirm_address">"\"%s\"?"</string>
+    <string name="ui_confirm_address">"\"%s\""</string>
     <string-array name="tts_confirm_address">
-        <item>"%s, right?"</item> <!-- %s: address/name of place -->
-        <item>"OK, %s, right?"</item>
-        <item>"%s, am I right? "</item>
+        <item>"Taking you to \"%s\"..."</item> <!-- %s: address/name of place -->
     </string-array>
 
     <string name="ui_ask_address_again">"Please say again"</string>
@@ -62,7 +60,7 @@
 
     <string name="ui_confirm_msg">"\"%s\""</string>
     <string-array name="tts_confirm_msg">
-        <item>""%s" is it correct?"</item>
+        <item>""%s" ready to send?"</item>
     </string-array>
 
     <string name="ui_ask_emoji">"%s"</string>
@@ -168,6 +166,12 @@
     <string-array name="options_common">
         <item>"Yes"</item>
         <item>"No"</item>
+        <item>"Cancel"</item>
+    </string-array>
+
+    <string-array name="options_common_2">
+        <item>"Sure"</item>
+        <item>"Change"</item>
         <item>"Cancel"</item>
     </string-array>
 

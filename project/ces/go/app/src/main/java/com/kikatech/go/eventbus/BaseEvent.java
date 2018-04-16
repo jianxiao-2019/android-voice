@@ -10,12 +10,12 @@ import java.util.ArrayList;
  * @author SkeeterWang Created on 2017/12/1.
  */
 
-class BaseDFServiceEvent {
+class BaseEvent {
 
     private String action;
     private Bundle extras = new Bundle();
 
-    BaseDFServiceEvent(String action) {
+    BaseEvent(String action) {
         this.action = action;
     }
 
