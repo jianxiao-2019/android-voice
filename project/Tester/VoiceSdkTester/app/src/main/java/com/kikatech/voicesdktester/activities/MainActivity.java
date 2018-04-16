@@ -68,11 +68,10 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     private static final String[] mServerList = {
-            VoiceConfiguration.HostUrl.DEV_KIKAGO,
-            VoiceConfiguration.HostUrl.DEV_ASR,
             VoiceConfiguration.HostUrl.DEV_HAO,
-            VoiceConfiguration.HostUrl.PRODUCTION_KIKAGO,
-            VoiceConfiguration.HostUrl.PRODUCTION_KEYBOARD,
+            VoiceConfiguration.HostUrl.DEV_ASR,
+            VoiceConfiguration.HostUrl.DEV_KIKAGO,
+            VoiceConfiguration.HostUrl.DEV_KIKAGO,
     };
 
     private static final String[] VOLUME_TABLE = new String[] {
