@@ -1,5 +1,7 @@
 package com.kikatech.voice.core.recorder;
 
+import android.os.Process;
+
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.util.log.Logger;
@@ -16,10 +18,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VoiceRecorder {
 
+    public static final int ERR_OPEN_FAIL = 1;
+    public static final int ERR_RECORD_FAIL = 2;
+
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+
     private final IDataPath mDataPath;
     private final IVoiceSource mVoiceSource;
 
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AudioRecordThread mAudioRecordThread;
 
     private VoiceService.VoiceDataListener mVoiceDataListener;
@@ -41,24 +47,31 @@ public class VoiceRecorder {
     }
 
     public void open() {
-        mExecutor.execute(new Runnable() {
+        EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
+                android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
                 if (mVoiceSource != null) {
                     Logger.i(this + " [open] mVoiceSource = " + mVoiceSource + " Thread = " + Thread.currentThread().getName());
-                    mVoiceSource.open();
+                    boolean success = mVoiceSource.open();
+                    if (!success && mListener != null) {
+                        mListener.onRecorderError(ERR_OPEN_FAIL);
+                    }
                 }
+
+                Logger.i(this + " [open] enddddddd");
             }
         });
     }
 
     public void start() {
         Logger.d(this + " start mAudioRecordThread = " + mAudioRecordThread + " Thread = " + Thread.currentThread().getName());
+        Logger.d(this + " start mExecutor isShutDown = " + EXECUTOR.isShutdown() + " isTerminated = " + EXECUTOR.isTerminated());
         if (mAudioRecordThread != null) {
             mAudioRecordThread.stop();
         }
         mAudioRecordThread = new AudioRecordThread();
-        mExecutor.execute(mAudioRecordThread);
+        EXECUTOR.execute(mAudioRecordThread);
     }
 
     public void stop() {
@@ -73,13 +86,15 @@ public class VoiceRecorder {
         if (mAudioRecordThread != null) {
             Logger.e("Please call stop() first.");
         }
-        mExecutor.execute(new Runnable() {
+        EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 Logger.i(this + " [close] mVoiceSource = " + mVoiceSource + " Thread = " + Thread.currentThread().getName());
                 if (mVoiceSource != null) {
                     mVoiceSource.close();
                 }
+
+                Logger.i(this + " [close] enddddddd");
             }
         });
     }
@@ -111,7 +126,9 @@ public class VoiceRecorder {
             byte[] audioData = new byte[mVoiceSource.getBufferSize()];
             int readSize;
             while (mIsRunning.get()) {
+                Logger.v("voiceRecorder before read");
                 readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
+                Logger.v("voiceRecorder read new size = " + readSize);
 
                 if (mVoiceDataListener != null) {
                     mVoiceDataListener.onData(audioData, readSize);
@@ -130,7 +147,7 @@ public class VoiceRecorder {
                     }
                     if (mListener != null && ++mFailCount == FAIL_COUNT_THRESHOLD) {
                         Logger.e("AudioRecordThread[Err] FAIL_COUNT_THRESHOLD");
-                        mListener.onRecorderError(0);
+                        mListener.onRecorderError(ERR_RECORD_FAIL);
                         break;
                     }
                 }

@@ -46,7 +46,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     public static final int ERR_REASON_NOT_CREATED = 1;
     public static final int ERR_CONNECTION_ERROR = 2;
     public static final int ERR_NO_SPEECH = 3;
-    public static final int ERR_RECORD_DATA_FAIL = 4;
+    public static final int ERR_RECORD_OPEN_FAIL = 4;
+    public static final int ERR_RECORD_DATA_FAIL = 5;
 
     public static final String SERVER_COMMAND_NBEST = "NBEST";
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
@@ -82,12 +83,18 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private VoiceConfiguration.SpeechMode mCurrentSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
 
     @Override
-    public void onRecorderError(int errorCode) {
+    public void onRecorderError(final int errorCode) {
         if (mMainThreadHandler != null) {
             mMainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    handleError(ERR_RECORD_DATA_FAIL);
+                    if (errorCode == VoiceRecorder.ERR_OPEN_FAIL) {
+                        handleError(ERR_RECORD_OPEN_FAIL);
+                    } else if (errorCode == VoiceRecorder.ERR_RECORD_FAIL) {
+                        handleError(ERR_RECORD_DATA_FAIL);
+                    } else {
+                        Logger.e("onRecorderError : Not supported error code : " + errorCode);
+                    }
                 }
             });
         }
@@ -317,7 +324,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void destroy() {
-        Logger.d("VoiceService mWebService.release()");
+        Logger.d("VoiceService destroy");
 
         stop(StopType.CANCEL);
         EventBus.getDefault().unregister(this);

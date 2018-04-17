@@ -33,7 +33,8 @@ public class VoiceSource implements IVoiceSource {
     }
 
     @Override
-    public void open() {
+    public boolean open() {
+        return true;
     }
 
     @Override

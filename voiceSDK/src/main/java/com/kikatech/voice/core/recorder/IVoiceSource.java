@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 
 public interface IVoiceSource {
 
-    void open();
+    boolean open();
 
     void start();
 
