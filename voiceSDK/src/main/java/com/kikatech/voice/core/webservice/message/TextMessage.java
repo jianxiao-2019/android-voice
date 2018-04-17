@@ -19,10 +19,12 @@ public class TextMessage extends Message {
     }
 
     public TextMessage(IntermediateMessage intermediateMessage) {
-        this.state = intermediateMessage.state;
-        this.text = new String[]{intermediateMessage.text};
-        this.engine = intermediateMessage.engine;
-        this.cid = intermediateMessage.cid;
+        if (intermediateMessage != null) {
+            this.state = intermediateMessage.state;
+            this.text = new String[]{intermediateMessage.text};
+            this.engine = intermediateMessage.engine;
+            this.cid = intermediateMessage.cid;
+        }
     }
 
     @Override
@@ -46,6 +48,6 @@ public class TextMessage extends Message {
 
     @Override
     public String toString() {
-        return super.toString() + " text = " + text[0];
+        return super.toString() + " text = " + text[0] + "(" + cid + ")";
     }
 }

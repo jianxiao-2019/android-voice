@@ -23,6 +23,9 @@ public abstract class Message {
     public static final String MSG_TYPE_EMOJI = "EMOJI";
     public static final String MSG_TYPE_NBEST = "NBEST";
 
+    public static final String MSG_TYPE_BOS = "BOS";
+    public static final String MSG_TYPE_EOS = "EOS";
+
     public Message() {
     }
 

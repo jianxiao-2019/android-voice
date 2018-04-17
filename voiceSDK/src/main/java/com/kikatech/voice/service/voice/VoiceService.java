@@ -9,6 +9,7 @@ import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.WebSocket;
+import com.kikatech.voice.core.webservice.message.BosMessage;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
@@ -73,6 +74,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private TimerHandler mTimerHandler;
 
     private IntermediateMessage mLastIntermediateMessage;
+    private BosMessage mLastBosMessage;
     private long mSkippedCid = -1;
 
     private boolean mIsStarting = false;
@@ -172,6 +174,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private void registerMessage() {
         Message.register(Message.MSG_TYPE_INTERMEDIATE, IntermediateMessage.class);
         Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
+        Message.register(Message.MSG_TYPE_BOS, BosMessage.class);
 
         AsrConfiguration asrConfiguration = mConf.getConnectionConfiguration().getAsrConfiguration();
         if (asrConfiguration.getAlterEnabled()) {
@@ -206,6 +209,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         } else {
             sendCommand(SERVER_COMMAND_TOKEN, "-1");
         }
+        sendCommand(SERVER_COMMAND_RESET, "");
 
         if (mWakeUpDetector != null) {
             mWakeUpDetector.setDebugFilePath(DebugUtil.getDebugFilePath());
@@ -218,6 +222,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         if (mWakeUpDetector == null || mWakeUpDetector.isAwake()) {
             startVadBosTimer(bosDuration);
         }
+
+        mLastIntermediateMessage = null;
     }
 
     public void stop(StopType stopType) {
@@ -233,6 +239,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
             cleanVadEosTimer();
             if (mLastIntermediateMessage != null) {
                 mSkippedCid = mLastIntermediateMessage.cid;
+            } else if (mLastBosMessage != null) {
+                mSkippedCid = mLastBosMessage.cid;
             }
         } else if (stopType == StopType.ERROR) {
             cleanVadBosTimer();
@@ -358,7 +366,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EventMsg eventMsg) {
         if (eventMsg.type == EventMsg.Type.VD_VAD_CHANGED) {
-            Logger.d("onMessageEvent VD_VAD_CHANGED prob = " + eventMsg.obj);
+            Logger.v("onEvent VD_VAD_CHANGED prob = " + eventMsg.obj);
             float prob = (float) eventMsg.obj;
             if (mVoiceDataListener != null) {
                 mVoiceDataListener.onSpeechProbabilityChanged(prob);
@@ -400,12 +408,19 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
         @Override
         public void onMessage(final Message message) {
-            Logger.d("[WebSocketListener] 1qaz onMessage:" + message);
             if (mMainThreadHandler != null) {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (mSkippedCid != getMessageCid(message)) {
+                        if (message instanceof BosMessage) {
+                            Logger.d("[WebSocketListener] 1qaz onMessage:" + message);
+                            mLastBosMessage = (BosMessage) message;
+                            return;
+                        }
+
+                        long messageCid = getMessageCid(message);
+                        Logger.d("[WebSocketListener] 1qaz onMessage:" + message + (mSkippedCid == messageCid ? "  <Skipped>" : ""));
+                        if (mSkippedCid != messageCid) {
                             if (message instanceof TextMessage) {
                                 mLastIntermediateMessage = null;
                                 cleanVadBosTimer();
@@ -427,7 +442,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                                 mLastIntermediateMessage = (IntermediateMessage) message;
                             }
 
-                            Logger.d("1qaz mSkippedCid = " + mSkippedCid + " message.cid = " + getMessageCid(message));
                             if (mVoiceRecognitionListener != null) {
                                 mVoiceRecognitionListener.onRecognitionResult(message);
                                 ReportUtil.getInstance().logTimeStamp(message.toString());
@@ -530,11 +544,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                 } else {
                     handleError(ERR_NO_SPEECH);
                 }
+                mLastIntermediateMessage = null;
                 return;
             } else if (msg.what == MSG_VAD_EOS) {
                 Logger.i("1qaz onEos");
                 stop(StopType.CANCEL);
-                mSkippedCid = mLastIntermediateMessage.cid;
                 TextMessage finalResult = new TextMessage(mLastIntermediateMessage);
                 mLastIntermediateMessage = null;
                 if (mVoiceRecognitionListener != null) {

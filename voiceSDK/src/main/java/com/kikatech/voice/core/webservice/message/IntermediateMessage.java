@@ -33,6 +33,6 @@ public class IntermediateMessage extends Message {
 
     @Override
     public String toString() {
-        return super.toString() + " text = " + text;
+        return super.toString() + " text = " + text + "(" + cid + ")";
     }
 }
