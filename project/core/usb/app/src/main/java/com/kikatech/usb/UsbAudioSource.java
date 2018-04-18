@@ -3,27 +3,44 @@ package com.kikatech.usb;
 import android.support.annotation.NonNull;
 
 import com.kikatech.usb.driver.UsbAudioDriver;
-import com.kikatech.usb.driver.impl.KikaS2MBuff;
 import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.util.log.Logger;
+import com.xiao.usbaudio.AudioPlayBack;
+import com.xiao.usbaudio.UsbAudio;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by tianli on 17-11-6.
  * Update by ryanlin on 25/12/2017.
  */
 
-public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListener {
+public class UsbAudioSource implements IVoiceSource {
 
-    public static final int VOLUME_ERROR = 255;
-    public static final int READ_FAIL = -99;
+    public static int OPEN_RESULT_FAIL = -1;
+    public static int OPEN_RESULT_MONO = 1;
+    public static int OPEN_RESULT_STEREO = 2;
+
+    private static final int INIT_VOLUME = 6;
+
+    public static final int ERROR_VOLUME_NOT_INITIALIZED = 254;
+    public static final int ERROR_VOLUME_FW_NOT_SUPPORT = 255;
+    public static final int ERROR_VERSION = -1;
 
     private UsbAudioDriver mAudioDriver;
+
+    private UsbAudio mUsbAudio = new UsbAudio();
     private KikaBuffer mKikaBuffer;
 
-    private boolean mIsOpened = false;
+    private AtomicBoolean mIsOpened = new AtomicBoolean(false);
 
+    private OnOpenedCallback mOnOpenedCallback;
     private SourceDataCallback mSourceDataCallback;
+
+    public interface OnOpenedCallback {
+        void onOpened(int state);
+    }
 
     public interface SourceDataCallback {
         void onSource(byte[] leftData, byte[] rightData);
@@ -31,53 +48,81 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
 
     public UsbAudioSource(UsbAudioDriver driver) {
         mAudioDriver = driver;
-        mAudioDriver.setOnDataListener(this);
         mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.TYPE_NOISC_CANCELLATION);
     }
 
     @Override
-    public void open() {
-        mIsOpened = true;
-        mKikaBuffer.create();
+    public boolean open() {
+        Logger.d("KikaAudioDriver open openConnection  device name = " + mAudioDriver.getDeviceName()
+                + " mConnectionFileDes = " + mAudioDriver.getFileDescriptor()
+                + " productId = " + mAudioDriver.getProductId()
+                + " vendorId = " + mAudioDriver.getVendorId());
+        int result = mUsbAudio.setupWithChannelNo(
+                mAudioDriver.getDeviceName(),
+                mAudioDriver.getFileDescriptor(),
+                mAudioDriver.getProductId(),
+                mAudioDriver.getVendorId());
+        Logger.d("KikaAudioDriver open result = " + result);
+        if (result == OPEN_RESULT_STEREO) {
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    mUsbAudio.loop();
+                }
+            }).start();
+            setToDefaultVolume();
+
+            mIsOpened.set(true);
+            mKikaBuffer.create();
+        } else {
+            Logger.e("UsbAudioSource open fail.");
+        }
+
+        if (mOnOpenedCallback != null) {
+            if (result > 0) {
+                mOnOpenedCallback.onOpened(result);
+            } else {
+                mOnOpenedCallback.onOpened(OPEN_RESULT_FAIL);
+            }
+        }
+
+        return result == OPEN_RESULT_STEREO;
+    }
+
+    private void setToDefaultVolume() {
+        int volume = mUsbAudio.checkVolumeState();
+        while (volume != ERROR_VOLUME_FW_NOT_SUPPORT && volume != INIT_VOLUME) {
+            if (volume > INIT_VOLUME) {
+                volume = mUsbAudio.volumeDown();
+            } else if (volume < INIT_VOLUME) {
+                volume = mUsbAudio.volumeUp();
+            }
+        }
     }
 
     @Override
     public void start() {
-        if (mAudioDriver != null) {
-            mAudioDriver.startRecording();
-        } else {
-            Logger.w("Don't call start() after device detached.");
-        }
+        mUsbAudio.start();
+        AudioPlayBack.setup(this);
     }
 
     @Override
     public void stop() {
-        if (mAudioDriver != null) {
-            mAudioDriver.stopRecording();
-        } else {
-            Logger.w("Don't call stop() after device detached.");
-        }
+        mUsbAudio.stop();
+        AudioPlayBack.stop();
     }
 
     @Override
     public void close() {
-        mKikaBuffer.close();
-        mIsOpened = false;
-    }
-
-    public void closeDevice() {
-        if (mAudioDriver != null) {
-            mAudioDriver.close();
-            mAudioDriver = null;
+        if (mIsOpened.compareAndSet(true, false)) {
+            mUsbAudio.close();
+            mKikaBuffer.close();
         }
     }
 
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
-        if (mAudioDriver == null) {
-            Logger.w("Don't call read() after device detached.");
-            return READ_FAIL;
-        }
         return mKikaBuffer.read(audioData, offsetInBytes, sizeInBytes);
     }
 
@@ -94,7 +139,6 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
         return KikaNcBuffer.getNoiseSuppressionParameters(mode);
     }
 
-    @Override
     public void onData(byte[] data, int length) {
         if (mSourceDataCallback != null) {
             byte[] leftResult = new byte[length / 2];
@@ -110,47 +154,69 @@ public class UsbAudioSource implements IVoiceSource, UsbAudioDriver.OnDataListen
         mKikaBuffer.onData(data, length);
     }
 
+    public boolean mIsOpened() {
+        return mIsOpened.get();
+    }
+
     public int checkVolumeState() {
-        if (mAudioDriver != null) {
-            return mAudioDriver.checkVolumeState();
+        if (!mIsOpened()) {
+            Logger.w("Fail operation because the Usb audio not initialized : checkVolumeState");
+            return ERROR_VOLUME_NOT_INITIALIZED;
         }
-        return VOLUME_ERROR;
+        Logger.d("[" + Thread.currentThread().getName() + "] checkVolumeState mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
+        return mUsbAudio.checkVolumeState();
     }
 
     public int volumeUp() {
-        if (mAudioDriver != null) {
-            return mAudioDriver.volumeUp();
+        if (!mIsOpened()) {
+            Logger.w("Fail operation because the Usb audio not initialized : volumeUp");
+            return ERROR_VOLUME_NOT_INITIALIZED;
         }
-        return VOLUME_ERROR;
+        Logger.d("[" + Thread.currentThread().getName() + "] volumeUp mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
+        return mUsbAudio.volumeUp();
     }
 
     public int volumeDown() {
-        if (mAudioDriver != null) {
-            return mAudioDriver.volumeDown();
+        if (!mIsOpened()) {
+            Logger.w("Fail operation because the Usb audio not initialized : volumeDown");
+            return ERROR_VOLUME_NOT_INITIALIZED;
         }
-        return VOLUME_ERROR;
+        Logger.d("[" + Thread.currentThread().getName() + "] volumeDown mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
+        return mUsbAudio.volumeDown();
     }
 
     public int checkFwVersion() {
-        if (mAudioDriver != null) {
-            return mAudioDriver.checkFwVersion();
+        if (!mIsOpened()) {
+            Logger.w("Fail operation because the Usb audio not initialized : checkFwVersion");
+            return ERROR_VERSION;
         }
-        return -1;
+        byte[] result = mUsbAudio.checkFwVersion();
+
+        return result[1] & 0xFF |
+                (result[0] & 0xFF) << 8;
     }
 
     public int checkDriverVersion() {
-        if (mAudioDriver != null) {
-            return mAudioDriver.checkDriverVersion();
+        if (!mIsOpened()) {
+            Logger.w("Fail operation because the Usb audio not initialized : checkDriverVersion");
+            return ERROR_VERSION;
         }
-        return -1;
+        byte[] result = mUsbAudio.checkDriverVersion();
+
+        return result[1] & 0xFF |
+                (result[0] & 0xFF) << 8;
     }
 
     public void setKikaBuffer(int tag) {
-        if (!mIsOpened) {
+        if (!mIsOpened()) {
             mKikaBuffer = KikaBuffer.getKikaBuffer(tag);
         } else {
             Logger.e("Can't change the buffer when it has been opened.");
         }
+    }
+
+    public void setOnOpenedCallback(OnOpenedCallback callback) {
+        mOnOpenedCallback = callback;
     }
 
     public void setSourceDataCallback(SourceDataCallback callback) {

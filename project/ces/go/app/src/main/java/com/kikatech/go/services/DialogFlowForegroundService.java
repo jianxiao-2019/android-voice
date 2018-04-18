@@ -329,7 +329,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         MusicForegroundService.stopMusic(this);
 
-        mVoiceSourceHelper.closeUsbVoiceSource();
+        mVoiceSourceHelper.closeDevice(this);
 
         AudioPlayBack.setListener(null);
     }
@@ -830,7 +830,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         case VoiceSourceHelper.ChangedReason.USB_DEVICE_NOT_FOUND:
                             sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NO_DEVICES));
                             if (mIsStarted && mVoiceSourceHelper.getUsbVoiceSource() != null) {
-                                mVoiceSourceHelper.closeUsbVoiceSource();
+                                mVoiceSourceHelper.closeDevice(DialogFlowForegroundService.this);
                                 setupDialogFlowService();
                             }
                             break;

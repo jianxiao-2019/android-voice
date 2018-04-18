@@ -4,11 +4,9 @@ import android.content.Context;
 import android.hardware.usb.UsbDevice;
 
 import com.kikatech.usb.driver.UsbAudioDriver;
-import com.kikatech.usb.driver.impl.KikaAudioDriver;
 import com.kikatech.voice.util.log.Logger;
 
-import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_INIT_FAIL;
-import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_MONO;
+import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_CONNECTION_FAIL;
 import static com.kikatech.usb.IUsbAudioListener.ERROR_NO_DEVICES;
 
 /**
@@ -21,6 +19,7 @@ public class UsbAudioService {
 
     private static volatile UsbAudioService sInstance;
 
+    private UsbAudioDriver mUsbAudioDriver = null;
     private UsbAudioSource mAudioSource = null;
     private Context mContext;
     private IUsbAudioListener mListener;
@@ -51,6 +50,15 @@ public class UsbAudioService {
         mDeviceManager.scanDevices();
     }
 
+    public void closeDevice() {
+        if (mUsbAudioDriver != null) {
+            mUsbAudioDriver.close();
+            if (mListener != null) {
+                mListener.onDeviceDetached();
+            }
+        }
+    }
+
     public void setReqPermissionOnReceiver(boolean reqPermissionOnReceiver) {
         if (mDeviceManager != null) {
             mDeviceManager.setReqPermissionOnReceiver(reqPermissionOnReceiver);
@@ -62,38 +70,29 @@ public class UsbAudioService {
         @Override
         public void onDeviceAttached(UsbDevice device) {
             Logger.i("UsbAudioService onDeviceAttached");
-            if (mAudioSource != null) {
-                mAudioSource.closeDevice();
-            }
             mDevice = device;
-            UsbAudioDriver driver = new KikaAudioDriver(mContext, mDevice);
-            int openResult = driver.open();
-            if (openResult == UsbAudioDriver.RESULT_STEREO) {
-                mAudioSource = new UsbAudioSource(driver);
+            if (mUsbAudioDriver != null) {
+                mUsbAudioDriver.close();
+            }
+            mUsbAudioDriver = new UsbAudioDriver(mContext, mDevice);
+            if (mUsbAudioDriver.open()) {
+                mAudioSource = new UsbAudioSource(mUsbAudioDriver);
                 if (mListener != null) {
                     mListener.onDeviceAttached(mAudioSource);
                 }
             } else {
                 if (mListener != null) {
-                    mListener.onDeviceError(getErrorCode(openResult));
+                    mListener.onDeviceError(ERROR_DRIVER_CONNECTION_FAIL);
                 }
             }
-        }
-
-        private int getErrorCode(int openResult) {
-            if (openResult == UsbAudioDriver.RESULT_MONO) {
-                return ERROR_DRIVER_MONO;
-            }
-            return ERROR_DRIVER_INIT_FAIL;
         }
 
         @Override
         public void onDeviceDetached() {
             Logger.i("UsbAudioService onDeviceDetached");
             mDevice = null;
-            if (mAudioSource != null) {
-                mAudioSource.closeDevice();
-                mAudioSource = null;
+            if (mUsbAudioDriver != null) {
+                mUsbAudioDriver = null;
                 if (mListener != null) {
                     mListener.onDeviceDetached();
                 }

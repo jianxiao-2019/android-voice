@@ -116,6 +116,10 @@ public class VoiceSourceHelper {
         }
     }
 
+    public synchronized void closeDevice(Context context) {
+        UsbAudioService.getInstance(context).closeDevice();
+    }
+
     public synchronized void closeUsbVoiceSource() {
         boolean isUsbVoiceExist = mUsbVoiceSource != null;
         if (LogUtil.DEBUG) {
@@ -160,7 +164,8 @@ public class VoiceSourceHelper {
         }
         if (isUsbVoiceExist) {
             int currentVolumeLevel = mUsbVoiceSource.checkVolumeState();
-            while (UsbAudioSource.VOLUME_ERROR != currentVolumeLevel && TARGET_VOLUME_LEVEL != currentVolumeLevel) {
+            while (UsbAudioSource.ERROR_VOLUME_FW_NOT_SUPPORT != currentVolumeLevel
+                    && TARGET_VOLUME_LEVEL != currentVolumeLevel) {
                 if (currentVolumeLevel > TARGET_VOLUME_LEVEL) {
                     currentVolumeLevel = mUsbVoiceSource.volumeDown();
                 } else if (currentVolumeLevel < TARGET_VOLUME_LEVEL) {

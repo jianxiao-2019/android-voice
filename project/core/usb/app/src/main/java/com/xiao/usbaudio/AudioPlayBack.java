@@ -3,7 +3,7 @@ package com.xiao.usbaudio;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.kikatech.usb.driver.impl.KikaAudioDriver;
+import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class AudioPlayBack {
-    private static KikaAudioDriver sKikaAudioDriver;
+    private static UsbAudioSource sKikaAudioDriver;
 
     public static final int RAW_DATA_LENGTH_STEREO = 640;
 
@@ -63,7 +63,7 @@ public class AudioPlayBack {
         }
     }
 
-    public static void setup(KikaAudioDriver kikaAudioDriver) {
+    public static void setup(UsbAudioSource kikaAudioDriver) {
         sKikaAudioDriver = kikaAudioDriver;
 
         sFilePath = DebugUtil.getDebugFilePath();

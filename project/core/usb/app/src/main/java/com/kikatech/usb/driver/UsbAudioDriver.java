@@ -1,37 +1,58 @@
 package com.kikatech.usb.driver;
 
+import android.content.Context;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbManager;
+
 /**
  * Created by tianli on 17-11-6.
  */
 
-public interface UsbAudioDriver {
+public class UsbAudioDriver {
 
-    int RESULT_CONNECTION_FAIL = -2;
-    int RESULT_FAIL = -1;
-    int RESULT_MONO = 1;
-    int RESULT_STEREO = 2;
+    private Context mContext;
 
-    int open();
+    private UsbDeviceConnection mConnection = null;
+    private UsbDevice mDevice;
 
-    void startRecording();
-
-    void stopRecording();
-
-    void close();
-
-    void setOnDataListener(OnDataListener listener);
-
-    interface OnDataListener {
-        void onData(byte[] data, int length);
+    public UsbAudioDriver(Context context, UsbDevice device) {
+        mContext = context.getApplicationContext();
+        mDevice = device;
     }
 
-    int checkVolumeState();
+    public boolean open() {
+        try {
+            UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
+            if (manager == null) {
+                return false;
+            }
+            mConnection = manager.openDevice(mDevice);
+            return mConnection != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-    int volumeUp();
+    public void close() {
+        if (mConnection != null) {
+            mConnection.close();
+        }
+    }
 
-    int volumeDown();
+    public String getDeviceName() {
+        return mDevice.getDeviceName();
+    }
 
-    int checkFwVersion();
+    public int getFileDescriptor() {
+        return mConnection.getFileDescriptor();
+    }
 
-    int checkDriverVersion();
+    public int getProductId() {
+        return mDevice.getProductId();
+    }
+
+    public int getVendorId() {
+        return mDevice.getVendorId();
+    }
 }
