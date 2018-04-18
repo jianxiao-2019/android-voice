@@ -1,6 +1,7 @@
 package com.kikatech.voicesdktester.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,9 +20,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,6 +34,7 @@ import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.usb.nc.KikaNcBuffer;
+import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
@@ -129,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mTextMode;
     private Button mButtonMode;
     private TextView mVolumeText;
+    private EditText mNoteText;
+    private Button mButtonNote;
 
     private View mNcParamLayout;
 
@@ -181,6 +187,10 @@ public class MainActivity extends AppCompatActivity implements
                     mResultAdapter.clearResults();
                     mResultAdapter.notifyDataSetChanged();
 
+                    writeNoteToFile();
+                    writeVersionsToFile();
+                    writeVolumeToFile();
+
                     if (mTextView != null) {
                         mTextView.setText("starting.");
                     }
@@ -202,6 +212,12 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mVadTextView != null) {
                     mVadTextView.setText("0.0");
+                }
+                if (mNoteText!= null) {
+                    String note = mNoteText.getText().toString();
+                    String originalHint = getResources().getString(R.string.note_hint);
+                    mNoteText.setHint((note!=null && note.length()>0)? originalHint + note : originalHint);
+                    mNoteText.setText("", TextView.BufferType.EDITABLE);
                 }
                 if (mVoiceService != null) {
                     mVoiceService.stop(VoiceService.StopType.NORMAL);
@@ -291,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements
         mTextView = (TextView) findViewById(R.id.status_text);
         mStatus2TextView = (TextView) findViewById(R.id.status_right_text);
         mVadTextView = (TextView) findViewById(R.id.vad_text);
+        mNoteText = (EditText) findViewById(R.id.note_text);
         mResultAdapter = new ResultAdapter(this);
         mResultRecyclerView = (RecyclerView) findViewById(R.id.result_recycler);
         mResultRecyclerView.setAdapter(mResultAdapter);
@@ -335,6 +352,28 @@ public class MainActivity extends AppCompatActivity implements
 
                 mTextView.setText("Using Android source");
                 mNcParamLayout.setVisibility(View.GONE);
+            }
+        });
+
+        findViewById(R.id.button_use_note).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mNoteText != null) {
+                    String note = mNoteText.getText().toString();
+                    if (note != null && note.length() > 0) {
+                        try {
+                            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
+                        } catch (Exception e) {
+                        }
+                    } else {
+                        String hint = mNoteText.getHint().toString();
+                        String originalHint = getResources().getString(R.string.note_hint);
+                        if (hint != null && originalHint != null) {
+                            mNoteText.setText(hint.replace(originalHint,""), TextView.BufferType.EDITABLE);
+                        }
+                    }
+                }
             }
         });
 
@@ -563,6 +602,34 @@ public class MainActivity extends AppCompatActivity implements
                 mVolumeText.setText(String.format(getString(R.string.current_volume), volume));
             } else {
                 mVolumeText.setText("");
+            }
+        }
+    }
+
+    private void writeNoteToFile() {
+        if (mNoteText!= null) {
+            String note = mNoteText.getText().toString();
+            if (note != null && note.length() > 0) {
+                DebugUtil.logTextToFile("note", note);
+            }
+        }
+    }
+
+    private void writeVersionsToFile() {
+        DebugUtil.logTextToFile("app", getVersionName(this));
+        if (mUsbAudioSource != null) {
+            DebugUtil.logTextToFile("fw", String.valueOf(Integer.toHexString(mUsbAudioSource.checkFwVersion())));
+            DebugUtil.logTextToFile("driver", String.valueOf(mUsbAudioSource.checkDriverVersion()));
+            DebugUtil.logTextToFile("nc", String.valueOf(mUsbAudioSource.getNcVersion()));
+        }
+    }
+
+    private void writeVolumeToFile() {
+        if (mUsbAudioSource != null) {
+            int volumeLevel = mUsbAudioSource.checkVolumeState();
+            String volume = (volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0) ? "error" : VOLUME_TABLE[volumeLevel];
+            if (!(volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0)) {
+                DebugUtil.logTextToFile("volume", String.format(getString(R.string.current_volume), volume).replace("Volume : ", ""));
             }
         }
     }
