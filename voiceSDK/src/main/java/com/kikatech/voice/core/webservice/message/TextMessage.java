@@ -1,7 +1,6 @@
 package com.kikatech.voice.core.webservice.message;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -32,17 +31,17 @@ public class TextMessage extends Message {
         state = dataObj.optInt("state");
         engine = dataObj.optString("engine");
         cid = dataObj.optLong("cid");
-        try {
-            parseTextResults(dataObj.getJSONArray("transcripts"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        parseTextResults(dataObj.optJSONArray("transcripts"));
     }
 
-    private void parseTextResults(JSONArray array) throws JSONException {
-        text = new String[array.length()];
-        for (int i = 0; i < array.length(); i++) {
-            text[i] = array.getString(i);
+    private void parseTextResults(JSONArray array) {
+        if (array != null && array.length() > 0) {
+            text = new String[array.length()];
+            for (int i = 0; i < array.length(); i++) {
+                text[i] = array.optString(i);
+            }
+        } else {
+            text = new String[]{""};
         }
     }
 
