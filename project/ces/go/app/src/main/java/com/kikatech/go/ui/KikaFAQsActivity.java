@@ -3,22 +3,18 @@ package com.kikatech.go.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.kikatech.go.R;
-import com.kikatech.go.util.dialog.DialogUtil;
+import com.kikatech.go.util.FAQHelper;
 
 /**
  * @author SkeeterWang Created on 2018/3/30.
  */
 
-public class KikaFAQsActivity extends BaseActivity {
+public class KikaFAQsActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "KikaFAQsActivity";
 
-    private View mItemQ1Content;
-    private ImageView mItemQ1BtnMore;
-    private View mItemQ2Content;
-    private ImageView mItemQ2BtnMore;
+    private FAQHelper mFAQHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,56 +22,47 @@ public class KikaFAQsActivity extends BaseActivity {
         setContentView(R.layout.activity_kika_faq);
         bindView();
         bindListener();
+        mFAQHelper = new FAQHelper(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mFAQHelper.release();
+        super.onDestroy();
     }
 
     private void bindView() {
-        mItemQ1Content = findViewById(R.id.faq_q1_content);
-        mItemQ1BtnMore = (ImageView) findViewById(R.id.faq_q1_btn_more);
-        mItemQ2Content = findViewById(R.id.faq_q2_content);
-        mItemQ2BtnMore = (ImageView) findViewById(R.id.faq_q2_btn_more);
     }
 
     private void bindListener() {
-        findViewById(R.id.drawer_title_icon).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        findViewById(R.id.drawer_title_icon).setOnClickListener(this);
+        findViewById(R.id.faq_q1).setOnClickListener(this);
+        findViewById(R.id.faq_q2).setOnClickListener(this);
+        findViewById(R.id.faq_q3).setOnClickListener(this);
+        findViewById(R.id.faq_t1).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == null) {
+            return;
+        }
+        switch (view.getId()) {
+            case R.id.drawer_title_icon:
                 finish();
-            }
-        });
-
-        findViewById(R.id.faq_q1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isExpanded = mItemQ1Content.getVisibility() == View.VISIBLE;
-                if (isExpanded) {
-                    mItemQ1Content.setVisibility(View.GONE);
-                    mItemQ1BtnMore.setImageResource(R.drawable.kika_settings_ic_more);
-                } else {
-                    mItemQ1Content.setVisibility(View.VISIBLE);
-                    mItemQ1BtnMore.setImageResource(R.drawable.kika_settings_ic_more_expand);
-                }
-            }
-        });
-
-        findViewById(R.id.faq_q2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isExpanded = mItemQ2Content.getVisibility() == View.VISIBLE;
-                if (isExpanded) {
-                    mItemQ2Content.setVisibility(View.GONE);
-                    mItemQ2BtnMore.setImageResource(R.drawable.kika_settings_ic_more);
-                } else {
-                    mItemQ2Content.setVisibility(View.VISIBLE);
-                    mItemQ2BtnMore.setImageResource(R.drawable.kika_settings_ic_more_expand);
-                }
-            }
-        });
-
-        findViewById(R.id.faq_t1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogUtil.showFAQ(KikaFAQsActivity.this, null);
-            }
-        });
+                break;
+            case R.id.faq_q1:
+                mFAQHelper.doFAQ1();
+                break;
+            case R.id.faq_q2:
+                mFAQHelper.doFAQ2();
+                break;
+            case R.id.faq_q3:
+                mFAQHelper.doFAQ3();
+                break;
+            case R.id.faq_t1:
+                mFAQHelper.doFAQT1();
+                break;
+        }
     }
 }

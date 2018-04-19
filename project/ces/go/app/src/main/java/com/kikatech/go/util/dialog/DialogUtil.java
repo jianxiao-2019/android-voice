@@ -2,20 +2,15 @@ package com.kikatech.go.util.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -25,10 +20,11 @@ import android.widget.TextView;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
+import com.kikatech.go.ui.adapter.FAQ1DialogAdapter;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.MediaPlayerUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -178,7 +174,7 @@ public class DialogUtil {
         mBtnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IntentUtil.openBrowser(context, "http://www.kika.ai/#home-section");
+                IntentUtil.openKikaGoProductWeb(context);
                 safeDismissDialog();
             }
         });
@@ -329,27 +325,32 @@ public class DialogUtil {
         mDialog.show();
     }
 
-    public static void showFAQ(final Context context, final IDialogListener listener) {
+    public static void showFAQ1(final Context context, final IDialogListener listener) {
         safeDismissDialog();
 
         mDialog = new Dialog(context);
 
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mDialog.setCancelable(false);
+        mDialog.setCancelable(true);
 
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_faq, null);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_faq_1, null);
 
         final ViewPager mPager = (ViewPager) dialogView.findViewById(R.id.dialog_faq_pager);
         TabLayout mIndicatorView = (TabLayout) dialogView.findViewById(R.id.dialog_faq_pager_indicators);
         final TextView mContent = (TextView) dialogView.findViewById(R.id.dialog_faq_content);
-        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+        final TextView mBtnApply = (TextView) dialogView.findViewById(R.id.dialog_btn_apply);
         View mBtnCancel = dialogView.findViewById(R.id.dialog_btn_cancel);
 
-        final String[] descriptions = context.getResources().getStringArray(R.array.dialog_faq_pager_item_des);
+        Resources resources = context.getResources();
+        final String[] DESCRIPTIONS = resources.getStringArray(R.array.faq_q1_descriptions);
+        final String[] BUTTON_TEXTS = resources.getStringArray(R.array.faq_q1_buttons);
 
-        final FAQsAdapter mAdapter = new FAQsAdapter(context);
+        final FAQ1DialogAdapter mAdapter = new FAQ1DialogAdapter(context);
         mPager.setAdapter(mAdapter);
         mIndicatorView.setupWithViewPager(mPager);
+
+        mContent.setText(DESCRIPTIONS.length > 0 ? DESCRIPTIONS[0] : "");
+        mBtnApply.setText(BUTTON_TEXTS.length > 0 ? BUTTON_TEXTS[0] : "");
 
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -358,9 +359,8 @@ public class DialogUtil {
 
             @Override
             public void onPageSelected(int position) {
-                if (position < descriptions.length) {
-                    mContent.setText(descriptions[position]);
-                }
+                mContent.setText(position < DESCRIPTIONS.length ? DESCRIPTIONS[position] : "");
+                mBtnApply.setText(position < BUTTON_TEXTS.length ? BUTTON_TEXTS[position] : "");
             }
 
             @Override
@@ -406,57 +406,250 @@ public class DialogUtil {
         mDialog.show();
     }
 
-    private static class FAQsAdapter extends PagerAdapter {
-        private ArrayList<View> mList = new ArrayList<>();
+    public static void showFAQ2(final Context context, final int idxPage, final IDialogLeftRightListener listener) {
+        safeDismissDialog();
 
-        public FAQsAdapter(Context context) {
-            View pagerItem1 = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
-            View pagerItem2 = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
-            View pagerItem3 = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
-            View pagerItem4 = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
+        mDialog = new Dialog(context);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(true);
 
-            Drawable drawable1 = context.getResources().getDrawable(R.drawable.bg_dialog_usb_detached);
-            drawable1.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC);
-            pagerItem1.setBackground(drawable1);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_faq_2, null);
 
-            Drawable drawable2 = context.getResources().getDrawable(R.drawable.bg_dialog_usb_detached);
-            drawable2.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC);
-            pagerItem2.setBackground(drawable2);
+        final TextView mContent = (TextView) dialogView.findViewById(R.id.dialog_faq_content);
+        final TextView mBtnLeft = (TextView) dialogView.findViewById(R.id.dialog_btn_left);
+        final TextView mBtnRight = (TextView) dialogView.findViewById(R.id.dialog_btn_right);
 
-            Drawable drawable3 = context.getResources().getDrawable(R.drawable.bg_dialog_usb_detached);
-            drawable3.setColorFilter(Color.RED, PorterDuff.Mode.SRC);
-            pagerItem3.setBackground(drawable3);
+        Resources resources = context.getResources();
+        final String[] DESCRIPTIONS = resources.getStringArray(R.array.faq_q2_descriptions);
+        final String[] BUTTON_TEXTS_L = resources.getStringArray(R.array.faq_q2_buttons_left);
+        final String[] BUTTON_TEXTS_R = resources.getStringArray(R.array.faq_q2_buttons_right);
 
-            Drawable drawable4 = context.getResources().getDrawable(R.drawable.bg_dialog_usb_detached);
-            drawable4.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC);
-            pagerItem4.setBackground(drawable4);
+        mContent.setText(idxPage < DESCRIPTIONS.length ? DESCRIPTIONS[idxPage] : "");
+        mBtnLeft.setText(idxPage < BUTTON_TEXTS_L.length ? BUTTON_TEXTS_L[idxPage] : "");
+        mBtnRight.setText(idxPage < BUTTON_TEXTS_R.length ? BUTTON_TEXTS_R[idxPage] : "");
 
-            mList.add(pagerItem1);
-            mList.add(pagerItem2);
-            mList.add(pagerItem3);
-            mList.add(pagerItem4);
+        mBtnLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    args.putInt(DialogKeys.KEY_PAGE_INDEX, idxPage);
+                    listener.onLeftBtnClicked(args);
+                }
+            }
+        });
+
+        mBtnRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    args.putInt(DialogKeys.KEY_PAGE_INDEX, idxPage);
+                    listener.onRightBtnClicked(args);
+                }
+            }
+        });
+
+        mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                if (listener != null) {
+                    listener.onShow();
+                }
+            }
+        });
+
+        mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (listener != null) {
+                    listener.onDismiss();
+                }
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
+    public static void showFAQ3(final Context context, final int idxPage, final IDialogLeftRightListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(true);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_faq_3, null);
+
+        final TextView mContent = (TextView) dialogView.findViewById(R.id.dialog_faq_content);
+        final TextView mBtnLeft = (TextView) dialogView.findViewById(R.id.dialog_btn_left);
+        final TextView mBtnRight = (TextView) dialogView.findViewById(R.id.dialog_btn_right);
+        View mBtnExtra = dialogView.findViewById(R.id.dialog_faq_extra_btn);
+
+        Resources resources = context.getResources();
+        final String[] DESCRIPTIONS = resources.getStringArray(R.array.faq_q3_descriptions);
+        final String[] BUTTON_TEXTS_L = resources.getStringArray(R.array.faq_q3_buttons_left);
+        final String[] BUTTON_TEXTS_R = resources.getStringArray(R.array.faq_q3_buttons_right);
+
+        mContent.setText(idxPage < DESCRIPTIONS.length ? DESCRIPTIONS[idxPage] : "");
+        mBtnLeft.setText(idxPage < BUTTON_TEXTS_L.length ? BUTTON_TEXTS_L[idxPage] : "");
+        mBtnRight.setText(idxPage < BUTTON_TEXTS_R.length ? BUTTON_TEXTS_R[idxPage] : "");
+
+        if (idxPage == 2) {
+            mBtnExtra.setVisibility(View.VISIBLE);
+            mBtnExtra.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MediaPlayerUtil.playAlert(context, R.raw.wake_up_example, null);
+                }
+            });
         }
 
-        @Override
-        public int getCount() {
-            return mList.size();
+        mBtnLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    args.putInt(DialogKeys.KEY_PAGE_INDEX, idxPage);
+                    listener.onLeftBtnClicked(args);
+                }
+            }
+        });
+
+        mBtnRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    args.putInt(DialogKeys.KEY_PAGE_INDEX, idxPage);
+                    listener.onRightBtnClicked(args);
+                }
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
+    public static void showFAQ3Record(final Context context, final int recordTime, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(false);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_faq_3_record, null);
+
+        final TextView mContent = (TextView) dialogView.findViewById(R.id.dialog_faq_record_content);
+        TextView mBtnApply = (TextView) dialogView.findViewById(R.id.dialog_btn_apply);
+
+        mContent.post(new Runnable() {
+            private long milliseconds = 0;
+
+            @Override
+            public void run() {
+                milliseconds += 1000;
+                int duration = (int) (milliseconds / 1000);
+                int sec = duration % 60;
+                int min = duration / 60;
+                String durationText = ((min > 0 ? min : "00") + ":" + (sec > 9 ? sec : ("0" + sec)));
+                mContent.setText(durationText);
+                mContent.postDelayed(this, 1000);
+            }
+        });
+
+        if (recordTime == 3) {
+            mBtnApply.setText("DONE (3/3)");
+        } else {
+            mBtnApply.setText(String.format("OK (%s/3)", recordTime));
         }
 
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return (view == object);
-        }
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    args.putInt(DialogKeys.KEY_COUNTER, recordTime);
+                    listener.onApply(args);
+                }
+            }
+        });
 
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
-        }
+        mDialog.setContentView(dialogView);
 
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(mList.get(position));
-            return mList.get(position);
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
         }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
+    public static void showFAQ3RecordDone(final Context context, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(false);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_faq_3_record_done, null);
+
+        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    listener.onApply(args);
+                }
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
+    public static void dismiss() {
+        safeDismissDialog();
     }
 
 
@@ -510,5 +703,17 @@ public class DialogUtil {
 
     private interface IBaseDialogListener {
         void onApply(Bundle args);
+    }
+
+    public interface IDialogLeftRightListener {
+        void onShow();
+
+        void onDismiss();
+
+        void onLeftBtnClicked(Bundle args);
+
+        void onRightBtnClicked(Bundle args);
+
+        void onCancel();
     }
 }

@@ -179,13 +179,6 @@
     <string name="dialog_common_confirm">"OK"</string>
     <string name="dialog_common_cancel">"Cancel"</string>
 
-    <string-array name="dialog_faq_pager_item_des">
-        <item>"Adjust kikago faced you to get the proper voice recognition1"</item>
-        <item>"Adjust kikago faced you to get the proper voice recognition2"</item>
-        <item>"Adjust kikago faced you to get the proper voice recognition3"</item>
-        <item>"Adjust kikago faced you to get the proper voice recognition4"</item>
-    </string-array>
-
 
     <string-array name="feature_highlight_titles">
         <item>"KikaGo"</item>
@@ -224,25 +217,71 @@ immediately"</item>
     <string name="permission_toast">Setup completed</string>
 
     <string name="faq_title_general_question">"GENERAL QUESTIONS"</string>
-    <string name="faq_title_useful_tips">"USEFUL TIPS"</string>
-    <string name="faq_q1_title">"How to easily awake Kikago?"</string>
-    <string name="faq_q2_title">"Encounter hardware issue?"</string>
-    <string name="faq_q2_description">"The KikaGo logo is in the front side of KikaGo. When you use KikaGo app with KikaGo Smart Mic, the KikaGo logo needs to face to you."</string>
-    <string name="faq_t1_title">"How to accurately use Kikago?"</string>
-    <string name="faq_t1_description">"You can learn some useful tips from the following topics below:
-1. How to accurately install kikago?
-2. How to adjust kikago to the proper angle?
-3. Adjust kikago faced you
-4. Trigger word"</string>
+    <string name="faq_title_tip">"CONTACT US"</string>
+
+    <string name="faq_q1_title">"KikaGo Smart Mic User Tips"</string>
+    <string-array name="faq_q1_descriptions">
+        <item>"The Smart Mic must face up when connected to the phone"</item>
+        <item>"Adjust the Smart Mic facing the speaker for better voice recognition"</item>
+        <item>"Keep a distance of two inches on both sides of the Smart Mic for best performance."</item>
+    </string-array>
+    <string-array name="faq_q1_buttons">
+        <item>"Next"</item>
+        <item>"Next"</item>
+        <item>"That's it, enjoy!"</item>
+    </string-array>
+
+    <string name="faq_q2_title">"Is your Smart Mic not working?"</string>
+    <string-array name="faq_q2_descriptions">
+        <item>"Please connect KikaGo Smart Mic to your phone for testing."</item>
+        <item>"Something went wrong, please reconnect the Smart Mic to your phone."</item>
+        <item>"We didn’t detect any problems in your KikaGo Smart Mic. Please try again. If it's still not working, you can either report the problem to us or check out the user tips for more details!"</item>
+    </string-array>
+    <string-array name="faq_q2_buttons_left">
+        <item>"No KikaGo?"</item>
+        <item>"OK"</item>
+        <item>"Tips"</item>
+    </string-array>
+    <string-array name="faq_q2_buttons_right">
+        <item>"Connected"</item>
+        <item>"Not working"</item>
+        <item>"Report"</item>
+    </string-array>
+
+    <string name="faq_q3_title">"KikaGo does not respond to "Hi, Kika""</string>
+    <string-array name="faq_q3_descriptions">
+        <item>"How often can KikaGo hear you say "Hi, Kika"?"</item>
+        <item>"Can KikaGo hear you after removing the Smart Mic?"</item>
+        <item>"Please check if you pronounce "Hi, Kika" correctly like the one below. You can also upload your voice saying "Hi, Kika" to make KikaGo understand you even better in the future when we update the current version."</item>
+    </string-array>
+    <string-array name="faq_q3_buttons_left">
+        <item>"Never"</item>
+        <item>"No"</item>
+        <item>"Got it"</item>
+    </string-array>
+    <string-array name="faq_q3_buttons_right">
+        <item>"Rarely"</item>
+        <item>"Yes"</item>
+        <item>"Upload voice"</item>
+    </string-array>
+    <string name="faq_q3_p3_btn">"<u>Listen to Hi Kika example</u>"</string>
+    <string name="faq_q3_p4_description">"Please say, "Hi, Kika""</string>
+    <string name="faq_q3_p4_done_description">"Thank you for your voice! It has been uploaded. Please update KikaGo when the next version is available for a better experience."</string>
+
+    <string name="faq_t1_title">"Report problems"</string>
+
 
     <string name="report_description">"Is something not working? Really sorry for the inconvenience. Please let us know what the problem is. Your report is greatly appreciated so we can make the product better!"</string>
     <string name="report_title">"What is the problem?"</string>
     <string name="report_title_hint">"Title"</string>
     <string name="report_details">"Details"</string>
     <string name="report_details_hint">"Please explain what happened and the steps you took that led to the problem…"</string>
+    <string name="report_mail">"E-mail"</string>
+    <string name="report_mail_hint">"You email..."</string>
     <string name="report_btn_send">"Send"</string>
     <string name="report_toast_sent">"Report sent"</string>
 
+    <string name="faq_report_description">"Seems like there’s a problem with the Smart Mic. Please leave your email here, and we will contact you as soon as we know what’s wrong with your product."</string>
 
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>
@@ -251,7 +290,6 @@ immediately"</item>
     <string name="drawer_item_tip">"Quick commands"</string>
     <string name="drawer_item_advanced">"Advanced settings"</string>
     <string name="drawer_item_faq">"FAQs"</string>
-    <string name="drawer_item_report">"Report a Problem"</string>
     <string name="drawer_item_debug">"Debug log"</string>
     <string name="drawer_item_exit">"Exit KikaGo"</string>
     <string name="drawer_item_im_popup_menu_item_yes">"Yes"</string>

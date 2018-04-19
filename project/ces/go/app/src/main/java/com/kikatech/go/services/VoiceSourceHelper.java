@@ -23,14 +23,17 @@ public class VoiceSourceHelper {
     private static final int CHANGED_REASON_USB_DEVICE_NOT_FOUND = 3;
     private static final int CHANGED_REASON_USB_DEVICE_ERROR = 4;
     private static final int CHANGED_REASON_SCAN_TIMEOUT = 5;
+    private static final int CHANGED_REASON_NON_CHANGED = 6;
 
-    @IntDef({CHANGED_REASON_USB_ATTACHED, CHANGED_REASON_USB_DETACHED, CHANGED_REASON_USB_DEVICE_NOT_FOUND, CHANGED_REASON_USB_DEVICE_ERROR, CHANGED_REASON_SCAN_TIMEOUT})
+    @IntDef({CHANGED_REASON_USB_ATTACHED, CHANGED_REASON_USB_DETACHED, CHANGED_REASON_USB_DEVICE_NOT_FOUND,
+            CHANGED_REASON_USB_DEVICE_ERROR, CHANGED_REASON_SCAN_TIMEOUT, CHANGED_REASON_NON_CHANGED})
     public @interface ChangedReason {
         int USB_ATTACHED = CHANGED_REASON_USB_ATTACHED;
         int USB_DETACHED = CHANGED_REASON_USB_DETACHED;
         int USB_DEVICE_NOT_FOUND = CHANGED_REASON_USB_DEVICE_NOT_FOUND;
         int USB_DEVICE_ERROR = CHANGED_REASON_USB_DEVICE_ERROR;
         int SCAN_TIMEOUT = CHANGED_REASON_SCAN_TIMEOUT;
+        int NON_CHANGED = CHANGED_REASON_NON_CHANGED;
     }
 
     private long start_t;
@@ -48,6 +51,10 @@ public class VoiceSourceHelper {
                 mUsbVoiceSource = audioSource;
                 if (mVoiceSourceListener != null) {
                     mVoiceSourceListener.onVoiceSourceChanged(mUsbVoiceSource, ChangedReason.USB_ATTACHED);
+                }
+            } else {
+                if (mVoiceSourceListener != null) {
+                    mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.NON_CHANGED);
                 }
             }
         }
@@ -96,7 +103,7 @@ public class VoiceSourceHelper {
             if (LogUtil.DEBUG) {
                 LogUtil.logw(TAG, String.format("onTimeout, spend: %s ms", (System.currentTimeMillis() - start_t)));
             }
-            if (mVoiceSourceListener != null && mUsbVoiceSource != null) {
+            if (mVoiceSourceListener != null /* && mUsbVoiceSource != null*/) {
                 mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.SCAN_TIMEOUT);
             }
         }
@@ -113,6 +120,10 @@ public class VoiceSourceHelper {
             UsbAudioService audioService = UsbAudioService.getInstance(context);
             audioService.setListener(mUsbListener);
             audioService.scanDevices();
+        } else {
+            if (mVoiceSourceListener != null) {
+                mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.NON_CHANGED);
+            }
         }
     }
 
@@ -126,7 +137,6 @@ public class VoiceSourceHelper {
             LogUtil.log(TAG, String.format("isUsbVoiceExist: %s", isUsbVoiceExist));
         }
         if (isUsbVoiceExist) {
-//            sAudioSource.closeDevice();
             mUsbVoiceSource = null;
         }
     }

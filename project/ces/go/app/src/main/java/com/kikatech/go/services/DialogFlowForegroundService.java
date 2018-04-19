@@ -50,6 +50,7 @@ import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
 import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.AsyncThreadPool;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
@@ -302,7 +303,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         LogOnViewUtil.getIns().configFilterClass("com.kikatech.go.dialogflow.");
         registerReceiver();
         initVoiceSource();
-        initDialogFlowService();
+        BackgroundThread.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                initDialogFlowService();
+            }
+        });
         acquireWakeLock();
     }
 
@@ -432,7 +438,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     }
 
                     @Override
-
                     public void onSleep() {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, "onSleep");
@@ -521,6 +526,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             mAsrMaxDurationTimer.stop();
                         }
                         switch (reason) {
+                            case VoiceService.ERR_RECORD_DATA_FAIL:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.logw(TAG, "ERR_RECORD_DATA_FAIL");
+                                }
+                                updateVoiceSource();
+                                break;
                             case VoiceService.ERR_NO_SPEECH:
                                 if (LogUtil.DEBUG) {
                                     LogUtil.logw(TAG, "ERR_NO_SPEECH");
@@ -703,6 +714,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         String action = DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, voiceSource);
+                        event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
                         sendDFServiceEvent(event);
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("updateVoiceSource, mUsbVoiceSource: %s", mVoiceSourceHelper.getUsbVoiceSource()));
@@ -788,7 +800,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             LogUtil.logv(TAG, "setupDialogFlowService, mIsStarted:" + mIsStarted);
         }
         if (mIsStarted) {
-            mMainHandler.post(new Runnable() {
+            BackgroundThread.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     final long start_t = System.currentTimeMillis();
@@ -836,10 +848,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             break;
                         case VoiceSourceHelper.ChangedReason.USB_DETACHED:
                         case VoiceSourceHelper.ChangedReason.USB_DEVICE_ERROR:
-                        case VoiceSourceHelper.ChangedReason.SCAN_TIMEOUT:
                             if (mIsStarted) {
                                 setupDialogFlowService();
                             }
+                            break;
+                        case VoiceSourceHelper.ChangedReason.SCAN_TIMEOUT:
+                        case VoiceSourceHelper.ChangedReason.NON_CHANGED:
+                            DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NON_CHANGED);
+                            serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mVoiceSourceHelper.getUsbVoiceSource() == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
+                            serviceEvent.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
+                            sendDFServiceEvent(serviceEvent);
                             break;
                     }
                 }

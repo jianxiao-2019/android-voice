@@ -46,7 +46,7 @@ public class UserSettings {
         serverList.add(VoiceConfiguration.HostUrl.DEV_HAO);
         serverList.add(VoiceConfiguration.HostUrl.DEV_ASR);
         serverList.add(VoiceConfiguration.HostUrl.DEV_KIKAGO);
-        serverList.add(VoiceConfiguration.HostUrl.PRODUCTION_KIKAGO);
+        serverList.add(VoiceConfiguration.HostUrl.DEV_KEYBOARD);
         return serverList;
     }
 

@@ -87,6 +87,9 @@
         <activity android:name=".ui.KikaUserReportActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"
                   android:screenOrientation="portrait"/>
+        <activity android:name=".ui.KikaFAQsReportActivity"
+                  android:windowSoftInputMode="adjustResize|stateHidden"
+                  android:screenOrientation="portrait"/>
 
 
         <activity android:name=".ui.dialog.KikaStopServiceDialogActivity"

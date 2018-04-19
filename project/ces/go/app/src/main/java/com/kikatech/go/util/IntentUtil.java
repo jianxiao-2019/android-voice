@@ -15,20 +15,26 @@ import com.kikatech.go.ui.KikaPermissionsActivity;
 public class IntentUtil {
     private static final String TAG = "IntentUtil";
 
+    private static final String KIKA_GO_PRODUCT_URL = "http://www.kika.ai/#home-section";
+
     public static boolean openKikaGo(Context context) {
         Intent intent = new Intent(context, KikaAlphaUiActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return IntentUtil.sendPendingIntent(context, intent);
+        return sendPendingIntent(context, intent);
     }
 
     public static boolean openPermissionPage(Context context) {
         Intent intent = new Intent(context, KikaPermissionsActivity.class);
-        return IntentUtil.sendPendingIntent(context, intent);
+        return sendPendingIntent(context, intent);
+    }
+
+    public static boolean openKikaGoProductWeb(Context context) {
+        return openBrowser(context, KIKA_GO_PRODUCT_URL);
     }
 
     public static boolean openBrowser(Context context, String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        return IntentUtil.sendPendingIntent(context, intent);
+        return sendPendingIntent(context, intent);
     }
 
     /**

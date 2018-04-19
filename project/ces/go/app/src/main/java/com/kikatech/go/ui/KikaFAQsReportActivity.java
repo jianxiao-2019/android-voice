@@ -1,5 +1,6 @@
 package com.kikatech.go.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -9,31 +10,54 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.kikatech.go.R;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.UserReportUtil;
 
 /**
- * @author SkeeterWang Created on 2018/3/30.
+ * @author SkeeterWang Created on 2018/4/17.
  */
 
-public class KikaUserReportActivity extends BaseActivity {
-    private static final String TAG = "KikaUserReportActivity";
+public class KikaFAQsReportActivity extends BaseActivity {
+    private static final String TAG = "KikaFAQsReportActivity";
 
-    private EditText mEdtTitle;
-    private EditText mEdtDescription;
+    private String title;
+    private String description;
+
     private EditText mEdtMail;
     private View mBtnSend;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_kika_user_report);
+        setContentView(R.layout.activity_faq_report);
+        bindData();
         bindView();
         bindListener();
     }
 
+    private void bindData() {
+        Intent intent = getIntent();
+        if (intent == null) {
+            finish();
+            return;
+        }
+        Bundle args = intent.getExtras();
+        if (args == null) {
+            finish();
+            return;
+        }
+        title = intent.getStringExtra(UserReportUtil.FAQReportReason.KEY_TITLE);
+        description = intent.getStringExtra(UserReportUtil.FAQReportReason.KEY_DESCRIPTION);
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(description)) {
+            finish();
+            return;
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("title: %s, description: %s", title, description));
+        }
+    }
+
     private void bindView() {
-        mEdtTitle = (EditText) findViewById(R.id.report_edt_title);
-        mEdtDescription = (EditText) findViewById(R.id.report_edt_des);
         mEdtMail = (EditText) findViewById(R.id.report_edt_mail);
         mBtnSend = findViewById(R.id.report_btn_send);
     }
@@ -68,16 +92,12 @@ public class KikaUserReportActivity extends BaseActivity {
             }
         };
 
-        mEdtTitle.addTextChangedListener(mAdjustBtnStatusWatcher);
-        mEdtDescription.addTextChangedListener(mAdjustBtnStatusWatcher);
         mEdtMail.addTextChangedListener(mAdjustBtnStatusWatcher);
     }
 
     private void adjustBtnSendStatus() {
-        String title = getEditTextContent(mEdtTitle);
-        String description = getEditTextContent(mEdtDescription);
         String mail = getEditTextContent(mEdtMail);
-        boolean available = !TextUtils.isEmpty(title) && !TextUtils.isEmpty(description) && !TextUtils.isEmpty(mail);
+        boolean available = !TextUtils.isEmpty(mail);
         mBtnSend.setEnabled(available);
     }
 
@@ -90,16 +110,12 @@ public class KikaUserReportActivity extends BaseActivity {
 
     @SuppressWarnings("ConstantConditions")
     private void performReport() {
-        String title = getEditTextContent(mEdtTitle);
-        String description = getEditTextContent(mEdtDescription);
         String mail = getEditTextContent(mEdtMail);
         String logFileUrl = "";
         UserReportUtil.report(title, description, mail, logFileUrl);
     }
 
     private void clearEditTexts() {
-        mEdtTitle.setText("");
-        mEdtDescription.setText("");
         mEdtMail.setText("");
     }
 

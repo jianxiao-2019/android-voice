@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_usb_detached"
+    tools:ignore="SpUsage, UselessParent">
+
+    <LinearLayout
+        android:layout_width="305dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="15dp"
+            android:paddingLeft="13dp"
+            android:paddingRight="13dp"
+            android:paddingTop="15dp"
+            android:text="@string/faq_q3_p4_done_description"
+            android:textColor="#8e94a9"
+            android:textSize="14dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#c4c8d9"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#c4c8d9"/>
+
+        <TextView
+            android:id="@+id/dialog_btn_apply"
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="OK"
+            android:textColor="#3274e6"
+            android:textSize="16dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>
