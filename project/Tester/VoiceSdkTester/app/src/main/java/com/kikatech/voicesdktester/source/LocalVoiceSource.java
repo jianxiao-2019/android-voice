@@ -38,8 +38,9 @@ public abstract class LocalVoiceSource implements IVoiceSource {
     }
 
     @Override
-    public void open() {
+    public boolean open() {
         mKikaBuffer.create();
+        return true;
     }
 
     @Override

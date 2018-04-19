@@ -97,9 +97,6 @@ public class RecorderFragment extends PageFragment implements
                 mUsingKikaGo.setSelected(false);
                 mUsingAndroid.setSelected(true);
 
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.closeDevice();
-                }
                 mUsbAudioSource = null;
                 attachService();
             }
@@ -181,11 +178,9 @@ public class RecorderFragment extends PageFragment implements
         }
 
         if (mUsbAudioService != null) {
+            mUsbAudioService.closeDevice();
             mUsbAudioService.setListener(null);
             mUsbAudioService.setReqPermissionOnReceiver(false);
-        }
-        if (mUsbAudioSource != null) {
-            mUsbAudioSource.closeDevice();
         }
     }
 
@@ -373,7 +368,7 @@ public class RecorderFragment extends PageFragment implements
                     mUsingKikaGo.setSelected(false);
                     mUsingAndroid.setSelected(true);
                 }
-            } else if (errorCode == ERROR_DRIVER_INIT_FAIL) {
+            } else if (errorCode == ERROR_DRIVER_CONNECTION_FAIL) {
                 Logger.d("onDeviceError ERROR_DRIVER_INIT_FAIL");
                 if (mErrorHintText != null) {
                     mErrorHintText.setVisibility(View.VISIBLE);

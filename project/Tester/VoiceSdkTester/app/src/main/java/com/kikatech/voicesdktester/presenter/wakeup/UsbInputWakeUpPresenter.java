@@ -84,10 +84,8 @@ public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
     @Override
     public void close() {
         super.close();
-        if (mUsbAudioSource != null) {
-            mUsbAudioSource.closeDevice();
-        }
         if (mUsbAudioService != null) {
+            mUsbAudioService.closeDevice();
             mUsbAudioService.setListener(null);
             mUsbAudioService.setReqPermissionOnReceiver(false);
         }

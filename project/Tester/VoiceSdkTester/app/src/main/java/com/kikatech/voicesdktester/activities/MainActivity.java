@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceWakeUpListener,
         VoiceService.VoiceDataListener,
-        TtsSource.TtsStateChangedListener {
+        TtsSource.TtsStateChangedListener,
+        UsbAudioSource.OnOpenedCallback {
 
     private static final boolean IS_WAKE_UP_MODE = false;
     private static final String DEBUG_FILE_TAG = "voiceTester";
@@ -498,8 +499,6 @@ public class MainActivity extends AppCompatActivity implements
 
         mVolumeText = (TextView) findViewById(R.id.text_volume);
 
-        checkVersions();
-
         findViewById(R.id.button_volume_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -546,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements
     private void checkVersions() {
         StringBuilder version = new StringBuilder();
         version.append("[app : ").append(getVersionName(this)).append("] ");
-        if (mUsbAudioSource != null) {
+        if (mUsbAudioSource != null && mUsbAudioSource.mIsOpened()) {
             version.append("[fw : 0x").append(Integer.toHexString(mUsbAudioSource.checkFwVersion())).append("] ");
             version.append("[driver : ").append(mUsbAudioSource.checkDriverVersion()).append("] ");
             version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("] ");
@@ -556,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void checkVolume() {
         if (mVolumeText != null) {
-            if (mUsbAudioSource != null) {
+            if (mUsbAudioSource != null && mUsbAudioSource.mIsOpened()) {
                 int volumeLevel = mUsbAudioSource.checkVolumeState();
                 String volume = (volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0) ? "error" : VOLUME_TABLE[volumeLevel];
                 mVolumeText.setText(String.format(getString(R.string.current_volume), volume));
@@ -697,10 +696,8 @@ public class MainActivity extends AppCompatActivity implements
             mTtsSource = null;
         }
 
-        if (mUsbAudioSource != null) {
-            mUsbAudioSource.closeDevice();
-        }
         if (mUsbAudioService != null) {
+            mUsbAudioService.closeDevice();
             mUsbAudioService.setListener(null);
             mUsbAudioService.setReqPermissionOnReceiver(false);
         }
@@ -856,9 +853,6 @@ public class MainActivity extends AppCompatActivity implements
             mButtonMode.setEnabled(true);
 
             mTextView.setText("Using Usb source");
-
-            checkVersions();
-            checkVolume();
         }
 
         @Override
@@ -915,6 +909,14 @@ public class MainActivity extends AppCompatActivity implements
         if (mWaveCanvas != null) {
             mWaveCanvas.stopDraw();
             mWaveCanvas = null;
+        }
+    }
+
+    @Override
+    public void onOpened(int state) {
+        if (state == UsbAudioSource.OPEN_RESULT_STEREO) {
+            checkVersions();
+            checkVolume();
         }
     }
 }
