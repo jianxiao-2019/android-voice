@@ -1,6 +1,7 @@
 package com.kikatech.voice.core.debug;
 
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.LongSparseArray;
 
@@ -227,6 +228,27 @@ public class DebugUtil {
         }
     }
 
+    public static void logTextToFile(@NonNull String title, @NonNull String text) {
+        String filePath = sDebugFilepath;
+        BufferedWriter bufferedWriter = null;
+        try {
+            bufferedWriter = new BufferedWriter(new java.io.FileWriter(filePath + ".txt", true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (bufferedWriter != null) {
+            Logger.d("logTextToFile = " + title + ": " + text);
+            try {
+                bufferedWriter.write(title + ": " + text);
+                bufferedWriter.newLine();
+                bufferedWriter.write("-----------------------");
+                bufferedWriter.newLine();
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static void checkFiles(VoiceConfiguration conf) {
         VoiceConfiguration.ExternalConfig externalConfig = conf.getExternalConfig();
