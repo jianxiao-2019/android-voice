@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mTextView;
     private TextView mStatus2TextView;
     private TextView mVadTextView;
+    private TextView mDbTextView;
+    private TextView mDbTitleView;
 
     private RecyclerView mResultRecyclerView;
     private ResultAdapter mResultAdapter;
@@ -135,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements
     private Button mButtonMode;
     private TextView mVolumeText;
     private EditText mNoteText;
-    private Button mButtonNote;
 
     private View mNcParamLayout;
 
@@ -143,6 +144,25 @@ public class MainActivity extends AppCompatActivity implements
     private WaveSurfaceView mWavesfv;
 
     private VoiceConfiguration.SpeechMode mSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
+
+    private UsbAudioSource.SourceDataCallback mSourceDataCallback = new UsbAudioSource.SourceDataCallback() {
+        @Override
+        public void onSource(byte[] leftData, byte[] rightData) {
+
+        }
+
+        @Override
+        public void onCurrentDB(int curDB) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mDbTextView != null) {
+                        mDbTextView.setText(String.valueOf(curDB));
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -308,6 +328,8 @@ public class MainActivity extends AppCompatActivity implements
         mTextView = (TextView) findViewById(R.id.status_text);
         mStatus2TextView = (TextView) findViewById(R.id.status_right_text);
         mVadTextView = (TextView) findViewById(R.id.vad_text);
+        mDbTitleView = (TextView) findViewById(R.id.db_title);
+        mDbTextView = (TextView) findViewById(R.id.db_text);
         mNoteText = (EditText) findViewById(R.id.note_text);
         mResultAdapter = new ResultAdapter(this);
         mResultRecyclerView = (RecyclerView) findViewById(R.id.result_recycler);
@@ -356,6 +378,12 @@ public class MainActivity extends AppCompatActivity implements
 
                 mTextView.setText("Using Android source");
                 mNcParamLayout.setVisibility(View.GONE);
+                if (mDbTitleView != null) {
+                    mDbTitleView.setVisibility(View.GONE);
+                }
+                if (mDbTextView != null) {
+                    mDbTextView.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -906,6 +934,8 @@ public class MainActivity extends AppCompatActivity implements
                 return;
             }
 
+            mUsbAudioSource.setSourceDataCallback(mSourceDataCallback);
+
             mNcParamLayout.setVisibility(View.VISIBLE);
             if (mSeekAngle != null) {
                 mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
@@ -915,6 +945,13 @@ public class MainActivity extends AppCompatActivity implements
             }
             if (mSeekMode != null) {
                 mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
+            }
+
+            if (mDbTitleView != null) {
+                mDbTitleView.setVisibility(View.VISIBLE);
+            }
+            if (mDbTextView != null) {
+                mDbTextView.setVisibility(View.VISIBLE);
             }
 
             mButtonAngle.setEnabled(true);

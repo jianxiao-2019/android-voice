@@ -304,19 +304,38 @@
                 android:singleLine="true" />
 
             <TextView
-                android:id="@+id/vad_title"
-                android:layout_width="90dp"
+                android:visibility="gone"
+                android:id="@+id/db_title"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.5"
                 android:singleLine="true"
-                android:text="VAD:" />
+                android:text="DB" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/db_text"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:gravity="start|left"
+                android:singleLine="true"
+                android:text="0" />
+
+            <TextView
+            android:id="@+id/vad_title"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:singleLine="true"
+            android:text="VAD" />
 
             <TextView
                 android:id="@+id/vad_text"
-                android:layout_width="80dp"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right|end"
+                android:layout_weight="0.5"
+                android:gravity="start|left"
                 android:singleLine="true"
                 android:text="0.0" />
         </LinearLayout>

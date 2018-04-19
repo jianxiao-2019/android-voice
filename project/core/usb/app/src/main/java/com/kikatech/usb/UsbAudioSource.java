@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.usb.driver.UsbAudioDriver;
 import com.kikatech.usb.nc.KikaNcBuffer;
+import com.kikatech.usb.util.DbUtil;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.util.log.Logger;
 import com.xiao.usbaudio.AudioPlayBack;
@@ -38,17 +39,42 @@ public class UsbAudioSource implements IVoiceSource {
     private OnOpenedCallback mOnOpenedCallback;
     private SourceDataCallback mSourceDataCallback;
 
+    private DbUtil mDbUtil;
+
     public interface OnOpenedCallback {
         void onOpened(int state);
     }
 
     public interface SourceDataCallback {
         void onSource(byte[] leftData, byte[] rightData);
+
+        void onCurrentDB(int curDB);
     }
+
+    private DbUtil.DbCallback mDbCallback = new DbUtil.DbCallback() {
+        @Override
+        public void onCurrentDB(int curDB) {
+            if (mSourceDataCallback != null) {
+                mSourceDataCallback.onCurrentDB(curDB);
+            }
+        }
+
+        @Override
+        public void onLongtimeDB(int longtimeDB) {
+
+        }
+
+        @Override
+        public void onMaxDB(int maxDB) {
+
+        }
+    };
 
     public UsbAudioSource(UsbAudioDriver driver) {
         mAudioDriver = driver;
         mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.TYPE_NOISC_CANCELLATION);
+        mDbUtil = new DbUtil();
+        mDbUtil.setDbCallback(mDbCallback);
     }
 
     @Override
@@ -103,6 +129,7 @@ public class UsbAudioSource implements IVoiceSource {
 
     @Override
     public void start() {
+        mDbUtil.clearData();
         mUsbAudio.start();
         AudioPlayBack.setup(this);
     }
@@ -111,6 +138,11 @@ public class UsbAudioSource implements IVoiceSource {
     public void stop() {
         mUsbAudio.stop();
         AudioPlayBack.stop();
+
+        mDbUtil.clearData();
+        if (mSourceDataCallback != null) {
+            mSourceDataCallback.onCurrentDB(0);
+        }
     }
 
     @Override
@@ -118,6 +150,11 @@ public class UsbAudioSource implements IVoiceSource {
         if (mIsOpened.compareAndSet(true, false)) {
             mUsbAudio.close();
             mKikaBuffer.close();
+        }
+
+        mDbUtil.clearData();
+        if (mSourceDataCallback != null) {
+            mSourceDataCallback.onCurrentDB(0);
         }
     }
 
@@ -149,6 +186,7 @@ public class UsbAudioSource implements IVoiceSource {
                 rightResult[i] = data[i * 2 + 2];
                 rightResult[i + 1] = data[i * 2 + 3];
             }
+            mDbUtil.onData(leftResult, leftResult.length);
             mSourceDataCallback.onSource(leftResult, rightResult);
         }
         mKikaBuffer.onData(data, length);
