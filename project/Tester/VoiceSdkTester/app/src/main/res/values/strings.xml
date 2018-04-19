@@ -7,4 +7,6 @@
     <string name="tab_title_player">Result</string>
 
     <string name="current_volume">Volume : 20 + %s</string>
+
+    <string name="note_hint">Note:</string>
 </resources>
