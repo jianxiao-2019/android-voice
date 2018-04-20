@@ -38,6 +38,8 @@ public class UsbAudioSource implements IVoiceSource {
 
     private SourceDataCallback mSourceDataCallback;
 
+    private boolean mIsInversePhase = false;
+
     private DbUtil mDbUtil;
 
     public interface SourceDataCallback {
@@ -98,6 +100,9 @@ public class UsbAudioSource implements IVoiceSource {
 
             mIsOpened.set(true);
             mKikaBuffer.create();
+
+            // fw version 1221 means one of the channels has inverse-phase issue
+            mIsInversePhase = Integer.toHexString(checkFwVersion()).equals("1221");
         } else {
             Logger.e("UsbAudioSource open fail.");
         }
@@ -169,16 +174,59 @@ public class UsbAudioSource implements IVoiceSource {
         if (mSourceDataCallback != null) {
             byte[] leftResult = new byte[length / 2];
             byte[] rightResult = new byte[length / 2];
-            for (int i = 0; i < leftResult.length; i += 2) {
-                leftResult[i] = data[i * 2];
-                leftResult[i + 1] = data[i * 2 + 1];
-                rightResult[i] = data[i * 2 + 2];
-                rightResult[i + 1] = data[i * 2 + 3];
-            }
+            separateChannelsToLeftAndRight(data, leftResult, rightResult);
+            correctInversePhase(data, leftResult, rightResult);
             mDbUtil.onData(leftResult, leftResult.length);
             mSourceDataCallback.onSource(leftResult, rightResult);
         }
         mKikaBuffer.onData(data, length);
+    }
+
+    private void correctInversePhase(byte[] data, byte[] leftResult, byte[] rightResult) {
+        if (mIsInversePhase) {
+            short[] shorts = ByteToShort(leftResult);
+            for (int i = 0; i < shorts.length; i += 1) {
+                shorts[i] = (short) (shorts[i] * -1); //inverse the phase
+            }
+            ShortToByteWithBytes(leftResult, shorts);
+            combineLeftAndRightChannels(data, leftResult, rightResult);
+        }
+    }
+
+    private void separateChannelsToLeftAndRight(byte[] data, byte[] leftResult, byte[] rightResult) {
+        for (int i = 0; i < leftResult.length; i += 2) {
+            leftResult[i] = data[i * 2];
+            leftResult[i + 1] = data[i * 2 + 1];
+            rightResult[i] = data[i * 2 + 2];
+            rightResult[i + 1] = data[i * 2 + 3];
+        }
+    }
+
+    private void combineLeftAndRightChannels(byte[] data, byte[] leftResult, byte[] rightResult) {
+        for (int i = 0; i < leftResult.length; i += 2) {
+            data[i * 2] = leftResult[i];
+            data[i * 2 + 1] = leftResult[i + 1];
+        }
+        for (int i = 0; i < rightResult.length; i += 2) {
+            data[i * 2 + 2] = rightResult[i];
+            data[i * 2 + 3] = rightResult[i + 1];
+        }
+    }
+
+    private short[] ByteToShort(byte[] bytes) {
+        int len = bytes.length / 2;
+        short[] shorts = new short[len];
+        for (int i = 0; i < len; ++i) {
+            shorts[i] = (short) ((bytes[i * 2 + 1] << 8) | (bytes[i * 2] & 0xff));
+        }
+        return shorts;
+    }
+
+    private void ShortToByteWithBytes(byte[] bytes, short[] shorts) {
+        for (int i = 0; i < shorts.length; i++) {
+            bytes[2 * i] = (byte) (shorts[i] & 0xff);
+            bytes[2 * i + 1] = (byte) ((shorts[i] >> 8) & 0xff);
+        }
     }
 
     public boolean mIsOpened() {
