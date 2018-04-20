@@ -339,9 +339,12 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_source_usb).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mUsbAudioService = UsbAudioService.getInstance(MainActivity.this);
-                mUsbAudioService.setListener(mIUsbAudioListener);
-                mUsbAudioService.scanDevices();
+                if (mUsbAudioSource == null) {
+                    mUsbAudioService = UsbAudioService.getInstance(MainActivity.this);
+                    mUsbAudioService.setReqPermissionOnReceiver(true);
+                    mUsbAudioService.setListener(mIUsbAudioListener);
+                    mUsbAudioService.scanDevices();
+                }
             }
         });
 
@@ -566,6 +569,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        checkVersions();
         waveCreateView();
         attachService();
 
