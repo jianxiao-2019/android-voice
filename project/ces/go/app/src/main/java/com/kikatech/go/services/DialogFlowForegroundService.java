@@ -59,8 +59,7 @@ import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.view.GoLayout;
-import com.kikatech.usb.UsbAudioSource;
-import com.kikatech.usb.util.ImageUtil;
+import com.kikatech.go.util.ImageUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
@@ -383,6 +382,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     // TODO: implement a dialogFlowService presenter for physical isolation?
     private void initDialogFlowService() {
         VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, mVoiceSourceHelper.getUsbVoiceSource());
+
+        mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
 
         mDialogFlowService = DialogFlowService.queryService(this,
                 config,
@@ -820,46 +821,35 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
     }
 
-    @SuppressLint("SwitchIntDef")
     private void initVoiceSource() {
         mVoiceSourceHelper.setVoiceSourceListener(new VoiceSourceHelper.IVoiceSourceListener() {
             @Override
-            public void onVoiceSourceChanged(UsbAudioSource source, @VoiceSourceHelper.ChangedReason int reason) {
+            public void onVoiceSourceEvent(int event) {
                 if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, String.format("onDeviceAttached, mIsStarted: %1$s, mUsbVoiceSource: %2$s", mIsStarted, source));
+                    LogUtil.log(TAG, String.format("onVoiceSourceEvent, isStart: %s, event: %s, source: %s", mIsStarted, event, mVoiceSourceHelper.getUsbVoiceSource()));
                 }
-                boolean isUsbSourceAvailable = source != null;
-                if (isUsbSourceAvailable) {
-                    mDFServiceStatus.setUsbDeviceAvailable(true);
-                    if (mIsStarted) {
+                if (!mIsStarted) {
+                    return;
+                }
+                switch (event) {
+                    case VoiceSourceHelper.Event.USB_ATTACHED:
                         setupDialogFlowService();
-                    }
-                } else {
-                    if (LogUtil.DEBUG) {
-                        LogUtil.log(TAG, String.format("reason: %s", reason));
-                    }
-                    switch (reason) {
-                        case VoiceSourceHelper.ChangedReason.USB_DEVICE_NOT_FOUND:
-                            sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NO_DEVICES));
-                            if (mIsStarted && mVoiceSourceHelper.getUsbVoiceSource() != null) {
-                                mVoiceSourceHelper.closeDevice(DialogFlowForegroundService.this);
-                                setupDialogFlowService();
-                            }
-                            break;
-                        case VoiceSourceHelper.ChangedReason.USB_DETACHED:
-                        case VoiceSourceHelper.ChangedReason.USB_DEVICE_ERROR:
-                            if (mIsStarted) {
-                                setupDialogFlowService();
-                            }
-                            break;
-                        case VoiceSourceHelper.ChangedReason.SCAN_TIMEOUT:
-                        case VoiceSourceHelper.ChangedReason.NON_CHANGED:
-                            DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NON_CHANGED);
-                            serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mVoiceSourceHelper.getUsbVoiceSource() == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
-                            serviceEvent.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
-                            sendDFServiceEvent(serviceEvent);
-                            break;
-                    }
+                        break;
+                    case VoiceSourceHelper.Event.USB_DETACHED:
+                        setupDialogFlowService();
+                        break;
+                    case VoiceSourceHelper.Event.USB_DEVICE_NOT_FOUND:
+                        sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NO_DEVICES));
+                    case VoiceSourceHelper.Event.USB_DEVICE_ERROR:
+                        mVoiceSourceHelper.closeDevice(DialogFlowForegroundService.this);
+                        setupDialogFlowService();
+                        break;
+                    case VoiceSourceHelper.Event.NON_CHANGED:
+                        DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NON_CHANGED);
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mVoiceSourceHelper.getUsbVoiceSource() == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
+                        sendDFServiceEvent(serviceEvent);
+                        break;
                 }
             }
         });
@@ -871,6 +861,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         }
         if (mDialogFlowService != null) {
             VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, mVoiceSourceHelper.getUsbVoiceSource());
+            mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
             mDialogFlowService.updateRecorderSource(config);
         }
     }

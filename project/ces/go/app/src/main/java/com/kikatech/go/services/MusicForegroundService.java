@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -23,7 +22,7 @@ import com.kikatech.go.services.presenter.YouTubeExtractorManager;
 import com.kikatech.go.services.view.manager.FloatingPlayerManager;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.usb.util.ImageUtil;
+import com.kikatech.go.util.ImageUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

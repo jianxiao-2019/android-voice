@@ -1,4 +1,4 @@
-package com.kikatech.usb.util;
+package com.kikatech.go.util;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 /**
  * @author SkeeterWang Created on 2017/10/25.
  */
+
 public class ImageUtil {
     public static Bitmap safeDecodeFile(String path) {
         Bitmap ret = null;

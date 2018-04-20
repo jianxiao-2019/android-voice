@@ -30,12 +30,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
-import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.ui.KikaGoActivity;
 import com.kikatech.go.ui.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.GoLayout;
-import com.kikatech.usb.util.ImageUtil;
+import com.kikatech.go.util.ImageUtil;
 
 /**
  * @author SkeeterWang Created on 2017/10/30.

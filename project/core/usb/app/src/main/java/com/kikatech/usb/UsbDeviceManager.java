@@ -11,7 +11,10 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
+import com.kikatech.usb.util.DeviceUtil;
+
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by tianli on 17-11-6.
@@ -63,39 +66,27 @@ class UsbDeviceManager {
             mListener.onNoDevices();
             return;
         }
-        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        if (deviceList == null || deviceList.size() == 0) {
+        HashMap<String, UsbDevice> allDeviceList = manager.getDeviceList();
+        List<UsbDevice> audioDeviceList = DeviceUtil.getAduioDeviceList(allDeviceList);
+        if (audioDeviceList.size() == 0) {
             mListener.onNoDevices();
             return;
         }
-        for (UsbDevice device : deviceList.values()) {
+        for (UsbDevice device : audioDeviceList) {
             mDeviceListener.onUsbAttached(device, true);
         }
-    }
-
-    private boolean isAudioDevice(UsbDevice device) {
-        if (device != null && device.getInterfaceCount() > 0) {
-            UsbInterface usbInterface = device.getInterface(0);
-            Log.d(TAG, "Audio UsbInterface : " + usbInterface.getInterfaceClass());
-            if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private UsbDeviceReceiver.UsbDeviceListener mDeviceListener = new UsbDeviceReceiver.UsbDeviceListener() {
         @Override
         public void onUsbAttached(UsbDevice device, boolean reqPermission) {
-            if (isAudioDevice(device)) {
-                Log.d(TAG, "Audio class device: " + device);
-                Log.d(TAG, "Audio class device name: " + device.getDeviceName());
-                if (hasPermission(device)) {
-                    mDevice = device;
-                    mListener.onDeviceAttached(mDevice);
-                } else if (reqPermission) {
-                    requestPermission(device, mDeviceReceiver);
-                }
+            Log.d(TAG, "Audio class device: " + device);
+            Log.d(TAG, "Audio class device name: " + device.getDeviceName());
+            if (hasPermission(device)) {
+                mDevice = device;
+                mListener.onDeviceAttached(mDevice);
+            } else if (reqPermission) {
+                requestPermission(device, mDeviceReceiver);
             }
         }
 

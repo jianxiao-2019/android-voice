@@ -239,6 +239,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         LocationMgr.init(this);
         registerReceivers();
         initUiTaskManager();
+        DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
         DialogFlowForegroundService.processPingDialogFlowStatus();
         onConnectivityChanged();
 

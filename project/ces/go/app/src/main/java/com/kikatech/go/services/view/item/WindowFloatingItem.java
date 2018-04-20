@@ -84,7 +84,10 @@ public abstract class WindowFloatingItem implements IFloatingItem {
 
     @Override
     public void setViewVisibility(int visibility) {
-        mItemView.setVisibility(visibility);
+        try {
+            mItemView.setVisibility(visibility);
+        } catch (Exception ignore) {
+        }
     }
 
     @Override

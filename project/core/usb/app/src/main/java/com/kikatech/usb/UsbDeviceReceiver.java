@@ -9,6 +9,8 @@ import android.hardware.usb.UsbManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.kikatech.usb.util.DeviceUtil;
+
 /**
  * Created by tianli on 17-11-6.
  */
@@ -53,7 +55,9 @@ class UsbDeviceReceiver extends BroadcastReceiver {
         switch (action) {
             case UsbManager.ACTION_USB_DEVICE_ATTACHED:
                 device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                onUsbAttached(device);
+                if (DeviceUtil.isAudioDevice(device)) { // we only provider audio device access
+                    onUsbAttached(device);
+                }
                 break;
             case UsbManager.ACTION_USB_DEVICE_DETACHED:
                 device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);

@@ -70,9 +70,11 @@ public abstract class BaseForegroundService extends Service {
 
 
     private void handleStart() {
-        startForeground(getServiceId(), getForegroundNotification());
-        onStartForeground();
-        mIsStarted = true;
+        if (!mIsStarted) {
+            startForeground(getServiceId(), getForegroundNotification());
+            onStartForeground();
+            mIsStarted = true;
+        }
     }
 
     private void handleStop() {

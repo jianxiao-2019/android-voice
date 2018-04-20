@@ -3,7 +3,6 @@ package com.kikatech.go.services;
 import android.content.Context;
 import android.support.annotation.IntDef;
 
-import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
@@ -16,24 +15,19 @@ import com.kikatech.usb.UsbAudioSource;
 public class VoiceSourceHelper {
     private static final String TAG = "VoiceSourceHelper";
 
-    private static final int USB_SCAN_TIME_OUT_MS = 800;
+    private static final int EVENT_USB_ATTACHED = 1;
+    private static final int EVENT_USB_DETACHED = 2;
+    private static final int EVENT_USB_DEVICE_NOT_FOUND = 3;
+    private static final int EVENT_USB_DEVICE_ERROR = 4;
+    private static final int EVENT_NON_CHANGED = 5;
 
-    private static final int CHANGED_REASON_USB_ATTACHED = 1;
-    private static final int CHANGED_REASON_USB_DETACHED = 2;
-    private static final int CHANGED_REASON_USB_DEVICE_NOT_FOUND = 3;
-    private static final int CHANGED_REASON_USB_DEVICE_ERROR = 4;
-    private static final int CHANGED_REASON_SCAN_TIMEOUT = 5;
-    private static final int CHANGED_REASON_NON_CHANGED = 6;
-
-    @IntDef({CHANGED_REASON_USB_ATTACHED, CHANGED_REASON_USB_DETACHED, CHANGED_REASON_USB_DEVICE_NOT_FOUND,
-            CHANGED_REASON_USB_DEVICE_ERROR, CHANGED_REASON_SCAN_TIMEOUT, CHANGED_REASON_NON_CHANGED})
-    public @interface ChangedReason {
-        int USB_ATTACHED = CHANGED_REASON_USB_ATTACHED;
-        int USB_DETACHED = CHANGED_REASON_USB_DETACHED;
-        int USB_DEVICE_NOT_FOUND = CHANGED_REASON_USB_DEVICE_NOT_FOUND;
-        int USB_DEVICE_ERROR = CHANGED_REASON_USB_DEVICE_ERROR;
-        int SCAN_TIMEOUT = CHANGED_REASON_SCAN_TIMEOUT;
-        int NON_CHANGED = CHANGED_REASON_NON_CHANGED;
+    @IntDef({EVENT_USB_ATTACHED, EVENT_USB_DETACHED, EVENT_USB_DEVICE_NOT_FOUND, EVENT_USB_DEVICE_ERROR, EVENT_NON_CHANGED})
+    public @interface Event {
+        int USB_ATTACHED = EVENT_USB_ATTACHED;
+        int USB_DETACHED = EVENT_USB_DETACHED;
+        int USB_DEVICE_NOT_FOUND = EVENT_USB_DEVICE_NOT_FOUND;
+        int USB_DEVICE_ERROR = EVENT_USB_DEVICE_ERROR;
+        int NON_CHANGED = EVENT_NON_CHANGED;
     }
 
     private long start_t;
@@ -46,16 +40,11 @@ public class VoiceSourceHelper {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, String.format("onDeviceAttached, spend: %s", (System.currentTimeMillis() - start_t)));
             }
-            stopScanTimer();
-            if (mUsbVoiceSource == null) {
+            if (mUsbVoiceSource == null && audioSource != null) {
                 mUsbVoiceSource = audioSource;
-                if (mVoiceSourceListener != null) {
-                    mVoiceSourceListener.onVoiceSourceChanged(mUsbVoiceSource, ChangedReason.USB_ATTACHED);
-                }
+                dispatchEvent(Event.USB_ATTACHED);
             } else {
-                if (mVoiceSourceListener != null) {
-                    mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.NON_CHANGED);
-                }
+                dispatchEvent(Event.NON_CHANGED);
             }
         }
 
@@ -64,10 +53,11 @@ public class VoiceSourceHelper {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, String.format("onDeviceDetached, spend: %s", (System.currentTimeMillis() - start_t)));
             }
-            stopScanTimer();
-            if (mVoiceSourceListener != null && mUsbVoiceSource != null) {
-                closeUsbVoiceSource();
-                mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.USB_DETACHED);
+            if (mUsbVoiceSource != null) {
+                clearUsbVoiceSource();
+                dispatchEvent(Event.USB_DETACHED);
+            } else {
+                dispatchEvent(Event.NON_CHANGED);
             }
         }
 
@@ -76,35 +66,18 @@ public class VoiceSourceHelper {
             if (LogUtil.DEBUG) {
                 LogUtil.logw(TAG, String.format("onDeviceError, errorCode: %s", errorCode));
             }
-            stopScanTimer();
-
-            switch (errorCode) {
-                case IUsbAudioListener.ERROR_NO_DEVICES:
-                    if (mVoiceSourceListener != null) {
-                        mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.USB_DEVICE_NOT_FOUND);
-                    }
-                    break;
-                default:
-                    if (mVoiceSourceListener != null && mUsbVoiceSource != null) {
-                        closeUsbVoiceSource();
-                        mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.USB_DEVICE_ERROR);
-                    }
-                    break;
-            }
-        }
-    };
-    private Runnable mUsbScanTimeoutTask = new Runnable() {
-        @Override
-        public void run() {
-            onTimeout();
-        }
-
-        private void onTimeout() {
-            if (LogUtil.DEBUG) {
-                LogUtil.logw(TAG, String.format("onTimeout, spend: %s ms", (System.currentTimeMillis() - start_t)));
-            }
-            if (mVoiceSourceListener != null /* && mUsbVoiceSource != null*/) {
-                mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.SCAN_TIMEOUT);
+            if (mUsbVoiceSource != null) {
+                clearUsbVoiceSource();
+                switch (errorCode) {
+                    case IUsbAudioListener.ERROR_NO_DEVICES:
+                        dispatchEvent(Event.USB_DEVICE_NOT_FOUND);
+                        break;
+                    default:
+                        dispatchEvent(Event.USB_DEVICE_ERROR);
+                        break;
+                }
+            } else {
+                dispatchEvent(Event.NON_CHANGED);
             }
         }
     };
@@ -116,14 +89,11 @@ public class VoiceSourceHelper {
         }
         if (!isUsbVoiceExist) {
             start_t = System.currentTimeMillis();
-            startScanTimer();
             UsbAudioService audioService = UsbAudioService.getInstance(context);
             audioService.setListener(mUsbListener);
             audioService.scanDevices();
         } else {
-            if (mVoiceSourceListener != null) {
-                mVoiceSourceListener.onVoiceSourceChanged(null, ChangedReason.NON_CHANGED);
-            }
+            dispatchEvent(Event.NON_CHANGED);
         }
     }
 
@@ -131,7 +101,7 @@ public class VoiceSourceHelper {
         UsbAudioService.getInstance(context).closeDevice();
     }
 
-    public synchronized void closeUsbVoiceSource() {
+    private synchronized void clearUsbVoiceSource() {
         boolean isUsbVoiceExist = mUsbVoiceSource != null;
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, String.format("isUsbVoiceExist: %s", isUsbVoiceExist));
@@ -185,12 +155,11 @@ public class VoiceSourceHelper {
         }
     }
 
-    private synchronized void startScanTimer() {
-        BackgroundThread.postDelayed(mUsbScanTimeoutTask, USB_SCAN_TIME_OUT_MS);
-    }
 
-    private synchronized void stopScanTimer() {
-        BackgroundThread.getHandler().removeCallbacks(mUsbScanTimeoutTask);
+    private synchronized void dispatchEvent(@Event int event) {
+        if (mVoiceSourceListener != null) {
+            mVoiceSourceListener.onVoiceSourceEvent(event);
+        }
     }
 
 
@@ -199,6 +168,6 @@ public class VoiceSourceHelper {
     }
 
     public interface IVoiceSourceListener {
-        void onVoiceSourceChanged(UsbAudioSource source, @ChangedReason int reason);
+        void onVoiceSourceEvent(@Event int event);
     }
 }
