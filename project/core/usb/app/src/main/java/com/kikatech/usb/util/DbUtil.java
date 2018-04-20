@@ -8,24 +8,23 @@ import java.util.Date;
  */
 
 public class DbUtil {
-//    private static final DbUtil sInstance = new DbUtil();
-
     private DbCallback mDbCallback;
 
     private ArrayList<Short> mDbBuf = new ArrayList<Short>();
     private ArrayList<Double> mSamples = new ArrayList<Double>();
 
-    final private int rateX = 100; //every 1 sec get 160 samples, 16000/rateX
-    final private int latestSamplesCount = 32; //the amount of samples in the latest 0.2 sec, (16000/rateX)*(db_count_time/1000)
-    final private int longtimeSamplesCount = 1600; // the amount of samples in 10 secs, (16000/rateX)*10
+    final private int rateX = 100; //get 160 data every 1 sec, 16000/rateX
+    final private int limitDbBufferCount = 160; //keep the amount of buffer in 1 secs, (16000/rateX)*1
     final private long db_count_time = 200; //update info every 0.2 sec
+    final private int latestSamplesCount = 32; //get 32 samples in the latest 0.2 sec, (16000/rateX)*(db_count_time/1000)
+    final private int longtimeSamplesCount = 300; //every 0.2 sec get a DB number, 60 sec get 300 DB numbers, 1*(1000/db_count_time)*60
     private long db_c_time;
     private int mMaxDB = 0;
 
     public interface DbCallback {
-        void onCurrentDB(int curDB);
+        void onCurrentDB(int curDB); //the max DB in the latest 0.2 sec
 
-        void onLongtimeDB(int longtimeDB);
+        void onLongtimeDB(int longtimeDB); //average DB in the latest 60 sec
 
         void onMaxDB(int maxDB);
     }
@@ -35,6 +34,7 @@ public class DbUtil {
     }
 
     public void clearData() {
+        mDbBuf.clear();
         mSamples.clear();
         mMaxDB = 0;
     }
@@ -61,7 +61,7 @@ public class DbUtil {
                 if (mDbBuf.size() == 0) {
                     return;
                 } else {
-                    while (mDbBuf.size() > longtimeSamplesCount) {
+                    while (mDbBuf.size() > limitDbBufferCount) {
                         mDbBuf.remove(0);
                     }
                 }
@@ -78,15 +78,13 @@ public class DbUtil {
             return;
         }
 
-        final int latestSize = buffer.size() - latestSamplesCount;
+        final int latestSize = Math.max(buffer.size() - latestSamplesCount, 0);
         double latestMaxSample = 0;
 
-        for (int i = 0; i < buffer.size(); i++) {
+        for (int i = latestSize; i < buffer.size(); i++) {
             Short sample = buffer.get(i);
             double absSample = Math.abs(sample);
-            if (i >= latestSize) {
-                latestMaxSample = Math.max(latestMaxSample, absSample);
-            }
+            latestMaxSample = Math.max(latestMaxSample, absSample);
         }
 
         // current DB
@@ -98,13 +96,16 @@ public class DbUtil {
 
         // long time DB
         mSamples.add(latestMaxSample);
+        while (mSamples.size() > longtimeSamplesCount) {
+            mSamples.remove(0);
+        }
         double sum = 0;
         for (double sample : mSamples) {
             sum += sample;
         }
         double rms = sum / mSamples.size();
         final int longtimeDB = (int) SampleToDb(rms);
-//        Logger.d("[db]avgDB" + String.valueOf(avgDB));
+//        Logger.d("[db]avgDB" + String.valueOf(longtimeDB));
         if (mDbCallback != null) {
             mDbCallback.onLongtimeDB(longtimeDB);
         }
