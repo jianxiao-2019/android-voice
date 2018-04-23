@@ -153,7 +153,7 @@ public class WebSocket {
         }
     }
 
-    public void sendData(final byte[] data) {
+    public void sendData(byte[] data) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");
             if (mListener != null) {
@@ -161,10 +161,12 @@ public class WebSocket {
             }
             return;
         }
+        final byte[] sendingData = new byte[data.length];
+        System.arraycopy(data, 0, sendingData, 0, data.length);
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                checkConnectionAndSend(new SendingDataByte(data));
+                checkConnectionAndSend(new SendingDataByte(sendingData));
             }
         });
     }

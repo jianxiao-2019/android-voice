@@ -19,6 +19,10 @@ public class VoicePathConnector {
     public static IDataPath genDataPath(VoiceConfiguration conf,
                                         WakeUpDetector wakeUpDetector, IDataPath finalPath) {
 
+        if (conf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
+            return wrapFileWriter(finalPath, conf, "_upload");
+        }
+
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
         boolean isSupportWakeUpMode = conf.isSupportWakeUpMode() && wakeUpDetector != null;
 

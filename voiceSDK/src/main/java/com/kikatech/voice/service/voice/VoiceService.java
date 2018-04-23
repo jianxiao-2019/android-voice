@@ -153,6 +153,14 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mWakeUpDetector = mConf.isSupportWakeUpMode() ? WakeUpDetector.getDetector(context, this) : null;
         mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath, this);
+
+        if (conf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
+            mConf.getConnectionConfiguration().url = "ws://api-dev.kika.ai/v3/ns";
+
+            mConf.getConnectionConfiguration().bundle.putString("sid", "0");
+            mConf.getConnectionConfiguration().bundle.putString("type", "wakeup");
+            mConf.getConnectionConfiguration().bundle.putString("format", "pcm");
+        }
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
@@ -213,10 +221,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mCurrentSpeechMode = mConf.getSpeechMode();
         if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
             sendCommand(SERVER_COMMAND_TOKEN, "1");
-        } else {
+            sendCommand(SERVER_COMMAND_RESET, "");
+        } else if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.CONVERSATION) {
             sendCommand(SERVER_COMMAND_TOKEN, "-1");
+            sendCommand(SERVER_COMMAND_RESET, "");
         }
-        sendCommand(SERVER_COMMAND_RESET, "");
 
         if (mWakeUpDetector != null) {
             mWakeUpDetector.setDebugFilePath(DebugUtil.getDebugFilePath());
@@ -226,7 +235,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mDataPath.start();
         mVoiceRecorder.start();
 
-        if (mWakeUpDetector == null || mWakeUpDetector.isAwake()) {
+        if ((mWakeUpDetector == null || mWakeUpDetector.isAwake())
+                && mCurrentSpeechMode != VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
             startVadBosTimer(bosDuration);
         }
 
@@ -419,6 +429,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
+                            return;
+                        }
+
                         if (message instanceof BosMessage) {
                             Logger.d("[WebSocketListener] 1qaz onMessage:" + message);
                             mLastBosMessage = (BosMessage) message;

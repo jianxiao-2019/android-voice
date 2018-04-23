@@ -33,6 +33,7 @@ public class VoiceConfiguration {
     public enum SpeechMode {
         ONE_SHOT,
         CONVERSATION,
+        AUDIO_UPLOAD,
     }
 
     private static final String DEFAULT_ENGINE = Engine.KIKA_GOOGLE;
@@ -175,7 +176,7 @@ public class VoiceConfiguration {
 
 
     public static class ConnectionConfiguration {
-        public final String url;
+        public String url;
         public final String locale;
         public final String sign;
         public final String userAgent;
