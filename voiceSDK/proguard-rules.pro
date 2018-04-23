@@ -27,3 +27,6 @@
     public static native void switchJNILog(...);
     public static native float speechProbability(...);
 }
+-keep class com.kikatech.voice.core.vad.VadConfiguration {
+    public *;
+}
