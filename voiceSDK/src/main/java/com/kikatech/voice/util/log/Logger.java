@@ -10,13 +10,13 @@ import java.util.Locale;
  * Created by brad_chang on 2016/1/10.
  */
 public class Logger {
-    final static public boolean DEBUG = true;
-    final static private boolean ENABLE_FILE_LOG = DEBUG;
+    public static boolean DEBUG = false;
+    private static boolean sIsFileLogEnabled = DEBUG;
 
     private static final String TAG = "KikaVoiceSdk";
     private static final int DEF_STACKS_COUNT = 0;
 
-    private static final int sPid = DEBUG ? 0 : android.os.Process.myPid();
+    private static int sPid = 0;
     private static final int PARENT_NODE = 3, SELF_NODE = 2;
     private static final String PARENT_LOG_FORMAT = "[%s:%s:ln%d] ";
     private static final String LOG_FORMAT = "[%s:%s:ln%d] %s (pid: %d)";
@@ -24,6 +24,13 @@ public class Logger {
     public final static String LOG_FOLDER = "kikaVoiceSdk/log";
     public final static String LOG_FILE = "%s_voice_sdk.txt";
     private static int mFileLoggerId = -1;
+
+    public static void updateDebugState(boolean isDebug) {
+        DEBUG = isDebug;
+        sIsFileLogEnabled = isDebug;
+
+        sPid = DEBUG ? 0 : android.os.Process.myPid();
+    }
 
     private enum LogLabel {
         VERBOSE,
@@ -105,7 +112,7 @@ public class Logger {
                 break;
         }
 
-        if (ENABLE_FILE_LOG) {
+        if (sIsFileLogEnabled) {
             if (mFileLoggerId == -1) {
                 mFileLoggerId = FileLoggerUtil.getIns().configFileLogger(LOG_FOLDER, LOG_FILE);
             }

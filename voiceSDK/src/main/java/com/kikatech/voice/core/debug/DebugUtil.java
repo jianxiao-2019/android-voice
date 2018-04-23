@@ -43,6 +43,7 @@ public class DebugUtil {
 
     public static void updateCacheDir(VoiceConfiguration conf) {
         sIsDebug = conf.getIsDebugMode();
+        Logger.updateDebugState(sIsDebug);
         if (!sIsDebug) {
             return;
         }
@@ -123,7 +124,7 @@ public class DebugUtil {
     }
 
     public static void convertCurrentPcmToWav() {
-        if (sDebugFilepath == null) {
+        if (TextUtils.isEmpty(sDebugFilepath)) {
             return;
         }
 
@@ -229,6 +230,10 @@ public class DebugUtil {
     }
 
     public static void logTextToFile(@NonNull String title, @NonNull String text) {
+        if (TextUtils.isEmpty(sDebugFilepath)) {
+            return;
+        }
+
         String filePath = sDebugFilepath;
         BufferedWriter bufferedWriter = null;
         try {
