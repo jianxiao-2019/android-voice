@@ -27,11 +27,7 @@ public class DialogFlow {
 
     public DialogFlow(Context context, VoiceConfiguration conf) {
         mAgent = conf.getAgent().create(context.getApplicationContext());
-        if (Logger.DEBUG) {
-            dbgMsg = new String[]{"", ""};
-        } else {
-            dbgMsg = null;
-        }
+        dbgMsg = new String[]{"", ""};
     }
 
     public void talk(final String words, final String[] nBestWords, byte queryType, boolean proactive, final IDialogFlowService.IAgentQueryStatus callback) {
