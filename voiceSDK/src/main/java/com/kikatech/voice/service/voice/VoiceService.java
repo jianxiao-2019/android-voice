@@ -228,7 +228,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         if (mWakeUpDetector != null) {
-            mWakeUpDetector.setDebugFilePath(DebugUtil.getDebugFilePath());
             mWakeUpDetector.reset();
         }
 

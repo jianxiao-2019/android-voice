@@ -24,6 +24,8 @@ public abstract class WakeUpDetector {
 
     WakeUpDetector(OnHotWordDetectListener listener) {
         mListener = listener;
+        // mFileWriter = new FileWriter("_COMMAND", null);
+        mFileWriter = null;
     }
 
     public static WakeUpDetector getDetector(Context context, OnHotWordDetectListener listener) {
@@ -38,15 +40,6 @@ public abstract class WakeUpDetector {
 
     public final IDataPath getDataPath() {
         return mDataPath;
-    }
-
-    // TODO : Do not need this method. But need find a timing for init the FileWriter.
-    public final void setDebugFilePath(String path) {
-        if (!TextUtils.isEmpty(path)) {
-            mFileWriter = new FileWriter("_COMMAND", null);
-        } else {
-            mFileWriter = null;
-        }
     }
 
     private class WakeUpDataPath extends IDataPath {

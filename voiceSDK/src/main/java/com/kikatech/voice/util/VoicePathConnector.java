@@ -28,7 +28,8 @@ public class VoicePathConnector {
 
         IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"));
         if (isSupportWakeUpMode) {
-            wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
+//            wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
+            wakeUpDetector.setNextDataPath(dataPath);
             dataPath = wakeUpDetector.getDataPath();
         }
 
