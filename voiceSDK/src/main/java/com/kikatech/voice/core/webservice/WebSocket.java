@@ -304,6 +304,10 @@ public class WebSocket {
 
         @Override
         public void onOpen(ServerHandshake handshakeData) {
+            if (mReleased.get()) {
+                Logger.v("onOpen, but has been released");
+                return;
+            }
             Logger.d("onOpen");
             changeState(CONNECTED);
             startHeartBeatTimer();
@@ -314,6 +318,10 @@ public class WebSocket {
 
         @Override
         public void onMessage(String message) {
+            if (mReleased.get()) {
+                Logger.v("onMessage, but has been released");
+                return;
+            }
             Logger.d("onMessage message = " + message);
             final Message msg = handleMessage(message);
             if (msg != null && mListener != null) {
@@ -323,6 +331,10 @@ public class WebSocket {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
+            if (mReleased.get()) {
+                Logger.v("onClose, but has been released");
+                return;
+            }
             Logger.d("onClose code = [" + code + "]");
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
@@ -334,6 +346,10 @@ public class WebSocket {
 
         @Override
         public void onError(Exception ex) {
+            if (mReleased.get()) {
+                Logger.v("onError, but has been released");
+                return;
+            }
             Logger.w("onError");
             ex.printStackTrace();
             changeState(DISCONNECTED);
