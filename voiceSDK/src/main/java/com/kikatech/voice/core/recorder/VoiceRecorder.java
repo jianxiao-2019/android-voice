@@ -104,7 +104,7 @@ public class VoiceRecorder {
         private static final int FAIL_COUNT_THRESHOLD = 10;
         private static final int S_BYTE_LEN = (int) (4096 * 1.5);//vad中的输入是一段4096字节的音频
 
-        private AtomicBoolean mIsRunning = new AtomicBoolean(false);
+        private boolean mIsRunning = true;
 
         private byte[] mBuf = new byte[S_BYTE_LEN];
         private int mBufLen = 0;
@@ -112,19 +112,18 @@ public class VoiceRecorder {
         private int mFailCount = 0;
 
         public void stop() {
-            mIsRunning.set(false);
+            mIsRunning = false;
         }
 
         @Override
         public void run() {
             Logger.d(this + " [prepare]");
-            mIsRunning.set(true);
             mVoiceSource.start();
 
             Logger.d(this + " [record] bufferSize = " + mVoiceSource.getBufferSize());
             byte[] audioData = new byte[mVoiceSource.getBufferSize()];
             int readSize;
-            while (mIsRunning.get()) {
+            while (mIsRunning) {
                 readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
 
                 if (mVoiceDataListener != null) {
