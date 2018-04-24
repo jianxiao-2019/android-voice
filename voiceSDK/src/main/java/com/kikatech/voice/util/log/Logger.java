@@ -129,43 +129,43 @@ public class Logger {
     }
 
     public static void i(@NonNull String log) {
-        if (DEBUG) log(LogLabel.INFO, TAG, getStackMsg(log, DEF_STACKS_COUNT));
+        log(LogLabel.INFO, TAG, getStackMsg(log, DEF_STACKS_COUNT));
     }
 
     public static void w(@NonNull String log) {
-        if (DEBUG) log(LogLabel.WARN, TAG, getStackMsg(log, DEF_STACKS_COUNT));
+        log(LogLabel.WARN, TAG, getStackMsg(log, DEF_STACKS_COUNT));
     }
 
     public static void e(@NonNull String log) {
-        if (DEBUG) log(LogLabel.ERROR, TAG, getStackMsg(log, DEF_STACKS_COUNT));
+        log(LogLabel.ERROR, TAG, getStackMsg(log, DEF_STACKS_COUNT));
     }
 
     public static void wtf(@NonNull String log) {
-        if (DEBUG) log(LogLabel.ASSERT, TAG, getStackMsg(log, DEF_STACKS_COUNT));
+        log(LogLabel.ASSERT, TAG, getStackMsg(log, DEF_STACKS_COUNT));
     }
 
     public static void v(@NonNull String logTag, @NonNull String log) {
         if (DEBUG) log(LogLabel.VERBOSE, logTag, getStackMsg(log, 0));
     }
 
-    public static void i(@NonNull String logTag, @NonNull String log) {
-        if (DEBUG) log(LogLabel.INFO, logTag, getStackMsg(log, DEF_STACKS_COUNT));
-    }
-
     public static void d(@NonNull String logTag, @NonNull String log) {
         if (DEBUG) log(LogLabel.DEBUG, logTag, getStackMsg(log, 0));
     }
 
+    public static void i(@NonNull String logTag, @NonNull String log) {
+        log(LogLabel.INFO, logTag, getStackMsg(log, DEF_STACKS_COUNT));
+    }
+
     public static void w(@NonNull String logTag, @NonNull String log) {
-        if (DEBUG) log(LogLabel.WARN, logTag, getStackMsg(log, 0));
+        log(LogLabel.WARN, logTag, getStackMsg(log, 0));
     }
 
     public static void e(@NonNull String logTag, @NonNull String log) {
-        if (DEBUG) log(LogLabel.ERROR, logTag, getStackMsg(log, 0));
+        log(LogLabel.ERROR, logTag, getStackMsg(log, 0));
     }
 
     public static void wtf(@NonNull String logTag, @NonNull String log) {
-        if (DEBUG) log(LogLabel.ASSERT, logTag, getStackMsg(log, 0));
+        log(LogLabel.ASSERT, logTag, getStackMsg(log, 0));
     }
 
     public static void v(@NonNull String logTag, @NonNull String log, int parentStacksCount) {
@@ -177,19 +177,19 @@ public class Logger {
     }
 
     public static void i(@NonNull String logTag, @NonNull String log, int parentStacksCount) {
-        if (DEBUG) log(LogLabel.INFO, logTag, getStackMsg(log, parentStacksCount));
+        log(LogLabel.INFO, logTag, getStackMsg(log, parentStacksCount));
     }
 
     public static void w(@NonNull String logTag, @NonNull String log, int parentStacksCount) {
-        if (DEBUG) log(LogLabel.WARN, logTag, getStackMsg(log, parentStacksCount));
+        log(LogLabel.WARN, logTag, getStackMsg(log, parentStacksCount));
     }
 
     public static void e(@NonNull String logTag, @NonNull String log, int parentStacksCount) {
-        if (DEBUG) log(LogLabel.ERROR, logTag, getStackMsg(log, parentStacksCount));
+        log(LogLabel.ERROR, logTag, getStackMsg(log, parentStacksCount));
     }
 
     public static void wtf(@NonNull String logTag, @NonNull String log, int parentStacksCount) {
-        if (DEBUG) log(LogLabel.ASSERT, logTag, getStackMsg(log, parentStacksCount));
+        log(LogLabel.ASSERT, logTag, getStackMsg(log, parentStacksCount));
     }
 
     public static void printStackTrace(@NonNull String logTag, @NonNull String log, Throwable throwable) {

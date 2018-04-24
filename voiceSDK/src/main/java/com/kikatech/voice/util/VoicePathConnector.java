@@ -27,16 +27,15 @@ public class VoicePathConnector {
         boolean isSupportWakeUpMode = conf.isSupportWakeUpMode() && wakeUpDetector != null;
 
         IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"));
-        Logger.d("VoicePathConnector isSupportWakeUpMode = " + isSupportWakeUpMode);
         if (isSupportWakeUpMode) {
             wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
             dataPath = wakeUpDetector.getDataPath();
         }
 
-        Logger.d("VoicePathConnector isUsbVoiceSource = " + isUsbVoiceSource);
         dataPath = wrapFileWriter(dataPath, conf, isUsbVoiceSource ? "_NC" : "_SRC");
-        // TODO : This is for debug.
-        dataPath.dump();
+        if (Logger.DEBUG) {
+            dataPath.dump();
+        }
         return dataPath;
     }
 

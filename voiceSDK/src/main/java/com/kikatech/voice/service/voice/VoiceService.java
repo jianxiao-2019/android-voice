@@ -184,6 +184,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         DebugUtil.updateCacheDir(mConf);
 
         registerMessage();
+        Logger.d("created");
     }
 
     private void registerMessage() {
@@ -212,7 +213,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void start(int bosDuration) {
-        Logger.i("1qaz start");
         mIsStarting = true;
 
         ReportUtil.getInstance().startTimeStamp("start record");
@@ -241,10 +241,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         mLastIntermediateMessage = null;
+        Logger.d("started");
     }
 
     public void stop(StopType stopType) {
-        Logger.i("1qaz stopType = " + stopType);
         mIsStarting = false;
 
         if (stopType == StopType.COMPLETE) {
@@ -269,6 +269,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         DebugUtil.convertCurrentPcmToWav();
         ReportUtil.getInstance().stopTimeStamp("stop record");
+        Logger.d("stopped, type = " + stopType);
     }
 
     private void cleanVadBosTimer() {
@@ -288,7 +289,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     private void startVadBosTimer(int bosDuration) {
-        Logger.d("1qaz VoiceService startVadBosTimer bosDuration = " + bosDuration);
+        Logger.d("startVadBosTimer bosDuration = " + bosDuration);
         if (mTimerHandler != null && bosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, bosDuration);
@@ -297,7 +298,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     private void startVadEosTimer() {
         int eosDuration = mConf.getEosDuration();
-        Logger.d("1qaz VoiceService startVadEosTimer eosDuration = " + eosDuration);
+        Logger.d("startVadEosTimer eosDuration = " + eosDuration);
         if (mTimerHandler != null && eosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_EOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_EOS, eosDuration);
@@ -321,6 +322,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
         cleanVadBosTimer();
         cleanVadEosTimer();
+        Logger.d("slept");
     }
 
     public void wakeUp() {
@@ -331,19 +333,16 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
             }
         }
         startVadBosTimer();
+        Logger.d("woken up");
     }
 
     public void destroy() {
-        Logger.d("VoiceService destroy");
-
         stop(StopType.CANCEL);
         EventBus.getDefault().unregister(this);
         mVoiceRecorder.close();
-        if (mWebService == null) {
-            return;
+        if (mWebService != null) {
+            mWebService.release();
         }
-        mWebService.release();
-        mWebService = null;
 
         if (mMainThreadHandler != null) {
             mMainThreadHandler.removeCallbacksAndMessages(null);
@@ -361,6 +360,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         unregisterMessage();
 
         checkFiles();
+
+        Logger.d("destroyed.");
     }
 
     private synchronized void checkFiles() {
@@ -383,7 +384,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EventMsg eventMsg) {
         if (eventMsg.type == EventMsg.Type.VD_VAD_CHANGED) {
-            Logger.v("onEvent VD_VAD_CHANGED prob = " + eventMsg.obj);
             float prob = (float) eventMsg.obj;
             if (mVoiceDataListener != null) {
                 mVoiceDataListener.onSpeechProbabilityChanged(prob);
@@ -394,19 +394,19 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     public void sendCommand(String command, String alter) {
         if (mWebService != null) {
             mWebService.sendCommand(command, alter);
+        } else {
+            Logger.w("Don't send command after destroyed");
         }
     }
 
     public void sendAlignment(String[] alignment) {
         JSONArray mJSONArray = new JSONArray(Arrays.asList(alignment));
-        if (mWebService != null) {
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("alignments", mJSONArray);
-                mWebService.sendCommand(SERVER_COMMAND_ALIGNMENT, jsonObject.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("alignments", mJSONArray);
+            sendCommand(SERVER_COMMAND_ALIGNMENT, jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -415,11 +415,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void updateAsrSettings(AsrConfiguration conf) {
-        if (mWebService != null) {
-            Logger.d("updateAsrSettings conf = " + conf.toJsonString());
-            mWebService.sendCommand(SERVER_COMMAND_SETTINGS, conf.toJsonString());
-            mConf.updateAsrConfiguration(conf);
-        }
+        sendCommand(SERVER_COMMAND_SETTINGS, conf.toJsonString());
+        mConf.updateAsrConfiguration(conf);
     }
 
     private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
@@ -434,13 +431,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                         }
 
                         if (message instanceof BosMessage) {
-                            Logger.d("[WebSocketListener] 1qaz onMessage:" + message);
+                            Logger.d("[WebSocketListener] onMessage:" + message);
                             mLastBosMessage = (BosMessage) message;
                             return;
                         }
 
                         long messageCid = getMessageCid(message);
-                        Logger.d("[WebSocketListener] 1qaz onMessage:" + message + (mSkippedCid == messageCid ? "  <Skipped>" : ""));
+                        Logger.d("[WebSocketListener] onMessage:" + message + (mSkippedCid == messageCid ? "  <Skipped>" : ""));
                         if (mSkippedCid != messageCid) {
                             if (message instanceof TextMessage) {
                                 mLastIntermediateMessage = null;
@@ -538,15 +535,16 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     private class VoiceDataSender extends IDataPath {
 
-        public VoiceDataSender(IDataPath nextPath) {
+        VoiceDataSender(IDataPath nextPath) {
             super(nextPath);
         }
 
         @Override
         public void onData(byte[] data) {
-            Logger.v("VoiceDataSender onData");
+            Logger.v("[VoiceDataSender] onData");
             if (mWebService != null) {
-                if (ReportUtil.getInstance().isEverDetectedVad() == true && ReportUtil.getInstance().isEverSentDataToWeb() == false) {
+                if (ReportUtil.getInstance().isEverDetectedVad()
+                        && !ReportUtil.getInstance().isEverSentDataToWeb()) {
                     ReportUtil.getInstance().sentDataToWeb();
                     ReportUtil.getInstance().logTimeStamp("first_send_data_to_web");
                 }
@@ -559,7 +557,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         @Override
         public void handleMessage(android.os.Message msg) {
             if (msg.what == MSG_VAD_BOS) {
-                Logger.i("1qaz onBos");
+                Logger.d("onBos");
                 if (mWebService != null && !mWebService.isConnected()) {
                     handleError(ERR_CONNECTION_ERROR);
                 } else {
@@ -568,7 +566,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                 mLastIntermediateMessage = null;
                 return;
             } else if (msg.what == MSG_VAD_EOS) {
-                Logger.i("1qaz onEos");
+                Logger.d("onEos");
                 stop(StopType.CANCEL);
                 TextMessage finalResult = new TextMessage(mLastIntermediateMessage);
                 mLastIntermediateMessage = null;

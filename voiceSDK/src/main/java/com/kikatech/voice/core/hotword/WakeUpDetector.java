@@ -33,7 +33,6 @@ public abstract class WakeUpDetector {
     }
 
     public final void setNextDataPath(IDataPath nextPath) {
-        Logger.d("WakeUpDetector setNextDataPath next path = " + nextPath);
         mDataPath = new WakeUpDataPath(nextPath);
     }
 
@@ -66,12 +65,12 @@ public abstract class WakeUpDetector {
 
         @Override
         public final void onData(byte[] data) {
-            Logger.v("WakeUpDataPath onData data.length = " + data.length + " isAwake = " + isAwake());
             if (isAwake()) {
                 if (mNextPath != null) {
                     mNextPath.onData(data);
                 }
             } else {
+                Logger.v("onData data.length = " + data.length);
                 checkWakeUpCommand(data);
                 if (mFileWriter != null) {
                     mFileWriter.onData(data);

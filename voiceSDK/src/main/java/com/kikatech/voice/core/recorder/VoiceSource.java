@@ -6,8 +6,6 @@ import android.media.MediaRecorder;
 import android.media.audiofx.AcousticEchoCanceler;
 import android.support.annotation.NonNull;
 
-import com.kikatech.voice.util.log.Logger;
-
 /**
  * Created by tianli on 17-10-29.
  * Update by ryanlin on 25/12/2017.
@@ -45,21 +43,16 @@ public class VoiceSource implements IVoiceSource {
         }
         mAudioRecord = createAudioRecord();
         if (mAudioRecord == null || mAudioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
-//            return STATUS_RECORDER_INIT_FAIL;
             return;
         }
         initAec(mAudioRecord);
         mAudioRecord.startRecording();
-//        return STATUS_SUCCESS;
     }
 
     @Override
     public void stop() {
         releaseAec();
         if (mAudioRecord != null) {
-//            if (mAudioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
-//                mAudioRecord.stop();
-//            }
             mAudioRecord.release();
             mAudioRecord = null;
         }
@@ -83,7 +76,6 @@ public class VoiceSource implements IVoiceSource {
     }
 
     private AudioRecord createAudioRecord() {
-        Logger.d("createAudioRecord mBufferSizeInBytes = " + mBufferSizeInBytes);
         if (mBufferSizeInBytes <= 0) {
             return null;
         }
@@ -100,7 +92,6 @@ public class VoiceSource implements IVoiceSource {
             mCanceler = AcousticEchoCanceler.create(audioRecord.getAudioSessionId());
             if (mCanceler != null) {
                 mCanceler.setEnabled(true);
-                Logger.d("DefaultVoiceSource initAec mCanceler.enable = " + mCanceler.getEnabled());
             }
         }
     }

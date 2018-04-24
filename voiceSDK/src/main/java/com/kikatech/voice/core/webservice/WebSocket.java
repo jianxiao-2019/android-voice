@@ -87,7 +87,7 @@ public class WebSocket {
             @Override
             public void run() {
                 if (mClient != null && (mClient.isConnecting() || mClient.isOpen())) {
-                    Logger.i("WebSocket is connecting.");
+                    Logger.w("WebSocket is connecting or it's already connected.");
                     return;
                 }
                 mConf = conf;
@@ -99,7 +99,6 @@ public class WebSocket {
                 httpHeaders.put("locale", conf.locale);
                 httpHeaders.put("engine", conf.engine);
                 httpHeaders.put("app-name", conf.appName);
-                Logger.d("appName = " + conf.appName);
 
                 AsrConfiguration asrConf = conf.getAsrConfiguration();
                 if (asrConf != null) {
@@ -109,22 +108,14 @@ public class WebSocket {
                     httpHeaders.put("punctuationEnabled", String.valueOf(asrConf.getPunctuationEnabled()));
                     httpHeaders.put("vprEnabled", String.valueOf(asrConf.getVprEnabled()));
                     httpHeaders.put("eosPackets", String.valueOf(asrConf.getEosPackets()));
-                    Logger.d("sign = " + conf.sign + " agent = " + conf.userAgent + " engine = " + conf.engine);
-                    Logger.d("alterEnabled = " + asrConf.getAlterEnabled()
-                            + " spellingEnabled = " + asrConf.getSpellingEnabled()
-                            + " emojiEnabled = " + asrConf.getEmojiEnabled()
-                            + " punctuationEnabled = " + asrConf.getPunctuationEnabled()
-                            + " vprEnabled = " + asrConf.getVprEnabled()
-                            + " eosPackets = " + asrConf.getEosPackets()
-                    );
                 }
                 for (String key : conf.bundle.keySet()) {
                     httpHeaders.put(key, conf.bundle.getString(key));
-                    Logger.d(key + " = " + conf.bundle.getString(key));
                 }
                 Draft draft = new Draft_6455();
                 try {
-                    Logger.i("WebSocket connect url = " + conf.url);
+                    Logger.d("WebSocket connect url = " + conf.url);
+                    logTheHttpHeaders(httpHeaders);
                     mClient = new VoiceWebSocketClient(new URI(conf.url), draft,
                             httpHeaders, WEB_SOCKET_CONNECT_TIMEOUT);
                 } catch (URISyntaxException e) {
@@ -134,6 +125,13 @@ public class WebSocket {
                 mSocketState = CONNECTING;
             }
         });
+    }
+
+    private void logTheHttpHeaders(Map<String, String> httpHeaders) {
+        Logger.d("-------- http headers --------");
+        for (String key : httpHeaders.keySet()) {
+            Logger.d(key + " : " + httpHeaders.get(key));
+        }
     }
 
     public void release() {
@@ -183,7 +181,7 @@ public class WebSocket {
             @Override
             public void run() {
                 String jsonCommand = genCommand(command, payload);
-                Logger.i("1qaz sendCommand " + jsonCommand);
+                Logger.d("Send command : " + jsonCommand);
                 if (TextUtils.isEmpty(jsonCommand)) {
                     Logger.e("Send command error : generate command failed.");
                     return;
@@ -222,7 +220,7 @@ public class WebSocket {
             return message;
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.i("WebSocket parseMessage error: " + e.getMessage());
+            Logger.w("WebSocket parseMessage error: " + e.getMessage());
         }
         return null;
     }
@@ -306,7 +304,7 @@ public class WebSocket {
 
         @Override
         public void onOpen(ServerHandshake handshakeData) {
-            Logger.i("VoiceWebSocketClient onOpen mListener = " + mListener);
+            Logger.d("onOpen");
             changeState(CONNECTED);
             startHeartBeatTimer();
             sendRemindData();
@@ -316,7 +314,7 @@ public class WebSocket {
 
         @Override
         public void onMessage(String message) {
-            Logger.i("VoiceWebSocketClient onMessage message = " + message);
+            Logger.d("onMessage message = " + message);
             final Message msg = handleMessage(message);
             if (msg != null && mListener != null) {
                 mListener.onMessage(msg);
@@ -325,7 +323,7 @@ public class WebSocket {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            Logger.i("VoiceWebSocketClient onClose code = [" + code + "]");
+            Logger.d("onClose code = [" + code + "]");
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
                 if (mListener != null) {
@@ -336,7 +334,7 @@ public class WebSocket {
 
         @Override
         public void onError(Exception ex) {
-            Logger.w("VoiceWebSocketClient onError ex = " + ex);
+            Logger.w("onError");
             ex.printStackTrace();
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
@@ -347,6 +345,7 @@ public class WebSocket {
         }
 
         private boolean reconnect() {
+            Logger.d("reconnect mReconnectTimes = " + mReconnectTimes);
             if (mReconnectTimes < MAX_RECONNECT_TIME && !mReleased.get()) {
                 mReconnectTimes++;
                 WebSocket.this.connect(mConf);

@@ -2,7 +2,6 @@ package com.kikatech.voice.core.debug;
 
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.log.FileLoggerUtil;
-import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by ryanlin on 25/12/2017.
@@ -35,7 +34,6 @@ public class FileWriter extends IDataPath {
         }
 
         if (mNextPath != null) {
-//            Logger.d("FileWriter pass data to next : " + mDataOut);
             mNextPath.onData(data);
         }
     }

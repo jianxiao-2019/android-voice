@@ -40,14 +40,15 @@ public class VoiceDetector extends IDataPath {
     @Override
     public void start() {
         super.start();
-        Logger.d("VoiceDetector startDetecting");
         mStopped.set(false);
+
+        Logger.d("Started");
     }
 
     @Override
     public void stop() {
         super.stop();
-        Logger.d("VoiceDetector stopDetecting");
+
         mStopped.set(true);
         mExecutor.execute(new Runnable() {
             @Override
@@ -60,6 +61,8 @@ public class VoiceDetector extends IDataPath {
                 }
             }
         });
+
+        Logger.d("Stopped");
     }
 
     @Override
@@ -89,9 +92,8 @@ public class VoiceDetector extends IDataPath {
             final byte[] data = mData;
             float[] sample = ByteToFloat(data, data.length / 2);
             float prob = VadUtil.speechProbability(sample, 0, sample.length, VadUtil.sConf);
-            Logger.v("VoiceDetector prob = " + prob);
             if (DebugUtil.isDebug() && prob > 0) {
-                if (ReportUtil.getInstance().isEverDetectedVad() == false) {
+                if (!ReportUtil.getInstance().isEverDetectedVad()) {
                     ReportUtil.getInstance().vadDetected();
                     ReportUtil.getInstance().logTimeStamp("first_vad_prob = " + String.format("%.2f", (double) prob));
                 } else {
