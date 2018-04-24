@@ -79,6 +79,7 @@ public class WebSocket {
     }
 
     public void connect(final ConnectionConfiguration conf) {
+        Logger.d("connect");
         if (mReleased.get()) {
             Logger.e("WebSocket already released, can not connect again");
             return;
@@ -132,9 +133,11 @@ public class WebSocket {
         for (String key : httpHeaders.keySet()) {
             Logger.d(key + " : " + httpHeaders.get(key));
         }
+        Logger.d("------------------------------");
     }
 
     public void release() {
+        Logger.d("release");
         if (mReleased.compareAndSet(false, true)) {
             mExecutor.execute(new Runnable() {
                 @Override
@@ -143,6 +146,12 @@ public class WebSocket {
                         mClient.close();
                     }
                     mClient = null;
+
+                    if (mTimer != null) {
+                        mTimer.cancel();
+                    }
+                    mTimer = null;
+
                     mSendBuffer.clear();
 
                     mSocketState = DISCONNECTED;
@@ -171,7 +180,7 @@ public class WebSocket {
 
     public void sendCommand(final String command, final String payload) {
         if (mReleased.get()) {
-            Logger.e("WebSocket already released, ignore data");
+            Logger.e("WebSocket already released, ignore command ");
             if (mListener != null) {
                 mListener.onWebSocketClosed();
             }
