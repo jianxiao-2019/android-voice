@@ -32,6 +32,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.ArrayList;
 
+import lib.android.anc.NoiseCancellation;
+
 /**
  * Created by brad_chang on 2017/12/8.
  */
@@ -91,6 +93,7 @@ public class KikaDebugLogActivity extends BaseActivity {
         if (!TextUtils.isEmpty(text)) {
             builder.append("  <Record From:").append(text).append(">");
         }
+        builder.append(" <NC Version:").append(NoiseCancellation.GetVersion()).append(">");
         tvLogAppVersion.setText(builder.toString());
     }
 
