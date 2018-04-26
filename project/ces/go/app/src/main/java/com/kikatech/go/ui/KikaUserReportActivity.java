@@ -99,10 +99,11 @@ public class KikaUserReportActivity extends BaseActivity {
         final String title = getEditTextContent(mEdtTitle);
         final String description = getEditTextContent(mEdtDescription);
         final String mail = getEditTextContent(mEdtMail);
-        File file = FileLoggerUtil.getIns().getLogFullPath(LogUtil.LOG_FOLDER, LogUtil.LOG_FILE);
-        if (file.exists()) {
-            final String key = FileUtil.getS3LogFileKey(mail, file.getName());
-            S3TransferUtil.getIns().uploadFile(file.getAbsolutePath(), key, new S3TransferUtil.IUploadListener() {
+        File originLogFile = FileLoggerUtil.getIns().getLogFullPath(LogUtil.LOG_FOLDER, LogUtil.LOG_FILE);
+        File copyLogFile = FileUtil.copy(originLogFile);
+        if (copyLogFile.exists()) {
+            final String key = FileUtil.getS3LogFileKey(mail, copyLogFile.getName());
+            S3TransferUtil.getIns().uploadFile(copyLogFile.getAbsolutePath(), key, new S3TransferUtil.IUploadListener() {
                 @Override
                 public void onUploaded(long remainTime) {
                     if (LogUtil.DEBUG) {
