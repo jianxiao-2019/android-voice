@@ -860,6 +860,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             LogUtil.log(TAG, String.format("updateVoiceSource, source: %s", mVoiceSourceHelper.getUsbVoiceSource()));
         }
         if (mDialogFlowService != null) {
+            if (mAsrMaxDurationTimer.isCounting()) {
+                mAsrMaxDurationTimer.stop();
+            }
             VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(this, mVoiceSourceHelper.getUsbVoiceSource());
             mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
             mDialogFlowService.updateRecorderSource(config);
