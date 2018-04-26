@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.kikatech.go.R;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.FAQHelper;
 
 /**
@@ -23,11 +24,13 @@ public class KikaFAQsActivity extends BaseActivity implements View.OnClickListen
         bindView();
         bindListener();
         mFAQHelper = new FAQHelper(this);
+        DialogFlowForegroundService.processDisableWakeUpDetector();
     }
 
     @Override
     protected void onDestroy() {
         mFAQHelper.release();
+        DialogFlowForegroundService.processEnableWakeUpDetector();
         super.onDestroy();
     }
 

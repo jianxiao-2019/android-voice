@@ -206,6 +206,22 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 // resume to its original visibility
                 mManager.updateGMapVisibility();
                 break;
+            case ToDFServiceEvent.ACTION_DISABLE_WAKE_UP_DETECTOR:
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("action: %s", action));
+                }
+                if (mDialogFlowService != null) {
+                    mDialogFlowService.disableWakeUpDetector();
+                }
+                break;
+            case ToDFServiceEvent.ACTION_ENABLE_WAKE_UP_DETECTOR:
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("action: %s", action));
+                }
+                if (mDialogFlowService != null) {
+                    mDialogFlowService.enableWakeUpDetector();
+                }
+                break;
         }
     }
 
@@ -1111,6 +1127,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processAccessibilityStopped() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ACCESSIBILITY_STOPPED);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processDisableWakeUpDetector() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DISABLE_WAKE_UP_DETECTOR);
+        sendToDFServiceEvent(event);
+    }
+
+    public synchronized static void processEnableWakeUpDetector() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ENABLE_WAKE_UP_DETECTOR);
         sendToDFServiceEvent(event);
     }
 

@@ -8,6 +8,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 
 import com.kikatech.go.R;
+import com.kikatech.go.services.DialogFlowForegroundService;
 
 /**
  * @author SkeeterWang Created on 2017/12/19.
@@ -80,10 +81,12 @@ public abstract class BaseDrawerActivity extends BaseActivity implements DrawerL
 
     @Override
     public void onDrawerOpened(View drawerView) {
+        DialogFlowForegroundService.processDisableWakeUpDetector();
     }
 
     @Override
     public void onDrawerClosed(View drawerView) {
+        DialogFlowForegroundService.processEnableWakeUpDetector();
         if (isDrawerAvailable()) {
             updateDrawerContent(getMainDrawerFragment());
         }

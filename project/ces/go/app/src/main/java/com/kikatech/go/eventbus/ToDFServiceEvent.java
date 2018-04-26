@@ -22,6 +22,8 @@ public class ToDFServiceEvent extends BaseEvent {
     public static final String ACTION_PING_VOICE_SOURCE = "action_ping_voice_source";
     public static final String ACTION_ACCESSIBILITY_STARTED = "action_accessibility_started";
     public static final String ACTION_ACCESSIBILITY_STOPPED = "action_accessibility_stopped";
+    public static final String ACTION_DISABLE_WAKE_UP_DETECTOR = "action_disable_wake_up_detector";
+    public static final String ACTION_ENABLE_WAKE_UP_DETECTOR = "action_enable_wake_up_detector";
 
     public static final String PARAM_STATUS = "param_status";
     public static final String PARAM_TEXT = "param_text";

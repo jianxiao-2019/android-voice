@@ -463,6 +463,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
         @Override
         public void onItemFAQsClicked() {
+            closeDrawer();
             startAnotherActivity(KikaFAQsActivity.class, false);
         }
 
