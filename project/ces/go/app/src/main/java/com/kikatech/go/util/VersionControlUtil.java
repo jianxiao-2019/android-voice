@@ -13,7 +13,9 @@ import com.kikatech.go.util.preference.GlobalPref;
 public class VersionControlUtil {
     private static final String TAG = "VersionControlUtil";
 
-    private static final String UPDATE_APP_URL = "https://drive.google.com/file/d/1A7aZ9s7P5C31TulG2BqbaQ1kG75E_JKZ/view?usp=drivesdk";
+    private static final String UPDATE_APP_URL_MAIN = "https://drive.google.com/open?id=1gU6In8OUPRxd-uz1KU-rXV3nLMrFklfy";
+    private static final String UPDATE_APP_URL_MANUFACTURER = "https://drive.google.com/file/d/1A7aZ9s7P5C31TulG2BqbaQ1kG75E_JKZ/view?usp=drivesdk";
+    private static final String UPDATE_APP_URL = FlavorUtil.isFlavorManufacturer() ? UPDATE_APP_URL_MANUFACTURER : UPDATE_APP_URL_MAIN;
 
     private static final int APP_VERSION_STATUS_LATEST = 0;
     private static final int APP_VERSION_STATUS_UPDATE = 1;
