@@ -130,6 +130,7 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
         mVoiceService.setVoiceRecognitionListener(mVoiceRecognitionListener);
 
         mVoiceService.create();
+        mVoiceService.start();
 
         mServiceCallback.onInitComplete();
         mServiceCallback.onAsrConfigChange(mAsrConfiguration);
