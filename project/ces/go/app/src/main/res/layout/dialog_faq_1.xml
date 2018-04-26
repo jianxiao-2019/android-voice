@@ -17,11 +17,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.v4.view.ViewPager
+            <com.kikatech.go.view.widget.WrapContentHeightViewPager
                 android:id="@+id/dialog_faq_pager"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:background="@drawable/bg_dialog_tmp"/>
+                android:layout_height="wrap_content"/>
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/dialog_faq_pager_indicators"
@@ -34,15 +33,33 @@
                 app:tabMaxWidth="13dp"
                 app:tabMinWidth="13dp"/>
 
-            <TextView
-                android:id="@+id/dialog_faq_content"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="75dp"
+                android:layout_height="90dp"
                 android:gravity="center"
-                android:paddingLeft="13dp"
-                android:paddingRight="13dp"
-                android:textColor="#8e94a9"
-                android:textSize="14dp"/>
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dialog_faq_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:textColor="#444444"
+                    android:textSize="18dp"/>
+
+                <TextView
+                    android:id="@+id/dialog_faq_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:paddingLeft="13dp"
+                    android:paddingRight="13dp"
+                    android:textColor="#8e94a9"
+                    android:textSize="13dp"/>
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -55,7 +72,7 @@
                 android:layout_height="53dp"
                 android:gravity="center"
                 android:text="Next"
-                android:textColor="#7e8296"
+                android:textColor="#3274e6"
                 android:textSize="16dp"/>
 
         </LinearLayout>

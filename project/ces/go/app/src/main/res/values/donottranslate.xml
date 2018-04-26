@@ -220,6 +220,11 @@ immediately"</item>
     <string name="faq_title_tip">"CONTACT US"</string>
 
     <string name="faq_q1_title">"KikaGo Smart Mic User Tips"</string>
+    <string-array name="faq_q1_subtitles">
+        <item>"Face up"</item>
+        <item>"Adjust the angle"</item>
+        <item>"Keep a distance"</item>
+    </string-array>
     <string-array name="faq_q1_descriptions">
         <item>"The Smart Mic must face up when connected to the phone"</item>
         <item>"Adjust the Smart Mic facing the speaker for better voice recognition"</item>
@@ -282,6 +287,14 @@ immediately"</item>
     <string name="report_toast_sent">"Report sent"</string>
 
     <string name="faq_report_description">"Seems like there’s a problem with the Smart Mic. Please leave your email here, and we will contact you as soon as we know what’s wrong with your product."</string>
+
+    <string name="block_title">"Update KikaGo"</string>
+    <string name="block_description">"Oops! Looks like your current version is no longer available. Please update to the latest version to continue driving hands-free with KikaGo!"</string>
+    <string name="block_btn_update">"Update"</string>
+
+    <string name="dialog_update_app_title">"Update"</string>
+    <string name="dialog_update_app_description">"We have a new version. Please update your KikaGo for a better experience!"</string>
+    <string name="dialog_update_app_btn_update">"Update"</string>
 
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>

@@ -1,13 +1,11 @@
 package com.kikatech.go.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.kikatech.go.R;
 
@@ -21,26 +19,12 @@ public class FAQ1DialogAdapter extends PagerAdapter {
 
     private ArrayList<View> mList = new ArrayList<>();
 
-    public FAQ1DialogAdapter(Context context) {
-        View pagerItem1 = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
-        View pagerItem2 = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
-        View pagerItem3 = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
-
-        Drawable drawable1 = context.getResources().getDrawable(R.drawable.bg_dialog_tmp);
-        drawable1.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-        pagerItem1.setBackground(drawable1);
-
-        Drawable drawable2 = context.getResources().getDrawable(R.drawable.bg_dialog_tmp);
-        drawable2.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-        pagerItem2.setBackground(drawable2);
-
-        Drawable drawable3 = context.getResources().getDrawable(R.drawable.bg_dialog_tmp);
-        drawable3.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-        pagerItem3.setBackground(drawable3);
-
-        mList.add(pagerItem1);
-        mList.add(pagerItem2);
-        mList.add(pagerItem3);
+    public FAQ1DialogAdapter(Context context, int[] resources, int size) {
+        for (int i = 0; i < size; i++) {
+            View pagerItem = LayoutInflater.from(context).inflate(R.layout.dialog_faq_pager_item_1, null);
+            ((ImageView) pagerItem.findViewById(R.id.dialog_faq_pager_item_img)).setImageResource(resources[i]);
+            mList.add(pagerItem);
+        }
     }
 
     @Override
@@ -60,7 +44,8 @@ public class FAQ1DialogAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        container.addView(mList.get(position));
-        return mList.get(position);
+        View mItemView = mList.get(position);
+        container.addView(mItemView);
+        return mItemView;
     }
 }

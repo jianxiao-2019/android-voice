@@ -66,6 +66,9 @@ public class RemoteConfigUtil {
         HashMap<String, Object> defaults = new HashMap<>();
         /* Normal Config Infos */
         defaults.put(Keys.CONFIG_VERSION, GlobalPref.getIns().getRemoteConfigVersion());
+        /* App Version Infos */
+        defaults.put(Keys.APP_VERSION_LATEST, GlobalPref.getIns().getRemoteConfigAppVersionLatest());
+        defaults.put(Keys.APP_VERSION_MIN, GlobalPref.getIns().getRemoteConfigAppVersionMin());
         return defaults;
     }
 
@@ -126,6 +129,7 @@ public class RemoteConfigUtil {
 
     private void saveConfigs() {
         saveNormalConfigInfos();
+        saveAppVersionInfos();
     }
 
     /* Normal Config Infos */
@@ -137,6 +141,19 @@ public class RemoteConfigUtil {
         }
 
         GlobalPref.getIns().saveRemoteConfigConfigVersion(configVersion);
+    }
+
+    /* App Version Infos */
+    private void saveAppVersionInfos() {
+        long appVersionLatest = mFirebaseRemoteConfig.getLong(Keys.APP_VERSION_LATEST);
+        long appVersionMin = mFirebaseRemoteConfig.getLong(Keys.APP_VERSION_MIN);
+
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, String.format("[AppVersion] appVersionLatest: %s, appVersionMin: %s", appVersionLatest, appVersionMin));
+        }
+
+        GlobalPref.getIns().saveRemoteConfigAppVersionLatest(appVersionLatest);
+        GlobalPref.getIns().saveRemoteConfigAppVersionMin(appVersionMin);
     }
 
     public interface IFetchListener {

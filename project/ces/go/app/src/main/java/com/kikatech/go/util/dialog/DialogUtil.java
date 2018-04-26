@@ -23,7 +23,9 @@ import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.ui.adapter.FAQ1DialogAdapter;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
+import com.kikatech.go.util.MathUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
+import com.kikatech.go.util.VersionControlUtil;
 
 import java.util.List;
 
@@ -337,18 +339,25 @@ public class DialogUtil {
 
         final ViewPager mPager = (ViewPager) dialogView.findViewById(R.id.dialog_faq_pager);
         TabLayout mIndicatorView = (TabLayout) dialogView.findViewById(R.id.dialog_faq_pager_indicators);
+        final TextView mSubtitle = (TextView) dialogView.findViewById(R.id.dialog_faq_subtitle);
         final TextView mContent = (TextView) dialogView.findViewById(R.id.dialog_faq_content);
         final TextView mBtnApply = (TextView) dialogView.findViewById(R.id.dialog_btn_apply);
         View mBtnCancel = dialogView.findViewById(R.id.dialog_btn_cancel);
 
         Resources resources = context.getResources();
+        final int[] IMAGE_RESOURCE = new int[]{R.drawable.ic_settings_faq_illu_headup,
+                R.drawable.ic_settings_faq_illu_facingdriver,
+                R.drawable.ic_settings_faq_illu_2inches};
+        final String[] SUBTITLES = resources.getStringArray(R.array.faq_q1_subtitles);
         final String[] DESCRIPTIONS = resources.getStringArray(R.array.faq_q1_descriptions);
         final String[] BUTTON_TEXTS = resources.getStringArray(R.array.faq_q1_buttons);
+        int LIST_SIZE = MathUtil.min(IMAGE_RESOURCE.length, SUBTITLES.length, DESCRIPTIONS.length, BUTTON_TEXTS.length);
 
-        final FAQ1DialogAdapter mAdapter = new FAQ1DialogAdapter(context);
+        final FAQ1DialogAdapter mAdapter = new FAQ1DialogAdapter(context, IMAGE_RESOURCE, LIST_SIZE);
         mPager.setAdapter(mAdapter);
         mIndicatorView.setupWithViewPager(mPager);
 
+        mSubtitle.setText(SUBTITLES.length > 0 ? SUBTITLES[0] : "");
         mContent.setText(DESCRIPTIONS.length > 0 ? DESCRIPTIONS[0] : "");
         mBtnApply.setText(BUTTON_TEXTS.length > 0 ? BUTTON_TEXTS[0] : "");
 
@@ -359,6 +368,7 @@ public class DialogUtil {
 
             @Override
             public void onPageSelected(int position) {
+                mSubtitle.setText(position < SUBTITLES.length ? SUBTITLES[position] : "");
                 mContent.setText(position < DESCRIPTIONS.length ? DESCRIPTIONS[position] : "");
                 mBtnApply.setText(position < BUTTON_TEXTS.length ? BUTTON_TEXTS[position] : "");
             }
@@ -627,6 +637,43 @@ public class DialogUtil {
         mBtnApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    listener.onApply(args);
+                }
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
+    public static void showUpdateApp(final Context context, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(true);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_update_app, null);
+
+        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                VersionControlUtil.openUpdatePage(context);
                 safeDismissDialog();
                 if (listener != null) {
                     Bundle args = new Bundle();

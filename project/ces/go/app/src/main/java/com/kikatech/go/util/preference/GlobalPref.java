@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.reflect.TypeToken;
+import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.SettingDestination;
@@ -173,6 +174,8 @@ public class GlobalPref {
     }
 
 
+    // ----- Remote Configurations -----
+
     public void saveRemoteConfigConfigVersion(long version) {
         sEditor.putLong(Key.KEY_REMOTE_CONFIG_CONFIG_VERSION, version);
         apply();
@@ -180,5 +183,23 @@ public class GlobalPref {
 
     public long getRemoteConfigVersion() {
         return sPref.getLong(Key.KEY_REMOTE_CONFIG_CONFIG_VERSION, Long.valueOf(KikaMultiDexApplication.getAppContext().getString(R.string.remote_config_config_version)));
+    }
+
+    public void saveRemoteConfigAppVersionLatest(long version) {
+        sEditor.putLong(Key.KEY_REMOTE_CONFIG_APP_VERSION_LATEST, version);
+        apply();
+    }
+
+    public long getRemoteConfigAppVersionLatest() {
+        return sPref.getLong(Key.KEY_REMOTE_CONFIG_APP_VERSION_LATEST, BuildConfig.VERSION_CODE);
+    }
+
+    public void saveRemoteConfigAppVersionMin(long version) {
+        sEditor.putLong(Key.KEY_REMOTE_CONFIG_APP_VERSION_MIN, version);
+        apply();
+    }
+
+    public long getRemoteConfigAppVersionMin() {
+        return sPref.getLong(Key.KEY_REMOTE_CONFIG_APP_VERSION_MIN, 0);
     }
 }

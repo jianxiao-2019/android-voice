@@ -29,4 +29,6 @@ class Key {
 
     // Remote Configs
     static final String KEY_REMOTE_CONFIG_CONFIG_VERSION = "key_remote_config_config_version";
+    static final String KEY_REMOTE_CONFIG_APP_VERSION_LATEST = "key_remote_config_app_version_latest";
+    static final String KEY_REMOTE_CONFIG_APP_VERSION_MIN = "key_remote_config_app_version_min";
 }

@@ -7,5 +7,7 @@ package com.kikatech.go.util.firebase;
 class Keys {
     /* Normal Config Infos */
     static final String CONFIG_VERSION = "config_version";
-
+    /* App Version Infos */
+    static final String APP_VERSION_LATEST = "app_version_latest";
+    static final String APP_VERSION_MIN = "app_version_min";
 }

@@ -22,9 +22,11 @@ import com.kikatech.go.ui.fragment.DrawerMainFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
 import com.kikatech.go.util.AnimationUtils;
+import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
+import com.kikatech.go.util.VersionControlUtil;
 import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.GoLayout;
@@ -49,8 +51,12 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     private View mIconConnectionStatus;
     private View mIconUsbHardwareStatus;
     private View mIconUsbAttached;
+    private View mIconHelp;
+    private View mIconUpdateApp;
 
     private boolean triggerDialogViaClick;
+
+    private boolean mIsUsbDataCorrect = true;
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -75,7 +81,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
         switch (action) {
             case DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED:
-                onConnectivityChanged();
+                updateTopIconStatus();
                 break;
             case DFServiceEvent.ACTION_EXIT_APP:
                 finishAffinity();
@@ -83,7 +89,17 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             case DFServiceEvent.ACTION_ON_USB_NO_DEVICES:
                 if (!GlobalPref.getIns().getHasShowDialogUsbIllustration()) {
                     GlobalPref.getIns().setHasShowDialogUsbIllustration(true);
-                    DialogUtil.showDialogAlertUsbInstallation(KikaAlphaUiActivity.this, null);
+                    AsyncThreadPool.getIns().executeDelay(new Runnable() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DialogUtil.showDialogAlertUsbInstallation(KikaAlphaUiActivity.this, null);
+                                }
+                            });
+                        }
+                    }, 1600);
                 } else if (triggerDialogViaClick) {
                     triggerDialogViaClick = false;
                     DialogUtil.showDialogAlertUsbInstallation(KikaAlphaUiActivity.this, null);
@@ -162,7 +178,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                     if (LogUtil.DEBUG) {
                         LogUtil.logv(TAG, String.format("ACTION_ON_PING_SERVICE_STATUS, isUsbDataCorrect: %s", isUsbDataCorrect));
                     }
-                    onUsbHardwareStatusChanged(isUsbDataCorrect);
+                    mIsUsbDataCorrect = isUsbDataCorrect;
+                    updateTopIconStatus();
                 }
                 break;
             case DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED:
@@ -170,7 +187,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, String.format("ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED, isUsbDataCorrect: %s", isUsbDataCorrect));
                 }
-                onUsbHardwareStatusChanged(isUsbDataCorrect);
+                mIsUsbDataCorrect = isUsbDataCorrect;
+                updateTopIconStatus();
                 break;
         }
     }
@@ -234,27 +252,38 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kika_alpha_ui);
         bindView();
-        // TODO fine tune init timing
-        ContactManager.getIns().init(this);
-        LocationMgr.init(this);
-        registerReceivers();
-        initUiTaskManager();
-        DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
-        DialogFlowForegroundService.processPingDialogFlowStatus();
-        onConnectivityChanged();
+        bindListener();
 
-        if (GlobalPref.getIns().isFirstLaunch()) {
-            CustomConfig.removeAllCustomConfigFiles();
+        @VersionControlUtil.AppVersionStatus int status = VersionControlUtil.checkAppVersion();
+        switch (status) {
+            case VersionControlUtil.AppVersionStatus.BLOCK:
+                startAnotherActivity(KikaBlockActivity.class, true);
+                break;
+            case VersionControlUtil.AppVersionStatus.UPDATE:
+                mIconUpdateApp.setVisibility(View.VISIBLE);
+            case VersionControlUtil.AppVersionStatus.LATEST:
+                // TODO fine tune init timing
+                ContactManager.getIns().init(this);
+                LocationMgr.init(this);
+                registerReceivers();
+                initUiTaskManager();
+                DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+                DialogFlowForegroundService.processPingDialogFlowStatus();
+                updateTopIconStatus();
+
+                if (GlobalPref.getIns().isFirstLaunch()) {
+                    CustomConfig.removeAllCustomConfigFiles();
+                }
+
+//                if (LogUtil.DEBUG) {
+//                    String sen = CustomConfig.getSnowboySensitivity();
+//                    int timeout = CustomConfig.getKikaTtsServerTimeout();
+//                    String msg = "[config] Sensitivity: " + sen + " , Timeout: " + timeout + " ms";
+//                    showLongToast(msg);
+//                    LogUtil.log(TAG, msg);
+//                }
+                break;
         }
-
-
-//        if (LogUtil.DEBUG) {
-//            String sen = CustomConfig.getSnowboySensitivity();
-//            int timeout = CustomConfig.getKikaTtsServerTimeout();
-//            String msg = "[config] Sensitivity: " + sen + " , Timeout: " + timeout + " ms";
-//            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-//            LogUtil.log(TAG, msg);
-//        }
     }
 
     @Override
@@ -279,7 +308,11 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
         mIconUsbHardwareStatus = findViewById(R.id.go_layout_ic_hardware_status);
         mIconUsbAttached = findViewById(R.id.go_layout_ic_usb_attached);
+        mIconHelp = findViewById(R.id.go_layout_ic_help);
+        mIconUpdateApp = findViewById(R.id.go_layout_ic_update_app);
+    }
 
+    private void bindListener() {
         mBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -298,6 +331,18 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 DialogUtil.showDialogUsbHardwareError(KikaAlphaUiActivity.this, null);
             }
         });
+        mIconHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAnotherActivity(KikaFAQsActivity.class, false);
+            }
+        });
+        mIconUpdateApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogUtil.showUpdateApp(KikaAlphaUiActivity.this, null);
+            }
+        });
     }
 
     private void registerReceivers() {
@@ -314,16 +359,24 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         }
     }
 
-    private synchronized void onConnectivityChanged() {
-        boolean isNetworkAvailable = NetworkUtil.isNetworkAvailable(KikaAlphaUiActivity.this);
-        if (isNetworkAvailable) {
+    private synchronized void updateTopIconStatus() {
+        boolean hasNetwork = NetworkUtil.isNetworkAvailable(KikaAlphaUiActivity.this);
+        if (!hasNetwork) { // do not have network connection
+            mIconUsbHardwareStatus.setVisibility(View.GONE);
+            mIconHelp.setVisibility(View.INVISIBLE);
+            animateNetworkError();
+        } else if (!mIsUsbDataCorrect) { // has network connection, but usb data incorrect
             mIconConnectionStatus.clearAnimation();
             mIconConnectionStatus.setVisibility(View.GONE);
-        } else {
+            mIconUsbHardwareStatus.setVisibility(View.VISIBLE);
+            mIconHelp.setVisibility(View.INVISIBLE);
+        } else { // has network connection, and usb data correct
+            mIconConnectionStatus.clearAnimation();
+            mIconConnectionStatus.setVisibility(View.GONE);
             mIconUsbHardwareStatus.setVisibility(View.GONE);
-            animateNetworkError();
+            mIconHelp.setVisibility(View.VISIBLE);
         }
-        mUiManager.dispatchConnectionStatusChanged(isNetworkAvailable);
+        mUiManager.dispatchConnectionStatusChanged(hasNetwork);
     }
 
     private boolean isAnimating;
@@ -346,14 +399,6 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 isAnimating = false;
             }
         });
-    }
-
-    private void onUsbHardwareStatusChanged(boolean isUsbDataCorrect) {
-        if (isUsbDataCorrect) {
-            mIconUsbHardwareStatus.setVisibility(View.GONE);
-        } else if (mIconConnectionStatus.getVisibility() != View.VISIBLE) {
-            mIconUsbHardwareStatus.setVisibility(View.VISIBLE);
-        }
     }
 
     private void onUsbAttachedStatusChanged(boolean isUsbAttach) {

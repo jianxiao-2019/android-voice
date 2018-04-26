@@ -70,7 +70,7 @@
             android:layout_weight="1"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="OK"
+            android:text="Got it"
             android:textColor="#3274e6"
             android:textSize="16dp"/>
 
