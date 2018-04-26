@@ -75,9 +75,9 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             return;
         }
         Bundle extras;
-        String text, scene, sceneAction;
+        String text, scene, sceneAction, source;
         SceneStage stage;
-        boolean isFinished, proactive;
+        boolean isFinished, proactive, isUsbSource, isUsbDataCorrect;
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
         switch (action) {
             case DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED:
@@ -86,6 +86,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             case DFServiceEvent.ACTION_EXIT_APP:
                 finishAffinity();
                 break;
+            case DFServiceEvent.ACTION_ON_USB_NON_CHANGED:
+                source = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
+                isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
+                isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, true);
+                if (isUsbSource && isUsbDataCorrect) {
+                    break;
+                }
             case DFServiceEvent.ACTION_ON_USB_NO_DEVICES:
                 if (!GlobalPref.getIns().getHasShowDialogUsbIllustration()) {
                     GlobalPref.getIns().setHasShowDialogUsbIllustration(true);
@@ -161,8 +168,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             case DFServiceEvent.ACTION_ON_ASR_CONFIG:
                 break;
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
-                String source = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                boolean isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
+                source = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
+                isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
                 onUsbAttachedStatusChanged(isUsbSource);
                 break;
             case DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS:
@@ -174,7 +181,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                         mUiManager.dispatchSleep();
                     }
                     Boolean isDataCorrect = serviceStatus.isUsbDeviceDataCorrect();
-                    boolean isUsbDataCorrect = isDataCorrect == null || isDataCorrect;
+                    isUsbDataCorrect = isDataCorrect == null || isDataCorrect;
                     if (LogUtil.DEBUG) {
                         LogUtil.logv(TAG, String.format("ACTION_ON_PING_SERVICE_STATUS, isUsbDataCorrect: %s", isUsbDataCorrect));
                     }
@@ -183,7 +190,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 }
                 break;
             case DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED:
-                boolean isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT);
+                isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT);
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, String.format("ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED, isUsbDataCorrect: %s", isUsbDataCorrect));
                 }
