@@ -126,7 +126,7 @@ public class KikaPermissionsActivity extends BaseActivity {
 
 
     private void adjustPermissionAndBtnLayout() {
-        boolean hasPermissionOverlay = DeviceUtil.overM() && OverlayUtil.isPermissionOverlayEnabled(KikaPermissionsActivity.this);
+        boolean hasPermissionOverlay = !DeviceUtil.overM() || OverlayUtil.isPermissionOverlayEnabled(KikaPermissionsActivity.this);
         mBtnOverlay.setChecked(hasPermissionOverlay);
         mBtnOverlay.setEnabled(!hasPermissionOverlay);
         boolean hasPermissionAccessibility = AccessibilityUtils.isSettingsOn(KikaPermissionsActivity.this);
