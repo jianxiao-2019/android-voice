@@ -13,7 +13,7 @@ public class Logger {
     public static boolean DEBUG = false;
     private static boolean sIsFileLogEnabled = DEBUG;
 
-    private static final String TAG = "KikaVoiceSdk";
+    public static final String TAG = "KikaVoiceSdk";
     private static final int DEF_STACKS_COUNT = 0;
 
     private static int sPid = 0;

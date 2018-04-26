@@ -109,6 +109,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     @Override
     public void onDetected() {
+        Logger.d("onDetected");
         if (mMainThreadHandler != null) {
             mMainThreadHandler.post(new Runnable() {
                 @Override
@@ -168,6 +169,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void create() {
+        Logger.d(Logger.TAG, "create", 1);
         if (mWebService != null) {
             mWebService.release();
         }
@@ -181,10 +183,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mVoiceRecorder.open();
         EventBus.getDefault().register(this);
 
-        DebugUtil.updateCacheDir(mConf);
-
         registerMessage();
-        Logger.d("created");
+
+        DebugUtil.updateCacheDir(mConf);
     }
 
     private void registerMessage() {
@@ -213,6 +214,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void start(int bosDuration) {
+        Logger.d(Logger.TAG, "start", 1);
         mIsStarting = true;
 
         ReportUtil.getInstance().startTimeStamp("start record");
@@ -240,10 +242,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         mLastIntermediateMessage = null;
-        Logger.d("started");
     }
 
     public void stop(StopType stopType) {
+        Logger.d(Logger.TAG, "stop, type = " + stopType, 1);
         mIsStarting = false;
 
         if (stopType == StopType.COMPLETE) {
@@ -268,16 +270,17 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         DebugUtil.convertCurrentPcmToWav();
         ReportUtil.getInstance().stopTimeStamp("stop record");
-        Logger.d("stopped, type = " + stopType);
     }
 
     private void cleanVadBosTimer() {
+        Logger.v("cleanVadBosTimer");
         if (mTimerHandler != null) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
         }
     }
 
     private void cleanVadEosTimer() {
+        Logger.v("cleanVadEosTimer");
         if (mTimerHandler != null) {
             mTimerHandler.removeMessages(MSG_VAD_EOS);
         }
@@ -288,7 +291,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     private void startVadBosTimer(int bosDuration) {
-        Logger.d("startVadBosTimer bosDuration = " + bosDuration);
+        Logger.v("startVadBosTimer bosDuration = " + bosDuration);
         if (mTimerHandler != null && bosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, bosDuration);
@@ -297,7 +300,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     private void startVadEosTimer() {
         int eosDuration = mConf.getEosDuration();
-        Logger.d("startVadEosTimer eosDuration = " + eosDuration);
+        Logger.v("startVadEosTimer eosDuration = " + eosDuration);
         if (mTimerHandler != null && eosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_EOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_EOS, eosDuration);
@@ -313,6 +316,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void sleep() {
+        Logger.d("sleep");
         if (mWakeUpDetector != null && mWakeUpDetector.isAwake()) {
             mWakeUpDetector.goSleep();
             if (mVoiceWakeUpListener != null) {
@@ -321,10 +325,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
         cleanVadBosTimer();
         cleanVadEosTimer();
-        Logger.d("slept");
     }
 
     public void wakeUp() {
+        Logger.d("wake up");
         if (mWakeUpDetector != null && !mWakeUpDetector.isAwake()) {
             mWakeUpDetector.wakeUp();
             if (mVoiceWakeUpListener != null) {
@@ -332,10 +336,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
             }
         }
         startVadBosTimer();
-        Logger.d("woken up");
     }
 
     public void destroy() {
+        Logger.d(Logger.TAG, "destroy", 1);
         stop(StopType.CANCEL);
         EventBus.getDefault().unregister(this);
         mVoiceRecorder.close();
@@ -359,8 +363,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         unregisterMessage();
 
         checkFiles();
-
-        Logger.d("destroyed.");
     }
 
     private synchronized void checkFiles() {

@@ -47,12 +47,13 @@ public class VoiceRecorder {
     }
 
     public void open() {
+        Logger.d("open");
         EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
                 if (mVoiceSource != null) {
-                    Logger.d(this + " [open] mVoiceSource = " + mVoiceSource);
+                    Logger.v(VoiceRecorder.this + " [open] mVoiceSource = " + mVoiceSource);
                     boolean success = mVoiceSource.open();
                     if (!success) {
                         Logger.e("Voice source open fail!");
@@ -66,8 +67,7 @@ public class VoiceRecorder {
     }
 
     public void start() {
-        Logger.v(this + " start mAudioRecordThread = " + mAudioRecordThread
-                + " Thread = " + Thread.currentThread().getName());
+        Logger.v(this + " start mAudioRecordThread = " + mAudioRecordThread);
         if (mAudioRecordThread != null) {
             mAudioRecordThread.stop();
         }
@@ -76,8 +76,7 @@ public class VoiceRecorder {
     }
 
     public void stop() {
-        Logger.v(this + " stop mAudioRecordThread = " + mAudioRecordThread
-                + " Thread = " + Thread.currentThread().getName());
+        Logger.v(this + " stop mAudioRecordThread = " + mAudioRecordThread);
         if (mAudioRecordThread != null) {
             mAudioRecordThread.stop();
             mAudioRecordThread = null;
@@ -85,13 +84,14 @@ public class VoiceRecorder {
     }
 
     public void close() {
+        Logger.d("open");
         if (mAudioRecordThread != null) {
             Logger.e("Please call stop() first.");
         }
         EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
-                Logger.d(this + " [close] mVoiceSource = " + mVoiceSource);
+                Logger.v(VoiceRecorder.this + " [close] mVoiceSource = " + mVoiceSource);
                 if (mVoiceSource != null) {
                     mVoiceSource.close();
                 }
@@ -117,10 +117,10 @@ public class VoiceRecorder {
 
         @Override
         public void run() {
-            Logger.d(this + " [prepare]");
+            Logger.v(VoiceRecorder.this + " [prepare]");
             mVoiceSource.start();
 
-            Logger.d(this + " [record] bufferSize = " + mVoiceSource.getBufferSize());
+            Logger.v(VoiceRecorder.this + " [record] bufferSize = " + mVoiceSource.getBufferSize());
             byte[] audioData = new byte[mVoiceSource.getBufferSize()];
             int readSize;
             while (mIsRunning) {
@@ -151,7 +151,7 @@ public class VoiceRecorder {
                 }
             }
 
-            Logger.d(this + " [release]");
+            Logger.v(VoiceRecorder.this + " [release]");
             if (mBufLen > 0 && mDataPath != null) {
                 byte[] lastData = Arrays.copyOf(mBuf, mBufLen);
                 mDataPath.onData(lastData);

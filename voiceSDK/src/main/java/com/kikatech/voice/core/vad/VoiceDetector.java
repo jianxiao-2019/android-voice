@@ -40,14 +40,14 @@ public class VoiceDetector extends IDataPath {
     @Override
     public void start() {
         super.start();
+        Logger.d("Start");
         mStopped.set(false);
-
-        Logger.d("Started");
     }
 
     @Override
     public void stop() {
         super.stop();
+        Logger.d("Stop");
 
         mStopped.set(true);
         mExecutor.execute(new Runnable() {
@@ -61,8 +61,6 @@ public class VoiceDetector extends IDataPath {
                 }
             }
         });
-
-        Logger.d("Stopped");
     }
 
     @Override
