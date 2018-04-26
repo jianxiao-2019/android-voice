@@ -57,6 +57,7 @@ import static com.kikatech.voice.service.voice.VoiceService.ERR_CONNECTION_ERROR
 import static com.kikatech.voice.service.voice.VoiceService.ERR_NO_SPEECH;
 import static com.kikatech.voice.service.voice.VoiceService.ERR_REASON_NOT_CREATED;
 import static com.kikatech.voice.service.voice.VoiceService.ERR_RECORD_DATA_FAIL;
+import static com.kikatech.voice.service.voice.VoiceService.ERR_RECORD_OPEN_FAIL;
 
 public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
@@ -867,6 +868,14 @@ public class MainActivity extends AppCompatActivity implements
             if (mTextView != null) {
                 mTextView.setText("Record data fail.");
             }
+        } else if (reason == ERR_RECORD_OPEN_FAIL) {
+            mUsbAudioService.closeDevice();
+            if (mUsbAudioSource != null) {
+                mUsbAudioSource.close();
+                mUsbAudioSource = null;
+            }
+            attachService();
+            Toast.makeText(this, "Device open fail", Toast.LENGTH_SHORT).show();
         }
         waveStopDraw();
         mStartButton.setEnabled(true);

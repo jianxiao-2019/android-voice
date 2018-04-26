@@ -32,7 +32,7 @@ public class AudioPlayBack {
     }
 
     public static void write(byte[] decodedAudio, int len) {
-        Logger.v("AudioPlayBack write len = " + len);
+        Logger.v("AudioPlayBack write len = " + len + " sKikaAudioDriver = " + sKikaAudioDriver);
         if (mListener != null) {
             mListener.onWrite(len);
         }
@@ -64,6 +64,7 @@ public class AudioPlayBack {
     }
 
     public static void setup(UsbAudioSource kikaAudioDriver) {
+        Logger.d("AudioPlayBack setup sKikaAudioDriver = " + kikaAudioDriver);
         sKikaAudioDriver = kikaAudioDriver;
 
         sFilePath = DebugUtil.getDebugFilePath();
@@ -81,6 +82,7 @@ public class AudioPlayBack {
     }
 
     public static void stop() {
+        Logger.d("AudioPlayBack stop sKikaAudioDriver = " + sKikaAudioDriver);
         sKikaAudioDriver = null;
     }
 
