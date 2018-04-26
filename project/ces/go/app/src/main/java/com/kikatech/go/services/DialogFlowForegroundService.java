@@ -987,7 +987,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             @Override
             public void onWrite(int len) {
                 if (mDFServiceStatus.isUsbDeviceAvailable()) {
-                    boolean isValidRawDataLen = AudioPlayBack.RAW_DATA_LENGTH_STEREO == len;
+                    boolean isValidRawDataLen = len >= AudioPlayBack.RAW_DATA_AVAILABLE_LENGTH;
                     if (mDFServiceStatus.isUsbDeviceDataCorrect() == null || mDFServiceStatus.isUsbDeviceDataCorrect() != isValidRawDataLen) {
                         mDFServiceStatus.setUsbDeviceDataCorrect(isValidRawDataLen);
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);

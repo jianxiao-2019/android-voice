@@ -17,6 +17,7 @@ public class AudioPlayBack {
     private static UsbAudioSource sKikaAudioDriver;
 
     public static final int RAW_DATA_LENGTH_STEREO = 640;
+    public static final int RAW_DATA_AVAILABLE_LENGTH = 600;
 
     // For debug
     private static long previousWrite = 0;
