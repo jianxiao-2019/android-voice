@@ -271,7 +271,8 @@ immediately"</item>
     </string-array>
     <string name="faq_q3_p3_btn">"<u>Listen to Hi Kika example</u>"</string>
     <string name="faq_q3_p4_description">"Please say, "Hi, Kika""</string>
-    <string name="faq_q3_p4_done_description">"Thank you for your voice! It has been uploaded. Please update KikaGo when the next version is available for a better experience."</string>
+    <string name="faq_q3_p4_done_title">"Thank you for your voice"</string>
+    <string name="faq_q3_p4_done_description">"It has been uploaded. Please update KikaGo when the next version is available for a better experience."</string>
 
     <string name="faq_t1_title">"Report problems"</string>
 

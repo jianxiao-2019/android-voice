@@ -58,6 +58,8 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
 
     private boolean mIsUsbDataCorrect = true;
 
+    private int mIconHelpVisibility = View.VISIBLE;
+
     /**
      * <p>Reflection subscriber method used by EventBus,
      * <p>do not remove this except the subscriber is no longer needed.
@@ -245,9 +247,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 switch (mode) {
                     case AWAKE:
                         mBtnOpenDrawer.setVisibility(View.GONE);
+                        mIconHelpVisibility = View.INVISIBLE;
+                        updateTopIconStatus();
                         break;
                     case SLEEP:
                         mBtnOpenDrawer.setVisibility(View.VISIBLE);
+                        mIconHelpVisibility = View.VISIBLE;
+                        updateTopIconStatus();
                         break;
                 }
             }
@@ -381,7 +387,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             mIconConnectionStatus.clearAnimation();
             mIconConnectionStatus.setVisibility(View.GONE);
             mIconUsbHardwareStatus.setVisibility(View.GONE);
-            mIconHelp.setVisibility(View.VISIBLE);
+            mIconHelp.setVisibility(mIconHelpVisibility);
         }
         mUiManager.dispatchConnectionStatusChanged(hasNetwork);
     }

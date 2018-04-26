@@ -13,13 +13,24 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/dialog_faq_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:paddingTop="15dp"
+            android:text="@string/faq_q3_p4_done_title"
+            android:textColor="#444444"
+            android:textSize="18dp"/>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:paddingBottom="15dp"
-            android:paddingLeft="13dp"
-            android:paddingRight="13dp"
-            android:paddingTop="15dp"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:paddingTop="8dp"
             android:text="@string/faq_q3_p4_done_description"
             android:textColor="#8e94a9"
             android:textSize="14dp"/>
