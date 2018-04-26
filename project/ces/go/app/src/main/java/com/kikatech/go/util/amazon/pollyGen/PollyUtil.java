@@ -1,4 +1,4 @@
-package com.kikatech.go.util.pollyGen;
+package com.kikatech.go.util.amazon.pollyGen;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Regions;

@@ -12,6 +12,9 @@ import com.kikatech.go.util.HttpClient.HttpClientExecutor;
 public class UserReportUtil {
     private static final String TAG = "UserReportUtil";
 
+    public static final String LOG_FILE_UPLOAD_FAILED = "log_file_upload_failed";
+    public static final String LOG_FILE_NOT_EXIST = "log_file_not_exist";
+
     private static final String PROTOCOL_SCHEME_HTTPS = "https";
     private static final String GOOGLE_DOC_DOMAIN = "docs.google.com";
     private static final String GOOGLE_DOC_URL_FORMAT = "/forms/d/e/%s/formResponse";

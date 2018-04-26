@@ -12,16 +12,20 @@ import java.io.InputStream;
 /**
  * @author SkeeterWang Created on 2017/10/25.
  */
-@SuppressWarnings("ResultOfMethodCallIgnored")
+
 public class FileUtil {
     private static final String TAG = "FileUtil";
+
+    private static final String S3_FOLDER_KIKAGO = "kika_go";
+    private static final String S3_FOLDER_LOG = S3_FOLDER_KIKAGO + "/report_log/%s/%s"; // mail, filename
 
     private static final String RECORD_FOLDER = "/kika_go";
     private static final String EXTENSION_PNG = ".png";
     private static final String FILE_NAME = "kika_%s" + EXTENSION_PNG;
 
+    @SuppressWarnings("UnusedReturnValue")
     public static String saveInPNG(Bitmap bitmap, String filePath) {
-        /** Saving image file with appropriate compressing quality **/
+        // Saving image file with appropriate compressing quality
         try {
             FileOutputStream out = new FileOutputStream(filePath);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -54,6 +58,10 @@ public class FileUtil {
             byteBuffer.write(buffer, 0, len);
         }
         return byteBuffer.toByteArray();
+    }
+
+    public static String getS3LogFileKey(String mail, String fileName) {
+        return String.format(S3_FOLDER_LOG, mail, fileName);
     }
 
     public static String getImAvatarFilePath(String appName, String name) {

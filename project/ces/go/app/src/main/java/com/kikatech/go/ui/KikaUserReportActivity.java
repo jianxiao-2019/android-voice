@@ -9,7 +9,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.kikatech.go.R;
+import com.kikatech.go.util.FileUtil;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.UserReportUtil;
+import com.kikatech.go.util.amazon.S3TransferUtil;
+import com.kikatech.voice.util.log.FileLoggerUtil;
+
+import java.io.File;
 
 /**
  * @author SkeeterWang Created on 2018/3/30.
@@ -90,11 +96,32 @@ public class KikaUserReportActivity extends BaseActivity {
 
     @SuppressWarnings("ConstantConditions")
     private void performReport() {
-        String title = getEditTextContent(mEdtTitle);
-        String description = getEditTextContent(mEdtDescription);
-        String mail = getEditTextContent(mEdtMail);
-        String logFileUrl = "";
-        UserReportUtil.report(title, description, mail, logFileUrl);
+        final String title = getEditTextContent(mEdtTitle);
+        final String description = getEditTextContent(mEdtDescription);
+        final String mail = getEditTextContent(mEdtMail);
+        File file = FileLoggerUtil.getIns().getLogFullPath(LogUtil.LOG_FOLDER, LogUtil.LOG_FILE);
+        if (file.exists()) {
+            final String key = FileUtil.getS3LogFileKey(mail, file.getName());
+            S3TransferUtil.getIns().uploadFile(file.getAbsolutePath(), key, new S3TransferUtil.IUploadListener() {
+                @Override
+                public void onUploaded(long remainTime) {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logd("S3TransferUtil", String.format("remainTime: %s", remainTime));
+                    }
+                    UserReportUtil.report(title, description, mail, key);
+                }
+
+                @Override
+                public void onFailed() {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logd("S3TransferUtil", "onFailed");
+                    }
+                    UserReportUtil.report(title, description, mail, UserReportUtil.LOG_FILE_UPLOAD_FAILED);
+                }
+            });
+        } else {
+            UserReportUtil.report(title, description, mail, UserReportUtil.LOG_FILE_NOT_EXIST);
+        }
     }
 
     private void clearEditTexts() {
