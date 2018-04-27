@@ -51,6 +51,8 @@ import com.kikatech.voicesdktester.wave.draw.WaveCanvas;
 import com.kikatech.voicesdktester.wave.view.WaveSurfaceView;
 import com.xiao.usbaudio.AudioPlayBack;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import static com.kikatech.voice.service.voice.VoiceService.ERR_CONNECTION_ERROR;
@@ -208,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements
                     mResultAdapter.clearResults();
                     mResultAdapter.notifyDataSetChanged();
 
+                    writeTimeToFile();
                     writeNoteToFile();
                     writeVersionsToFile();
                     writeVolumeToFile();
@@ -241,6 +244,7 @@ public class MainActivity extends AppCompatActivity implements
                     mNoteText.setText("", TextView.BufferType.EDITABLE);
                 }
                 if (mVoiceService != null) {
+                    writeTimeToFile();
                     mVoiceService.stop(VoiceService.StopType.NORMAL);
 
                     Logger.d("MainActivity onStopListening");
@@ -628,6 +632,12 @@ public class MainActivity extends AppCompatActivity implements
                 mVolumeText.setText("");
             }
         }
+    }
+
+    private void writeTimeToFile(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String currentDateAndTime = sdf.format(new Date());
+        DebugUtil.logTextToFile("time", currentDateAndTime);
     }
 
     private void writeNoteToFile() {

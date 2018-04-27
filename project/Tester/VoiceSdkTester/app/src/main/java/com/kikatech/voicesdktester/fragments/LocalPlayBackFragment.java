@@ -32,7 +32,9 @@ import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -113,6 +115,7 @@ public class LocalPlayBackFragment extends Fragment implements
                     mResultAdapter.clearResults();
                     mResultAdapter.notifyDataSetChanged();
 
+                    writeTimeToFile();
                     if (mTextView != null) {
                         mTextView.setText("starting.");
                     }
@@ -270,6 +273,7 @@ public class LocalPlayBackFragment extends Fragment implements
         mUiHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                writeTimeToFile();
                 mVoiceService.stop(VoiceService.StopType.NORMAL);
 
                 if (mTextView != null) {
@@ -317,5 +321,11 @@ public class LocalPlayBackFragment extends Fragment implements
                 }
                 return mLocalNcVoiceSource;
         }
+    }
+
+    private void writeTimeToFile(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String currentDateAndTime = sdf.format(new Date());
+        DebugUtil.logTextToFile("time", currentDateAndTime);
     }
 }
