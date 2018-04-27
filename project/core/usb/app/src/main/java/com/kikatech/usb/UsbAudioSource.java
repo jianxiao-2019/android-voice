@@ -89,7 +89,9 @@ public class UsbAudioSource implements IVoiceSource {
 
                 @Override
                 public void run() {
+                    Logger.v("KikaAudioDriver start loop");
                     mUsbAudio.loop();
+                    Logger.v("KikaAudioDriver stop loop");
                 }
             }).start();
             setToDefaultVolume();
