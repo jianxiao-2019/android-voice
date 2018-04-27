@@ -263,7 +263,7 @@ public class SkPlayerController extends FrameLayout implements IVideoPlayerContr
                 mSeekBar = null;
                 mTvTimeTotal = null;
                 // ---------- Player Action Buttons ----------
-                mBtnScaleUp = null;
+                mBtnScaleUp = findViewById(R.id.controller_center_btn_scale_up);
                 mBtnScaleDown = null;
                 mBtnClose = findViewById(R.id.controller_center_btn_close);
                 mBtnShare = null;
