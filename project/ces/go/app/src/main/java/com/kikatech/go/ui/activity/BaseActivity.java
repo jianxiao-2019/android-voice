@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Toast;
+
+import com.kikatech.go.ui.KikaMultiDexApplication;
 
 /**
  * @author jasonli Created on 2017/10/24.

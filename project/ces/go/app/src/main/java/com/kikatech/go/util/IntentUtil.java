@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.kikatech.go.ui.KikaAlphaUiActivity;
-import com.kikatech.go.ui.KikaPermissionsActivity;
+import com.kikatech.go.ui.activity.KikaGoActivity;
+import com.kikatech.go.ui.activity.KikaPermissionsActivity;
 
 /**
  * @author SkeeterWang Created on 2017/11/29.
@@ -18,7 +18,7 @@ public class IntentUtil {
     private static final String KIKA_GO_PRODUCT_URL = "http://www.kika.ai/#home-section";
 
     public static boolean openKikaGo(Context context) {
-        Intent intent = new Intent(context, KikaAlphaUiActivity.class);
+        Intent intent = new Intent(context, KikaGoActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return sendPendingIntent(context, intent);
     }

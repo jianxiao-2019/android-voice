@@ -21,7 +21,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.im.IMUtil;
-import com.kikatech.go.ui.ResolutionUtil;
+import com.kikatech.go.util.ResolutionUtil;
 import com.kikatech.go.ui.adapter.BaseAdapter;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.view.NoPredictiveAnimationManager;

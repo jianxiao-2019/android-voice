@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -76,12 +76,12 @@ public class KikaLaunchActivity extends BaseActivity {
 
         @Override
         public void onTimeTickEnd() {
-            startAnotherActivity(KikaAlphaUiActivity.class, true);
+            startAnotherActivity(KikaGoActivity.class, true);
         }
 
         @Override
         public void onInterrupted(long stopMillis) {
-            startAnotherActivity(KikaAlphaUiActivity.class, true);
+            startAnotherActivity(KikaGoActivity.class, true);
         }
     });
 

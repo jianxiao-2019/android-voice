@@ -47,7 +47,7 @@ import com.kikatech.go.eventbus.MusicEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
-import com.kikatech.go.ui.KikaAlphaUiActivity;
+import com.kikatech.go.ui.activity.KikaGoActivity;
 import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
@@ -799,7 +799,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         // Register all scenes from scene mangers
         mSceneManagers.add(new TelephonySceneManager(this, mDialogFlowService));
         mSceneManagers.add(new NaviSceneManager(this, mDialogFlowService));
-        mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService, KikaAlphaUiActivity.class));
+        mSceneManagers.add(new SceneStopIntentManager(this, mDialogFlowService, KikaGoActivity.class));
         mSceneManagers.add(new SmsSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new IMSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new CommonSceneManager(this, mDialogFlowService));

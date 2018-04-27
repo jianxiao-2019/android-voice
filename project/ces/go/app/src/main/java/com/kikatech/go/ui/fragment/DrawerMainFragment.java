@@ -14,7 +14,7 @@ import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.ui.KikaDebugLogActivity;
+import com.kikatech.go.ui.activity.KikaDebugLogActivity;
 import com.kikatech.go.util.FlavorUtil;
 import com.kikatech.go.util.LogUtil;
 

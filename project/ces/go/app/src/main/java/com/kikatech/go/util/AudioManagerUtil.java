@@ -8,9 +8,6 @@ import android.support.annotation.RequiresApi;
 import com.kikatech.go.ui.KikaMultiDexApplication;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author SkeeterWang Created on 2017/11/27.

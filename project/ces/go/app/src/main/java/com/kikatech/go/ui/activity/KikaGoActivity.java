@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.ui.activity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -42,8 +42,8 @@ import org.greenrobot.eventbus.ThreadMode;
 /**
  * @author SkeeterWang Created on 2017/11/10.
  */
-public class KikaAlphaUiActivity extends BaseDrawerActivity {
-    private static final String TAG = "KikaAlphaUiActivity";
+public class KikaGoActivity extends BaseDrawerActivity {
+    private static final String TAG = "KikaGoActivity";
 
     private GoLayout mGoLayout;
     private UiTaskManager mUiManager;
@@ -104,14 +104,14 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    DialogUtil.showDialogAlertUsbInstallation(KikaAlphaUiActivity.this, null);
+                                    DialogUtil.showDialogAlertUsbInstallation(KikaGoActivity.this, null);
                                 }
                             });
                         }
                     }, 1600);
                 } else if (triggerDialogViaClick) {
                     triggerDialogViaClick = false;
-                    DialogUtil.showDialogAlertUsbInstallation(KikaAlphaUiActivity.this, null);
+                    DialogUtil.showDialogAlertUsbInstallation(KikaGoActivity.this, null);
                 }
                 break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
@@ -263,7 +263,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_kika_alpha_ui);
+        setContentView(R.layout.activity_kika_go);
         bindView();
         bindListener();
 
@@ -280,7 +280,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
                 LocationMgr.init(this);
                 registerReceivers();
                 initUiTaskManager();
-                DialogFlowForegroundService.processStart(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+                DialogFlowForegroundService.processStart(KikaGoActivity.this, DialogFlowForegroundService.class);
                 DialogFlowForegroundService.processPingDialogFlowStatus();
                 updateTopIconStatus();
 
@@ -311,7 +311,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
             mUiManager.release();
         }
         unregisterReceivers();
-        DialogFlowForegroundService.processStop(KikaAlphaUiActivity.this, DialogFlowForegroundService.class);
+        DialogFlowForegroundService.processStop(KikaGoActivity.this, DialogFlowForegroundService.class);
         super.onDestroy();
     }
 
@@ -335,13 +335,13 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mIconConnectionStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogUtil.showDialogConnectionError(KikaAlphaUiActivity.this, null);
+                DialogUtil.showDialogConnectionError(KikaGoActivity.this, null);
             }
         });
         mIconUsbHardwareStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogUtil.showDialogUsbHardwareError(KikaAlphaUiActivity.this, null);
+                DialogUtil.showDialogUsbHardwareError(KikaGoActivity.this, null);
             }
         });
         mIconHelp.setOnClickListener(new View.OnClickListener() {
@@ -353,7 +353,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
         mIconUpdateApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogUtil.showUpdateApp(KikaAlphaUiActivity.this, null);
+                DialogUtil.showUpdateApp(KikaGoActivity.this, null);
             }
         });
     }
@@ -373,7 +373,7 @@ public class KikaAlphaUiActivity extends BaseDrawerActivity {
     }
 
     private synchronized void updateTopIconStatus() {
-        boolean hasNetwork = NetworkUtil.isNetworkAvailable(KikaAlphaUiActivity.this);
+        boolean hasNetwork = NetworkUtil.isNetworkAvailable(KikaGoActivity.this);
         if (!hasNetwork) { // do not have network connection
             mIconUsbHardwareStatus.setVisibility(View.GONE);
             mIconHelp.setVisibility(View.INVISIBLE);

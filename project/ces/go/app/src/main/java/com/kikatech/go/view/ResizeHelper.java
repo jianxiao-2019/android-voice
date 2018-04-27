@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
-import com.kikatech.go.ui.ResolutionUtil;
+import com.kikatech.go.util.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
 
 /**

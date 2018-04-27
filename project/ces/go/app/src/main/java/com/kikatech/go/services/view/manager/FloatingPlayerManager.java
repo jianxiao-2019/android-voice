@@ -18,7 +18,7 @@ import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.presenter.YouTubeExtractorManager;
 import com.kikatech.go.services.view.item.ItemYouTubePlayer;
-import com.kikatech.go.ui.ResolutionUtil;
+import com.kikatech.go.util.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.youtube.player.impl.SkVideoPlayerView;

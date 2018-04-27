@@ -2,7 +2,6 @@ package com.kikatech.go.util;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.PopupWindow;
 
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.UserSettings;
-import com.kikatech.go.ui.ResolutionUtil;
 
 /**
  * @author SkeeterWang Created on 2017/12/27.

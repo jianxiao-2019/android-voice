@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.ui.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

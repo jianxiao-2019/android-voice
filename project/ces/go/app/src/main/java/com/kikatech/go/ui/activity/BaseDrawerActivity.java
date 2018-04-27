@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

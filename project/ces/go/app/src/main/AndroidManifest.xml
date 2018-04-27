@@ -33,7 +33,7 @@
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.KikaLaunchActivity"
+        <activity android:name=".ui.activity.KikaLaunchActivity"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait">
             <intent-filter>
@@ -41,26 +41,26 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.KikaPermissionsActivity"
+        <activity android:name=".ui.activity.KikaPermissionsActivity"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaDebugLogActivity"
+        <activity android:name=".ui.activity.KikaDebugLogActivity"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaAlphaUiActivity"
+        <activity android:name=".ui.activity.KikaGoActivity"
                   android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaFeatureHighlightActivity"
+        <activity android:name=".ui.activity.KikaFeatureHighlightActivity"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaFAQsActivity"
+        <activity android:name=".ui.activity.KikaFAQsActivity"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaUserReportActivity"
+        <activity android:name=".ui.activity.KikaUserReportActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaFAQsReportActivity"
+        <activity android:name=".ui.activity.KikaFAQsReportActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaBlockActivity"
+        <activity android:name=".ui.activity.KikaBlockActivity"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
 

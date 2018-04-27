@@ -31,7 +31,7 @@ import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.ui.ResolutionUtil;
+import com.kikatech.go.util.ResolutionUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.timer.CountingTimer;

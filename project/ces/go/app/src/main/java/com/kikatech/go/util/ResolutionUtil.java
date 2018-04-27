@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.util;
 
 import android.content.Context;
 import android.util.TypedValue;

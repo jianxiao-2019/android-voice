@@ -1,4 +1,4 @@
-package com.kikatech.go.ui;
+package com.kikatech.go.ui.activity;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import com.kikatech.go.accessibility.AccessibilityUtils;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.notification.NotificationListenerUtil;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.DeviceUtil;
 import com.kikatech.go.util.IntentUtil;
@@ -145,7 +146,7 @@ public class KikaPermissionsActivity extends BaseActivity {
                 @Override
                 public void run() {
                     DialogFlowForegroundService.processStart(KikaPermissionsActivity.this, DialogFlowForegroundService.class);
-                    startAnotherActivity(KikaAlphaUiActivity.class, true, R.anim.activity_no_anim, R.anim.activity_slide_out_left);
+                    startAnotherActivity(KikaGoActivity.class, true, R.anim.activity_no_anim, R.anim.activity_slide_out_left);
                 }
             }, 800);
         }

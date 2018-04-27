@@ -8,9 +8,9 @@ import android.text.TextUtils;
 
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
-import com.kikatech.go.ui.BaseActivity;
-import com.kikatech.go.ui.KikaFAQsReportActivity;
-import com.kikatech.go.ui.KikaUserReportActivity;
+import com.kikatech.go.ui.activity.BaseActivity;
+import com.kikatech.go.ui.activity.KikaFAQsReportActivity;
+import com.kikatech.go.ui.activity.KikaUserReportActivity;
 import com.kikatech.go.util.dialog.DialogKeys;
 import com.kikatech.go.util.dialog.DialogUtil;
 
