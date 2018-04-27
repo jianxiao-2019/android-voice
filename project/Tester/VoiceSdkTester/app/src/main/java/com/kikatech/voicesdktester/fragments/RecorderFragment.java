@@ -94,6 +94,12 @@ public class RecorderFragment extends PageFragment implements
             @Override
             public void onClick(View v) {
 
+                if (mKikagoSignal != null) {
+                    mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
+                }
+                if (mAndroidSignal != null) {
+                    mAndroidSignal.setImageResource(R.drawable.signal_point_yellow);
+                }
                 mUsingKikaGo.setSelected(false);
                 mUsingAndroid.setSelected(true);
 
@@ -110,7 +116,6 @@ public class RecorderFragment extends PageFragment implements
                 if (mUsbAudioSource == null) {
                     mUsingKikaGo.setSelected(true);
                     mUsingAndroid.setSelected(false);
-                    setViewToDisableState();
                     if (mErrorHintText != null) {
                         mErrorHintText.setVisibility(View.GONE);
                     }
@@ -225,19 +230,6 @@ public class RecorderFragment extends PageFragment implements
         mVoiceService.create();
     }
 
-    private void setViewToDisableState() {
-        if (mKikagoSignal != null) {
-            mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
-        }
-        if (mAndroidSignal != null) {
-            mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
-        }
-        if (mStartRecordView != null) {
-            mStartRecordView.setAlpha(0.2f);
-            mStartRecordView.setEnabled(false);
-        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -260,28 +252,32 @@ public class RecorderFragment extends PageFragment implements
                 if (mVoiceService != null) {
                     mVoiceService.stop(VoiceService.StopType.NORMAL);
                 }
-                if (mStartRecordView != null) {
-                    mStartRecordView.setVisibility(View.VISIBLE);
-                }
-                if (mStopRecordView != null) {
-                    mStopRecordView.setVisibility(View.GONE);
-                }
-
-                mTimerHandler.removeMessages(MSG_TIMER);
-                mTimeInSec = 0;
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshRecentView();
-                    }
-                }, 1000);
+                updateViewForStopRecording();
                 break;
             case R.id.device_button_left:
                 break;
             case R.id.device_button_right:
                 break;
         }
+    }
+
+    private void updateViewForStopRecording() {
+        if (mStartRecordView != null) {
+            mStartRecordView.setVisibility(View.VISIBLE);
+        }
+        if (mStopRecordView != null) {
+            mStopRecordView.setVisibility(View.GONE);
+        }
+
+        mTimerHandler.removeMessages(MSG_TIMER);
+        mTimeInSec = 0;
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshRecentView();
+            }
+        }, 1000);
     }
 
     @Override
@@ -313,8 +309,22 @@ public class RecorderFragment extends PageFragment implements
         Logger.e("onError reason = " + reason);
         // setViewToDisableState();
         if (mErrorHintText != null) {
+            String str = "";
+            if (reason == VoiceService.ERR_REASON_NOT_CREATED) {
+                str = "ERR_REASON_NOT_CREATED";
+            } else if (reason == VoiceService.ERR_CONNECTION_ERROR) {
+                str = "ERR_CONNECTION_ERROR";
+            } else if (reason == VoiceService.ERR_NO_SPEECH) {
+                str = "ERR_NO_SPEECH";
+            } else if (reason == VoiceService.ERR_RECORD_OPEN_FAIL) {
+                str = "ERR_RECORD_OPEN_FAIL";
+            } else if (reason == VoiceService.ERR_RECORD_DATA_FAIL) {
+                str = "ERR_RECORD_DATA_FAIL";
+            }
+            mErrorHintText.setText(str);
             mErrorHintText.setVisibility(View.VISIBLE);
         }
+        updateViewForStopRecording();
     }
 
     @Override
@@ -335,6 +345,9 @@ public class RecorderFragment extends PageFragment implements
             mUsbAudioSource = audioSource;
             attachService();
 
+            if (mAndroidSignal != null) {
+                mAndroidSignal.setImageResource(R.drawable.signal_point_empty);
+            }
             if (mKikagoSignal != null) {
                 mKikagoSignal.setImageResource(R.drawable.signal_point_yellow);
                 mUsingKikaGo.setSelected(true);
@@ -348,6 +361,9 @@ public class RecorderFragment extends PageFragment implements
             mUsbAudioSource = null;
             attachService();
 
+            if (mKikagoSignal != null) {
+                mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
+            }
             if (mAndroidSignal != null) {
                 mAndroidSignal.setImageResource(R.drawable.signal_point_yellow);
                 mUsingKikaGo.setSelected(false);
@@ -363,6 +379,9 @@ public class RecorderFragment extends PageFragment implements
                 attachService();
                 Toast.makeText(getContext(), "KikaGo mic isn’t plugged-in.", Toast.LENGTH_SHORT).show();
 
+                if (mKikagoSignal != null) {
+                    mKikagoSignal.setImageResource(R.drawable.signal_point_empty);
+                }
                 if (mAndroidSignal != null) {
                     mAndroidSignal.setImageResource(R.drawable.signal_point_yellow);
                     mUsingKikaGo.setSelected(false);
@@ -371,6 +390,7 @@ public class RecorderFragment extends PageFragment implements
             } else if (errorCode == ERROR_DRIVER_CONNECTION_FAIL) {
                 Logger.d("onDeviceError ERROR_DRIVER_INIT_FAIL");
                 if (mErrorHintText != null) {
+                    mErrorHintText.setText("Device connection fail");
                     mErrorHintText.setVisibility(View.VISIBLE);
                 }
                 if (mKikagoSignal != null) {
