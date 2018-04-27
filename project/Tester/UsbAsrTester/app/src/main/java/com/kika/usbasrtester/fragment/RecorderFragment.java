@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.kika.usbasrtester.R;
@@ -25,9 +24,9 @@ import com.kikatech.voice.core.webservice.message.EosMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
-import com.kikatech.voice.service.VoiceConfiguration;
-import com.kikatech.voice.service.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.xiao.usbaudio.AudioPlayBack;
@@ -42,8 +41,6 @@ import java.util.concurrent.Executors;
 public class RecorderFragment extends PageFragment implements
         View.OnClickListener,
         VoiceService.VoiceRecognitionListener,
-        VoiceService.VoiceStateChangedListener,
-        VoiceService.VoiceActiveStateListener,
         VoiceService.VoiceDataListener,
         UsbAudioSource.SourceDataCallback,
         TtsSource.TtsStateChangedListener {
@@ -186,10 +183,10 @@ public class RecorderFragment extends PageFragment implements
         }
 
         if (mUsbAudioService != null) {
+            mUsbAudioService.closeDevice();
             mUsbAudioService.setListener(null);
         }
         if (mUsbAudioSource != null) {
-            mUsbAudioSource.closeDevice();
             mUsbAudioSource.setSourceDataCallback(null);
         }
 
@@ -238,7 +235,6 @@ public class RecorderFragment extends PageFragment implements
                 .build());
         mVoiceService = VoiceService.getService(getActivity(), conf);
         mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.setVoiceStateChangedListener(this);
         mVoiceService.setVoiceDataListener(this);
         mVoiceService.create();
 
@@ -252,11 +248,34 @@ public class RecorderFragment extends PageFragment implements
                 if (mVoiceService != null) {
                     mVoiceService.start();
                 }
+                if (mStartRecordView != null) {
+                    mStartRecordView.setVisibility(View.GONE);
+                }
+                if (mStopRecordView != null) {
+                    mStopRecordView.setVisibility(View.VISIBLE);
+                }
+
+                mRecordingTimerText.setText("00:00");
+                mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
+
+                mResultStr.setLength(0);
+                mResultsView.setText(mResultStr.toString());
+                waveStartDraw();
                 break;
             case R.id.stop_record:
                 if (mVoiceService != null) {
-                    mVoiceService.stop();
+                    mVoiceService.stop(VoiceService.StopType.NORMAL);
                 }
+                if (mStartRecordView != null) {
+                    mStartRecordView.setVisibility(View.VISIBLE);
+                }
+                if (mStopRecordView != null) {
+                    mStopRecordView.setVisibility(View.GONE);
+                }
+
+                mTimerHandler.removeMessages(MSG_TIMER);
+                mTimeInSec = 0;
+                waveStopDraw();
                 break;
         }
     }
@@ -309,57 +328,11 @@ public class RecorderFragment extends PageFragment implements
     }
 
     @Override
-    public void onCreated() {
-
-    }
-
-    @Override
-    public void onStartListening() {
-        if (mStartRecordView != null) {
-            mStartRecordView.setVisibility(View.GONE);
-        }
-        if (mStopRecordView != null) {
-            mStopRecordView.setVisibility(View.VISIBLE);
-        }
-
-        mRecordingTimerText.setText("00:00");
-        mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
-
-        mResultStr.setLength(0);
-        mResultsView.setText(mResultStr.toString());
-        waveStartDraw();
-    }
-
-    @Override
-    public void onStopListening() {
-        if (mStartRecordView != null) {
-            mStartRecordView.setVisibility(View.VISIBLE);
-        }
-        if (mStopRecordView != null) {
-            mStopRecordView.setVisibility(View.GONE);
-        }
-
-        mTimerHandler.removeMessages(MSG_TIMER);
-        mTimeInSec = 0;
-        waveStopDraw();
-    }
-
-    @Override
-    public void onDestroyed() {
-
-    }
-
-    @Override
     public void onError(int reason) {
         Logger.e("onError reason = " + reason);
         if (mUsbAudioSource != null) {
             mUsbAudioSource.setSourceDataCallback(null);
         }
-    }
-
-    @Override
-    public void onConnectionClosed() {
-
     }
 
     @Override
@@ -372,16 +345,6 @@ public class RecorderFragment extends PageFragment implements
         mPreProb = prob;
     }
 
-    @Override
-    public void onWakeUp() {
-
-    }
-
-    @Override
-    public void onSleep() {
-
-    }
-
     private IUsbAudioListener mIUsbAudioListener = new IUsbAudioListener() {
 
         @Override
@@ -391,8 +354,13 @@ public class RecorderFragment extends PageFragment implements
             mUsbAudioSource.setSourceDataCallback(RecorderFragment.this);
             attachService();
 
-            checkVolume();
-            checkVersion();
+            mTimerHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    checkVolume();
+                    checkVersion();
+                }
+            }, 1000);
 
             mStatusTextView.setText("Usb Device Attached.");
             setRecordViewEnabled(true);
@@ -414,7 +382,7 @@ public class RecorderFragment extends PageFragment implements
             if (errorCode == ERROR_NO_DEVICES) {
                 Logger.d("onDeviceError ERROR_NO_DEVICES");
                 mStatusTextView.setText("No usb devices.");
-            } else if (errorCode == ERROR_DRIVER_INIT_FAIL) {
+            } else if (errorCode == ERROR_DRIVER_CONNECTION_FAIL) {
                 Logger.d("onDeviceError ERROR_DRIVER_INIT_FAIL");
                 mStatusTextView.setText("Device init fail.");
             } else if (errorCode == ERROR_DRIVER_MONO) {
@@ -459,7 +427,7 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onPagePause() {
         if (mVoiceService != null) {
-            mVoiceService.stop();
+            mVoiceService.stop(VoiceService.StopType.CANCEL);
         }
     }
 
@@ -572,6 +540,11 @@ public class RecorderFragment extends PageFragment implements
                 }
             }
         });
+    }
+
+    @Override
+    public void onCurrentDB(int curDB) {
+
     }
 
     private String getVersionName(Context context) {
