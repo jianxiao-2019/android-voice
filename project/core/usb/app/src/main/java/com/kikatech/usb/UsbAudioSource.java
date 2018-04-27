@@ -23,7 +23,7 @@ public class UsbAudioSource implements IVoiceSource {
     public static int OPEN_RESULT_MONO = 1;
     public static int OPEN_RESULT_STEREO = 2;
 
-    private static final int INIT_VOLUME = 6;
+    private static final int INIT_VOLUME = 4;
 
     public static final int ERROR_VOLUME_NOT_INITIALIZED = 254;
     public static final int ERROR_VOLUME_FW_NOT_SUPPORT = 255;
