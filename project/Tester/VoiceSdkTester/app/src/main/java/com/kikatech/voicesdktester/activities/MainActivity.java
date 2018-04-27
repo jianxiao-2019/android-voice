@@ -63,8 +63,7 @@ public class MainActivity extends AppCompatActivity implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceWakeUpListener,
         VoiceService.VoiceDataListener,
-        TtsSource.TtsStateChangedListener,
-        UsbAudioSource.OnOpenedCallback {
+        TtsSource.TtsStateChangedListener {
 
     private static final boolean IS_WAKE_UP_MODE = false;
     private static final String DEBUG_FILE_TAG = "voiceTester";
@@ -1031,14 +1030,6 @@ public class MainActivity extends AppCompatActivity implements
         if (mWaveCanvas != null) {
             mWaveCanvas.stopDraw();
             mWaveCanvas = null;
-        }
-    }
-
-    @Override
-    public void onOpened(int state) {
-        if (state == UsbAudioSource.OPEN_RESULT_STEREO) {
-            checkVersions();
-            checkVolume();
         }
     }
 }

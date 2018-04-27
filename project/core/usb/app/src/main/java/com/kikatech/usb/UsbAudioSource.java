@@ -36,14 +36,9 @@ public class UsbAudioSource implements IVoiceSource {
 
     private AtomicBoolean mIsOpened = new AtomicBoolean(false);
 
-    private OnOpenedCallback mOnOpenedCallback;
     private SourceDataCallback mSourceDataCallback;
 
     private DbUtil mDbUtil;
-
-    public interface OnOpenedCallback {
-        void onOpened(int state);
-    }
 
     public interface SourceDataCallback {
         void onSource(byte[] leftData, byte[] rightData);
@@ -83,13 +78,13 @@ public class UsbAudioSource implements IVoiceSource {
                 + " mConnectionFileDes = " + mAudioDriver.getFileDescriptor()
                 + " productId = " + mAudioDriver.getProductId()
                 + " vendorId = " + mAudioDriver.getVendorId());
-        int result = mUsbAudio.setupWithChannelNo(
+        boolean success = mUsbAudio.setup(
                 mAudioDriver.getDeviceName(),
                 mAudioDriver.getFileDescriptor(),
                 mAudioDriver.getProductId(),
                 mAudioDriver.getVendorId());
-        Logger.d("KikaAudioDriver open result = " + result);
-        if (result == OPEN_RESULT_STEREO) {
+        Logger.d("KikaAudioDriver open success = " + success);
+        if (success) {
             new Thread(new Runnable() {
 
                 @Override
@@ -103,14 +98,6 @@ public class UsbAudioSource implements IVoiceSource {
             mKikaBuffer.create();
         } else {
             Logger.e("UsbAudioSource open fail.");
-        }
-
-        if (mOnOpenedCallback != null) {
-            if (result > 0) {
-                mOnOpenedCallback.onOpened(result);
-            } else {
-                mOnOpenedCallback.onOpened(OPEN_RESULT_FAIL);
-            }
         }
 
         return mIsOpened.get();
@@ -251,10 +238,6 @@ public class UsbAudioSource implements IVoiceSource {
         } else {
             Logger.e("Can't change the buffer when it has been opened.");
         }
-    }
-
-    public void setOnOpenedCallback(OnOpenedCallback callback) {
-        mOnOpenedCallback = callback;
     }
 
     public void setSourceDataCallback(SourceDataCallback callback) {
