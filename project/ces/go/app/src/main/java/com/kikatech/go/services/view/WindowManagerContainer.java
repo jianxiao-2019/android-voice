@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.kikatech.go.services.view.item.WindowFloatingItem;
+import com.kikatech.go.util.MathUtil;
 
 /**
  * @author SkeeterWang Created on 2017/12/18.
@@ -90,17 +91,9 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     @Override
     public double distance(WindowFloatingItem item1, WindowFloatingItem item2) {
         if (isViewAdded(item1) && isViewAdded(item2)) {
-            return distance(item1.getViewX(), item1.getViewY(), item2.getViewX(), item2.getViewY());
+            return MathUtil.distance(item1.getViewX(), item1.getViewY(), item2.getViewX(), item2.getViewY());
         }
         return Double.MAX_VALUE;
-    }
-
-    public double distance(int[] pair1, int[] pair2) {
-        return distance(pair1[0], pair1[1], pair2[0], pair2[1]);
-    }
-
-    private double distance(int x1, int y1, int x2, int y2) {
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
     @Override

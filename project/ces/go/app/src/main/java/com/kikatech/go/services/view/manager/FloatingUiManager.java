@@ -18,6 +18,7 @@ import com.kikatech.go.services.view.item.ItemMsg;
 import com.kikatech.go.services.view.item.ItemTip;
 import com.kikatech.go.services.view.item.WindowFloatingButton;
 import com.kikatech.go.services.view.item.WindowFloatingItem;
+import com.kikatech.go.util.MathUtil;
 import com.kikatech.go.util.ResolutionUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.FlexibleOnTouchListener;
@@ -93,7 +94,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             mContainer.moveItem(mItemGMap, targetX, targetY);
 
             if (!buttonShown) {
-                if (mContainer.distance(deltaXY, viewOriginalXY) > ResolutionUtil.dp2px(mContext, 20)) {
+                if (MathUtil.distance(deltaXY, viewOriginalXY) > ResolutionUtil.dp2px(mContext, 20)) {
                     showButtons();
                     buttonShown = true;
                 }
@@ -119,7 +120,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             }
             mItemGMap.setAlpha(1.0f);
             int gmapX;
-            int gmapY = ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP);
+            int gmapY = getNearestGmapPortY(mItemGMap.getViewY());
             if (mItemGMap.getViewX() > getDeviceWidthByOrientation() / 2) {
                 mGravity = Gravity.LEFT;
                 int deviceWidth = getDeviceWidthByOrientation();
@@ -150,6 +151,54 @@ public class FloatingUiManager extends BaseFloatingManager {
             return (deltaY > 0)
                     ? (viewOriginalY + deltaY < boundBottom) ? viewOriginalY + deltaY : boundBottom
                     : (viewOriginalY + deltaY >= boundTop) ? viewOriginalY + deltaY : boundTop;
+        }
+
+        private WindowFloatingButton getNearestBtn(WindowFloatingItem item) {
+            double minDistance = Double.MAX_VALUE;
+            WindowFloatingButton nearestItem = null;
+            for (WindowFloatingButton btn : mButtonList) {
+                if (btn.isShowing()) {
+                    double MIN_DISTANCE = (btn.getMeasuredWidth() / 2 + item.getMeasuredWidth() / 2);
+                    double distance = mContainer.distance(item, btn);
+                    if (distance < MIN_DISTANCE && distance < minDistance) {
+                        minDistance = distance;
+                        nearestItem = btn;
+                    }
+                }
+            }
+            return nearestItem;
+        }
+
+        private int getNearestGmapPortY(int viewCenterY) {
+            int[] GMAP_PORT_Y = getGmapPortY();
+            int minDistance = Integer.MAX_VALUE;
+            int nearestY = GMAP_PORT_Y[0];
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, String.format("viewCenterY: %s", viewCenterY));
+            }
+            for (int y : GMAP_PORT_Y) {
+                int distance = Math.abs(y - viewCenterY);
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("y: %s, distances: %s", viewCenterY, distance));
+                }
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestY = y;
+                }
+            }
+            return nearestY;
+        }
+
+        private int[] getGmapPortY() {
+            // port position must above bottom button
+            final int bottomBtnX = getDeviceHeightByOrientation() - ResolutionUtil.dp2px(mContext, 94) - ResolutionUtil.getStatusBarHeight(mContext);
+            final int GMAP_MAP_MARGIN_PX = ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP);
+            int GMAP_ITEM_HEIGHT = mItemGMap.getMeasuredHeight();
+            int interval = (bottomBtnX - (2 * GMAP_MAP_MARGIN_PX) - (3 * GMAP_ITEM_HEIGHT)) / 2;
+            int firstY = GMAP_MAP_MARGIN_PX;
+            int secondY = firstY + GMAP_ITEM_HEIGHT + interval;
+            int thirdY = secondY + GMAP_ITEM_HEIGHT + interval;
+            return new int[]{firstY, secondY, thirdY};
         }
     });
 
@@ -243,21 +292,6 @@ public class FloatingUiManager extends BaseFloatingManager {
         }
     }
 
-    private WindowFloatingButton getNearestBtn(WindowFloatingItem item) {
-        double minDistance = Double.MAX_VALUE;
-        WindowFloatingButton nearestItem = null;
-        for (WindowFloatingButton btn : mButtonList) {
-            if (btn.isShowing()) {
-                double MIN_DISTANCE = (btn.getMeasuredWidth() / 2 + item.getMeasuredWidth() / 2);
-                double distance = mContainer.distance(item, btn);
-                if (distance < MIN_DISTANCE && distance < minDistance) {
-                    minDistance = distance;
-                    nearestItem = btn;
-                }
-            }
-        }
-        return nearestItem;
-    }
 
     private Runnable removeTipViewRunnable = new Runnable() {
         @Override
@@ -328,7 +362,7 @@ public class FloatingUiManager extends BaseFloatingManager {
 
         mItemTip.setGravity(Gravity.TOP | mGravity);
         mItemTip.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
-        mItemTip.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
+        mItemTip.setViewY(mItemGMap.getViewY());
         mItemTip.setAnimation(android.R.style.Animation_Toast);
         mItemTip.updateBackgroundRes(mGravity);
 
@@ -358,7 +392,7 @@ public class FloatingUiManager extends BaseFloatingManager {
 
         mItemAsrResult.setGravity(Gravity.TOP | mGravity);
         mItemAsrResult.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
-        mItemAsrResult.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
+        mItemAsrResult.setViewY(mItemGMap.getViewY());
         mItemAsrResult.setAnimation(android.R.style.Animation_Toast);
         mItemAsrResult.updateBackgroundRes(mGravity);
 
@@ -392,7 +426,7 @@ public class FloatingUiManager extends BaseFloatingManager {
 
         mItemMsg.setGravity(Gravity.TOP | mGravity);
         mItemMsg.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
-        mItemMsg.setViewY(ResolutionUtil.dp2px(mContext, 78) - ResolutionUtil.getStatusBarHeight(mContext));
+        mItemMsg.setViewY(mItemGMap.getViewY());
         mItemMsg.setAnimation(android.R.style.Animation_Toast);
         mItemMsg.updateBackgroundRes(mGravity);
 
@@ -489,7 +523,6 @@ public class FloatingUiManager extends BaseFloatingManager {
             hideAllItems();
         }
     }
-
 
 
     public static final class Builder extends BaseFloatingManager.Builder<Builder> {
