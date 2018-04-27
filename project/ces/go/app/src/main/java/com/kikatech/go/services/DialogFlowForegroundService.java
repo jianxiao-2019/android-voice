@@ -539,11 +539,18 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                             mAsrMaxDurationTimer.stop();
                         }
                         switch (reason) {
+                            case VoiceService.ERR_RECORD_OPEN_FAIL:
+                                if (LogUtil.DEBUG) {
+                                    LogUtil.logw(TAG, "ERR_RECORD_OPEN_FAIL");
+                                }
                             case VoiceService.ERR_RECORD_DATA_FAIL:
                                 if (LogUtil.DEBUG) {
                                     LogUtil.logw(TAG, "ERR_RECORD_DATA_FAIL");
                                 }
-                                updateVoiceSource();
+                                mDFServiceStatus.setUsbDeviceDataCorrect(false);
+                                DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
+                                event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, false);
+                                sendDFServiceEvent(event);
                                 break;
                             case VoiceService.ERR_NO_SPEECH:
                                 if (LogUtil.DEBUG) {
