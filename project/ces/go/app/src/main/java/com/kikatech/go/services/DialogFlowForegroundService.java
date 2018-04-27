@@ -48,7 +48,6 @@ import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.KikaAlphaUiActivity;
-import com.kikatech.go.ui.dialog.KikaStopServiceDialogActivity;
 import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.IntentUtil;
@@ -357,9 +356,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     @Override
     protected void onStopForegroundWithConfirm() {
-        Intent showDialogIntent = new Intent(this, KikaStopServiceDialogActivity.class);
-        showDialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        IntentUtil.sendPendingIntent(DialogFlowForegroundService.this, showDialogIntent);
     }
 
 

@@ -1,36 +1,3 @@
 <resources>
     <string name="app_name">KikaGo</string>
-
-    <string name="tap_to_start">Tap the mic to start speaking.</string>
-    <string name="repeating">Repeating…</string>
-    <string name="sending">Sending…\nIf you want to erase the content,\nplease say \"Cancel\".</string>
-    <string name="has_been_send">Message sent.</string>
-    <string name="has_been_erased">Content erased.</string>
-    <string name="not_supported_app">\"Send\" is not supported in this application yet,\nplease tap the \"Send\" button.</string>
-    <string name="content_empty">You don’t have any text content.</string>
-    <string name="content_updated">Content updated.</string>
-    <string name="not_altered">Update unsuccessful</string>
-    <string name="init_hint">Some commands you can use: \"send\", \"repeat\", or \"cancel\"</string>
-    <string name="unsent_hint">You still have an unsent message, you can say \"Send\", \"Repeat\", or \"Cancel\"</string>
-
-    <string name="debug_session_id">Server Session id : %1$s</string>
-    <string name="debug_client_record_id">Client record id : %1$s</string>
-    <string name="debug_recognize_time">Server first event time : %1$dms</string>
-    <string name="debug_server_response_time">Server event time : %1$dms</string>
-    <string name="debug_command_to_tts_time">Command to TTS time : %1$dms</string>
-    <string name="debug_tts_prepare_time">TTS prepare time : %1$dms</string>
-
-    <string name="btn1_start">Start</string>
-    <string name="btn1_stop">Stop</string>
-    <string name="btn2_start">Play</string>
-    <string name="btn2_stop">Stop</string>
-
-    <string name="cid_text">cid : %d</string>
-
-    <string-array name="hosts">
-        <item name="mvp_dev">ws://speech0-dev-mvp.kikakeyboard.com/v2/speech</item>
-        <item name="jincheng_dev">ws://speech0-poc.kikakeyboard.com/v2/speech</item>
-        <item name="hao_dev">ws://172.16.3.168:8080/v2/speech</item>
-        <item name="kika_dev">ws://speech0-dev.kikakeyboard.com/v2/speech</item>
-    </string-array>
 </resources>

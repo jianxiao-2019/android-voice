@@ -44,41 +44,11 @@
         <activity android:name=".ui.KikaPermissionsActivity"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
-        <activity android:name="com.kikatech.go.ui.KikaGoActivity"
-                  android:icon="@mipmap/ic_launcher_round"
-                  android:label="KikaGoDebug"
-                  android:launchMode="singleInstance"
-                  android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".ui.KikaAccessibilityActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".ui.TelephonyActivity"
-                  android:launchMode="singleTask"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaIMReplyActivity"
-                  android:screenOrientation="portrait" />
         <activity android:name=".ui.KikaDebugLogActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaSMSActivity"
-                  android:screenOrientation="portrait" />
-        <activity android:name=".ui.HotWordActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaApiAiActivity"
-                  android:screenOrientation="portrait" />
-        <activity android:name=".ui.KikaNavigationActivity"
-                  android:windowSoftInputMode="adjustResize"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaDialogFlowActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaAlphaUiActivity"
                   android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
                   android:launchMode="singleInstance"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".ui.KikaMusicActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.KikaFeatureHighlightActivity"
                   android:screenOrientation="portrait"/>
@@ -93,14 +63,6 @@
         <activity android:name=".ui.KikaBlockActivity"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
-
-
-        <activity android:name=".ui.dialog.KikaStopServiceDialogActivity"
-                  android:excludeFromRecents="true"
-                  android:launchMode="singleTask"
-                  android:screenOrientation="portrait"
-                  android:taskAffinity=".Dialog"
-                  android:theme="@style/DialogActivityStyle"/>
 
 
         <service
@@ -122,10 +84,8 @@
                 <action android:name="android.service.notification.NotificationListenerService"/>
             </intent-filter>
         </service>
-        <service android:name=".navigation.NavigationService"/>
         <service android:name=".services.DialogFlowForegroundService"/>
         <service android:name=".services.MusicForegroundService"/>
-        <service android:name=".services.OobeService"/>
 
 
         <receiver android:name="com.kikatech.go.dialogflow.telephony.PhoneStateReceiver">
