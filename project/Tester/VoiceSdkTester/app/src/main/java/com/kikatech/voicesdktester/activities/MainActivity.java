@@ -166,6 +166,34 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
+    private UsbAudioSource.OnOpenedCallback mOnOpenedCallback = new UsbAudioSource.OnOpenedCallback() {
+        @Override
+        public void onOpened(int state) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    checkVersions();
+                    checkVolume();
+                    checkNsParameters();
+                }
+            });
+        }
+    };
+
+    private void checkNsParameters() {
+        if (mUsbAudioService != null) {
+            if (mSeekAngle != null) {
+                mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
+            }
+            if (mSeekNc != null) {
+                mSeekNc.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(1));
+            }
+            if (mSeekMode != null) {
+                mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
+            }
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -953,17 +981,9 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             mUsbAudioSource.setSourceDataCallback(mSourceDataCallback);
+            mUsbAudioSource.setOnOpenedCallback(mOnOpenedCallback);
 
             mNcParamLayout.setVisibility(View.VISIBLE);
-            if (mSeekAngle != null) {
-                mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
-            }
-            if (mSeekNc != null) {
-                mSeekNc.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(1));
-            }
-            if (mSeekMode != null) {
-                mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
-            }
 
             if (mDbTitleView != null) {
                 mDbTitleView.setVisibility(View.VISIBLE);

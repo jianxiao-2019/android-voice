@@ -36,11 +36,16 @@ public class UsbAudioSource implements IVoiceSource {
 
     private AtomicBoolean mIsOpened = new AtomicBoolean(false);
 
+    private OnOpenedCallback mOnOpenedCallback;
     private SourceDataCallback mSourceDataCallback;
 
     private boolean mIsInversePhase = false;
 
     private DbUtil mDbUtil;
+
+    public interface OnOpenedCallback {
+        void onOpened(int state);
+    }
 
     public interface SourceDataCallback {
         void onSource(byte[] leftData, byte[] rightData);
@@ -105,6 +110,14 @@ public class UsbAudioSource implements IVoiceSource {
             mIsInversePhase = Integer.toHexString(checkFwVersion()).equals("1221");
         } else {
             Logger.e("UsbAudioSource open fail.");
+        }
+
+        if (mOnOpenedCallback != null) {
+            if (success) {
+                mOnOpenedCallback.onOpened(OPEN_RESULT_STEREO);
+            } else {
+                mOnOpenedCallback.onOpened(OPEN_RESULT_FAIL);
+            }
         }
 
         return mIsOpened.get();
@@ -292,6 +305,10 @@ public class UsbAudioSource implements IVoiceSource {
 
     public void setSourceDataCallback(SourceDataCallback callback) {
         mSourceDataCallback = callback;
+    }
+
+    public void setOnOpenedCallback(OnOpenedCallback callback) {
+        mOnOpenedCallback = callback;
     }
 
     public int getNcVersion() {
