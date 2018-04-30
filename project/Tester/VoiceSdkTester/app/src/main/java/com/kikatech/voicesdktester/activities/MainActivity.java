@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     private void checkNsParameters() {
-        if (mUsbAudioService != null) {
+        if (mUsbAudioSource != null) {
             if (mSeekAngle != null) {
                 mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
             }
