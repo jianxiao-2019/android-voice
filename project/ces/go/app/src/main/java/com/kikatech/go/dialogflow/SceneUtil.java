@@ -26,7 +26,7 @@ public class SceneUtil {
 
     public static final long OUTGOING_CALL_PAGE_DELAY = 2500;
     public static final long MSG_SENT_PAGE_DELAY = 2500;
-    public static final int CONFIRM_BOS_DURATION = 5500;
+    public static final int CONFIRM_BOS_DURATION = 4000;
 
     public static final int ICON_TRIGGER = R.drawable.kika_ic_trigger;
     public static final int ICON_COMMON = R.drawable.kika_ic_error;
