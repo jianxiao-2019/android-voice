@@ -22,7 +22,7 @@ public class VoiceConfiguration {
         public static final String DEV_KIKAGO           = "ws://kikago-sq.kika.ai/v3/speech";       // for KikaGo client dev
         public static final String DEV_KEYBOARD         = "ws://api-sq.kika.ai/v3/speech";          // for Kika keyboard client dev
         public static final String PRODUCTION_KIKAGO    = "ws://kikago.kika.ai/v3/speech";          // final KikaGo release production server
-        public static final String PRODUCTION_KEYBOARD  = "";   // final Kika keyboard release production server
+        public static final String PRODUCTION_KEYBOARD  = "ws://api.kika.ai/v3/speech";             // final Kika keyboard release production server
     }
 
     public interface Engine {
