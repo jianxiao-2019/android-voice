@@ -21,6 +21,7 @@ import com.kikatech.go.services.view.item.WindowFloatingItem;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MathUtil;
 import com.kikatech.go.util.ResolutionUtil;
+import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.GoLayout;
 
@@ -299,14 +300,12 @@ public class FloatingUiManager extends BaseFloatingManager {
     }
 
     private synchronized void showTipView() {
-        showTipView("Ｗake me up by saying...", "\"Hi Kika\"", 5000);
+        long displayMillis = GlobalPref.getIns().getKeepShowingFloatingUiTip() ? 0 : 5000;
+        showTipView("Ｗake me up by saying...", "\"Hi Kika\"", displayMillis);
     }
 
     private synchronized void showTipView(String title, String text, long displayMillis) {
-        if (mContainer.isViewAdded(mItemTip)) {
-            mContainer.removeItem(mItemTip);
-            removeCallbacks(removeTipViewRunnable);
-        }
+        removeTipView();
 
         mItemTip.setTitle(title);
         mItemTip.setText(text);
@@ -322,7 +321,16 @@ public class FloatingUiManager extends BaseFloatingManager {
 
         mContainer.addItem(mItemTip);
 
-        postDelay(removeTipViewRunnable, displayMillis);
+        if (displayMillis > 0) {
+            postDelay(removeTipViewRunnable, displayMillis);
+        }
+    }
+
+    private synchronized void removeTipView() {
+        if (mContainer.isViewAdded(mItemTip)) {
+            mContainer.removeItem(mItemTip);
+            removeCallbacks(removeTipViewRunnable);
+        }
     }
 
     private synchronized void showAsrResult(String text) {
@@ -399,6 +407,12 @@ public class FloatingUiManager extends BaseFloatingManager {
             LogUtil.logv(TAG, "handleStatusChanged: status: " + status.name());
         }
 
+        if (GoLayout.ViewStatus.STAND_BY_AWAKE.equals(status)) {
+            removeTipView();
+            if (GlobalPref.getIns().getKeepShowingFloatingUiTip()) {
+                GlobalPref.getIns().setKeepShowingFloatingUiTip(false);
+            }
+        }
         mItemGMap.updateStatus(mContext, status);
     }
 
@@ -406,6 +420,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(text)) {
             return;
         }
+        removeTipView();
         showAsrResult(text);
     }
 
@@ -413,6 +428,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(text)) {
             return;
         }
+        removeTipView();
         showMsgView(text);
     }
 
@@ -420,6 +436,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         if (!mContainer.isViewAdded(mItemGMap) || TextUtils.isEmpty(title) || TextUtils.isEmpty(text)) {
             return;
         }
+        removeTipView();
         showTipView(title, text, 2800);
     }
 

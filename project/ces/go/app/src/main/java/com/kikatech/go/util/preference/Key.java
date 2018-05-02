@@ -25,6 +25,7 @@ class Key {
     static final String KEY_NAVIGATED_ADDR_LIST = "key_navigated_addr_list";
 
     static final String KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION = "key_has_show_dialog_usb_illustration";
+    static final String KEY_KEEP_SHOWING_FLOATING_UI_TIP = "key_keep_showing_floating_ui_tip";
 
 
     // Remote Configs

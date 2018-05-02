@@ -173,6 +173,15 @@ public class GlobalPref {
         return sPref.getBoolean(Key.KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION, false);
     }
 
+    public void setKeepShowingFloatingUiTip(boolean toShow) {
+        sEditor.putBoolean(Key.KEY_KEEP_SHOWING_FLOATING_UI_TIP, toShow);
+        apply();
+    }
+
+    public boolean getKeepShowingFloatingUiTip() {
+        return sPref.getBoolean(Key.KEY_KEEP_SHOWING_FLOATING_UI_TIP, true);
+    }
+
 
     // ----- Remote Configurations -----
 
