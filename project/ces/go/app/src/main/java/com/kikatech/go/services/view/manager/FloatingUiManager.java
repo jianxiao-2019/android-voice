@@ -345,7 +345,7 @@ public class FloatingUiManager extends BaseFloatingManager {
     }
 
     private synchronized void showTipView() {
-        showTipView("You can wake me up by saying...", "\"Hi Kika\"", 5000);
+        showTipView("Ｗake me up by saying...", "\"Hi Kika\"", 5000);
     }
 
     private synchronized void showTipView(String title, String text, long displayMillis) {
