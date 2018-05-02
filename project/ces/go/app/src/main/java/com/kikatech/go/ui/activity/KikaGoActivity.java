@@ -108,7 +108,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
                                 }
                             });
                         }
-                    }, 1600);
+                    }, 1200);
                 } else if (triggerDialogViaClick) {
                     triggerDialogViaClick = false;
                     DialogUtil.showDialogAlertUsbInstallation(KikaGoActivity.this, null);
