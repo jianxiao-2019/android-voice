@@ -176,7 +176,7 @@
     </string-array>
 
     <string-array name="options_common_2">
-        <item>"Sure"</item>
+        <item>"OK"</item>
         <item>"Change"</item>
         <item>"Cancel"</item>
     </string-array>
