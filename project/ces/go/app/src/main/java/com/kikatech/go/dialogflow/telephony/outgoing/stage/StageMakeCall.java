@@ -8,6 +8,7 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.telephony.TelephonyServiceManager;
 import com.kikatech.go.util.BackgroundThread;
+import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -83,6 +84,7 @@ public class StageMakeCall extends StageOutgoing {
         BackgroundThread.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                TipsHelper.setCanShowDialogMoreCommands(true);
                 exitScene();
             }
         }, SceneUtil.OUTGOING_CALL_PAGE_DELAY);

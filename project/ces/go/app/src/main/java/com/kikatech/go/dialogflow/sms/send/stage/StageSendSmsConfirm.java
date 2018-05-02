@@ -8,6 +8,7 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.sms.SmsContent;
 import com.kikatech.go.dialogflow.sms.SmsUtil;
 import com.kikatech.go.util.BackgroundThread;
+import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -47,6 +48,7 @@ public class StageSendSmsConfirm extends BaseSendSmsStage {
         send(args);
 
         SmsUtil.sendSms(mSceneBase.getContext(), sc.getChosenPhoneNumber(), sc.getMessageBody(true));
+        TipsHelper.setCanShowDialogMoreCommands(true);
         BackgroundThread.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {

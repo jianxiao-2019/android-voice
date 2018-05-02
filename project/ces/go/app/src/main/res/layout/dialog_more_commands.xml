@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_usb_detached"
+    tools:ignore="SpUsage, UselessParent">
+
+    <RelativeLayout
+        android:layout_width="305dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/dialog_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_settings_faq_illu_headup"/>
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dialog_img"
+            android:layout_marginTop="15dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:text="@string/dialog_more_commands_title"
+            android:textColor="#444444"
+            android:textSize="18dp"/>
+
+
+        <TextView
+            android:id="@+id/dialog_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dialog_title"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:text="@string/dialog_more_commands_description"
+            android:textColor="#8e94a9"
+            android:textSize="13dp"/>
+
+        <View
+            android:id="@+id/underline"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_below="@+id/dialog_description"
+            android:layout_marginTop="15dp"
+            android:background="#c4c8d9"/>
+
+        <TextView
+            android:id="@+id/dialog_btn_apply"
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:layout_below="@+id/underline"
+            android:gravity="center"
+            android:text="@string/dialog_more_commands_button"
+            android:textColor="#3274e6"
+            android:textSize="16dp"/>
+
+        <ImageView
+            android:id="@+id/dialog_btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="18dp"
+            android:src="@drawable/kika_ic_settings_faq_popup_dialogue_x"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

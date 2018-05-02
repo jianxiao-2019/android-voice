@@ -695,6 +695,53 @@ public class DialogUtil {
         mDialog.show();
     }
 
+    public static void showMoreCommands(final Context context, final IDialogListener listener) {
+        safeDismissDialog();
+
+        mDialog = new Dialog(context);
+
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setCancelable(true);
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_more_commands, null);
+
+        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+        View mBtnCancel = dialogView.findViewById(R.id.dialog_btn_cancel);
+
+        mBtnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                safeDismissDialog();
+                if (listener != null) {
+                    Bundle args = new Bundle();
+                    listener.onApply(args);
+                }
+            }
+        });
+
+        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                safeDismissDialog();
+                if (listener != null) {
+                    listener.onCancel();
+                }
+            }
+        });
+
+        mDialog.setContentView(dialogView);
+
+        Window window = mDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        setDimAlpha(window, 0.35f);
+
+        mDialog.show();
+    }
+
     public static void dismiss() {
         safeDismissDialog();
     }

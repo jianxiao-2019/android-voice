@@ -27,6 +27,9 @@ class Key {
     static final String KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION = "key_has_show_dialog_usb_illustration";
     static final String KEY_KEEP_SHOWING_FLOATING_UI_TIP = "key_keep_showing_floating_ui_tip";
 
+    static final String KEY_CAN_SHOW_DIALOG_MORE_COMMANDS = "key_can_show_dialog_commands";
+    static final String KEY_HAS_SHOW_DIALOG_MORE_COMMANDS = "key_has_show_dialog_commands";
+
 
     // Remote Configs
     static final String KEY_REMOTE_CONFIG_CONFIG_VERSION = "key_remote_config_config_version";

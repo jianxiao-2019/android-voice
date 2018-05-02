@@ -303,6 +303,10 @@ immediately"</item>
     <string name="dialog_update_app_description">"We have a new version. Please update your KikaGo for a better experience!"</string>
     <string name="dialog_update_app_btn_update">"Update"</string>
 
+    <string name="dialog_more_commands_title">"Quick commands"</string>
+    <string name="dialog_more_commands_description">"There are more commands on KikaGo waiting for you to discover."</string>
+    <string name="dialog_more_commands_button">"Show me"</string>
+
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>
     <string name="drawer_item_im">"Messaging"</string>

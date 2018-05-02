@@ -182,6 +182,23 @@ public class GlobalPref {
         return sPref.getBoolean(Key.KEY_KEEP_SHOWING_FLOATING_UI_TIP, true);
     }
 
+    public void setCanShowDialogMoreCommands(boolean canShow) {
+        sEditor.putBoolean(Key.KEY_CAN_SHOW_DIALOG_MORE_COMMANDS, canShow);
+        apply();
+    }
+
+    public boolean getCanShowDialogMoreCommands() {
+        return sPref.getBoolean(Key.KEY_CAN_SHOW_DIALOG_MORE_COMMANDS, false);
+    }
+
+    public void setHasShowDialogMoreCommands(boolean hasShow) {
+        sEditor.putBoolean(Key.KEY_HAS_SHOW_DIALOG_MORE_COMMANDS, hasShow);
+        apply();
+    }
+
+    public boolean getHasShowDialogMoreCommands() {
+        return sPref.getBoolean(Key.KEY_HAS_SHOW_DIALOG_MORE_COMMANDS, false);
+    }
 
     // ----- Remote Configurations -----
 

@@ -23,6 +23,7 @@ import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
 import com.kikatech.go.util.AnimationUtils;
 import com.kikatech.go.util.AsyncThreadPool;
+import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
@@ -295,6 +296,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
 //                    showLongToast(msg);
 //                    LogUtil.log(TAG, msg);
 //                }
+
                 break;
         }
     }
@@ -303,6 +305,19 @@ public class KikaGoActivity extends BaseDrawerActivity {
     protected void onStart() {
         super.onStart();
         DialogFlowForegroundService.processScanUsbDevices();
+        if (TipsHelper.shouldShowDialogMoreCommands()) {
+            TipsHelper.showDialogMoreCommands(KikaGoActivity.this, new DialogUtil.IDialogListener() {
+                @Override
+                public void onApply(Bundle args) {
+                    updateDrawerContent(mDrawerTipFragment);
+                    openDrawer();
+                }
+
+                @Override
+                public void onCancel() {
+                }
+            });
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
+import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -71,6 +72,7 @@ public class StageNavigationGo extends BaseNaviStage {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "onStageActionDone, isInterrupted:" + isInterrupted + ", delayAsrResume:" + delayAsrResume);
         }
+        TipsHelper.setCanShowDialogMoreCommands(true);
         exitScene();
     }
 }
