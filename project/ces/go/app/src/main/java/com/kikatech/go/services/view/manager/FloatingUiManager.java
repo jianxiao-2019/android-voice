@@ -18,9 +18,9 @@ import com.kikatech.go.services.view.item.ItemMsg;
 import com.kikatech.go.services.view.item.ItemTip;
 import com.kikatech.go.services.view.item.WindowFloatingButton;
 import com.kikatech.go.services.view.item.WindowFloatingItem;
+import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MathUtil;
 import com.kikatech.go.util.ResolutionUtil;
-import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.GoLayout;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * @author SkeeterWang Created on 2017/12/18.
  */
 
-@SuppressWarnings("SuspiciousNameCombination")
+@SuppressWarnings("SuspiciousNameCombination,RtlHardcoded")
 public class FloatingUiManager extends BaseFloatingManager {
     private static final String TAG = "FloatingUiManager";
 
@@ -120,7 +120,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             }
             mItemGMap.setAlpha(1.0f);
             int gmapX;
-            int gmapY = getNearestGmapPortY(mItemGMap.getViewY());
+            int gmapY = mItemGMap.getViewY();
             if (mItemGMap.getViewX() > getDeviceWidthByOrientation() / 2) {
                 mGravity = Gravity.LEFT;
                 int deviceWidth = getDeviceWidthByOrientation();
@@ -168,38 +168,6 @@ public class FloatingUiManager extends BaseFloatingManager {
             }
             return nearestItem;
         }
-
-        private int getNearestGmapPortY(int viewCenterY) {
-            int[] GMAP_PORT_Y = getGmapPortY();
-            int minDistance = Integer.MAX_VALUE;
-            int nearestY = GMAP_PORT_Y[0];
-            if (LogUtil.DEBUG) {
-                LogUtil.logv(TAG, String.format("viewCenterY: %s", viewCenterY));
-            }
-            for (int y : GMAP_PORT_Y) {
-                int distance = Math.abs(y - viewCenterY);
-                if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, String.format("y: %s, distances: %s", viewCenterY, distance));
-                }
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearestY = y;
-                }
-            }
-            return nearestY;
-        }
-
-        private int[] getGmapPortY() {
-            // port position must above bottom button
-            final int bottomBtnX = getDeviceHeightByOrientation() - ResolutionUtil.dp2px(mContext, 94) - ResolutionUtil.getStatusBarHeight(mContext);
-            final int GMAP_MAP_MARGIN_PX = ResolutionUtil.dp2px(mContext, GMAP_MARGIN_DP);
-            int GMAP_ITEM_HEIGHT = mItemGMap.getMeasuredHeight();
-            int interval = (bottomBtnX - (2 * GMAP_MAP_MARGIN_PX) - (3 * GMAP_ITEM_HEIGHT)) / 2;
-            int firstY = GMAP_MAP_MARGIN_PX;
-            int secondY = firstY + GMAP_ITEM_HEIGHT + interval;
-            int thirdY = secondY + GMAP_ITEM_HEIGHT + interval;
-            return new int[]{firstY, secondY, thirdY};
-        }
     });
 
 
@@ -244,21 +212,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         int deviceWidth = getDeviceWidthByOrientation();
         int yOffset = ResolutionUtil.dp2px(mContext, 18 + BUTTON_SIZE_DP) + ResolutionUtil.getStatusBarHeight(mContext);
         int y = getDeviceHeightByOrientation() - yOffset;
-        int fixedDistance, firstBtnX, secondBtnX;
-
-//        switch (mConfiguration.orientation) {
-//            case Configuration.ORIENTATION_LANDSCAPE:
-//                fixedDistance = ResolutionUtil.dp2px(mContext, 30);
-//                firstBtnX = deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 + fixedDistance;
-//                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
-//                break;
-//            case Configuration.ORIENTATION_PORTRAIT:
-//            default:
-//                fixedDistance = ResolutionUtil.dp2px(mContext, 5);
-//                firstBtnX = (int) (deviceWidth / 3 - mBtnClose.getMeasuredWidth() / 2 - (fixedDistance * 1.5f));
-//                secondBtnX = deviceWidth * 2 / 3 - mBtnOpenApp.getMeasuredWidth() / 2;
-//                break;
-//        }
+        int firstBtnX, secondBtnX;
 
         firstBtnX = (deviceWidth - ResolutionUtil.dp2px(mContext, BUTTON_SIZE_DP * 2 + 70)) / 2;
         secondBtnX = firstBtnX + ResolutionUtil.dp2px(mContext, BUTTON_SIZE_DP + 70);
@@ -315,7 +269,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         }
     };
 
-    public synchronized void showGMap() {
+    private synchronized void showGMap() {
         if (mContainer.isViewAdded(mItemGMap)) {
             showAllItems();
             return;
