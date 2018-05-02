@@ -208,6 +208,13 @@ public class SceneUtil {
         return new String[]{ui, getStringFromArray(ttsArray)};
     }
 
+    public static String[] getPlayMusic(Context context) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_play_music);
+        String[] ttsArray = resource.getStringArray(R.array.tts_play_music);
+        return new String[]{ui, getStringFromArray(ttsArray)};
+    }
+
     public static String getResponseNotGet(Context context) {
         Resources resource = context.getResources();
         return resource.getString(R.string.tts_response_not_get);

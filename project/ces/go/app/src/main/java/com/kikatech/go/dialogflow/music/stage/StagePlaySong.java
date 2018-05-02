@@ -39,8 +39,7 @@ class StagePlaySong extends BaseMusicStage {
     @Override
     public void action() {
         if (mPlayList != null && !mPlayList.isEmpty()) {
-            String tmp = "OK, playing music.";
-            String[] uiAndTtsText = new String[]{tmp, tmp};
+            String[] uiAndTtsText = SceneUtil.getPlayMusic(mSceneBase.getContext());
             if (uiAndTtsText.length > 0) {
                 String uiText = uiAndTtsText[0];
                 String ttsText = uiAndTtsText[1];
