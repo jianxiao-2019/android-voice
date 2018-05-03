@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_settings_faq_illu_headup"/>
+            android:src="@drawable/ic_oneshoot_dialogue_illustration"/>
 
         <TextView
             android:id="@+id/dialog_title"
