@@ -115,7 +115,7 @@ public class VoiceConfiguration {
     }
 
     public boolean isSupportWakeUpMode() {
-        return mSupportWakeUpMode;
+        return false;
     }
 
     public void setIsSupportNBest(boolean isNBest) {
