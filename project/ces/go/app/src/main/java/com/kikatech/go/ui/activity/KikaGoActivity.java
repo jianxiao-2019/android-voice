@@ -19,6 +19,7 @@ import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.ui.fragment.DrawerAdvancedFragment;
 import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
+import com.kikatech.go.ui.fragment.DrawerMusicFragment;
 import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
 import com.kikatech.go.util.AnimationUtils;
@@ -473,6 +474,11 @@ public class KikaGoActivity extends BaseDrawerActivity {
         }
 
         @Override
+        public void onItemMusicClicked() {
+            updateDrawerContent(mDrawerMusicFragment);
+        }
+
+        @Override
         public void onItemMicClicked() {
             triggerDialogViaClick = true;
             closeDrawer();
@@ -502,6 +508,13 @@ public class KikaGoActivity extends BaseDrawerActivity {
     });
 
     private Fragment mDrawerNavigationFragment = DrawerNavigationFragment.newInstance(new DrawerNavigationFragment.IDrawerNavigationListener() {
+        @Override
+        public void onBackClicked() {
+            updateDrawerContent(mDrawerMainFragment);
+        }
+    });
+
+    private Fragment mDrawerMusicFragment = DrawerMusicFragment.newInstance(new DrawerMusicFragment.IDrawerMusicListener() {
         @Override
         public void onBackClicked() {
             updateDrawerContent(mDrawerMainFragment);

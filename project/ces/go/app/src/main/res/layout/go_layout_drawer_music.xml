@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/drawer_width"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/drawer_bg"
+    android:orientation="vertical"
+    tools:ignore="RtlHardcoded,RtlSymmetry,SpUsage">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_title_area_height"
+        android:background="@color/drawer_title_area"
+        android:gravity="center_vertical"
+        android:paddingLeft="19dp">
+
+        <ImageView
+            android:id="@+id/drawer_title_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/kika_settings_ic_back"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/drawer_item_music"
+            android:textColor="@color/drawer_title_text"
+            android:textSize="@dimen/drawer_title_text_size"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_item_area_height"
+        android:gravity="center_vertical"
+        android:paddingLeft="35dp"
+        android:text="@string/drawer_item_music_subtitle"
+        android:textColor="#8e94a9"
+        android:textSize="16dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/drawer_music_playlist_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

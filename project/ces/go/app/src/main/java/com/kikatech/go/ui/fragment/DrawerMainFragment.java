@@ -133,6 +133,14 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
+        mView.findViewById(R.id.drawer_item_music).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemMusicClicked();
+                }
+            }
+        });
         mView.findViewById(R.id.drawer_item_mic).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,6 +233,8 @@ public class DrawerMainFragment extends Fragment {
         void onItemNavigationClick();
 
         void onItemImClicked();
+
+        void onItemMusicClicked();
 
         void onItemMicClicked();
 

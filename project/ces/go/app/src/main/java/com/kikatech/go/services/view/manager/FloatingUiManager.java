@@ -32,7 +32,7 @@ import java.util.List;
  * @author SkeeterWang Created on 2017/12/18.
  */
 
-@SuppressWarnings("SuspiciousNameCombination,RtlHardcoded")
+@SuppressWarnings({"SuspiciousNameCombination", "RtlHardcoded", "SameParameterValue", "WeakerAccess"})
 public class FloatingUiManager extends BaseFloatingManager {
     private static final String TAG = "FloatingUiManager";
 

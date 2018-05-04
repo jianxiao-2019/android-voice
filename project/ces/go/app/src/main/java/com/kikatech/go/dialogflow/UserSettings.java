@@ -103,7 +103,6 @@ public class UserSettings {
         return GlobalPref.getIns().getSettingConfirmCounter();
     }
 
-
     public static String getDefaultDestinationListJson() {
         List<SettingDestination> list = new ArrayList<>();
         list.add(new SettingDestination(SettingDestination.TYPE_DEFAULT_HOME, "Home"));
@@ -117,6 +116,71 @@ public class UserSettings {
 
     public static List<SettingDestination> getSettingDestinationList() {
         return GlobalPref.getIns().getSettingDestinationList();
+    }
+
+
+    public static void saveSettingRecommendListPop(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListPop(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListPop() {
+        return GlobalPref.getIns().getSettingRecommendListPop();
+    }
+
+    public static void saveSettingRecommendListHipHop(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListHipHop(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListHipHop() {
+        return GlobalPref.getIns().getSettingRecommendListHipHop();
+    }
+
+    public static void saveSettingRecommendListRock(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListRock(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListRock() {
+        return GlobalPref.getIns().getSettingRecommendListRock();
+    }
+
+    public static void saveSettingRecommendListEDM(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListEDM(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListEDM() {
+        return GlobalPref.getIns().getSettingRecommendListEDM();
+    }
+
+    public static void saveSettingRecommendListLatin(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListLatin(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListLatin() {
+        return GlobalPref.getIns().getSettingRecommendListLatin();
+    }
+
+    public static void saveSettingRecommendListCountry(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListCountry(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListCountry() {
+        return GlobalPref.getIns().getSettingRecommendListCountry();
+    }
+
+    public static void saveSettingRecommendListJazz(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListJazz(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListJazz() {
+        return GlobalPref.getIns().getSettingRecommendListJazz();
+    }
+
+    public static void saveSettingRecommendListIndie(boolean isEnabled) {
+        GlobalPref.getIns().saveSettingRecommendListIndie(isEnabled);
+    }
+
+    public static boolean getSettingRecommendListIndie() {
+        return GlobalPref.getIns().getSettingRecommendListIndie();
     }
 
 

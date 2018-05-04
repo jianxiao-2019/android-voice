@@ -144,6 +144,80 @@ public class GlobalPref {
         return ret;
     }
 
+
+    public void saveSettingRecommendListPop(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_POP, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListPop() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_POP, true);
+    }
+
+    public void saveSettingRecommendListHipHop(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_HIP_HOP, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListHipHop() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_HIP_HOP, false);
+    }
+
+    public void saveSettingRecommendListRock(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_ROCK, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListRock() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_ROCK, false);
+    }
+
+    public void saveSettingRecommendListEDM(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_EDM, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListEDM() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_EDM, false);
+    }
+
+    public void saveSettingRecommendListLatin(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_LATIN, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListLatin() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_LATIN, false);
+    }
+
+    public void saveSettingRecommendListCountry(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_COUNTRY, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListCountry() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_COUNTRY, false);
+    }
+
+    public void saveSettingRecommendListJazz(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_JAZZ, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListJazz() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_JAZZ, false);
+    }
+
+    public void saveSettingRecommendListIndie(boolean isEnabled) {
+        sEditor.putBoolean(Key.KEY_SETTING_RECOMMEND_LIST_INDIE, isEnabled);
+        apply();
+    }
+
+    public boolean getSettingRecommendListIndie() {
+        return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_INDIE, false);
+    }
+
+
     public boolean isFirstLaunch() {
         boolean isFirst = sPref.getBoolean(Key.KEY_FIRST_LAUNCH, true);
         if (isFirst) {

@@ -310,6 +310,7 @@ immediately"</item>
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>
     <string name="drawer_item_im">"Messaging"</string>
+    <string name="drawer_item_music">"Music"</string>
     <string name="drawer_item_mic_status">"KikaGo Smart Mic"</string>
     <string name="drawer_item_tip">"Quick commands"</string>
     <string name="drawer_item_advanced">"Advanced settings"</string>
@@ -326,6 +327,7 @@ immediately"</item>
     <string name="drawer_item_navigation_dialog_add_hint">"Add a place or address..."</string>
     <string name="drawer_item_navigation_dialog_edit_title">"Edit"</string>
     <string name="drawer_item_navigation_dialog_edit_hint">"Edit the address..."</string>
+    <string name="drawer_item_music_subtitle">"Choose genres for music playing"</string>
     <string name="drawer_item_mic_status_connected">"Connected"</string>
     <string name="drawer_item_mic_status_disconnected">"Disconnected"</string>
     <string name="drawer_item_mic_usb_data_status_error">"(Hardware Error)"</string>

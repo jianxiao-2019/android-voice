@@ -22,6 +22,7 @@ import com.kikatech.go.util.LogUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -153,7 +154,42 @@ public class YouTubeAPI {
     }
 
     public void searchDefaultRecommendPlayList(final IYoutubeApiCallback callback) {
-        searchRecommendPlayList(YouTubeUtil.RECOMMEND_PLAYLIST, callback);
+        if (callback == null) {
+            return;
+        }
+        final List<YouTubeUtil.RecommendPlayList> enabledPlayList = YouTubeUtil.getEnabledPlayList();
+        if (enabledPlayList.isEmpty()) {
+            return;
+        }
+        YouTubeUtil.RecommendPlayList firstList = enabledPlayList.get(0);
+        if (firstList == null) {
+            return;
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("0. listId: %s", firstList.getName()));
+        }
+        searchRecommendPlayList(firstList.getId(), new IYoutubeApiCallback() {
+            YouTubeVideoList fullList = new YouTubeVideoList(YouTubeVideoList.ListType.RECOMMEND);
+            int i = 1;
+
+            @Override
+            public void onLoaded(YouTubeVideoList result) {
+                fullList.addAll(result);
+                boolean hasNext = i < enabledPlayList.size();
+                if (hasNext) {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, String.format("%s. listId: %s", i, enabledPlayList.get(i).getName()));
+                    }
+                    searchRecommendPlayList(enabledPlayList.get(i++).getId(), this);
+                } else {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, String.format("%s. stop search", i));
+                    }
+                    Collections.shuffle(fullList.getList());
+                    callback.onLoaded(fullList);
+                }
+            }
+        });
     }
 
     public void searchRecommendPlayList(final String listId, final IYoutubeApiCallback callback) {

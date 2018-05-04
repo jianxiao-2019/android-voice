@@ -24,6 +24,17 @@ class Key {
 
     static final String KEY_NAVIGATED_ADDR_LIST = "key_navigated_addr_list";
 
+
+    static final String KEY_SETTING_RECOMMEND_LIST_POP = "key_setting_recommend_list_pop";
+    static final String KEY_SETTING_RECOMMEND_LIST_HIP_HOP = "key_setting_recommend_list_hip_hop";
+    static final String KEY_SETTING_RECOMMEND_LIST_ROCK = "key_setting_recommend_list_rock";
+    static final String KEY_SETTING_RECOMMEND_LIST_EDM = "key_setting_recommend_list_edm";
+    static final String KEY_SETTING_RECOMMEND_LIST_LATIN = "key_setting_recommend_list_latin";
+    static final String KEY_SETTING_RECOMMEND_LIST_COUNTRY = "key_setting_recommend_list_country";
+    static final String KEY_SETTING_RECOMMEND_LIST_JAZZ = "key_setting_recommend_list_jazz";
+    static final String KEY_SETTING_RECOMMEND_LIST_INDIE = "key_setting_recommend_list_indie";
+
+
     static final String KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION = "key_has_show_dialog_usb_illustration";
     static final String KEY_KEEP_SHOWING_FLOATING_UI_TIP = "key_keep_showing_floating_ui_tip";
 
