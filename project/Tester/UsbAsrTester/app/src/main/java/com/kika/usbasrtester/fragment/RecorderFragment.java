@@ -43,6 +43,7 @@ public class RecorderFragment extends PageFragment implements
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceDataListener,
         UsbAudioSource.SourceDataCallback,
+        UsbAudioSource.OnOpenedCallback,
         TtsSource.TtsStateChangedListener {
 
     private static final String DEBUG_FILE_TAG = "UsbTester";
@@ -352,15 +353,8 @@ public class RecorderFragment extends PageFragment implements
             Logger.d("onDeviceAttached.");
             mUsbAudioSource = audioSource;
             mUsbAudioSource.setSourceDataCallback(RecorderFragment.this);
+            mUsbAudioSource.setOnOpenedCallback(RecorderFragment.this);
             attachService();
-
-            mTimerHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    checkVolume();
-                    checkVersion();
-                }
-            }, 1000);
 
             mStatusTextView.setText("Usb Device Attached.");
             setRecordViewEnabled(true);
@@ -558,5 +552,16 @@ public class RecorderFragment extends PageFragment implements
             e.printStackTrace();
         }
         return "";
+    }
+
+    @Override
+    public void onOpened(int state) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                checkVersion();
+                checkVolume();
+            }
+        });
     }
 }
