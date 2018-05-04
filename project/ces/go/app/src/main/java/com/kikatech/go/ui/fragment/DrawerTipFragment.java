@@ -8,14 +8,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
-import com.kikatech.go.dialogflow.model.SettingDestination;
 import com.kikatech.go.ui.adapter.BaseAdapter;
 import com.kikatech.go.view.NoPredictiveAnimationManager;
 
@@ -110,7 +108,7 @@ public class DrawerTipFragment extends Fragment {
     }
 
 
-    private static final class TipAdapter extends BaseAdapter {
+    private static final class TipAdapter extends BaseAdapter<TipBase> {
 
         private static final int TYPE_TITLE = 0;
         private static final int TYPE_TIP = 1;
@@ -119,12 +117,8 @@ public class DrawerTipFragment extends Fragment {
         private @interface ViewType {
         }
 
-        private Context mContext;
-        private List<TipBase> mList;
-
         private TipAdapter(Context context, List<TipBase> list) {
-            mContext = context;
-            mList = list;
+            super(context, list);
         }
 
         @Override
@@ -190,11 +184,6 @@ public class DrawerTipFragment extends Fragment {
 
         private void resetTitleHolder(TipTitleHolder holder) {
             holder.mItemTitle.setText("");
-        }
-
-        @Override
-        public int getItemCount() {
-            return mList != null ? mList.size() : 0;
         }
 
         @Override

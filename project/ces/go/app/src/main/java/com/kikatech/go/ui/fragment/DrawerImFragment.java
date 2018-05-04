@@ -83,14 +83,10 @@ public class DrawerImFragment extends Fragment {
         void onBackClicked();
     }
 
-    private final class AppAdapter extends BaseAdapter {
-
-        private Context mContext;
-        private List<AppInfo> mList;
+    private final class AppAdapter extends BaseAdapter<AppInfo> {
 
         private AppAdapter(Context context, List<AppInfo> list) {
-            mContext = context;
-            mList = list;
+            super(context, list);
         }
 
         @Override
@@ -196,11 +192,6 @@ public class DrawerImFragment extends Fragment {
             Glide.clear(mAppHolder.mItemIcon);
             mAppHolder.mItemBtnMore.setVisibility(View.VISIBLE);
             mAppHolder.itemView.setOnClickListener(null);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mList != null ? mList.size() : 0;
         }
 
         private class AppHolder extends RecyclerView.ViewHolder {

@@ -138,14 +138,10 @@ public class DrawerNavigationFragment extends Fragment {
     }
 
 
-    private final class DestinationAdapter extends BaseAdapter {
-
-        private Context mContext;
-        private List<SettingDestination> mList;
+    private final class DestinationAdapter extends BaseAdapter<SettingDestination> {
 
         private DestinationAdapter(Context context, List<SettingDestination> list) {
-            mContext = context;
-            mList = list;
+            super(context, list);
         }
 
         @Override
@@ -233,11 +229,6 @@ public class DrawerNavigationFragment extends Fragment {
             mDestinationHolder.mItemBtnEdit.setVisibility(View.GONE);
             mDestinationHolder.mItemBtnDelete.setVisibility(View.GONE);
             mDestinationHolder.mItemBtnDelete.setOnClickListener(null);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mList != null ? mList.size() : 0;
         }
 
         private class DestinationHolder extends RecyclerView.ViewHolder {
