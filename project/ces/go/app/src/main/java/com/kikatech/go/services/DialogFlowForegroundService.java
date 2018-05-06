@@ -104,17 +104,11 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 break;
             case ToDFServiceEvent.ACTION_ON_APP_FOREGROUND:
                 mDFServiceStatus.setAppForeground(true);
-                if (mDFPresenter != null) {
-                    mDFPresenter.enableUsbDetection();
-                }
                 mManager.setShowGMap(false);
                 mManager.updateGMapVisibility();
                 break;
             case ToDFServiceEvent.ACTION_ON_APP_BACKGROUND:
                 mDFServiceStatus.setAppForeground(false);
-                if (mDFPresenter != null) {
-                    mDFPresenter.disableUsbDetection();
-                }
                 mManager.setShowGMap(true);
                 if (!isDoingAccessibility) {
                     mManager.updateGMapVisibility();

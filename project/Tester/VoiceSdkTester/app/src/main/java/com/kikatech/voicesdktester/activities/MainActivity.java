@@ -398,7 +398,6 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 if (mUsbAudioSource == null) {
                     mUsbAudioService = UsbAudioService.getInstance(MainActivity.this);
-                    mUsbAudioService.setReqPermissionOnReceiver(true);
                     mUsbAudioService.setListener(mIUsbAudioListener);
                     mUsbAudioService.scanDevices();
                 }
@@ -833,7 +832,6 @@ public class MainActivity extends AppCompatActivity implements
         if (mUsbAudioService != null) {
             mUsbAudioService.closeDevice();
             mUsbAudioService.setListener(null);
-            mUsbAudioService.setReqPermissionOnReceiver(false);
         }
         AudioPlayBack.setListener(null);
     }

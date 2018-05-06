@@ -1,9 +1,9 @@
 package com.kikatech.usb;
 
 import android.content.Context;
+import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
 
-import com.kikatech.usb.driver.UsbAudioDriver;
 import com.kikatech.voice.util.log.Logger;
 
 import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_CONNECTION_FAIL;
@@ -15,16 +15,13 @@ import static com.kikatech.usb.IUsbAudioListener.ERROR_NO_DEVICES;
 
 public class UsbAudioService {
 
-    private static final String TAG = "UsbAudioService";
-
     private static volatile UsbAudioService sInstance;
 
-    private UsbAudioDriver mUsbAudioDriver = null;
-    private UsbAudioSource mAudioSource = null;
+    private IUsbAudioDriver mUsbAudioDriver = null;
+
     private Context mContext;
     private IUsbAudioListener mListener;
     private UsbDeviceManager mDeviceManager;
-    private UsbDevice mDevice;
 
     public static UsbAudioService getInstance(Context context) {
         if (sInstance == null) {
@@ -52,16 +49,10 @@ public class UsbAudioService {
 
     public void closeDevice() {
         if (mUsbAudioDriver != null) {
-            mUsbAudioDriver.close();
+            mUsbAudioDriver.closeUsb();
             if (mListener != null) {
                 mListener.onDeviceDetached();
             }
-        }
-    }
-
-    public void setReqPermissionOnReceiver(boolean reqPermissionOnReceiver) {
-        if (mDeviceManager != null) {
-            mDeviceManager.setReqPermissionOnReceiver(reqPermissionOnReceiver);
         }
     }
 
@@ -71,27 +62,36 @@ public class UsbAudioService {
         public void onDeviceAttached(UsbDevice device) {
             Logger.i("UsbAudioService onDeviceAttached");
             if (mUsbAudioDriver != null) {
-                mUsbAudioDriver.close();
+                mUsbAudioDriver.closeUsb();
             }
 
-            mDevice = device;
-            mUsbAudioDriver = new UsbAudioDriver(mContext, mDevice);
-            if (mUsbAudioDriver.open()) {
-                mAudioSource = new UsbAudioSource(mUsbAudioDriver);
-                if (mListener != null) {
-                    mListener.onDeviceAttached(mAudioSource);
-                }
-            } else {
-                if (mListener != null) {
-                    mListener.onDeviceError(ERROR_DRIVER_CONNECTION_FAIL);
-                }
-            }
+            onDeviceAttached(new KikaGoDeviceDataSource(mContext, device));
         }
 
         @Override
         public void onDeviceDetached() {
             Logger.i("UsbAudioService onDeviceDetached");
-            mDevice = null;
+            if (mUsbAudioDriver != null) {
+                mUsbAudioDriver = null;
+                if (mListener != null) {
+                    mListener.onDeviceDetached();
+                }
+            }
+        }
+
+        @Override
+        public void onAccessoryAttached(UsbAccessory accessory) {
+            Logger.i("UsbAudioService onDeviceAttached");
+            if (mUsbAudioDriver != null) {
+                mUsbAudioDriver.closeUsb();
+            }
+
+            onDeviceAttached(new KikaGoAccessoryDataSource(mContext, accessory));
+        }
+
+        @Override
+        public void onAccessoryDetached() {
+            Logger.i("UsbAudioService onAccessoryDetached");
             if (mUsbAudioDriver != null) {
                 mUsbAudioDriver = null;
                 if (mListener != null) {
@@ -104,6 +104,20 @@ public class UsbAudioService {
         public void onNoDevices() {
             if (mListener != null) {
                 mListener.onDeviceError(ERROR_NO_DEVICES);
+            }
+        }
+
+        private void onDeviceAttached(IUsbAudioDriver driver) {
+            mUsbAudioDriver = driver;
+            if (mUsbAudioDriver.openUsb()) {
+                UsbAudioSource mAudioSource = new UsbAudioSource((IUsbDataSource) mUsbAudioDriver);
+                if (mListener != null) {
+                    mListener.onDeviceAttached(mAudioSource);
+                }
+            } else {
+                if (mListener != null) {
+                    mListener.onDeviceError(ERROR_DRIVER_CONNECTION_FAIL);
+                }
             }
         }
     };

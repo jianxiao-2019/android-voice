@@ -185,7 +185,6 @@ public class RecorderFragment extends PageFragment implements
         if (mUsbAudioService != null) {
             mUsbAudioService.closeDevice();
             mUsbAudioService.setListener(null);
-            mUsbAudioService.setReqPermissionOnReceiver(false);
         }
     }
 

@@ -3,7 +3,6 @@ package com.kikatech.usb.nc;
 import android.support.annotation.NonNull;
 
 import com.kikatech.usb.KikaBuffer;
-import com.kikatech.usb.driver.UsbAudioDriver;
 import com.kikatech.usb.driver.impl.AudioBuffer;
 import com.kikatech.voice.util.log.Logger;
 

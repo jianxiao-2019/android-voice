@@ -1,13 +1,7 @@
 package com.kikatech.usb.util;
 
-import android.hardware.usb.UsbConstants;
+import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbInterface;
-import android.support.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author SkeeterWang Created on 2018/4/20.
@@ -16,26 +10,21 @@ import java.util.List;
 public class DeviceUtil {
     private static final String TAG = "DeviceUtil";
 
-    public static boolean isAudioDevice(UsbDevice device) {
-        if (device != null && device.getInterfaceCount() > 0) {
-            UsbInterface usbInterface = device.getInterface(0);
-            if (LogUtil.DEBUG) {
-                LogUtil.logd(TAG, String.format("Audio UsbInterface: %s", usbInterface.getInterfaceClass()));
-            }
-            if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
-                return true;
-            }
-        }
-        return false;
+    private static final int KIKA_GO_VENDER_ID = 1037;
+    private static final int KIKA_GO_PRODUCT_ID = 13323;
+
+    private static final String KIKA_GO_MODEL = "WCHUARTDemo";
+    private static final String KIKA_GO_MANUFACTURE = "WCH";
+
+    public static boolean isKikaGoDevice(UsbDevice device) {
+        return device != null
+                && device.getVendorId() == KIKA_GO_VENDER_ID
+                && device.getProductId() == KIKA_GO_PRODUCT_ID;
     }
 
-    public static List<UsbDevice> getAduioDeviceList(@NonNull HashMap<String, UsbDevice> allDeviceList) {
-        List<UsbDevice> result = new ArrayList<>();
-        for (UsbDevice device : allDeviceList.values()) {
-            if (isAudioDevice(device)) {
-                result.add(device);
-            }
-        }
-        return result;
+    public static boolean isKikaGoAccessory(UsbAccessory accessory) {
+        return accessory != null
+                && KIKA_GO_MODEL.equals(accessory.getModel())
+                && KIKA_GO_MANUFACTURE.equals(accessory.getManufacturer());
     }
 }

@@ -116,14 +116,6 @@ public class VoiceSourceHelper {
         }
     }
 
-    public synchronized void enableUsbDetection(Context context) {
-        UsbAudioService.getInstance(context).setReqPermissionOnReceiver(true);
-    }
-
-    public synchronized void disableUsbDetection(Context context) {
-        UsbAudioService.getInstance(context).setReqPermissionOnReceiver(false);
-    }
-
     public synchronized UsbAudioSource getUsbVoiceSource() {
         return mUsbVoiceSource;
     }

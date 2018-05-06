@@ -706,14 +706,6 @@ public class DialogFlowServicePresenter {
         mVoiceSourceHelper.scanUsbDevices(mContext);
     }
 
-    public void enableUsbDetection() {
-        mVoiceSourceHelper.enableUsbDetection(mContext);
-    }
-
-    public void disableUsbDetection() {
-        mVoiceSourceHelper.disableUsbDetection(mContext);
-    }
-
     public void usbVolumeUp() {
         if (mVoiceSourceHelper != null) {
             mVoiceSourceHelper.usbVolumeDown();

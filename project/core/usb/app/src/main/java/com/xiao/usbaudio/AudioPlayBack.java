@@ -3,7 +3,7 @@ package com.xiao.usbaudio;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.KikaGoDeviceDataSource;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class AudioPlayBack {
-    private static UsbAudioSource sKikaAudioDriver;
+    private static KikaGoDeviceDataSource sKikaGoDeviceDataSource;
 
     public static final int RAW_DATA_LENGTH_STEREO = 640;
     public static final int RAW_DATA_AVAILABLE_LENGTH = 600;
@@ -32,7 +32,7 @@ public class AudioPlayBack {
     }
 
     public static void write(byte[] decodedAudio, int len) {
-        Logger.v("AudioPlayBack write len = " + len + " sKikaAudioDriver = " + sKikaAudioDriver);
+        Logger.v("AudioPlayBack write len = " + len + " sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
         if (mListener != null) {
             mListener.onWrite(len);
         }
@@ -40,8 +40,8 @@ public class AudioPlayBack {
         if (len == 0) {
             return;
         }
-        if (sKikaAudioDriver != null) {
-            sKikaAudioDriver.onData(decodedAudio, len);
+        if (sKikaGoDeviceDataSource != null) {
+            sKikaGoDeviceDataSource.onData(decodedAudio, len);
         }
 
         if (sFilePath != null && output != null) {
@@ -63,9 +63,9 @@ public class AudioPlayBack {
         }
     }
 
-    public static void setup(UsbAudioSource kikaAudioDriver) {
-        Logger.d("AudioPlayBack setup sKikaAudioDriver = " + kikaAudioDriver);
-        sKikaAudioDriver = kikaAudioDriver;
+    public static void setup(KikaGoDeviceDataSource kikaAudioDriver) {
+        Logger.d("AudioPlayBack setup sKikaGoDeviceDataSource = " + kikaAudioDriver);
+        sKikaGoDeviceDataSource = kikaAudioDriver;
 
         sFilePath = DebugUtil.getDebugFilePath();
         Logger.d("AudioPlayBack setup sFilePath = " + sFilePath);
@@ -82,8 +82,8 @@ public class AudioPlayBack {
     }
 
     public static void stop() {
-        Logger.d("AudioPlayBack stop sKikaAudioDriver = " + sKikaAudioDriver);
-        sKikaAudioDriver = null;
+        Logger.d("AudioPlayBack stop sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
+        sKikaGoDeviceDataSource = null;
     }
 
     public static void setListener(OnAudioPlayBackWriteListener listener) {
