@@ -56,9 +56,10 @@ public class StageNavigationGo extends BaseNaviStage {
         } else {
             uiAndTtsText = SceneUtil.getStartNavigation(context);
         }
+        String extraTtsTip = GlobalPref.getIns().getKeepShowingFloatingUiTip() ? SceneUtil.getFirstSleepTip(context) : "";
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
-            String ttsText = uiAndTtsText[1];
+            String ttsText = uiAndTtsText[1] + extraTtsTip;
             TtsText tText = new TtsText(SceneUtil.ICON_NAVIGATION, uiText);
             Bundle args = new Bundle();
             args.putParcelable(SceneUtil.EXTRA_TTS_TEXT, tText);

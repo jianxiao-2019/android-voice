@@ -84,6 +84,12 @@ public class SceneUtil {
         return new String[]{ui, tryFormat(getStringFromArray(ttsArray), destination)};
     }
 
+    public static String getFirstSleepTip(Context context) {
+        Resources resource = context.getResources();
+        String[] ttsArray = resource.getStringArray(R.array.tts_first_sleep_tip);
+        return getStringFromArray(ttsArray);
+    }
+
     public static String getStopNavigation(Context context) {
         Resources resource = context.getResources();
         String[] ttsArray = resource.getStringArray(R.array.tts_stop_navigation);
@@ -213,6 +219,12 @@ public class SceneUtil {
         String ui = resource.getString(R.string.ui_play_music);
         String[] ttsArray = resource.getStringArray(R.array.tts_play_music);
         return new String[]{ui, getStringFromArray(ttsArray)};
+    }
+
+    public static String getHelp(Context context, String options) {
+        Resources resource = context.getResources();
+        String[] ttsArray = resource.getStringArray(R.array.tts_help);
+        return tryFormat(getStringFromArray(ttsArray), options);
     }
 
     public static String getResponseNotGet(Context context) {
