@@ -118,6 +118,8 @@ public class VoiceRecorder {
         @Override
         public void run() {
             Logger.v(VoiceRecorder.this + " [prepare]");
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+            
             mVoiceSource.start();
 
             Logger.v(VoiceRecorder.this + " [record] bufferSize = " + mVoiceSource.getBufferSize());
