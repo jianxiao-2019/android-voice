@@ -16,10 +16,13 @@ public abstract class WakeUpDetector {
 
     private FileWriter mFileWriter;
 
-    public WakeUpDetector(OnHotWordDetectListener listener) {
-        mListener = listener;
+    public WakeUpDetector() {
         // mFileWriter = new FileWriter("_COMMAND", null);
         mFileWriter = null;
+    }
+
+    public void setOnHotWordDetectListener(OnHotWordDetectListener listener) {
+        mListener = listener;
     }
 
     public final void setNextDataPath(IDataPath nextPath) {

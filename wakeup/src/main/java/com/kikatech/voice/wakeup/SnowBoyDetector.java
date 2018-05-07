@@ -44,9 +44,7 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     private boolean mEnableDetection = true;
 
-    public SnowBoyDetector(WakeUpDetector.OnHotWordDetectListener listener) {
-        super(listener);
-        mListener = listener;
+    public SnowBoyDetector() {
         long t = System.currentTimeMillis();
         String sensitivity = CustomConfig.getSnowboySensitivity();
 

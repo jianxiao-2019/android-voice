@@ -152,6 +152,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         IDataPath finalPath = new VoiceService.VoiceDataSender(null);
         mWakeUpDetector = mConf.getWakeUpDetector();
+        if (mWakeUpDetector != null) {
+            mWakeUpDetector.setOnHotWordDetectListener(this);
+        }
         mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath, this);
 
