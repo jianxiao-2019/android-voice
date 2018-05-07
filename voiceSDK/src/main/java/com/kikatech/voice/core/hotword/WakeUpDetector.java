@@ -1,14 +1,8 @@
 package com.kikatech.voice.core.hotword;
 
-import android.content.Context;
-import android.text.TextUtils;
-
 import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.util.VoicePathConnector;
 import com.kikatech.voice.util.log.Logger;
-
-import ai.kitt.snowboy.AppResCopy;
 
 /**
  * Created by ryanlin on 06/12/2017.
@@ -22,16 +16,10 @@ public abstract class WakeUpDetector {
 
     private FileWriter mFileWriter;
 
-    WakeUpDetector(OnHotWordDetectListener listener) {
+    public WakeUpDetector(OnHotWordDetectListener listener) {
         mListener = listener;
         // mFileWriter = new FileWriter("_COMMAND", null);
         mFileWriter = null;
-    }
-
-    public static WakeUpDetector getDetector(Context context, OnHotWordDetectListener listener) {
-        // TODO : SnowBoyDetector is the only one implement of WakeUpDetector.
-        AppResCopy.copyResFromAssetsToSD(context);
-        return new SnowBoyDetector(listener);
     }
 
     public final void setNextDataPath(IDataPath nextPath) {

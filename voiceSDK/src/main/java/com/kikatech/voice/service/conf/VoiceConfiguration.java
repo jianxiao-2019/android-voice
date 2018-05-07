@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.AgentCreator;
+import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.tts.TtsService;
 
@@ -42,6 +43,7 @@ public class VoiceConfiguration {
     private static final int DEFAULT_BOS_DURATION = -1;
     private static final int DEFAULT_EOS_DURATION = -1;
 
+    private WakeUpDetector mWakeUpDetector = null;
     private IVoiceSource mVoiceSource;
     private AgentCreator mAgentCreator;
 
@@ -52,17 +54,14 @@ public class VoiceConfiguration {
 
     private TtsService.TtsSourceType mTtsSource = TtsService.TtsSourceType.KIKA_WEB;
 
-    private boolean mSupportWakeUpMode = false;
     private boolean mSupportNBest = true;
 
     private SpeechMode mSpeechMode = SpeechMode.CONVERSATION;
-
 
     private boolean mIsDebugMode = false;
     private String mDebugFileTag = "Unknown";
 
     private ExternalConfig mExternalConfig;
-
 
     public VoiceConfiguration() {
     }
@@ -110,12 +109,12 @@ public class VoiceConfiguration {
         return eosDuration;
     }
 
-    public void setSupportWakeUpMode(boolean supportWakeUpMode) {
-        mSupportWakeUpMode = supportWakeUpMode;
+    public void setWakeUpDetector(WakeUpDetector wakeUpDetector) {
+        mWakeUpDetector = wakeUpDetector;
     }
 
-    public boolean isSupportWakeUpMode() {
-        return mSupportWakeUpMode;
+    public WakeUpDetector getWakeUpDetector() {
+        return mWakeUpDetector;
     }
 
     public void setIsSupportNBest(boolean isNBest) {

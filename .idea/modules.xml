@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/android-voice.iml" filepath="$PROJECT_DIR$/android-voice.iml" />
       <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/voiceSDK/voiceSDK.iml" filepath="$PROJECT_DIR$/voiceSDK/voiceSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wakeup/wakeup.iml" filepath="$PROJECT_DIR$/wakeup/wakeup.iml" />
     </modules>
   </component>
 </project>

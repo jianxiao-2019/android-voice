@@ -1,7 +1,8 @@
-package com.kikatech.voice.core.hotword;
+package com.kikatech.voice.wakeup;
 
 import android.util.SparseIntArray;
 
+import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.util.CustomConfig;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.MD5;
@@ -43,7 +44,7 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     private boolean mEnableDetection = true;
 
-    SnowBoyDetector(OnHotWordDetectListener listener) {
+    public SnowBoyDetector(WakeUpDetector.OnHotWordDetectListener listener) {
         super(listener);
         mListener = listener;
         long t = System.currentTimeMillis();

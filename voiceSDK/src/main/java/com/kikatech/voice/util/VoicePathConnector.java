@@ -24,10 +24,9 @@ public class VoicePathConnector {
         }
 
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
-        boolean isSupportWakeUpMode = conf.isSupportWakeUpMode() && wakeUpDetector != null;
 
         IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"));
-        if (isSupportWakeUpMode) {
+        if (wakeUpDetector != null) {
 //            wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
             wakeUpDetector.setNextDataPath(dataPath);
             dataPath = wakeUpDetector.getDataPath();
