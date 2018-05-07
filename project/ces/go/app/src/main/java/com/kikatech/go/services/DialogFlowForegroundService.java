@@ -75,7 +75,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Queue;
 
 /**
  * @author SkeeterWang Created on 2017/11/28.
@@ -118,6 +121,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private long mDbgLogResumeStartTime = 0;
     private long mDbgLogASRRecogFullTime = 0;
 
+    private Queue<Long> mMsgQueue = new LinkedList<>();
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -222,6 +226,20 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 }
                 if (mDialogFlowService != null) {
                     mDialogFlowService.enableWakeUpDetector();
+                }
+                break;
+            case ToDFServiceEvent.ACTION_ON_NEW_MSG:
+                final boolean isServiceAwake = mDFServiceStatus.isAwake();
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, String.format("action: %s, isServiceAwake: %s", action, isServiceAwake));
+                }
+                long msgTimestamp = event.getExtras().getLong(ToDFServiceEvent.PARAM_TIMESTAMP);
+                if (mDialogFlowService != null) {
+                    if (!isServiceAwake) {
+                        doOnNewMsg(msgTimestamp);
+                    } else {
+                        mMsgQueue.offer(msgTimestamp);
+                    }
                 }
                 break;
         }
@@ -473,6 +491,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         mHelpSceneManager = new HelpSceneManager(DialogFlowForegroundService.this, mDialogFlowService);
                         mSceneManagers.add(mCloseSceneManager);
                         mSceneManagers.add(mHelpSceneManager);
+                        if (!mMsgQueue.isEmpty()) {
+                            long msgTimestamp = mMsgQueue.poll();
+                            doOnNewMsg(msgTimestamp);
+                        }
                     }
 
                     @Override
@@ -910,6 +932,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
 
+    private void doOnNewMsg(long msgTimestamp) {
+        mDialogFlowService.wakeUp(SceneReplyIM.SCENE);
+        mDialogFlowService.resetContexts();
+        mDialogFlowService.talk(String.format(Locale.ENGLISH, IMSceneManager.KIKA_PROCESS_RECEIVED_IM, msgTimestamp), false);
+    }
+
+
     private CountingTimer mAsrMaxDurationTimer = new CountingTimer(20000, new CountingTimer.ICountingListener() {
         @Override
         public void onTimeTickStart() {
@@ -1157,6 +1186,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processEnableWakeUpDetector() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ENABLE_WAKE_UP_DETECTOR);
+        event.send();
+    }
+
+    public synchronized static void processOnNewMsg(long msgTimestamp) {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_NEW_MSG);
+        event.putExtra(ToDFServiceEvent.PARAM_TIMESTAMP, msgTimestamp);
         event.send();
     }
 

@@ -12,10 +12,9 @@ import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.im.send.SceneSendIM;
 import com.kikatech.go.message.im.BaseIMObject;
 import com.kikatech.go.message.im.IMManager;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.service.dialogflow.IDialogFlowService;
-
-import java.util.Locale;
 
 /**
  * Created by brad_chang on 2017/11/23.
@@ -23,7 +22,7 @@ import java.util.Locale;
 
 public class IMSceneManager extends BaseSceneManager {
 
-    private static final String KIKA_PROCESS_RECEIVED_IM = "kika_process_received_im %d";
+    public static final String KIKA_PROCESS_RECEIVED_IM = "kika_process_received_im %d";
 
     private BroadcastReceiver mImReceiver = null;
     private LongSparseArray<BaseIMObject> mReceivedSmsList;
@@ -50,9 +49,7 @@ public class IMSceneManager extends BaseSceneManager {
                     long t = System.currentTimeMillis();
                     mReceivedSmsList.put(t, imObject);
 
-                    mService.wakeUp(SceneReplyIM.SCENE);
-                    mService.resetContexts();
-                    mService.talk(String.format(Locale.ENGLISH, KIKA_PROCESS_RECEIVED_IM, t), false);
+                    DialogFlowForegroundService.processOnNewMsg(t);
                 }
             }
         };
