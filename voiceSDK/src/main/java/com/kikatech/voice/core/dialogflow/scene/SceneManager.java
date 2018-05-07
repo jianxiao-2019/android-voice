@@ -56,13 +56,17 @@ public class SceneManager implements DialogObserver, ISceneManager {
                 if (scene.equals(mScene)) {
                     notifyObservers(intent);
                 } else {
-                    prepareSwitchSceneInfo(scene, intent);
-                    doExitScene(mScene, false);
-                    mScene = scene;
-                    if (mCallback != null) {
-                        mCallback.onSceneEnter(mScene);
+                    if (mSubscribe.contains(scene)) {
+                        prepareSwitchSceneInfo(scene, intent);
+                        doExitScene(mScene, false);
+                        mScene = scene;
+                        if (mCallback != null) {
+                            mCallback.onSceneEnter(mScene);
+                        }
+                        notifyObservers(intent);
+                    } else {
+                        notifyObservers(new Intent(mScene, Intent.ACTION_UNKNOWN));
                     }
-                    notifyObservers(intent);
                 }
             } else {
                 prepareSwitchSceneInfo(scene, intent);
@@ -82,7 +86,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
 
     private void prepareSwitchSceneInfo(String targetScene, Intent intent) {
         if (Logger.DEBUG) {
-            Logger.i(TAG, "prepareSwitchSceneInfo, current:"+mScene+", target:" + targetScene+ ", intent:" + intent);
+            Logger.i(TAG, "prepareSwitchSceneInfo, current:" + mScene + ", target:" + targetScene + ", intent:" + intent);
         }
         if (!TextUtils.isEmpty(mScene) && intent != null) {
             SceneBase src = getScene(mScene);
@@ -101,7 +105,7 @@ public class SceneManager implements DialogObserver, ISceneManager {
     private SceneBase getScene(String scene) {
         List<SceneBase> list = mSubscribe.list(scene);
         for (SceneBase subscriber : list) {
-            if(subscriber.scene().equals(scene)) {
+            if (subscriber.scene().equals(scene)) {
                 return subscriber;
             }
         }

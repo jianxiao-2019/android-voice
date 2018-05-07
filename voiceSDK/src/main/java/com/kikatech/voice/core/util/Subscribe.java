@@ -36,21 +36,24 @@ public class Subscribe<T> {
             List<T> list = mSubscribers.get(key);
             if (list != null) {
                 list.remove(object);
-                if(list.isEmpty()){
+                if (list.isEmpty()) {
                     mSubscribers.remove(key);
                 }
             }
         }
     }
 
-    public List<T> list(String key){
+    public List<T> list(String key) {
         List<T> list = new ArrayList<>();
-        synchronized (this){
-            if(mSubscribers.containsKey(key)){
+        synchronized (this) {
+            if (mSubscribers.containsKey(key)) {
                 list.addAll(mSubscribers.get(key));
             }
         }
         return list;
     }
 
+    public boolean contains(String key) {
+        return mSubscribers.containsKey(key);
+    }
 }
