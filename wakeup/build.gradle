@@ -2,17 +2,15 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "27.0.0"
-
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -24,7 +22,6 @@ android {
             minifyEnabled false
         }
     }
-
 }
 
 def getVersionName(String versionName) {
@@ -37,7 +34,7 @@ def getVersionName(String versionName) {
             versionName = versionName + "-SNAPSHOT"
         }
     }
-    println 'VersionName=' + versionName;
+    println 'WakeUp VersionName=' + versionName;
     return versionName
 }
 
