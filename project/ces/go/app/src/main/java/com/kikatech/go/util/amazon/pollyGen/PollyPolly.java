@@ -66,6 +66,7 @@ public class PollyPolly {
             new AssetPolly("What's the song do you like?"),
             new AssetPolly("Can not connect to KikaGo service."),
             new AssetPolly("Can not connect to language understanding service."),
+            new AssetPolly("Hello, here's what you can do next: After the beep, you can start by saying one of the commands shown here like navigate. You can also say cancel to stop the conversation. If you’d like to see more commands, please check Frequently asked questions in Settings.")
     };
 
     public String removeDuplicateLetters(String s) {

@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.help.SceneHelpActions;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
-import com.kikatech.go.util.StringUtil;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -26,6 +26,10 @@ class StageHelpStart extends BaseHelpStage {
 
     @Override
     public SceneStage next(String action, Bundle extra) {
+        switch (action) {
+            case SceneHelpActions.ACTION_HELP_START:
+                return new StageHelpStart(mSceneBase, mFeedback);
+        }
         return null;
     }
 
@@ -42,8 +46,7 @@ class StageHelpStart extends BaseHelpStage {
         for (Option option : defaultList.getList()) {
             displayTexts.add(option.getDisplayText());
         }
-        String allOptions = StringUtil.join(displayTexts, " or ");
-        String ttsText = SceneUtil.getHelp(mSceneBase.getContext(), allOptions);
+        String ttsText = SceneUtil.getHelp(mSceneBase.getContext());
         Bundle args = new Bundle();
         args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, defaultList);
         speak(ttsText, args);

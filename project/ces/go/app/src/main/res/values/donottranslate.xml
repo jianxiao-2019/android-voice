@@ -134,7 +134,7 @@
     </string-array>
 
     <string-array name="tts_help">
-        <item>"You can say: %s"</item>
+        <item>"Hello, here's what you can do next: After the beep, you can start by saying one of the commands shown here like navigate. You can also say cancel to stop the conversation. If you’d like to see more commands, please check Frequently asked questions in Settings."</item>
     </string-array>
 
 

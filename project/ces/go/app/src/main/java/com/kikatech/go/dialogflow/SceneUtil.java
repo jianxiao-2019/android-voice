@@ -221,10 +221,10 @@ public class SceneUtil {
         return new String[]{ui, getStringFromArray(ttsArray)};
     }
 
-    public static String getHelp(Context context, String options) {
+    public static String getHelp(Context context) {
         Resources resource = context.getResources();
         String[] ttsArray = resource.getStringArray(R.array.tts_help);
-        return tryFormat(getStringFromArray(ttsArray), options);
+        return getStringFromArray(ttsArray);
     }
 
     public static String getResponseNotGet(Context context) {
