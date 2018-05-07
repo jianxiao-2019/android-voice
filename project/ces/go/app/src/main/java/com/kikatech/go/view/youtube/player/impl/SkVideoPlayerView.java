@@ -28,8 +28,6 @@ import com.kikatech.go.view.youtube.player.interfaces.IVideoPlayer;
 import com.kikatech.go.view.youtube.player.interfaces.IVideoStatusListener;
 import com.kikatech.go.view.youtube.playercontroller.interfaces.IVideoPlayerController;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.IOException;
 
 /**
@@ -545,7 +543,7 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
             mMediaPlayer.start();
             setKeepScreenOn(true);
             mCurrentState = PlayerState.PLAYING;
-            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_START));
+            new MusicEvent(MusicEvent.ACTION_ON_START).send();
         }
         mTargetState = PlayerState.PLAYING;
     }
@@ -561,7 +559,7 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
                     mVideoStatusListener.onPause();
                 }
             }
-            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_PAUSE));
+            new MusicEvent(MusicEvent.ACTION_ON_PAUSE).send();
         }
         mTargetState = PlayerState.PAUSED;
     }
@@ -574,7 +572,7 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
                 setKeepScreenOn(true);
                 mCurrentState = PlayerState.PLAYING;
             }
-            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_RESUME));
+            new MusicEvent(MusicEvent.ACTION_ON_RESUME).send();
         }
         mTargetState = PlayerState.PLAYING;
     }
@@ -588,7 +586,7 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
             setKeepScreenOn(false);
             mCurrentState = PlayerState.IDLE;
             mTargetState = PlayerState.IDLE;
-            sendMusicEvent(new MusicEvent(MusicEvent.ACTION_ON_STOP));
+            new MusicEvent(MusicEvent.ACTION_ON_STOP).send();
         }
     }
 
@@ -853,10 +851,6 @@ public class SkVideoPlayerView extends TextureView implements IVideoPlayer, Medi
 
     public void unmute() {
         mMediaPlayer.setVolume(mVolumeScalar, mVolumeScalar);
-    }
-
-    private synchronized void sendMusicEvent(MusicEvent event) {
-        EventBus.getDefault().post(event);
     }
 
 

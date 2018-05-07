@@ -143,7 +143,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             case ToDFServiceEvent.ACTION_PING_SERVICE_STATUS:
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS);
                 serviceEvent.putExtra(DFServiceEvent.PARAM_SERVICE_STATUS, mDFServiceStatus);
-                sendDFServiceEvent(serviceEvent);
+                serviceEvent.send();
                 break;
             case ToDFServiceEvent.ACTION_SCAN_USB_DEVICES:
                 mVoiceSourceHelper.scanUsbDevices(this);
@@ -193,7 +193,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             case ToDFServiceEvent.ACTION_PING_VOICE_SOURCE:
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
                 serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mVoiceSourceHelper.getUsbVoiceSource() == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
-                sendDFServiceEvent(serviceEvent);
+                serviceEvent.send();
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, String.format("updateVoiceSource, mUsbVoiceSource: %s", mVoiceSourceHelper.getUsbVoiceSource()));
                 }
@@ -308,8 +308,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     if (NetworkUtil.isNetworkAvailable(DialogFlowForegroundService.this)) {
                         updateVoiceSource();
                     }
-                    DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED);
-                    sendDFServiceEvent(event);
+                    new DFServiceEvent(DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED).send();
                     break;
             }
         }
@@ -345,7 +344,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         String action = DFServiceEvent.ACTION_EXIT_APP;
         DFServiceEvent event = new DFServiceEvent(action);
-        sendDFServiceEvent(event);
+        event.send();
 
         if (LogOnViewUtil.ENABLE_LOG_FILE) {
             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Exit App, Goodbye !");
@@ -412,7 +411,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         mDFServiceStatus.setInit(true);
                         String action = DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT;
                         DFServiceEvent event = new DFServiceEvent(action);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "init UI Done");
                         }
@@ -428,7 +427,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         String action = DFServiceEvent.ACTION_ON_WAKE_UP;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_WAKE_UP_FROM, scene);
-                        sendDFServiceEvent(event);
+                        event.send();
                         switch (scene) {
                             case SceneReplyIM.SCENE:
                             case SceneReplySms.SCENE:
@@ -466,7 +465,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         MusicForegroundService.resumeMusic();
                         String action = DFServiceEvent.ACTION_ON_SLEEP;
                         DFServiceEvent event = new DFServiceEvent(action);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Hi Kika Sleep");
                         }
@@ -480,7 +479,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     public void onASRPause() {
                         String action = DFServiceEvent.ACTION_ON_ASR_PAUSE;
                         DFServiceEvent event = new DFServiceEvent(action);
-                        sendDFServiceEvent(event); // TODO: redundant, remove later
+                        event.send(); // TODO: redundant, remove later
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             long spend = System.currentTimeMillis() - mDbgLogResumeStartTime;
                             int per = (int) (100 * ((float) mDbgLogASRRecogFullTime / spend));
@@ -495,7 +494,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         }
                         String action = DFServiceEvent.ACTION_ON_ASR_RESUME;
                         DFServiceEvent event = new DFServiceEvent(action);
-                        sendDFServiceEvent(event); // TODO: redundant, remove later
+                        event.send(); // TODO: redundant, remove later
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addSeparator();
                             mDbgLogResumeStartTime = System.currentTimeMillis();
@@ -522,7 +521,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         event.putExtra(DFServiceEvent.PARAM_TEXT, speechText);
                         //event.putExtra(DFServiceEvent.PARAM_EMOJI, emojiUnicode);
                         event.putExtra(DFServiceEvent.PARAM_IS_FINISHED, isFinished);
-                        sendDFServiceEvent(event);
+                        event.send();
 
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             mIsAsrFinished = isFinished;
@@ -558,7 +557,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                                 mDFServiceStatus.setUsbDeviceDataCorrect(false);
                                 DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
                                 event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, false);
-                                sendDFServiceEvent(event);
+                                event.send();
                                 break;
                             case VoiceService.ERR_NO_SPEECH:
                                 if (LogUtil.DEBUG) {
@@ -581,7 +580,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, text);
                         event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), text);
                         }
@@ -602,7 +601,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, text);
                         event.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), text);
                         }
@@ -628,7 +627,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         event.putExtra(DFServiceEvent.PARAM_SCENE, scene);
                         event.putExtra(DFServiceEvent.PARAM_SCENE_ACTION, action);
                         event.putExtra(DFServiceEvent.PARAM_SCENE_STAGE, stage);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(eventAction), stage.toString());
                         }
@@ -655,7 +654,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (overrideAsrBos != null) {
                             event.putExtra(DFServiceEvent.PARAM_BOS_DURATION, overrideAsrBos);
                         }
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "isInterrupted:" + isInterrupted);
                         }
@@ -711,7 +710,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         String action = DFServiceEvent.ACTION_ON_STAGE_EVENT;
                         DFServiceEvent serviceEvent = new DFServiceEvent(action);
                         serviceEvent.putExtra(DFServiceEvent.PARAM_EXTRAS, extras);
-                        sendDFServiceEvent(serviceEvent);
+                        serviceEvent.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Parameters:" + extras);
                         }
@@ -726,7 +725,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         String action = DFServiceEvent.ACTION_ON_SCENE_EXIT;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_IS_PROACTIVE, proactive);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "proactive:" + proactive);
                         }
@@ -738,7 +737,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         String action = DFServiceEvent.ACTION_ON_ASR_CONFIG;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, asrConfigJson);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addSeparator();
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), asrConfigJson);
@@ -753,7 +752,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_TEXT, voiceSource);
                         event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("updateVoiceSource, mUsbVoiceSource: %s", mVoiceSourceHelper.getUsbVoiceSource()));
                         }
@@ -773,7 +772,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_START;
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_IS_PROACTIVE, proactive);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             mDbgLogAPIQueryUITime = System.currentTimeMillis();
                             LogOnViewUtil.getIns().addSeparator();
@@ -796,7 +795,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         DFServiceEvent event = new DFServiceEvent(action);
                         event.putExtra(DFServiceEvent.PARAM_DBG_INTENT_ACTION, dbgMsg[0]);
                         event.putExtra(DFServiceEvent.PARAM_DBG_INTENT_PARMS, dbgMsg[1]);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             mDbgLogAPIQueryUITime = System.currentTimeMillis() - mDbgLogAPIQueryUITime;
                             LogOnViewUtil.getIns().addLog(getDbgAction(action) + " (" + mDbgLogAPIQueryUITime + "ms)", "\n" + dbgMsg[0] + "\n" + dbgMsg[1]);
@@ -812,7 +811,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         mDialogFlowService.onLocalIntent(SceneError.SCENE, ErrorSceneActions.ACTION_DF_ENGINE_ERROR);
                         String action = DFServiceEvent.ACTION_ON_AGENT_QUERY_ERROR;
                         DFServiceEvent event = new DFServiceEvent(action);
-                        sendDFServiceEvent(event);
+                        event.send();
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog("Api.ai query error");
                             LogOnViewUtil.getIns().addSeparator();
@@ -880,7 +879,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         setupDialogFlowService();
                         break;
                     case VoiceSourceHelper.Event.USB_DEVICE_NOT_FOUND:
-                        sendDFServiceEvent(new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NO_DEVICES));
+                        new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NO_DEVICES).send();
                     case VoiceSourceHelper.Event.USB_DEVICE_ERROR:
                         mVoiceSourceHelper.closeDevice(DialogFlowForegroundService.this);
                         setupDialogFlowService();
@@ -889,7 +888,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NON_CHANGED);
                         serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mVoiceSourceHelper.getUsbVoiceSource() == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
                         serviceEvent.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
-                        sendDFServiceEvent(serviceEvent);
+                        serviceEvent.send();
                         break;
                 }
             }
@@ -908,10 +907,6 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
             mDialogFlowService.updateRecorderSource(config);
         }
-    }
-
-    private void sendDFServiceEvent(DFServiceEvent event) {
-        EventBus.getDefault().post(event);
     }
 
 
@@ -1033,7 +1028,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         mDFServiceStatus.setUsbDeviceDataCorrect(isValidRawDataLen);
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
                         event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, isValidRawDataLen);
-                        sendDFServiceEvent(event);
+                        event.send();
                     }
                 }
             }
@@ -1087,86 +1082,82 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processPingDialogFlowStatus() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_PING_SERVICE_STATUS);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processScanUsbDevices() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_SCAN_USB_DEVICES);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processOnAppForeground() {
         isAppForeground = true;
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_FOREGROUND);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processOnAppBackground() {
         isAppForeground = false;
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_APP_BACKGROUND);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processStatusChanged(GoLayout.ViewStatus status) {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_STATUS_CHANGED);
         event.putExtra(ToDFServiceEvent.PARAM_STATUS, status);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processMsgChanged(String text) {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_MSG_CHANGED);
         event.putExtra(ToDFServiceEvent.PARAM_TEXT, text);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processNavigationStarted() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_NAVIGATION_STARTED);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processNavigationStopped() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_NAVIGATION_STOPPED);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processDialogFlowTalk(String text) {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DIALOG_FLOW_TALK);
         event.putExtra(ToDFServiceEvent.PARAM_TEXT, text);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processDialogFlowWakeUp() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DIALOG_FLOW_WAKE_UP);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processPingVoiceSource() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_PING_VOICE_SOURCE);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processAccessibilityStarted() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ACCESSIBILITY_STARTED);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processAccessibilityStopped() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ACCESSIBILITY_STOPPED);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processDisableWakeUpDetector() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DISABLE_WAKE_UP_DETECTOR);
-        sendToDFServiceEvent(event);
+        event.send();
     }
 
     public synchronized static void processEnableWakeUpDetector() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ENABLE_WAKE_UP_DETECTOR);
-        sendToDFServiceEvent(event);
-    }
-
-    private synchronized static void sendToDFServiceEvent(ToDFServiceEvent event) {
-        EventBus.getDefault().post(event);
+        event.send();
     }
 
 

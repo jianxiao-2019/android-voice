@@ -302,7 +302,7 @@ public class MusicForegroundService extends BaseForegroundService {
             LogUtil.log(TAG, "pauseMusic");
         }
         ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_PAUSE_MUSIC);
-        sendToMusicServiceEvent(event);
+        event.send();
     }
 
     public static synchronized void resumeMusic() {
@@ -310,21 +310,17 @@ public class MusicForegroundService extends BaseForegroundService {
             LogUtil.log(TAG, "resumeMusic");
         }
         ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_RESUME_MUSIC);
-        sendToMusicServiceEvent(event);
+        event.send();
     }
 
     public static synchronized void processMusicChanged() {
         ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_MUSIC_CHANGE);
-        sendToMusicServiceEvent(event);
+        event.send();
     }
 
     public static synchronized void processVolumeControl(@MusicSceneUtil.VolumeControlType int type) {
         ToMusicServiceEvent event = new ToMusicServiceEvent(ToMusicServiceEvent.ACTION_VOLUME_CONTROL);
         event.putExtra(ToMusicServiceEvent.PARAM_VOLUME_CONTROL_TYPE, type);
-        sendToMusicServiceEvent(event);
-    }
-
-    private synchronized static void sendToMusicServiceEvent(ToMusicServiceEvent event) {
-        EventBus.getDefault().post(event);
+        event.send();
     }
 }

@@ -3,6 +3,8 @@ package com.kikatech.go.eventbus;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -53,5 +55,9 @@ class BaseEvent {
 
     public void putExtra(String key, ArrayList<? extends Parcelable> value) {
         extras.putParcelableArrayList(key, value);
+    }
+
+    public void send() {
+        EventBus.getDefault().post(this);
     }
 }

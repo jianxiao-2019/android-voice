@@ -148,7 +148,7 @@ public class KikaDebugLogActivity extends BaseActivity {
                 DialogUtil.showDbgAsrServerList(KikaDebugLogActivity.this, new DialogUtil.IDialogListener() {
                     @Override
                     public void onApply(Bundle args) {
-                        EventBus.getDefault().post(new ToDFServiceEvent(ToDFServiceEvent.ACTION_CHANGE_SERVER));
+                        new ToDFServiceEvent(ToDFServiceEvent.ACTION_CHANGE_SERVER).send();
                         loadDbgAsrServer();
                     }
 
