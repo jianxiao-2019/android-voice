@@ -10,9 +10,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -26,11 +24,16 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.close.CloseSceneManager;
+import com.kikatech.go.dialogflow.close.SceneClose;
 import com.kikatech.go.dialogflow.common.CommonSceneManager;
+import com.kikatech.go.dialogflow.common.SceneCommon;
 import com.kikatech.go.dialogflow.error.ErrorSceneActions;
 import com.kikatech.go.dialogflow.error.ErrorSceneManager;
 import com.kikatech.go.dialogflow.error.SceneError;
 import com.kikatech.go.dialogflow.gotomain.GotoMainSceneManager;
+import com.kikatech.go.dialogflow.help.HelpSceneManager;
+import com.kikatech.go.dialogflow.help.SceneHelp;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
@@ -50,6 +53,7 @@ import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.activity.KikaGoActivity;
 import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.BackgroundThread;
+import com.kikatech.go.util.ImageUtil;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
@@ -58,7 +62,6 @@ import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.view.GoLayout;
-import com.kikatech.go.util.ImageUtil;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
@@ -97,10 +100,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     private IDialogFlowService mDialogFlowService;
     private final List<BaseSceneManager> mSceneManagers = new ArrayList<>();
+    private CloseSceneManager mCloseSceneManager;
+    private HelpSceneManager mHelpSceneManager;
 
     private VoiceSourceHelper mVoiceSourceHelper = new VoiceSourceHelper();
-
-    private Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     private DFServiceStatus mDFServiceStatus = new DFServiceStatus();
 
@@ -265,6 +268,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             performOnReceive(context, intent);
         }
 
+        @SuppressWarnings("unused")
         private void performOnReceive(Context context, Intent intent) {
             if (intent == null) {
                 return;
@@ -466,6 +470,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         if (LogOnViewUtil.ENABLE_LOG_FILE) {
                             LogOnViewUtil.getIns().addLog(getDbgAction(action), "Hi Kika Sleep");
                         }
+                        mCloseSceneManager = new CloseSceneManager(DialogFlowForegroundService.this, mDialogFlowService);
+                        mHelpSceneManager = new HelpSceneManager(DialogFlowForegroundService.this, mDialogFlowService);
+                        mSceneManagers.add(mCloseSceneManager);
+                        mSceneManagers.add(mHelpSceneManager);
                     }
 
                     @Override
@@ -604,6 +612,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     public void onStagePrepared(String scene, String action, SceneStage stage) {
                         if (LogUtil.DEBUG) {
                             LogUtil.log(TAG, String.format("scene: %1$s, action: %2$s, stage: %3$s", scene, action, stage.getClass().getSimpleName()));
+                        }
+                        if (!SceneError.SCENE.equals(scene) && !SceneCommon.SCENE.equals(scene)) {
+                            if (!SceneHelp.SCENE.equals(scene)) {
+                                mHelpSceneManager.close();
+                                mSceneManagers.remove(mHelpSceneManager);
+                            }
+                            if (!SceneClose.SCENE.equals(scene)) {
+                                mCloseSceneManager.close();
+                                mSceneManagers.remove(mCloseSceneManager);
+                            }
                         }
                         String eventAction = DFServiceEvent.ACTION_ON_STAGE_PREPARED;
                         DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_STAGE_PREPARED);
@@ -813,6 +831,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         mSceneManagers.add(new GotoMainSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new MusicSceneManager(this, mDialogFlowService));
         mSceneManagers.add(new ErrorSceneManager(this, mDialogFlowService));
+        mCloseSceneManager = new CloseSceneManager(this, mDialogFlowService);
+        mHelpSceneManager = new HelpSceneManager(this, mDialogFlowService);
+        mSceneManagers.add(mCloseSceneManager);
+        mSceneManagers.add(mHelpSceneManager);
     }
 
     private void setupDialogFlowService() {
