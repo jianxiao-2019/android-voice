@@ -27,6 +27,36 @@ android {
 
 }
 
+def getVersionName(String versionName) {
+    if (isRelease()) {
+        if (versionName.endsWith('-SNAPSHOT')) {
+            versionName = versionName.replace("-SNAPSHOT", "")
+        }
+    } else {
+        if (!versionName.endsWith('-SNAPSHOT')) {
+            versionName = versionName + "-SNAPSHOT"
+        }
+    }
+    println 'VersionName=' + versionName;
+    return versionName
+}
+
+def getVersionCode(int versionCode) {
+    if (hasProperty("VersionCode")) {
+        return Integer.parseInt(getProperty("VersionCode").toString())
+    }
+    return versionCode
+}
+
+def isRelease() {
+    if (hasProperty('RELEASE')) {
+        return getProperty('RELEASE').toBoolean()
+    }
+    return false
+}
+
+apply from: 'gradle-mvn-push.gradle'
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:25.3.1'
