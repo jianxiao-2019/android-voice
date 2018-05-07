@@ -121,7 +121,17 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     private long mDbgLogResumeStartTime = 0;
     private long mDbgLogASRRecogFullTime = 0;
 
-    private Queue<Long> mMsgQueue = new LinkedList<>();
+    private Queue<MsgTask> mMsgQueue = new LinkedList<>();
+
+    private class MsgTask {
+        private String commend;
+        private long timestamp;
+
+        private MsgTask(String commend, long timestamp) {
+            this.commend = commend;
+            this.timestamp = timestamp;
+        }
+    }
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -233,12 +243,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 if (LogUtil.DEBUG) {
                     LogUtil.logv(TAG, String.format("action: %s, isServiceAwake: %s", action, isServiceAwake));
                 }
-                long msgTimestamp = event.getExtras().getLong(ToDFServiceEvent.PARAM_TIMESTAMP);
                 if (mDialogFlowService != null) {
+                    long msgTimestamp = event.getExtras().getLong(ToDFServiceEvent.PARAM_TIMESTAMP);
+                    String msgCommend = event.getExtras().getString(ToDFServiceEvent.PARAM_MSG_COMMEND);
                     if (!isServiceAwake) {
-                        doOnNewMsg(msgTimestamp);
+                        doOnNewMsg(msgCommend, msgTimestamp);
                     } else {
-                        mMsgQueue.offer(msgTimestamp);
+                        mMsgQueue.offer(new MsgTask(msgCommend, msgTimestamp));
                     }
                 }
                 break;
@@ -492,8 +503,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                         mSceneManagers.add(mCloseSceneManager);
                         mSceneManagers.add(mHelpSceneManager);
                         if (!mMsgQueue.isEmpty()) {
-                            long msgTimestamp = mMsgQueue.poll();
-                            doOnNewMsg(msgTimestamp);
+                            MsgTask msgTask = mMsgQueue.poll();
+                            String msgCommend = msgTask.commend;
+                            long msgTimestamp = msgTask.timestamp;
+                            doOnNewMsg(msgCommend, msgTimestamp);
                         }
                     }
 
@@ -932,10 +945,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
 
-    private void doOnNewMsg(long msgTimestamp) {
+    private void doOnNewMsg(String msgCommend, long msgTimestamp) {
         mDialogFlowService.wakeUp(SceneReplyIM.SCENE);
         mDialogFlowService.resetContexts();
-        mDialogFlowService.talk(String.format(Locale.ENGLISH, IMSceneManager.KIKA_PROCESS_RECEIVED_IM, msgTimestamp), false);
+        mDialogFlowService.talk(String.format(Locale.ENGLISH, msgCommend, msgTimestamp), false);
     }
 
 
@@ -1189,8 +1202,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         event.send();
     }
 
-    public synchronized static void processOnNewMsg(long msgTimestamp) {
+    public synchronized static void processOnNewMsg(String commend, long msgTimestamp) {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_NEW_MSG);
+        event.putExtra(ToDFServiceEvent.PARAM_MSG_COMMEND, commend);
         event.putExtra(ToDFServiceEvent.PARAM_TIMESTAMP, msgTimestamp);
         event.send();
     }

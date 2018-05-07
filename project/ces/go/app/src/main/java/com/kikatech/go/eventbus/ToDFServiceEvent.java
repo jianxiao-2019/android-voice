@@ -28,6 +28,7 @@ public class ToDFServiceEvent extends BaseEvent {
 
     public static final String PARAM_STATUS = "param_status";
     public static final String PARAM_TEXT = "param_text";
+    public static final String PARAM_MSG_COMMEND = "param_msg_commend";
     public static final String PARAM_TIMESTAMP = "param_timestamp";
 
     public ToDFServiceEvent(String action) {

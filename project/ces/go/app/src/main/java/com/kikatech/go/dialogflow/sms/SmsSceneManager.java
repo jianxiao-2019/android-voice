@@ -12,6 +12,7 @@ import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
 import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.message.sms.SmsManager;
 import com.kikatech.go.message.sms.SmsObject;
+import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
@@ -46,9 +47,7 @@ public class SmsSceneManager extends BaseSceneManager {
                     long t = System.currentTimeMillis();
                     mReceivedSmsList.put(t, smsObject);
 
-                    mService.wakeUp(SceneReplySms.SCENE);
-                    mService.resetContexts();
-                    mService.talk(String.format(Locale.ENGLISH, KIKA_PROCESS_RECEIVED_SMS, t), false);
+                    DialogFlowForegroundService.processOnNewMsg(KIKA_PROCESS_RECEIVED_SMS, t);
                 }
             }
         };

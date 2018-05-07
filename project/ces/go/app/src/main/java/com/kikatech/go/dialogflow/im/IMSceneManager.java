@@ -22,7 +22,7 @@ import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 
 public class IMSceneManager extends BaseSceneManager {
 
-    public static final String KIKA_PROCESS_RECEIVED_IM = "kika_process_received_im %d";
+    private static final String KIKA_PROCESS_RECEIVED_IM = "kika_process_received_im %d";
 
     private BroadcastReceiver mImReceiver = null;
     private LongSparseArray<BaseIMObject> mReceivedSmsList;
@@ -49,7 +49,7 @@ public class IMSceneManager extends BaseSceneManager {
                     long t = System.currentTimeMillis();
                     mReceivedSmsList.put(t, imObject);
 
-                    DialogFlowForegroundService.processOnNewMsg(t);
+                    DialogFlowForegroundService.processOnNewMsg(KIKA_PROCESS_RECEIVED_IM, t);
                 }
             }
         };
