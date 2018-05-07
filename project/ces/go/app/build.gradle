@@ -113,6 +113,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.kikatech.voice:voice:1.0.6.5'
 //    compile project(':voice')
+//    compile project(':wakeup')
 }
 
 crashlytics {

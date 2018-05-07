@@ -8,6 +8,7 @@ import com.kikatech.usb.UsbAudioSource;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
+import com.kikatech.voice.wakeup.SnowBoyDetector;
 
 /**
  * Created by bradchang on 2017/11/7.
@@ -43,7 +44,7 @@ public class DialogFlowConfig {
         conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
         conf.setBosDuration(BOS_DURATION);
         conf.setEosDuration(EOS_DURATION);
-        conf.setSupportWakeUpMode(true);
+        conf.setWakeUpDetector(new SnowBoyDetector());
         return conf;
     }
 }
