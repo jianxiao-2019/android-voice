@@ -19,7 +19,7 @@ public class UsbAudio {
      * @return     true   setup ok
      *             false  setup failed
      */
-    public native boolean setup(String path, int fd, int vid, int pid);
+    public native synchronized boolean setup(String path, int fd, int vid, int pid);
 
     
     /**
@@ -36,7 +36,7 @@ public class UsbAudio {
      *             1    mono channel
      *             2    stereo
      */
-    public native int setupWithChannelNo(String path, int fd, int vid, int pid);
+    public native synchronized int setupWithChannelNo(String path, int fd, int vid, int pid);
 
     /**
      *  Inform device to prepare to capture usb data stream   
@@ -50,14 +50,14 @@ public class UsbAudio {
      *  Close usb handle.    
      *  After this call, start and stop function become non-sense.
      */
-    public native void close();
+    public native synchronized void close();
 
 
     /**
      *  Allow device to capture usb data stream, data will be   
      *  transmit to AudioPlayBack.write() function                  
      */
-    public native void start();
+    public native synchronized void start();
 
     
     /** 
@@ -66,7 +66,7 @@ public class UsbAudio {
      *  An invoke of start() will re-allow device to capture usb data 
      *  stram.
      */
-    public native void stop();
+    public native synchronized void stop();
 
     /**
      *  Return 2 bytes of firmware version
