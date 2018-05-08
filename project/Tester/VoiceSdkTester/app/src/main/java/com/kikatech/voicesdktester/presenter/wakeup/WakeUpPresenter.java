@@ -89,7 +89,7 @@ public abstract class WakeUpPresenter implements
                 .setUrl(PreferenceUtil.getString(
                         mContext,
                         PreferenceUtil.KEY_SERVER_LOCATION,
-                        VoiceConfiguration.HostUrl.DEV_KIKAGO))
+                        VoiceConfiguration.HostUrl.KIKAGO_SQ))
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(mContext))
                 .setUserAgent(RequestManager.generateUserAgent(mContext))

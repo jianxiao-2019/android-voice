@@ -47,7 +47,6 @@ public class RecorderFragment extends PageFragment implements
         TtsSource.TtsStateChangedListener {
 
     private static final String DEBUG_FILE_TAG = "UsbTester";
-    public static final String WEB_SOCKET_URL_DEV = "ws://speech0-dev.kikakeyboard.com/v3/speech";
 
     private View mStartRecordView;
     private View mStopRecordView;
@@ -227,7 +226,7 @@ public class RecorderFragment extends PageFragment implements
         conf.setBosDuration(Integer.MAX_VALUE);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
-                .setUrl(WEB_SOCKET_URL_DEV)
+                .setUrl(VoiceConfiguration.HostUrl.KIKAGO_SQ)
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(getActivity()))
                 .setUserAgent(RequestManager.generateUserAgent(getActivity()))

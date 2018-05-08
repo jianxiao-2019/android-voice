@@ -223,7 +223,7 @@ public class LocalPlayBackFragment extends Fragment implements
                 .setUrl(PreferenceUtil.getString(
                         getActivity(),
                         PreferenceUtil.KEY_SERVER_LOCATION,
-                        VoiceConfiguration.HostUrl.DEV_KIKAGO))
+                        VoiceConfiguration.HostUrl.KIKAGO_SQ))
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(getActivity()))
                 .setUserAgent(RequestManager.generateUserAgent(getActivity()))

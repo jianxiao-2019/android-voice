@@ -19,7 +19,7 @@ import java.util.List;
 public class UserSettings {
     private static final String TAG = "UserSettings";
 
-    public final static String DEFAULT_DBG_ASR_SERVER = VoiceConfiguration.HostUrl.DEV_KIKAGO;
+    public final static String DEFAULT_DBG_ASR_SERVER = VoiceConfiguration.HostUrl.KIKAGO_SQ;
 
     public final static int SETTING_REPLY_MSG_IGNORE = 0;
     public final static int SETTING_REPLY_MSG_READ = 1;
@@ -43,10 +43,10 @@ public class UserSettings {
 
     public static List<String> getDbgAsrServerList() {
         List<String> serverList = new ArrayList<>();
-        serverList.add(VoiceConfiguration.HostUrl.DEV_HAO);
-        serverList.add(VoiceConfiguration.HostUrl.DEV_ASR);
-        serverList.add(VoiceConfiguration.HostUrl.DEV_KIKAGO);
-        serverList.add(VoiceConfiguration.HostUrl.DEV_KEYBOARD);
+        serverList.add(VoiceConfiguration.HostUrl.HAO_DEV);
+        serverList.add(VoiceConfiguration.HostUrl.API_DEV);
+        serverList.add(VoiceConfiguration.HostUrl.KIKAGO_SQ);
+        serverList.add(VoiceConfiguration.HostUrl.KIKAGO_PRODUCTION);
         return serverList;
     }
 

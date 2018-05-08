@@ -77,10 +77,10 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     private static final String[] mServerList = {
-            VoiceConfiguration.HostUrl.DEV_HAO,
-            VoiceConfiguration.HostUrl.DEV_ASR,
-            VoiceConfiguration.HostUrl.DEV_KIKAGO,
-            VoiceConfiguration.HostUrl.DEV_KIKAGO,
+            VoiceConfiguration.HostUrl.HAO_DEV,
+            VoiceConfiguration.HostUrl.API_DEV,
+            VoiceConfiguration.HostUrl.KIKAGO_SQ,
+            VoiceConfiguration.HostUrl.KIKAGO_SQ,
     };
 
     private static final String[] VOLUME_TABLE = new String[] {
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onClick(View v) {
-                int checkedItem = findCheckedServer(PreferenceUtil.getString(MainActivity.this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.DEV_KIKAGO));
+                int checkedItem = findCheckedServer(PreferenceUtil.getString(MainActivity.this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.KIKAGO_SQ));
                 new AlertDialog.Builder(MainActivity.this)
                         .setSingleChoiceItems(mServerList, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
@@ -768,7 +768,7 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
-        String server = PreferenceUtil.getString(this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.DEV_KIKAGO);
+        String server = PreferenceUtil.getString(this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.KIKAGO_SQ);
         mCurServerButton.setText("Now is : " + server);
     }
 
@@ -801,7 +801,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setUrl(PreferenceUtil.getString(
                         MainActivity.this,
                         PreferenceUtil.KEY_SERVER_LOCATION,
-                        VoiceConfiguration.HostUrl.DEV_KIKAGO))
+                        VoiceConfiguration.HostUrl.KIKAGO_SQ))
                 .setLocale(getCurrentLocale())
                 .setSign(RequestManager.getSign(this))
                 .setUserAgent(RequestManager.generateUserAgent(this))

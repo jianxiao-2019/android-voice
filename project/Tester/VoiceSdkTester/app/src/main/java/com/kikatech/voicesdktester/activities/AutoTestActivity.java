@@ -233,7 +233,7 @@ public class AutoTestActivity extends AppCompatActivity implements
                 .setUrl(PreferenceUtil.getString(
                         AutoTestActivity.this,
                         PreferenceUtil.KEY_SERVER_LOCATION,
-                        VoiceConfiguration.HostUrl.DEV_KIKAGO))
+                        VoiceConfiguration.HostUrl.KIKAGO_SQ))
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(this))
                 .setUserAgent(RequestManager.generateUserAgent(this))
