@@ -44,6 +44,7 @@ import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
+import com.kikatech.voice.wakeup.SnowBoyDetector;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
@@ -791,7 +792,7 @@ public class MainActivity extends AppCompatActivity implements
         conf.setIsDebugMode(true);
         conf.setDebugFileTag(DEBUG_FILE_TAG);
         conf.source(mUsbAudioSource);
-        conf.setSupportWakeUpMode(IS_WAKE_UP_MODE);
+        conf.setWakeUpDetector(IS_WAKE_UP_MODE ? new SnowBoyDetector() : null);
         conf.setBosDuration(14500);
         conf.setEosDuration(10000);
         conf.setSpeechMode(mSpeechMode);

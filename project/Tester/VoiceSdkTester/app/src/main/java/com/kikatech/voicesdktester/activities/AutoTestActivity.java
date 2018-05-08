@@ -228,7 +228,6 @@ public class AutoTestActivity extends AppCompatActivity implements
         conf.setDebugFileTag(DEBUG_FILE_PATH);
         conf.setIsDebugMode(true);
         conf.source(mLocalNcVoiceSource);
-        conf.setSupportWakeUpMode(false);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
                 .setUrl(PreferenceUtil.getString(

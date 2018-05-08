@@ -10,6 +10,7 @@ import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
+import com.kikatech.voice.wakeup.SnowBoyDetector;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public abstract class WakeUpPresenter implements
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setDebugFileTag(DEBUG_FILE_PATH);
         conf.setIsDebugMode(true);
-        conf.setSupportWakeUpMode(true);
+        conf.setWakeUpDetector(new SnowBoyDetector());
         conf.source(mVoiceSource);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
