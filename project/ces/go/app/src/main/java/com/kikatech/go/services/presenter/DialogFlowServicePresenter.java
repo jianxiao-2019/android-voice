@@ -34,7 +34,6 @@ import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.activity.KikaGoActivity;
-import com.kikatech.go.util.AsyncThreadPool;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
@@ -81,7 +80,6 @@ public class DialogFlowServicePresenter {
 
 
     private boolean mDbgLogFirstAsrResult = false;
-    private boolean mIsAsrFinished = false;
     private long mDbgLogAPIQueryUITime = 0;
     private long mDbgLogASRRecogStartTime = 0;
     private long mDbgLogResumeStartTime = 0;
@@ -236,7 +234,6 @@ public class DialogFlowServicePresenter {
             event.send();
 
             if (LogOnViewUtil.ENABLE_LOG_FILE) {
-                mIsAsrFinished = isFinished;
                 if (!mDbgLogFirstAsrResult) {
                     mDbgLogFirstAsrResult = true;
                     mDbgLogASRRecogStartTime = System.currentTimeMillis();
@@ -246,7 +243,7 @@ public class DialogFlowServicePresenter {
                 String spendTime = " (" + mDbgLogASRRecogFullTime + " ms)";
                 String concat = StringUtil.upperCaseFirstWord(speechText);
                 LogOnViewUtil.getIns().addLog(LogOnViewUtil.getIns().getDbgActionLog(action) + finishMsg, concat + spendTime);
-                if (mIsAsrFinished) {
+                if (isFinished) {
                     mDbgLogFirstAsrResult = false;
                 }
             }
