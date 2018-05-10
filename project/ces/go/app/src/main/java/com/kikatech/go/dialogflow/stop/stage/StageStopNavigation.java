@@ -42,7 +42,7 @@ public class StageStopNavigation extends BaseSceneStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         NaviSceneUtil.stopNavigation(mSceneBase.getContext());
         exitScene();
     }

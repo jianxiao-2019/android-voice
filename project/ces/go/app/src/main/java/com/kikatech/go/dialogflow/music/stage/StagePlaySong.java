@@ -51,12 +51,12 @@ class StagePlaySong extends BaseMusicStage {
             }
             MusicForegroundService.startMusic(mSceneBase.getContext(), mPlayList);
         } else {
-            onStageActionDone(false, false);
+            onStageActionDone(false);
         }
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         TipsHelper.setCanShowDialogMoreCommands(true);
         exitScene();
     }

@@ -74,7 +74,7 @@ public class StageMakeCall extends StageOutgoing {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         Bundle args = new Bundle();
         args.putString(SceneUtil.EXTRA_EVENT, SceneUtil.EVENT_OUTGOING_CALL);
         send(args);

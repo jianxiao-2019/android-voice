@@ -24,7 +24,7 @@ public class StageCloseStart extends BaseCloseStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         DialogFlowForegroundService.processStop(mSceneBase.getContext(), DialogFlowForegroundService.class);
     }
 }

@@ -44,7 +44,7 @@ class StageQuerySong extends BaseMusicStage {
                 @Override
                 public void onLoaded(YouTubeVideoList result) {
                     mPlayList = result;
-                    onStageActionDone(false, false);
+                    onStageActionDone(false);
                 }
             });
         } else {
@@ -52,14 +52,14 @@ class StageQuerySong extends BaseMusicStage {
                 @Override
                 public void onLoaded(YouTubeVideoList result) {
                     mPlayList = result;
-                    onStageActionDone(false, false);
+                    onStageActionDone(false);
                 }
             });
         }
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         if (mPlayList != null && !mPlayList.isEmpty()) {
             SceneStage nextStage = new StagePlaySong(mSceneBase, mFeedback, mPlayList);
             mSceneBase.nextStage(nextStage);

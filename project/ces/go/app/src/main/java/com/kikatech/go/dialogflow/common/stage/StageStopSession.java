@@ -53,7 +53,7 @@ public class StageStopSession extends SceneStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         exitScene();
     }
 }

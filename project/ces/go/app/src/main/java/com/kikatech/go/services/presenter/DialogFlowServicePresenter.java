@@ -355,9 +355,9 @@ public class DialogFlowServicePresenter {
         }
 
         @Override
-        public void onStageActionDone(boolean isInterrupted, final boolean delayAsrResume, final Integer overrideAsrBos) {
+        public void onStageActionDone(boolean isInterrupted, final Integer overrideAsrBos) {
             if (LogUtil.DEBUG) {
-                LogUtil.log(TAG, String.format("isInterrupted: %1$s, delayAsrResume: %2$s", isInterrupted, delayAsrResume));
+                LogUtil.log(TAG, String.format("isInterrupted: %s", isInterrupted));
             }
 
             String action = DFServiceEvent.ACTION_ON_STAGE_ACTION_DONE;
@@ -378,15 +378,15 @@ public class DialogFlowServicePresenter {
 
                     @Override
                     public void onStop() {
-                        doStartAsrOnStageActionDone(delayAsrResume, overrideAsrBos);
+                        doStartAsrOnStageActionDone(overrideAsrBos);
                     }
                 });
             } else {
-                doStartAsrOnStageActionDone(delayAsrResume, overrideAsrBos);
+                doStartAsrOnStageActionDone(overrideAsrBos);
             }
         }
 
-        private void doStartAsrOnStageActionDone(boolean delayAsrResume, Integer overrideAsrBos) {
+        private void doStartAsrOnStageActionDone(Integer overrideAsrBos) {
             if (overrideAsrBos != null) {
                 startAsr(overrideAsrBos);
             } else {

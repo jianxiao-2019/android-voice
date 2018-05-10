@@ -44,7 +44,7 @@ public class StageQueryAddress extends BaseNaviStage {
                 @Override
                 public void onResult(PlaceSearchResult result) {
                     mPlaceSearchResult = result;
-                    onStageActionDone(false, false);
+                    onStageActionDone(false);
                 }
 
                 @Override
@@ -52,14 +52,14 @@ public class StageQueryAddress extends BaseNaviStage {
                     if (LogUtil.DEBUG) {
                         LogUtil.logw(TAG, String.format("onError: %s", err));
                     }
-                    onStageActionDone(false, false);
+                    onStageActionDone(false);
                 }
             });
         }
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         SceneStage nextStage = new StageAskAddress(mSceneBase, mFeedback, true);
         if (mPlaceSearchResult != null) {
             if (LogUtil.DEBUG) {

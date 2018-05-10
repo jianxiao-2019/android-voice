@@ -53,7 +53,7 @@ class StageHelpStart extends BaseHelpStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
-        super.onStageActionDone(isInterrupted, delayAsrResume);
+    public void onStageActionDone(boolean isInterrupted) {
+        super.onStageActionDone(isInterrupted);
     }
 }

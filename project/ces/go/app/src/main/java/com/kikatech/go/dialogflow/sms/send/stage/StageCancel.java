@@ -38,7 +38,7 @@ public class StageCancel extends BaseSendSmsStage {
     }
 
     @Override
-    public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume) {
+    public void onStageActionDone(boolean isInterrupted) {
         exitScene();
     }
 }
