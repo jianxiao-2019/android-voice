@@ -14,8 +14,8 @@
     <dimen name="go_layout_option_emoji_text_margin_top">117dp</dimen>
     <dimen name="go_layout_option_emoji_text_size">85dp</dimen>
 
-    <dimen name="go_layout_option_item_text_max_size">48dp</dimen>
-    <dimen name="go_layout_option_item_text_min_size">36dp</dimen>
+    <dimen name="go_layout_option_item_text_max_size">46dp</dimen>
+    <dimen name="go_layout_option_item_text_min_size">34dp</dimen>
 
     <dimen name="go_layout_usr_info_name_im_name_text_size">34dp</dimen>
     <dimen name="go_layout_usr_info_name_text_max_size">52dp</dimen>
