@@ -14,6 +14,7 @@ import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.ui.activity.KikaDebugLogActivity;
 import com.kikatech.go.util.FlavorUtil;
 import com.kikatech.go.util.LogUtil;
@@ -59,20 +60,20 @@ public class DrawerMainFragment extends Fragment {
         }
         switch (action) {
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
-                String text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                updateMicStatus(text);
+                String source = event.getExtras().getString(DFServiceEvent.PARAM_AUDIO_SOURCE);
+                updateMicStatus(source);
                 break;
             case DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED:
-                boolean isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT);
+                boolean isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT);
                 updateUsbDataStatus(isUsbDataCorrect);
                 break;
 
         }
     }
 
-    private void updateMicStatus(String text) {
+    private void updateMicStatus(String source) {
         if (mMicStatusView != null) {
-            if (DialogFlowForegroundService.VOICE_SOURCE_USB.equals(text)) {
+            if (VoiceSourceHelper.VOICE_SOURCE_USB.equals(source)) {
                 mMicStatusView.setText(getString(R.string.drawer_item_mic_status_connected));
                 mMicStatusView.setTextColor(getResources().getColor(R.color.drawer_subtitle_text));
             } else {

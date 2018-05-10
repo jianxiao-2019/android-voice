@@ -30,6 +30,11 @@ public class VoiceSourceHelper {
         int NON_CHANGED = EVENT_NON_CHANGED;
     }
 
+
+    public static final String VOICE_SOURCE_ANDROID = "Android";
+    public static final String VOICE_SOURCE_USB = "USB";
+
+
     private long start_t;
 
     private IVoiceSourceListener mVoiceSourceListener;

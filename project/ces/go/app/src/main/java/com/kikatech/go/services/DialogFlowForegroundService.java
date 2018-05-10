@@ -24,6 +24,7 @@ import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.MusicEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.services.presenter.DialogFlowServicePresenter;
+import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.util.ImageUtil;
 import com.kikatech.go.util.IntentUtil;
@@ -44,9 +45,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class DialogFlowForegroundService extends BaseForegroundService {
     private static final String TAG = "DialogFlowForegroundService";
-
-    public static final String VOICE_SOURCE_ANDROID = "Android";
-    public static final String VOICE_SOURCE_USB = "USB";
 
     private static class Commands extends BaseForegroundService.Commands {
         private static final String DIALOG_FLOW_SERVICE = "dialog_flow_service_";
@@ -83,6 +81,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             return;
         }
         DFServiceEvent serviceEvent;
+        UsbAudioSource usbAudioSource;
+        String source;
         switch (action) {
             case ToDFServiceEvent.ACTION_CHANGE_SERVER:
                 if (mDFPresenter != null) {
@@ -90,7 +90,10 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 }
                 break;
             case ToDFServiceEvent.ACTION_PING_SERVICE_STATUS:
+                usbAudioSource = mDFPresenter != null ? mDFPresenter.getUsbVoiceSource() : null;
+                source = usbAudioSource != null ? VoiceSourceHelper.VOICE_SOURCE_USB : VoiceSourceHelper.VOICE_SOURCE_ANDROID;
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS);
+                serviceEvent.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, source);
                 serviceEvent.putExtra(DFServiceEvent.PARAM_SERVICE_STATUS, mDFServiceStatus);
                 serviceEvent.send();
                 break;
@@ -151,8 +154,9 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 break;
             case ToDFServiceEvent.ACTION_PING_VOICE_SOURCE:
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
-                UsbAudioSource source = mDFPresenter != null ? mDFPresenter.getUsbVoiceSource() : null;
-                serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, source == null ? VOICE_SOURCE_ANDROID : VOICE_SOURCE_USB);
+                usbAudioSource = mDFPresenter != null ? mDFPresenter.getUsbVoiceSource() : null;
+                source = usbAudioSource != null ? VoiceSourceHelper.VOICE_SOURCE_USB : VoiceSourceHelper.VOICE_SOURCE_ANDROID;
+                serviceEvent.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, source);
                 serviceEvent.send();
                 if (LogUtil.DEBUG) {
                     LogUtil.log(TAG, String.format("updateVoiceSource, mUsbVoiceSource: %s", source));
@@ -303,20 +307,21 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         mDFPresenter = new DialogFlowServicePresenter(DialogFlowForegroundService.this, mDFServiceStatus, mManager);
 
-        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
-            @Override
-            public void onWrite(int len) {
-                if (mDFServiceStatus.isUsbDeviceAvailable()) {
-                    boolean isValidRawDataLen = len >= AudioPlayBack.RAW_DATA_AVAILABLE_LENGTH;
-                    if (mDFServiceStatus.isUsbDeviceDataCorrect() == null || mDFServiceStatus.isUsbDeviceDataCorrect() != isValidRawDataLen) {
-                        mDFServiceStatus.setUsbDeviceDataCorrect(isValidRawDataLen);
-                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
-                        event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, isValidRawDataLen);
-                        event.send();
-                    }
-                }
-            }
-        });
+//        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
+//            @Override
+//            public void onWrite(int len) {
+//                if (mDFServiceStatus.isUsbDeviceAvailable()) {
+//                    boolean isValidRawDataLen = len >= AudioPlayBack.RAW_DATA_AVAILABLE_LENGTH;
+//                    if (mDFServiceStatus.isAudioDataCorrect() == null || mDFServiceStatus.isAudioDataCorrect() != isValidRawDataLen) {
+//                        mDFServiceStatus.setAudioDataCorrect(isValidRawDataLen);
+//                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
+//                        event.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, VoiceSourceHelper.VOICE_SOURCE_USB);
+//                        event.putExtra(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, isValidRawDataLen);
+//                        event.send();
+//                    }
+//                }
+//            }
+//        });
 
         acquireWakeLock();
     }

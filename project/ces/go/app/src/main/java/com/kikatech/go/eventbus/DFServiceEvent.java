@@ -41,7 +41,9 @@ public class DFServiceEvent extends BaseEvent {
     public static final String PARAM_BOS_DURATION = "param_bos_duration";
     public static final String PARAM_IS_PROACTIVE = "param_is_proactive";
     public static final String PARAM_SERVICE_STATUS = "param_service_status";
-    public static final String PARAM_IS_USB_DEVICE_DATA_CORRECT = "param_is_usb_device_data_correct";
+    public static final String PARAM_ASR_CONFIG_JSON = "param_asr_config_json";
+    public static final String PARAM_AUDIO_SOURCE = "param_audio_source";
+    public static final String PARAM_IS_AUDIO_DATA_CORRECT = "param_is_audio_data_correct";
 
     public static final String PARAM_DBG_INTENT_ACTION = "param_dbg_intent_action";
     public static final String PARAM_DBG_INTENT_PARMS = "param_dbg_intent_parms";

@@ -31,7 +31,6 @@ import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
-import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.activity.KikaGoActivity;
@@ -269,9 +268,11 @@ public class DialogFlowServicePresenter {
                     if (LogUtil.DEBUG) {
                         LogUtil.logw(TAG, "ERR_RECORD_DATA_FAIL");
                     }
-                    mDFServiceStatus.setUsbDeviceDataCorrect(false);
+                    mDFServiceStatus.setAudioDataCorrect(false);
+                    String source = mVoiceSourceHelper.getUsbVoiceSource() != null ? VoiceSourceHelper.VOICE_SOURCE_USB : VoiceSourceHelper.VOICE_SOURCE_ANDROID;
                     DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
-                    event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, false);
+                    event.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, source);
+                    event.putExtra(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, false);
                     event.send();
                     break;
                 case VoiceService.ERR_NO_SPEECH:
@@ -451,7 +452,7 @@ public class DialogFlowServicePresenter {
             String asrConfigJson = asrConfig.toJsonString();
             String action = DFServiceEvent.ACTION_ON_ASR_CONFIG;
             DFServiceEvent event = new DFServiceEvent(action);
-            event.putExtra(DFServiceEvent.PARAM_TEXT, asrConfigJson);
+            event.putExtra(DFServiceEvent.PARAM_ASR_CONFIG_JSON, asrConfigJson);
             event.send();
             if (LogOnViewUtil.ENABLE_LOG_FILE) {
                 LogOnViewUtil.getIns().addSeparator();
@@ -462,11 +463,11 @@ public class DialogFlowServicePresenter {
 
         @Override
         public void onRecorderSourceUpdate() {
-            String voiceSource = mVoiceSourceHelper.getUsbVoiceSource() == null ? DialogFlowForegroundService.VOICE_SOURCE_ANDROID : DialogFlowForegroundService.VOICE_SOURCE_USB;
+            String voiceSource = mVoiceSourceHelper.getUsbVoiceSource() == null ? VoiceSourceHelper.VOICE_SOURCE_ANDROID : VoiceSourceHelper.VOICE_SOURCE_USB;
             String action = DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE;
             DFServiceEvent event = new DFServiceEvent(action);
-            event.putExtra(DFServiceEvent.PARAM_TEXT, voiceSource);
-            event.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
+            event.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, voiceSource);
+            event.putExtra(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, mDFServiceStatus.isAudioDataCorrect());
             event.send();
             if (LogUtil.DEBUG) {
                 LogUtil.log(TAG, String.format("updateVoiceSource, mUsbVoiceSource: %s", mVoiceSourceHelper.getUsbVoiceSource()));
@@ -559,9 +560,10 @@ public class DialogFlowServicePresenter {
                         setupDialogFlowService();
                         break;
                     case VoiceSourceHelper.Event.NON_CHANGED:
+                        String source = mVoiceSourceHelper.getUsbVoiceSource() == null ? VoiceSourceHelper.VOICE_SOURCE_ANDROID : VoiceSourceHelper.VOICE_SOURCE_USB;
                         DFServiceEvent serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_NON_CHANGED);
-                        serviceEvent.putExtra(DFServiceEvent.PARAM_TEXT, mVoiceSourceHelper.getUsbVoiceSource() == null ? DialogFlowForegroundService.VOICE_SOURCE_ANDROID : DialogFlowForegroundService.VOICE_SOURCE_USB);
-                        serviceEvent.putExtra(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, mDFServiceStatus.isUsbDeviceDataCorrect());
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, source);
+                        serviceEvent.putExtra(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, mDFServiceStatus.isAudioDataCorrect());
                         serviceEvent.send();
                         break;
                 }

@@ -16,6 +16,7 @@ import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.ui.fragment.DrawerAdvancedFragment;
 import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
@@ -51,14 +52,15 @@ public class KikaGoActivity extends BaseDrawerActivity {
     private UiTaskManager mUiManager;
     private ImageView mBtnOpenDrawer;
     private View mIconConnectionStatus;
-    private View mIconUsbHardwareStatus;
+    private ImageView mIconUsbHardwareStatus;
     private View mIconUsbAttached;
     private View mIconHelp;
     private View mIconUpdateApp;
 
     private boolean triggerDialogViaClick;
 
-    private boolean mIsUsbDataCorrect = true;
+    private boolean mIsUsbSource = false;
+    private boolean mIsAudioDataCorrect = true;
 
     private int mIconHelpVisibility = View.VISIBLE;
 
@@ -81,7 +83,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
         Bundle extras;
         String text, scene, sceneAction, source;
         SceneStage stage;
-        boolean isFinished, proactive, isUsbSource, isUsbDataCorrect;
+        boolean isFinished, proactive, isUsbSource, isAudioDataCorrect;
         String dbgAction = "[" + action.replace("action_on_", "") + "]";
         switch (action) {
             case DFServiceEvent.ACTION_ON_CONNECTIVITY_CHANGED:
@@ -91,10 +93,12 @@ public class KikaGoActivity extends BaseDrawerActivity {
                 finishAffinity();
                 break;
             case DFServiceEvent.ACTION_ON_USB_NON_CHANGED:
-                source = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
-                isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, true);
-                if (isUsbSource && isUsbDataCorrect) {
+                source = event.getExtras().getString(DFServiceEvent.PARAM_AUDIO_SOURCE);
+                isUsbSource = VoiceSourceHelper.VOICE_SOURCE_USB.equals(source);
+                isAudioDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, true);
+                mIsUsbSource = isUsbSource;
+                mIsAudioDataCorrect = isAudioDataCorrect;
+                if (isUsbSource && isAudioDataCorrect) {
                     break;
                 }
             case DFServiceEvent.ACTION_ON_USB_NO_DEVICES:
@@ -134,6 +138,10 @@ public class KikaGoActivity extends BaseDrawerActivity {
                 isFinished = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_FINISHED, false);
                 String concat = StringUtil.upperCaseFirstWord(text);
                 mUiManager.dispatchSpeechTask(concat, isFinished);
+                if (!mIsAudioDataCorrect) {
+                    mIsAudioDataCorrect = true;
+                    updateTopIconStatus();
+                }
                 break;
             case DFServiceEvent.ACTION_ON_TEXT:
                 text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
@@ -172,8 +180,10 @@ public class KikaGoActivity extends BaseDrawerActivity {
             case DFServiceEvent.ACTION_ON_ASR_CONFIG:
                 break;
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
-                source = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
+                source = event.getExtras().getString(DFServiceEvent.PARAM_AUDIO_SOURCE);
+                isUsbSource = VoiceSourceHelper.VOICE_SOURCE_USB.equals(source);
+                mIsUsbSource = isUsbSource;
+                mIsAudioDataCorrect = true;
                 onUsbAttachedStatusChanged(isUsbSource);
                 break;
             case DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS:
@@ -184,21 +194,27 @@ public class KikaGoActivity extends BaseDrawerActivity {
                     } else {
                         mUiManager.dispatchSleep();
                     }
-                    Boolean isDataCorrect = serviceStatus.isUsbDeviceDataCorrect();
-                    isUsbDataCorrect = isDataCorrect == null || isDataCorrect;
+                    source = event.getExtras().getString(DFServiceEvent.PARAM_AUDIO_SOURCE);
+                    isUsbSource = VoiceSourceHelper.VOICE_SOURCE_USB.equals(source);
+                    Boolean isDataCorrect = serviceStatus.isAudioDataCorrect();
+                    isAudioDataCorrect = isDataCorrect == null || isDataCorrect;
                     if (LogUtil.DEBUG) {
-                        LogUtil.logv(TAG, String.format("ACTION_ON_PING_SERVICE_STATUS, isUsbDataCorrect: %s", isUsbDataCorrect));
+                        LogUtil.logv(TAG, String.format("%s, isUsbSource: %s, isAudioDataCorrect: %s", action, isUsbSource, isAudioDataCorrect));
                     }
-                    mIsUsbDataCorrect = isUsbDataCorrect;
+                    mIsUsbSource = isUsbSource;
+                    mIsAudioDataCorrect = isAudioDataCorrect;
                     updateTopIconStatus();
                 }
                 break;
             case DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED:
-                isUsbDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT);
+                isAudioDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT);
+                source = event.getExtras().getString(DFServiceEvent.PARAM_AUDIO_SOURCE);
+                isUsbSource = VoiceSourceHelper.VOICE_SOURCE_USB.equals(source);
                 if (LogUtil.DEBUG) {
-                    LogUtil.logv(TAG, String.format("ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED, isUsbDataCorrect: %s", isUsbDataCorrect));
+                    LogUtil.logv(TAG, String.format("%s, isUsbSource: %s, isAudioDataCorrect: %s", action, isUsbSource, isAudioDataCorrect));
                 }
-                mIsUsbDataCorrect = isUsbDataCorrect;
+                mIsUsbSource = isUsbSource;
+                mIsAudioDataCorrect = isAudioDataCorrect;
                 updateTopIconStatus();
                 break;
         }
@@ -335,7 +351,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
         mBtnOpenDrawer = (ImageView) findViewById(R.id.go_layout_btn_open_drawer);
         mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
-        mIconUsbHardwareStatus = findViewById(R.id.go_layout_ic_hardware_status);
+        mIconUsbHardwareStatus = (ImageView) findViewById(R.id.go_layout_ic_hardware_status);
         mIconUsbAttached = findViewById(R.id.go_layout_ic_usb_attached);
         mIconHelp = findViewById(R.id.go_layout_ic_help);
         mIconUpdateApp = findViewById(R.id.go_layout_ic_update_app);
@@ -394,9 +410,10 @@ public class KikaGoActivity extends BaseDrawerActivity {
             mIconUsbHardwareStatus.setVisibility(View.GONE);
             mIconHelp.setVisibility(View.INVISIBLE);
             animateNetworkError();
-        } else if (!mIsUsbDataCorrect) { // has network connection, but usb data incorrect
+        } else if (!mIsAudioDataCorrect) { // has network connection, but audio data incorrect
             mIconConnectionStatus.clearAnimation();
             mIconConnectionStatus.setVisibility(View.GONE);
+            mIconUsbHardwareStatus.setImageResource(mIsUsbSource ? R.drawable.kika_settings_ic_hardware_error : R.drawable.kika_settings_ic_microphone_error);
             mIconUsbHardwareStatus.setVisibility(View.VISIBLE);
             mIconHelp.setVisibility(View.INVISIBLE);
         } else { // has network connection, and usb data correct

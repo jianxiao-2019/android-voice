@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.ui.activity.BaseActivity;
 import com.kikatech.go.ui.activity.KikaFAQsReportActivity;
 import com.kikatech.go.ui.activity.KikaUserReportActivity;
@@ -96,9 +97,9 @@ public class FAQHelper {
                 if (LogUtil.DEBUG) {
                     LogUtil.logd(TAG, String.format("mFaq2Step: %s", mFaq2Step));
                 }
-                String source = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                boolean isUsbSource = DialogFlowForegroundService.VOICE_SOURCE_USB.equals(source);
-                boolean isDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_USB_DEVICE_DATA_CORRECT, true);
+                String source = event.getExtras().getString(DFServiceEvent.PARAM_AUDIO_SOURCE);
+                boolean isUsbSource = VoiceSourceHelper.VOICE_SOURCE_USB.equals(source);
+                boolean isDataCorrect = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, true);
                 switch (mFaq2Step) {
                     case Faq2Step.IDLE:
                         break;

@@ -82,16 +82,16 @@ public class KikaDebugLogActivity extends BaseActivity {
         }
         switch (action) {
             case DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE:
-                String text = event.getExtras().getString(DFServiceEvent.PARAM_TEXT);
-                updateVoiceSourceInfo(text);
+                String source = event.getExtras().getString(DFServiceEvent.PARAM_AUDIO_SOURCE);
+                updateVoiceSourceInfo(source);
                 break;
         }
     }
 
-    public void updateVoiceSourceInfo(String text) {
+    public void updateVoiceSourceInfo(String source) {
         StringBuilder builder = new StringBuilder(BuildConfig.VERSION_NAME);
-        if (!TextUtils.isEmpty(text)) {
-            builder.append("  <Record From:").append(text).append(">");
+        if (!TextUtils.isEmpty(source)) {
+            builder.append("  <Record From:").append(source).append(">");
         }
         builder.append(" <NC Version:").append(NoiseCancellation.GetVersion()).append(">");
         tvLogAppVersion.setText(builder.toString());
