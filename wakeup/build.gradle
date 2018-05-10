@@ -61,6 +61,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-//    compile 'com.kikatech.voice:voice:1.0.7.2'
-    compile project(':voice')
+    compile 'com.kikatech.voice:voice:1.0.7.2'
+//    compile project(':voice')
 }
