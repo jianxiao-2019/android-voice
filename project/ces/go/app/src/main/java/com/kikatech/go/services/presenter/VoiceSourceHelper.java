@@ -1,4 +1,4 @@
-package com.kikatech.go.services;
+package com.kikatech.go.services.presenter;
 
 import android.content.Context;
 import android.support.annotation.IntDef;

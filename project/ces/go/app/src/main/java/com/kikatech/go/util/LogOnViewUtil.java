@@ -140,6 +140,10 @@ public class LogOnViewUtil {
         return log;
     }
 
+    public String getDbgActionLog(String action) {
+        return "[" + action.replace("action_on_", "") + "]";
+    }
+
     private void updateLogView() {
         if (mDebugLogView == null) {
             return;

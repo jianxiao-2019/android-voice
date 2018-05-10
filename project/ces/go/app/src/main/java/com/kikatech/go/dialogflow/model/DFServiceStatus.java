@@ -11,6 +11,7 @@ public class DFServiceStatus implements Serializable {
     private boolean isAwake;
     private boolean isUsbDeviceAvailable;
     private Boolean isUsbDeviceDataCorrect = null; // using Boolean to check if the status set or not
+    private boolean isAppForeground;
 
     public boolean isInit() {
         return isInit;
@@ -42,5 +43,13 @@ public class DFServiceStatus implements Serializable {
 
     public void setUsbDeviceDataCorrect(boolean isCorrect) {
         this.isUsbDeviceDataCorrect = isCorrect;
+    }
+
+    public boolean isAppForeground() {
+        return isAppForeground;
+    }
+
+    public void setAppForeground(boolean appForeground) {
+        this.isAppForeground = appForeground;
     }
 }
