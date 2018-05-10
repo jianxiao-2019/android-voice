@@ -269,8 +269,8 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         }
 
         @Override
-        public void onStageActionDone(boolean isInterrupted, boolean delayAsrResume, Integer overrideAsrBos) {
-            mServiceCallback.onStageActionDone(isInterrupted, delayAsrResume, overrideAsrBos);
+        public void onStageActionDone(boolean isInterrupted, Integer overrideAsrBos) {
+            mServiceCallback.onStageActionDone(isInterrupted, overrideAsrBos);
         }
 
         @Override
@@ -344,7 +344,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
                 AsyncThread.getIns().execute(new Runnable() {
                     @Override
                     public void run() {
-                        feedback.onStageActionDone(false, true);
+                        feedback.onStageActionDone(false);
                     }
                 });
             }
@@ -360,7 +360,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
                 AsyncThread.getIns().execute(new Runnable() {
                     @Override
                     public void run() {
-                        feedback.onStageActionDone(true, true);
+                        feedback.onStageActionDone(true);
                     }
                 });
             }
@@ -376,7 +376,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
                 AsyncThread.getIns().execute(new Runnable() {
                     @Override
                     public void run() {
-                        feedback.onStageActionDone(true, true);
+                        feedback.onStageActionDone(true);
                     }
                 });
             }

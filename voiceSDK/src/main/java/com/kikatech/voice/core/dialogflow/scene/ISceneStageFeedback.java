@@ -7,7 +7,7 @@ package com.kikatech.voice.core.dialogflow.scene;
 public interface ISceneStageFeedback {
     void onStageActionStart();
 
-    void onStageActionDone(boolean isInterrupted, boolean delayAsrResume);
+    void onStageActionDone(boolean isInterrupted);
 
     /**
      * @return null if no need to override asr bos duration
