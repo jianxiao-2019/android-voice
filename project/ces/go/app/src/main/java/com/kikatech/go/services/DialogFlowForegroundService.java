@@ -307,21 +307,21 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
         mDFPresenter = new DialogFlowServicePresenter(DialogFlowForegroundService.this, mDFServiceStatus, mManager);
 
-//        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
-//            @Override
-//            public void onWrite(int len) {
-//                if (mDFServiceStatus.isUsbDeviceAvailable()) {
-//                    boolean isValidRawDataLen = len >= AudioPlayBack.RAW_DATA_AVAILABLE_LENGTH;
-//                    if (mDFServiceStatus.isAudioDataCorrect() == null || mDFServiceStatus.isAudioDataCorrect() != isValidRawDataLen) {
-//                        mDFServiceStatus.setAudioDataCorrect(isValidRawDataLen);
-//                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
-//                        event.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, VoiceSourceHelper.VOICE_SOURCE_USB);
-//                        event.putExtra(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, isValidRawDataLen);
-//                        event.send();
-//                    }
-//                }
-//            }
-//        });
+        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
+            @Override
+            public void onWrite(int len) {
+                if (mDFServiceStatus.isUsbDeviceAvailable()) {
+                    boolean isValidRawDataLen = len >= AudioPlayBack.RAW_DATA_AVAILABLE_LENGTH;
+                    if (mDFServiceStatus.isAudioDataCorrect() == null || mDFServiceStatus.isAudioDataCorrect() != isValidRawDataLen) {
+                        mDFServiceStatus.setAudioDataCorrect(isValidRawDataLen);
+                        DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_USB_DEVICE_DATA_STATUS_CHANGED);
+                        event.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, VoiceSourceHelper.VOICE_SOURCE_USB);
+                        event.putExtra(DFServiceEvent.PARAM_IS_AUDIO_DATA_CORRECT, isValidRawDataLen);
+                        event.send();
+                    }
+                }
+            }
+        });
 
         acquireWakeLock();
     }
