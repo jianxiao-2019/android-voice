@@ -62,8 +62,6 @@ import java.util.Queue;
 public class DialogFlowServicePresenter {
     private static final String TAG = "DialogFlowServicePresenter";
 
-    private static final long TTS_DELAY_ASR_RESUME = 250;
-
 
     private Context mContext;
 
@@ -392,18 +390,10 @@ public class DialogFlowServicePresenter {
         }
 
         private void doStartAsrOnStageActionDone(boolean delayAsrResume, Integer overrideAsrBos) {
-            if (delayAsrResume) {
-                if (overrideAsrBos != null) {
-                    startAsrDelay(overrideAsrBos);
-                } else {
-                    startAsrDelay();
-                }
+            if (overrideAsrBos != null) {
+                startAsr(overrideAsrBos);
             } else {
-                if (overrideAsrBos != null) {
-                    startAsr(overrideAsrBos);
-                } else {
-                    startAsr();
-                }
+                startAsr();
             }
         }
 
@@ -791,24 +781,6 @@ public class DialogFlowServicePresenter {
             mDialogFlowService.startListening(bosDuration);
             mAsrMaxDurationTimer.start();
         }
-    }
-
-    private synchronized void startAsrDelay() {
-        AsyncThreadPool.getIns().executeDelay(new Runnable() {
-            @Override
-            public void run() {
-                startAsr();
-            }
-        }, TTS_DELAY_ASR_RESUME);
-    }
-
-    private synchronized void startAsrDelay(final int bosDuration) {
-        AsyncThreadPool.getIns().executeDelay(new Runnable() {
-            @Override
-            public void run() {
-                startAsr(bosDuration);
-            }
-        }, TTS_DELAY_ASR_RESUME);
     }
 
     private synchronized void cancelAsr() {
