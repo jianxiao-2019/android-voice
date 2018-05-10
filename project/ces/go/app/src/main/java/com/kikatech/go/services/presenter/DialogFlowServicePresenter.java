@@ -625,8 +625,11 @@ public class DialogFlowServicePresenter {
                     if (mAsrMaxDurationTimer.isCounting()) {
                         mAsrMaxDurationTimer.stop();
                     }
-                    VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(mContext, mVoiceSourceHelper.getUsbVoiceSource());
-                    mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
+                    UsbAudioSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
+                    VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(mContext, usbSource);
+                    mDFServiceStatus.setUsbDeviceAvailable(usbSource != null);
+                    mDFServiceStatus.setAudioDataCorrect(true);
+                    mDFServiceStatus.setInit(false);
                     mDialogFlowService.updateRecorderSource(config);
                 }
             });
