@@ -47,6 +47,10 @@ public class TextMessage extends Message {
 
     @Override
     public String toString() {
-        return super.toString() + " text = " + text[0] + "(" + cid + ")";
+        if (text != null && text[0] != null) {
+            return super.toString() + " text = " + text[0] + "(" + cid + ")";
+        } else {
+            return super.toString();
+        }
     }
 }
