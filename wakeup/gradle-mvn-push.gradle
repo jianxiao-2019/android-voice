@@ -49,6 +49,18 @@ afterEvaluate { project ->
                         url POM_SCM_URL
                     }
                 }
+                pom.whenConfigured { pom ->
+                    println("Current Dependencies ${pom.dependencies}")
+                    pom.dependencies.each { dep ->
+                        println("Processing ${dep}")
+                        if (dep.getVersion() == "unspecified") {
+                            println("Updating Dependencies")
+                            dep.setGroupId(GROUP)
+                            dep.setVersion(getVersionName(VERSION_NAME))
+                            println("Updated ${dep}")
+                        }
+                    }
+                }
 
                 //snapshotRepository(url: 'file://' + new File(System.getProperty('user.home'),'temp/snapshots').absolutePath) { }
 
