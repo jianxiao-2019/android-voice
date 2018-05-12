@@ -111,8 +111,9 @@ dependencies {
     compile 'com.google.firebase:firebase-core:9.2.0'
     compile project(':usb')
     testCompile 'junit:junit:4.12'
-    compile 'com.kikatech.voice:voice:1.0.6.5'
-//    compile project(':voice')
+    compile 'com.kikatech.voice:voice:1.0.7.5'
+    compile 'com.kikatech.voice:wakeup:1.0.7.5'
+//    compile project(':voiceSDK')
 //    compile project(':wakeup')
 }
 

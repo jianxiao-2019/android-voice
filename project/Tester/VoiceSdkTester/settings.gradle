@@ -1,8 +1,8 @@
 include ':app'
-include ':voice'
+include ':voiceSDK'
 include ':wakeup'
 include ':usb'
 
-project(":voice").projectDir = new File("../../../../android-voice/voiceSDK");
+project(":voiceSDK").projectDir = new File("../../../../android-voice/voiceSDK");
 project(":wakeup").projectDir = new File("../../../../android-voice/wakeup");
 project(":usb").projectDir = new File("../../core/usb/app");

@@ -37,7 +37,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
     testCompile 'junit:junit:4.12'
-    compile project(':voice')
+    compile project(':voiceSDK')
     compile project(':wakeup')
     compile project(path: ':usb')
 //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
