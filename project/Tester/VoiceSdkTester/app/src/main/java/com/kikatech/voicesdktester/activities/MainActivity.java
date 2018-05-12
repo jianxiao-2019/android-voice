@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsService;
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private AsrConfiguration mAsrConfiguration;
 
-    private UsbAudioSource mUsbAudioSource;
+    private KikaGoVoiceSource mKikaGoVoiceSource;
 
     private UsbAudioService mUsbAudioService;
 
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private VoiceConfiguration.SpeechMode mSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
 
-    private UsbAudioSource.SourceDataCallback mSourceDataCallback = new UsbAudioSource.SourceDataCallback() {
+    private KikaGoVoiceSource.SourceDataCallback mSourceDataCallback = new KikaGoVoiceSource.SourceDataCallback() {
         @Override
         public void onSource(byte[] leftData, byte[] rightData) {
 
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
-    private UsbAudioSource.OnOpenedCallback mOnOpenedCallback = new UsbAudioSource.OnOpenedCallback() {
+    private KikaGoVoiceSource.OnOpenedCallback mOnOpenedCallback = new KikaGoVoiceSource.OnOpenedCallback() {
         @Override
         public void onOpened(int state) {
             runOnUiThread(new Runnable() {
@@ -184,15 +184,15 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     private void checkNsParameters() {
-        if (mUsbAudioSource != null) {
+        if (mKikaGoVoiceSource != null) {
             if (mSeekAngle != null) {
-                mSeekAngle.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(0));
+                mSeekAngle.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(0));
             }
             if (mSeekNc != null) {
-                mSeekNc.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(1));
+                mSeekNc.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(1));
             }
             if (mSeekMode != null) {
-                mSeekMode.setProgress(mUsbAudioSource.getNoiseSuppressionParameters(2));
+                mSeekMode.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(2));
             }
         }
     }
@@ -396,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_source_usb).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource == null) {
+                if (mKikaGoVoiceSource == null) {
                     mUsbAudioService = UsbAudioService.getInstance(MainActivity.this);
                     mUsbAudioService.setListener(mIUsbAudioListener);
                     mUsbAudioService.scanDevices();
@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_source_android).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mUsbAudioSource = null;
+                mKikaGoVoiceSource = null;
                 attachService();
 
                 mTextView.setText("Using Android source");
@@ -521,8 +521,8 @@ public class MainActivity extends AppCompatActivity implements
         mButtonAngle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.setNoiseCancellationParameters(
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.setNoiseCancellationParameters(
                             KikaNcBuffer.CONTROL_ANGLE, mSeekAngle.getProgress());
                     if (mTextView != null) {
                         mTextView.setText("Set the Angle to " + mSeekAngle.getProgress());
@@ -556,8 +556,8 @@ public class MainActivity extends AppCompatActivity implements
         mButtonNc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.setNoiseCancellationParameters(
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.setNoiseCancellationParameters(
                             KikaNcBuffer.CONTROL_NC, mSeekNc.getProgress());
                 }
                 if (mTextView != null) {
@@ -591,8 +591,8 @@ public class MainActivity extends AppCompatActivity implements
         mButtonMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.setNoiseCancellationParameters(
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.setNoiseCancellationParameters(
                             KikaNcBuffer.CONTROL_MODE, mSeekMode.getProgress());
                 }
                 if (mTextView != null) {
@@ -607,8 +607,8 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_volume_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.volumeUp();
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.volumeUp();
                     checkVolume();
                 }
             }
@@ -617,8 +617,8 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_volume_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.volumeDown();
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.volumeDown();
                     checkVolume();
                 }
             }
@@ -644,18 +644,18 @@ public class MainActivity extends AppCompatActivity implements
     private void checkVersions() {
         StringBuilder version = new StringBuilder();
         version.append("[app : ").append(getVersionName(this)).append("] ");
-        if (mUsbAudioSource != null && mUsbAudioSource.mIsOpened()) {
-            version.append("[fw : 0x").append(Integer.toHexString(mUsbAudioSource.checkFwVersion())).append("] ");
-            version.append("[driver : ").append(mUsbAudioSource.checkDriverVersion()).append("] ");
-            version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("] ");
+        if (mKikaGoVoiceSource != null && mKikaGoVoiceSource.mIsOpened()) {
+            version.append("[fw : 0x").append(Integer.toHexString(mKikaGoVoiceSource.checkFwVersion())).append("] ");
+            version.append("[driver : ").append(mKikaGoVoiceSource.checkDriverVersion()).append("] ");
+            version.append("[nc : ").append(mKikaGoVoiceSource.getNcVersion()).append("] ");
         }
         ((TextView) findViewById(R.id.text_version)).setText("version : \n" + version);
     }
 
     private void checkVolume() {
         if (mVolumeText != null) {
-            if (mUsbAudioSource != null && mUsbAudioSource.mIsOpened()) {
-                int volumeLevel = mUsbAudioSource.checkVolumeState();
+            if (mKikaGoVoiceSource != null && mKikaGoVoiceSource.mIsOpened()) {
+                int volumeLevel = mKikaGoVoiceSource.checkVolumeState();
                 String volume = (volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0) ? "error" : VOLUME_TABLE[volumeLevel];
                 mVolumeText.setText(String.format(getString(R.string.current_volume), volume));
             } else {
@@ -681,16 +681,16 @@ public class MainActivity extends AppCompatActivity implements
 
     private void writeVersionsToFile() {
         DebugUtil.logTextToFile("app", getVersionName(this));
-        if (mUsbAudioSource != null) {
-            DebugUtil.logTextToFile("fw", String.valueOf(Integer.toHexString(mUsbAudioSource.checkFwVersion())));
-            DebugUtil.logTextToFile("driver", String.valueOf(mUsbAudioSource.checkDriverVersion()));
-            DebugUtil.logTextToFile("nc", String.valueOf(mUsbAudioSource.getNcVersion()));
+        if (mKikaGoVoiceSource != null) {
+            DebugUtil.logTextToFile("fw", String.valueOf(Integer.toHexString(mKikaGoVoiceSource.checkFwVersion())));
+            DebugUtil.logTextToFile("driver", String.valueOf(mKikaGoVoiceSource.checkDriverVersion()));
+            DebugUtil.logTextToFile("nc", String.valueOf(mKikaGoVoiceSource.getNcVersion()));
         }
     }
 
     private void writeVolumeToFile() {
-        if (mUsbAudioSource != null) {
-            int volumeLevel = mUsbAudioSource.checkVolumeState();
+        if (mKikaGoVoiceSource != null) {
+            int volumeLevel = mKikaGoVoiceSource.checkVolumeState();
             String volume = (volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0) ? "error" : VOLUME_TABLE[volumeLevel];
             if (!(volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0)) {
                 DebugUtil.logTextToFile("volume", String.format(getString(R.string.current_volume), volume).replace("Volume : ", ""));
@@ -792,7 +792,7 @@ public class MainActivity extends AppCompatActivity implements
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setIsDebugMode(true);
         conf.setDebugFileTag(DEBUG_FILE_TAG);
-        conf.source(mUsbAudioSource);
+        conf.source(mKikaGoVoiceSource);
         conf.setWakeUpDetector(IS_WAKE_UP_MODE ? new SnowBoyDetector() : null);
         conf.setBosDuration(14500);
         conf.setEosDuration(10000);
@@ -908,9 +908,9 @@ public class MainActivity extends AppCompatActivity implements
             }
         } else if (reason == ERR_RECORD_OPEN_FAIL) {
             mUsbAudioService.closeDevice();
-            if (mUsbAudioSource != null) {
-                mUsbAudioSource.close();
-                mUsbAudioSource = null;
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.close();
+                mKikaGoVoiceSource = null;
             }
             attachService();
             Toast.makeText(this, "Device open fail", Toast.LENGTH_SHORT).show();
@@ -972,17 +972,17 @@ public class MainActivity extends AppCompatActivity implements
     private IUsbAudioListener mIUsbAudioListener = new IUsbAudioListener() {
 
         @Override
-        public void onDeviceAttached(UsbAudioSource audioSource) {
+        public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached.");
-            mUsbAudioSource = audioSource;
+            mKikaGoVoiceSource = audioSource;
             attachService();
 
-            if (mUsbAudioSource == null) {
+            if (mKikaGoVoiceSource == null) {
                 return;
             }
 
-            mUsbAudioSource.setSourceDataCallback(mSourceDataCallback);
-            mUsbAudioSource.setOnOpenedCallback(mOnOpenedCallback);
+            mKikaGoVoiceSource.setSourceDataCallback(mSourceDataCallback);
+            mKikaGoVoiceSource.setOnOpenedCallback(mOnOpenedCallback);
 
             mNcParamLayout.setVisibility(View.VISIBLE);
 
@@ -1003,7 +1003,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onDeviceDetached() {
             Logger.d("onDeviceDetached.");
-            mUsbAudioSource = null;
+            mKikaGoVoiceSource = null;
             attachService();
 
             checkVersions();
@@ -1016,7 +1016,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onDeviceError(int errorCode) {
             Logger.d("onDeviceError errorCode = " + errorCode);
-            mUsbAudioSource = null;
+            mKikaGoVoiceSource = null;
             attachService();
 
             checkVersions();

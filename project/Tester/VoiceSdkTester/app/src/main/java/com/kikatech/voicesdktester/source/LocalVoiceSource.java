@@ -3,7 +3,7 @@ package com.kikatech.voicesdktester.source;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kikatech.usb.KikaBuffer;
+import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.util.log.Logger;
 

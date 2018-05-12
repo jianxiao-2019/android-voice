@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.go.util.LogUtil;
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
@@ -23,7 +23,7 @@ public class DialogFlowConfig {
     private static final int BOS_DURATION = 6800;
     private static final int EOS_DURATION = 3000;
 
-    public static VoiceConfiguration getVoiceConfig(Context ctx, UsbAudioSource audioSource) {
+    public static VoiceConfiguration getVoiceConfig(Context ctx, KikaGoVoiceSource audioSource) {
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
                 .source(audioSource);

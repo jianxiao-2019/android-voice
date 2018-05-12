@@ -17,7 +17,7 @@ import com.kika.usbasrtester.wave.draw.WaveCanvas;
 import com.kika.usbasrtester.wave.view.WaveSurfaceView;
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.EosMessage;
@@ -42,8 +42,8 @@ public class RecorderFragment extends PageFragment implements
         View.OnClickListener,
         VoiceService.VoiceRecognitionListener,
         VoiceService.VoiceDataListener,
-        UsbAudioSource.SourceDataCallback,
-        UsbAudioSource.OnOpenedCallback,
+        KikaGoVoiceSource.SourceDataCallback,
+        KikaGoVoiceSource.OnOpenedCallback,
         TtsSource.TtsStateChangedListener {
 
     private static final String DEBUG_FILE_TAG = "UsbTester";
@@ -62,7 +62,7 @@ public class RecorderFragment extends PageFragment implements
 
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
-    private UsbAudioSource mUsbAudioSource;
+    private KikaGoVoiceSource mKikaGoVoiceSource;
     private UsbAudioService mUsbAudioService;
 
     private WaveCanvas mLeftWaveCanvas;
@@ -126,8 +126,8 @@ public class RecorderFragment extends PageFragment implements
         view.findViewById(R.id.button_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.volumeUp();
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.volumeUp();
 
                     checkVolume();
                 }
@@ -137,8 +137,8 @@ public class RecorderFragment extends PageFragment implements
         view.findViewById(R.id.button_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mUsbAudioSource != null) {
-                    mUsbAudioSource.volumeDown();
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.volumeDown();
 
                     checkVolume();
                 }
@@ -158,10 +158,10 @@ public class RecorderFragment extends PageFragment implements
     private void checkVersion() {
         StringBuilder version = new StringBuilder();
         version.append("[app : ").append(getVersionName(getContext())).append("]\n");
-        if (mUsbAudioSource != null) {
-            version.append("[fw : 0x").append(Integer.toHexString(mUsbAudioSource.checkFwVersion())).append("]\n");
-            version.append("[driver : ").append(mUsbAudioSource.checkDriverVersion()).append("]\n");
-            version.append("[nc : ").append(mUsbAudioSource.getNcVersion()).append("]\n");
+        if (mKikaGoVoiceSource != null) {
+            version.append("[fw : 0x").append(Integer.toHexString(mKikaGoVoiceSource.checkFwVersion())).append("]\n");
+            version.append("[driver : ").append(mKikaGoVoiceSource.checkDriverVersion()).append("]\n");
+            version.append("[nc : ").append(mKikaGoVoiceSource.getNcVersion()).append("]\n");
         }
         mVersionText.setText("version : \n" + version);
     }
@@ -186,8 +186,8 @@ public class RecorderFragment extends PageFragment implements
             mUsbAudioService.closeDevice();
             mUsbAudioService.setListener(null);
         }
-        if (mUsbAudioSource != null) {
-            mUsbAudioSource.setSourceDataCallback(null);
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource.setSourceDataCallback(null);
         }
 
         AudioPlayBack.setListener(null);
@@ -222,7 +222,7 @@ public class RecorderFragment extends PageFragment implements
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setIsDebugMode(true);
         conf.setDebugFileTag(DEBUG_FILE_TAG);
-        conf.source(mUsbAudioSource);
+        conf.source(mKikaGoVoiceSource);
         conf.setBosDuration(Integer.MAX_VALUE);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
@@ -330,8 +330,8 @@ public class RecorderFragment extends PageFragment implements
     @Override
     public void onError(int reason) {
         Logger.e("onError reason = " + reason);
-        if (mUsbAudioSource != null) {
-            mUsbAudioSource.setSourceDataCallback(null);
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource.setSourceDataCallback(null);
         }
     }
 
@@ -348,11 +348,11 @@ public class RecorderFragment extends PageFragment implements
     private IUsbAudioListener mIUsbAudioListener = new IUsbAudioListener() {
 
         @Override
-        public void onDeviceAttached(UsbAudioSource audioSource) {
+        public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached.");
-            mUsbAudioSource = audioSource;
-            mUsbAudioSource.setSourceDataCallback(RecorderFragment.this);
-            mUsbAudioSource.setOnOpenedCallback(RecorderFragment.this);
+            mKikaGoVoiceSource = audioSource;
+            mKikaGoVoiceSource.setSourceDataCallback(RecorderFragment.this);
+            mKikaGoVoiceSource.setOnOpenedCallback(RecorderFragment.this);
             attachService();
 
             mStatusTextView.setText("Usb Device Attached.");
@@ -362,8 +362,8 @@ public class RecorderFragment extends PageFragment implements
         @Override
         public void onDeviceDetached() {
             Logger.d("onDeviceDetached.");
-            if (mUsbAudioSource != null) {
-                mUsbAudioSource.setSourceDataCallback(null);
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.setSourceDataCallback(null);
             }
 
             mStatusTextView.setText("Usb Device Detached.");
@@ -383,8 +383,8 @@ public class RecorderFragment extends PageFragment implements
                 mStatusTextView.setText("Device is MONO.");
             }
 
-            if (mUsbAudioSource != null) {
-                mUsbAudioSource.setSourceDataCallback(null);
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.setSourceDataCallback(null);
             }
             setRecordViewEnabled(false);
         }
@@ -392,7 +392,7 @@ public class RecorderFragment extends PageFragment implements
 
     private void checkVolume() {
         if (mVolumeText != null) {
-            int volumeLevel = mUsbAudioSource.checkVolumeState();
+            int volumeLevel = mKikaGoVoiceSource.checkVolumeState();
             String volume = (volumeLevel >= VOLUME_TABLE.length | volumeLevel < 0) ? "error" : VOLUME_TABLE[volumeLevel];
             mVolumeText.setText(String.format(getString(R.string.current_volume), volume));
         }

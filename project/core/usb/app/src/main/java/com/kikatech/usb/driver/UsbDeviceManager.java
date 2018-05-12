@@ -1,4 +1,4 @@
-package com.kikatech.usb;
+package com.kikatech.usb.driver;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,7 +18,7 @@ import java.util.HashMap;
  * Created by tianli on 17-11-6.
  */
 
-class UsbDeviceManager {
+public class UsbDeviceManager {
 
     private static final String TAG = "UsbDeviceManager";
     private Context mContext;
@@ -26,7 +26,7 @@ class UsbDeviceManager {
     private UsbDeviceReceiver mDeviceReceiver;
     private IUsbAudioDeviceListener mListener = null;
 
-    interface IUsbAudioDeviceListener {
+    public interface IUsbAudioDeviceListener {
 
         void onDeviceAttached(UsbDevice device);
 

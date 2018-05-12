@@ -4,6 +4,12 @@ import android.content.Context;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
 
+import com.kikatech.usb.datasource.IUsbDataSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
+import com.kikatech.usb.datasource.impl.KikaGoAccessoryDataSource;
+import com.kikatech.usb.datasource.impl.KikaGoDeviceDataSource;
+import com.kikatech.usb.driver.IUsbAudioDriver;
+import com.kikatech.usb.driver.UsbDeviceManager;
 import com.kikatech.voice.util.log.Logger;
 
 import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_CONNECTION_FAIL;
@@ -110,7 +116,7 @@ public class UsbAudioService {
         private void onDeviceAttached(IUsbAudioDriver driver) {
             mUsbAudioDriver = driver;
             if (mUsbAudioDriver.openUsb()) {
-                UsbAudioSource mAudioSource = new UsbAudioSource((IUsbDataSource) mUsbAudioDriver);
+                KikaGoVoiceSource mAudioSource = new KikaGoVoiceSource((IUsbDataSource) mUsbAudioDriver);
                 if (mListener != null) {
                     mListener.onDeviceAttached(mAudioSource);
                 }

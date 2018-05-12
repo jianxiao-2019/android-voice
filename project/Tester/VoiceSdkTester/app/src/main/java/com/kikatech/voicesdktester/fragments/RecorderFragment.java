@@ -15,13 +15,13 @@ import android.widget.Toast;
 
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.voice.VoiceService;
-import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.AudioPlayerTask;
@@ -57,7 +57,7 @@ public class RecorderFragment extends PageFragment implements
 
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
-    private UsbAudioSource mUsbAudioSource;
+    private KikaGoVoiceSource mKikaGoVoiceSource;
     private UsbAudioService mUsbAudioService;
 
     private static final int MSG_TIMER = 0;
@@ -103,7 +103,7 @@ public class RecorderFragment extends PageFragment implements
                 mUsingKikaGo.setSelected(false);
                 mUsingAndroid.setSelected(true);
 
-                mUsbAudioSource = null;
+                mKikaGoVoiceSource = null;
                 attachService();
             }
         });
@@ -113,7 +113,7 @@ public class RecorderFragment extends PageFragment implements
         mUsingKikaGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUsbAudioSource == null) {
+                if (mKikaGoVoiceSource == null) {
                     mUsingKikaGo.setSelected(true);
                     mUsingAndroid.setSelected(false);
                     if (mErrorHintText != null) {
@@ -214,7 +214,7 @@ public class RecorderFragment extends PageFragment implements
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setIsDebugMode(true);
         conf.setDebugFileTag(DEBUG_FILE_TAG);
-        conf.source(mUsbAudioSource);
+        conf.source(mKikaGoVoiceSource);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")
                 .setUrl(VoiceConfiguration.HostUrl.KIKAGO_SQ)
@@ -339,9 +339,9 @@ public class RecorderFragment extends PageFragment implements
     private IUsbAudioListener mIUsbAudioListener = new IUsbAudioListener() {
 
         @Override
-        public void onDeviceAttached(UsbAudioSource audioSource) {
+        public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached.");
-            mUsbAudioSource = audioSource;
+            mKikaGoVoiceSource = audioSource;
             attachService();
 
             if (mAndroidSignal != null) {
@@ -357,7 +357,7 @@ public class RecorderFragment extends PageFragment implements
         @Override
         public void onDeviceDetached() {
             Logger.d("onDeviceDetached.");
-            mUsbAudioSource = null;
+            mKikaGoVoiceSource = null;
             attachService();
 
             if (mKikagoSignal != null) {
@@ -374,7 +374,7 @@ public class RecorderFragment extends PageFragment implements
         public void onDeviceError(int errorCode) {
             if (errorCode == ERROR_NO_DEVICES) {
                 Logger.d("onDeviceError ERROR_NO_DEVICES");
-                mUsbAudioSource = null;
+                mKikaGoVoiceSource = null;
                 attachService();
                 Toast.makeText(getContext(), "KikaGo mic isn’t plugged-in.", Toast.LENGTH_SHORT).show();
 

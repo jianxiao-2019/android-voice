@@ -1,8 +1,7 @@
-package com.kikatech.usb;
+package com.kikatech.usb.buffer;
 
 import android.support.annotation.NonNull;
 
-import com.kikatech.usb.driver.impl.KikaS2MBuff;
 import com.kikatech.usb.nc.KikaNcBuffer;
 
 /**

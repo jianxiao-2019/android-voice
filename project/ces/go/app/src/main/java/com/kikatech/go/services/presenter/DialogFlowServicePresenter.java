@@ -40,7 +40,7 @@ import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.StringUtil;
 import com.kikatech.go.util.timer.CountingTimer;
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
@@ -622,7 +622,7 @@ public class DialogFlowServicePresenter {
                     if (mAsrMaxDurationTimer.isCounting()) {
                         mAsrMaxDurationTimer.stop();
                     }
-                    UsbAudioSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
+                    KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
                     VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(mContext, usbSource);
                     mDFServiceStatus.setUsbDeviceAvailable(usbSource != null);
                     mDFServiceStatus.setAudioDataCorrect(true);
@@ -726,7 +726,7 @@ public class DialogFlowServicePresenter {
         mVoiceSourceHelper.closeDevice(mContext);
     }
 
-    public UsbAudioSource getUsbVoiceSource() {
+    public KikaGoVoiceSource getUsbVoiceSource() {
         return mVoiceSourceHelper.getUsbVoiceSource();
     }
 

@@ -5,8 +5,8 @@ import android.support.annotation.IntDef;
 
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.usb.IUsbAudioListener;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.usb.UsbAudioService;
-import com.kikatech.usb.UsbAudioSource;
 
 /**
  * @author SkeeterWang Created on 2018/3/13.
@@ -38,10 +38,10 @@ public class VoiceSourceHelper {
     private long start_t;
 
     private IVoiceSourceListener mVoiceSourceListener;
-    private UsbAudioSource mUsbVoiceSource;
+    private KikaGoVoiceSource mUsbVoiceSource;
     private IUsbAudioListener mUsbListener = new IUsbAudioListener() {
         @Override
-        public void onDeviceAttached(UsbAudioSource audioSource) {
+        public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             if (LogUtil.DEBUG) {
                 LogUtil.logv(TAG, String.format("onDeviceAttached, spend: %s", (System.currentTimeMillis() - start_t)));
             }
@@ -116,7 +116,7 @@ public class VoiceSourceHelper {
         }
     }
 
-    public synchronized UsbAudioSource getUsbVoiceSource() {
+    public synchronized KikaGoVoiceSource getUsbVoiceSource() {
         return mUsbVoiceSource;
     }
 
@@ -141,7 +141,7 @@ public class VoiceSourceHelper {
         }
         if (isUsbVoiceExist) {
             int currentVolumeLevel = mUsbVoiceSource.checkVolumeState();
-            while (UsbAudioSource.ERROR_VOLUME_FW_NOT_SUPPORT != currentVolumeLevel
+            while (KikaGoVoiceSource.ERROR_VOLUME_FW_NOT_SUPPORT != currentVolumeLevel
                     && TARGET_VOLUME_LEVEL != currentVolumeLevel) {
                 if (currentVolumeLevel > TARGET_VOLUME_LEVEL) {
                     currentVolumeLevel = mUsbVoiceSource.volumeDown();

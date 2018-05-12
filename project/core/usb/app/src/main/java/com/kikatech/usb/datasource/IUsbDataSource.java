@@ -1,4 +1,4 @@
-package com.kikatech.usb;
+package com.kikatech.usb.datasource;
 
 /**
  * Created by ryanlin on 2018/5/6.

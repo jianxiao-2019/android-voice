@@ -1,17 +1,19 @@
-package com.kikatech.usb;
+package com.kikatech.usb.datasource.impl;
 
 import android.content.Context;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
 
+import com.kikatech.usb.datasource.IUsbDataSource;
+import com.kikatech.usb.driver.IUsbAudioDriver;
 import com.kikatech.voice.util.log.Logger;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static com.kikatech.usb.UsbAudioSource.ERROR_VOLUME_FW_NOT_SUPPORT;
+import static com.kikatech.usb.datasource.KikaGoVoiceSource.ERROR_VOLUME_FW_NOT_SUPPORT;
 
 /**
  * Created by ryanlin on 2018/5/9.

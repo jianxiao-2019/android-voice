@@ -3,9 +3,9 @@ package com.kikatech.voicesdktester.presenter.wakeup;
 import android.content.Context;
 
 import com.kikatech.usb.IUsbAudioListener;
-import com.kikatech.usb.KikaBuffer;
 import com.kikatech.usb.UsbAudioService;
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.buffer.KikaBuffer;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -15,7 +15,7 @@ import com.kikatech.voice.util.log.Logger;
 
 public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
 
-    private UsbAudioSource mUsbAudioSource;
+    private KikaGoVoiceSource mKikaGoVoiceSource;
     private UsbAudioService mUsbAudioService;
 
     public UsbInputWakeUpPresenter(Context context) {
@@ -38,26 +38,26 @@ public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
     private IUsbAudioListener mIUsbAudioListener = new IUsbAudioListener() {
 
         @Override
-        public void onDeviceAttached(UsbAudioSource audioSource) {
+        public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached. mIsUsingNc = " + isUsingNc());
-            mUsbAudioSource = audioSource;
-            mUsbAudioSource.setKikaBuffer(isUsingNc() ? KikaBuffer.TYPE_NOISC_CANCELLATION : KikaBuffer.TYPE_STEREO_TO_MONO);
+            mKikaGoVoiceSource = audioSource;
+            mKikaGoVoiceSource.setKikaBuffer(isUsingNc() ? KikaBuffer.TYPE_NOISC_CANCELLATION : KikaBuffer.TYPE_STEREO_TO_MONO);
 
-            mVoiceSource = mUsbAudioSource;
+            mVoiceSource = mKikaGoVoiceSource;
             attachService();
         }
 
         @Override
         public void onDeviceDetached() {
             Logger.d("onDeviceDetached.");
-            mUsbAudioSource = null;
+            mKikaGoVoiceSource = null;
             mVoiceSource = null;
             attachService();
         }
 
         @Override
         public void onDeviceError(int errorCode) {
-            mUsbAudioSource = null;
+            mKikaGoVoiceSource = null;
             mVoiceSource = null;
             attachService();
         }

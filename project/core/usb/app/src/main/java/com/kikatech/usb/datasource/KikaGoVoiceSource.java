@@ -1,7 +1,8 @@
-package com.kikatech.usb;
+package com.kikatech.usb.datasource;
 
 import android.support.annotation.NonNull;
 
+import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.usb.util.DataUtil;
 import com.kikatech.usb.util.DbUtil;
@@ -17,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Update by ryanlin on 25/12/2017.
  */
 
-public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListener {
+public class KikaGoVoiceSource implements IVoiceSource {
 
     public static int OPEN_RESULT_FAIL = -1;
     public static int OPEN_RESULT_MONO = 1;
@@ -54,6 +55,31 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
         void onCurrentDB(int curDB);
     }
 
+    private IUsbDataSource.OnDataListener mOnDataListener = new IUsbDataSource.OnDataListener () {
+        @Override
+        public void onData(byte[] data, int length) {
+            Logger.d("KikaGoVoiceSource onData length = " + length);
+            byte[] leftResult = new byte[length / 2];
+            byte[] rightResult = new byte[length / 2];
+            DataUtil.separateChannelsToLeftAndRight(data, leftResult, rightResult);
+
+            if (mIsInversePhase) {
+                DataUtil.correctInversePhase(data, leftResult, rightResult);
+            }
+
+            if (mSourceDataCallback != null) {
+                mSourceDataCallback.onSource(leftResult, rightResult);
+                mDbUtil.onData(leftResult, leftResult.length);
+            }
+
+            if (mFileWriter != null) {
+                mFileWriter.onData(data);
+            }
+
+            mKikaBuffer.onData(data, length);
+        }
+    };
+
     private DbUtil.DbCallback mDbCallback = new DbUtil.DbCallback() {
         @Override
         public void onCurrentDB(int curDB) {
@@ -73,9 +99,9 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
         }
     };
 
-    public UsbAudioSource(IUsbDataSource source) {
+    public KikaGoVoiceSource(IUsbDataSource source) {
         mUsbDataSource = source;
-        mUsbDataSource.setOnDataListener(this);
+        mUsbDataSource.setOnDataListener(mOnDataListener);
 
         mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.TYPE_NOISC_CANCELLATION);
 
@@ -97,7 +123,7 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
             // fw version 1221 means one of the channels has inverse-phase issue
             mIsInversePhase = Integer.toHexString(checkFwVersion()).equals("1221");
         } else {
-            Logger.e("UsbAudioSource open fail.");
+            Logger.e("KikaGoVoiceSource open fail.");
         }
 
         if (mOnOpenedCallback != null) {
@@ -160,29 +186,6 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
 
     public int getNoiseSuppressionParameters(int mode) {
         return KikaNcBuffer.getNoiseSuppressionParameters(mode);
-    }
-
-    @Override
-    public void onData(byte[] data, int length) {
-        Logger.d("UsbAudioSource onData length = " + length);
-        byte[] leftResult = new byte[length / 2];
-        byte[] rightResult = new byte[length / 2];
-        DataUtil.separateChannelsToLeftAndRight(data, leftResult, rightResult);
-
-        if (mIsInversePhase) {
-            DataUtil.correctInversePhase(data, leftResult, rightResult);
-        }
-
-        if (mSourceDataCallback != null) {
-            mSourceDataCallback.onSource(leftResult, rightResult);
-            mDbUtil.onData(leftResult, leftResult.length);
-        }
-
-        if (mFileWriter != null) {
-            mFileWriter.onData(data);
-        }
-
-        mKikaBuffer.onData(data, length);
     }
 
     public boolean mIsOpened() {

@@ -32,7 +32,7 @@ import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.view.GoLayout;
-import com.kikatech.usb.UsbAudioSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.xiao.usbaudio.AudioPlayBack;
 
 import org.greenrobot.eventbus.EventBus;
@@ -81,7 +81,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             return;
         }
         DFServiceEvent serviceEvent;
-        UsbAudioSource usbAudioSource;
+        KikaGoVoiceSource kikaGoVoiceSource;
         String source;
         switch (action) {
             case ToDFServiceEvent.ACTION_CHANGE_SERVER:
@@ -90,8 +90,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 }
                 break;
             case ToDFServiceEvent.ACTION_PING_SERVICE_STATUS:
-                usbAudioSource = mDFPresenter != null ? mDFPresenter.getUsbVoiceSource() : null;
-                source = usbAudioSource != null ? VoiceSourceHelper.VOICE_SOURCE_USB : VoiceSourceHelper.VOICE_SOURCE_ANDROID;
+                kikaGoVoiceSource = mDFPresenter != null ? mDFPresenter.getUsbVoiceSource() : null;
+                source = kikaGoVoiceSource != null ? VoiceSourceHelper.VOICE_SOURCE_USB : VoiceSourceHelper.VOICE_SOURCE_ANDROID;
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_PING_SERVICE_STATUS);
                 serviceEvent.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, source);
                 serviceEvent.putExtra(DFServiceEvent.PARAM_SERVICE_STATUS, mDFServiceStatus);
@@ -148,8 +148,8 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                 break;
             case ToDFServiceEvent.ACTION_PING_VOICE_SOURCE:
                 serviceEvent = new DFServiceEvent(DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE);
-                usbAudioSource = mDFPresenter != null ? mDFPresenter.getUsbVoiceSource() : null;
-                source = usbAudioSource != null ? VoiceSourceHelper.VOICE_SOURCE_USB : VoiceSourceHelper.VOICE_SOURCE_ANDROID;
+                kikaGoVoiceSource = mDFPresenter != null ? mDFPresenter.getUsbVoiceSource() : null;
+                source = kikaGoVoiceSource != null ? VoiceSourceHelper.VOICE_SOURCE_USB : VoiceSourceHelper.VOICE_SOURCE_ANDROID;
                 serviceEvent.putExtra(DFServiceEvent.PARAM_AUDIO_SOURCE, source);
                 serviceEvent.send();
                 if (LogUtil.DEBUG) {

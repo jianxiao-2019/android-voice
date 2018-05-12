@@ -1,4 +1,4 @@
-package com.kikatech.usb.driver.impl;
+package com.kikatech.usb.buffer;
 
 import com.kikatech.voice.util.log.Logger;
 
@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by tianli on 17-11-20.
  */
 
-public class AudioBuffer {
+public class CircularBuffer {
 
     private final byte[] mBuffer;
     private int mBufferSize;
@@ -18,7 +18,7 @@ public class AudioBuffer {
 
     private ReentrantLock mLock = new ReentrantLock();
 
-    public AudioBuffer(int size) {
+    public CircularBuffer(int size) {
         mBufferSize = size;
         mBuffer = new byte[mBufferSize];
     }

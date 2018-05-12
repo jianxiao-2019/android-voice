@@ -1,10 +1,13 @@
-package com.kikatech.usb;
+package com.kikatech.usb.datasource.impl;
 
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 
+import com.kikatech.usb.datasource.IUsbDataSource;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
+import com.kikatech.usb.driver.IUsbAudioDriver;
 import com.kikatech.voice.util.log.Logger;
 import com.xiao.usbaudio.AudioPlayBack;
 import com.xiao.usbaudio.UsbAudio;
@@ -81,10 +84,10 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
 
     private void setToDefaultVolume() {
         int volume = mUsbAudio.checkVolumeState();
-        while (volume != UsbAudioSource.ERROR_VOLUME_FW_NOT_SUPPORT && volume != UsbAudioSource.INIT_VOLUME) {
-            if (volume > UsbAudioSource.INIT_VOLUME) {
+        while (volume != KikaGoVoiceSource.ERROR_VOLUME_FW_NOT_SUPPORT && volume != KikaGoVoiceSource.INIT_VOLUME) {
+            if (volume > KikaGoVoiceSource.INIT_VOLUME) {
                 volume = mUsbAudio.volumeDown();
-            } else if (volume < UsbAudioSource.INIT_VOLUME) {
+            } else if (volume < KikaGoVoiceSource.INIT_VOLUME) {
                 volume = mUsbAudio.volumeUp();
             }
         }

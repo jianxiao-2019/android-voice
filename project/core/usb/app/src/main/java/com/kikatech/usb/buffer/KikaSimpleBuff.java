@@ -1,8 +1,6 @@
-package com.kikatech.usb.driver.impl;
+package com.kikatech.usb.buffer;
 
 import android.support.annotation.NonNull;
-
-import com.kikatech.usb.KikaBuffer;
 
 /**
  * Created by ryanlin on 02/04/2018.
@@ -10,15 +8,15 @@ import com.kikatech.usb.KikaBuffer;
 
 public class KikaSimpleBuff extends KikaBuffer {
 
-    private final AudioBuffer mAudioBuffer;
+    private final CircularBuffer mCircularBuffer;
 
     public KikaSimpleBuff() {
-        mAudioBuffer = new AudioBuffer(20000);
+        mCircularBuffer = new CircularBuffer(20000);
     }
 
     @Override
     public void onData(byte[] data, int len) {
-        mAudioBuffer.write(data, len);
+        mCircularBuffer.write(data, len);
     }
 
     @Override
@@ -33,11 +31,11 @@ public class KikaSimpleBuff extends KikaBuffer {
 
     @Override
     public void reset() {
-        mAudioBuffer.clear();
+        mCircularBuffer.clear();
     }
 
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
-        return mAudioBuffer.read(audioData, offsetInBytes, sizeInBytes);
+        return mCircularBuffer.read(audioData, offsetInBytes, sizeInBytes);
     }
 }

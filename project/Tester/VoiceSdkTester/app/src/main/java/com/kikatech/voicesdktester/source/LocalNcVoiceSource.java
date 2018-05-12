@@ -1,6 +1,6 @@
 package com.kikatech.voicesdktester.source;
 
-import com.kikatech.usb.KikaBuffer;
+import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.nc.KikaNcBuffer;
 
 /**

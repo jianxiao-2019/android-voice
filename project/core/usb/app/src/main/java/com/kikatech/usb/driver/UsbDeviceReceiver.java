@@ -1,4 +1,4 @@
-package com.kikatech.usb;
+package com.kikatech.usb.driver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

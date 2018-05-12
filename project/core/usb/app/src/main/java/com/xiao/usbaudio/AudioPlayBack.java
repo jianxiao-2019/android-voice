@@ -1,6 +1,6 @@
 package com.xiao.usbaudio;
 
-import com.kikatech.usb.KikaGoDeviceDataSource;
+import com.kikatech.usb.datasource.impl.KikaGoDeviceDataSource;
 import com.kikatech.voice.util.log.Logger;
 
 public class AudioPlayBack {
