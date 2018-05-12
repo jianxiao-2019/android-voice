@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.usb.KikaBuffer;
 import com.kikatech.usb.driver.impl.AudioBuffer;
+import com.kikatech.usb.util.DataUtil;
 import com.kikatech.voice.util.log.Logger;
 
 import lib.android.anc.NoiseCancellation;
@@ -47,9 +48,9 @@ public class KikaNcBuffer extends KikaBuffer {
 
     private byte[] doNoiseCancellation() {
         short[] outBuffs = new short[mAudioBytes.length / 2];
-        NoiseCancellation.NoiseMask(ByteToShort(mAudioBytes), outBuffs);
+        NoiseCancellation.NoiseMask(DataUtil.byteToShort(mAudioBytes), outBuffs);
 
-        return ShortToByte(outBuffs);
+        return DataUtil.shortToByte(outBuffs);
     }
 
     @Override
@@ -72,25 +73,6 @@ public class KikaNcBuffer extends KikaBuffer {
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
         return mAudioBuffer.read(audioData, offsetInBytes, sizeInBytes);
-    }
-
-    private short[] ByteToShort(byte[] bytes) {
-        int len = bytes.length / 2;
-        short[] shorts = new short[len];
-        for (int i = 0; i < len; ++i) {
-            shorts[i] = (short) ((bytes[i * 2 + 1] << 8) | (bytes[i * 2] & 0xff));
-        }
-        return shorts;
-    }
-
-    private byte[] ShortToByte(short[] shorts) {
-        byte[] bytes = new byte[shorts.length * 2];
-        for (int i = 0; i < shorts.length; i++) {
-            bytes[2 * i] = (byte) (shorts[i] & 0xff);
-            bytes[2 * i + 1] = (byte) ((shorts[i] >> 8) & 0xff);
-        }
-
-        return bytes;
     }
 
     public static void setNoiseSuppressionParameters(int mode, int value) {

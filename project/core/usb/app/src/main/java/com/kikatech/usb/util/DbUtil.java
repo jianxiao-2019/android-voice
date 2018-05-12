@@ -45,7 +45,7 @@ public class DbUtil {
         }
 
         try {
-            short[] buffer = ByteToShort(data);
+            short[] buffer = DataUtil.byteToShort(data);
             synchronized (mDbBuf) {
                 for (int i = 0; i < readSize; i += rateX) {
                     mDbBuf.add(buffer[i]);
@@ -122,23 +122,5 @@ public class DbUtil {
 
     private double SampleToDb(double sample) {
         return 20 * Math.log10(sample + 1); // "+ 1" for prevent infinite number
-    }
-
-    private short[] ByteToShort(byte[] bytes) {
-        int len = bytes.length / 2;
-        short[] shorts = new short[len];
-        for (int i = 0; i < len; ++i) {
-            shorts[i] = (short) ((bytes[i * 2 + 1] << 8) | (bytes[i * 2] & 0xff));
-        }
-        return shorts;
-    }
-
-    private byte[] ShortToByte(short[] shorts) {
-        byte[] bytes = new byte[shorts.length * 2];
-        for (int i = 0; i < shorts.length; i++) {
-            bytes[2 * i] = (byte) (shorts[i] & 0xff);
-            bytes[2 * i + 1] = (byte) ((shorts[i] >> 8) & 0xff);
-        }
-        return bytes;
     }
 }

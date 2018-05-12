@@ -3,7 +3,10 @@ package com.kikatech.usb;
 import android.support.annotation.NonNull;
 
 import com.kikatech.usb.nc.KikaNcBuffer;
+import com.kikatech.usb.util.DataUtil;
 import com.kikatech.usb.util.DbUtil;
+import com.kikatech.voice.core.debug.DebugUtil;
+import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.util.log.Logger;
 
@@ -39,6 +42,8 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
 
     private DbUtil mDbUtil;
 
+    private FileWriter mFileWriter;
+
     public interface OnOpenedCallback {
         void onOpened(int state);
     }
@@ -71,9 +76,13 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
     public UsbAudioSource(IUsbDataSource source) {
         mUsbDataSource = source;
         mUsbDataSource.setOnDataListener(this);
+
         mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.TYPE_NOISC_CANCELLATION);
+
         mDbUtil = new DbUtil();
         mDbUtil.setDbCallback(mDbCallback);
+
+        mFileWriter = DebugUtil.isDebug() ? new FileWriter("_USB", null) : null;
     }
 
     @Override
@@ -106,6 +115,10 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
     public void start() {
         mDbUtil.clearData();
         mUsbDataSource.start();
+
+        if (mFileWriter != null) {
+            mFileWriter.start();
+        }
     }
 
     @Override
@@ -152,62 +165,24 @@ public class UsbAudioSource implements IVoiceSource, IUsbDataSource.OnDataListen
     @Override
     public void onData(byte[] data, int length) {
         Logger.d("UsbAudioSource onData length = " + length);
-        if (mSourceDataCallback != null) {
-            byte[] leftResult = new byte[length / 2];
-            byte[] rightResult = new byte[length / 2];
-            separateChannelsToLeftAndRight(data, leftResult, rightResult);
-            correctInversePhase(data, leftResult, rightResult);
-            mDbUtil.onData(leftResult, leftResult.length);
-            mSourceDataCallback.onSource(leftResult, rightResult);
-        }
-        mKikaBuffer.onData(data, length);
-    }
+        byte[] leftResult = new byte[length / 2];
+        byte[] rightResult = new byte[length / 2];
+        DataUtil.separateChannelsToLeftAndRight(data, leftResult, rightResult);
 
-    private void correctInversePhase(byte[] data, byte[] leftResult, byte[] rightResult) {
         if (mIsInversePhase) {
-            short[] shorts = ByteToShort(leftResult);
-            for (int i = 0; i < shorts.length; i += 1) {
-                shorts[i] = (short) (shorts[i] * -1); //inverse the phase
-            }
-            ShortToByteWithBytes(leftResult, shorts);
-            combineLeftAndRightChannels(data, leftResult, rightResult);
+            DataUtil.correctInversePhase(data, leftResult, rightResult);
         }
-    }
 
-    private void separateChannelsToLeftAndRight(byte[] data, byte[] leftResult, byte[] rightResult) {
-        for (int i = 0; i < leftResult.length; i += 2) {
-            leftResult[i] = data[i * 2];
-            leftResult[i + 1] = data[i * 2 + 1];
-            rightResult[i] = data[i * 2 + 2];
-            rightResult[i + 1] = data[i * 2 + 3];
+        if (mSourceDataCallback != null) {
+            mSourceDataCallback.onSource(leftResult, rightResult);
+            mDbUtil.onData(leftResult, leftResult.length);
         }
-    }
 
-    private void combineLeftAndRightChannels(byte[] data, byte[] leftResult, byte[] rightResult) {
-        for (int i = 0; i < leftResult.length; i += 2) {
-            data[i * 2] = leftResult[i];
-            data[i * 2 + 1] = leftResult[i + 1];
+        if (mFileWriter != null) {
+            mFileWriter.onData(data);
         }
-        for (int i = 0; i < rightResult.length; i += 2) {
-            data[i * 2 + 2] = rightResult[i];
-            data[i * 2 + 3] = rightResult[i + 1];
-        }
-    }
 
-    private short[] ByteToShort(byte[] bytes) {
-        int len = bytes.length / 2;
-        short[] shorts = new short[len];
-        for (int i = 0; i < len; ++i) {
-            shorts[i] = (short) ((bytes[i * 2 + 1] << 8) | (bytes[i * 2] & 0xff));
-        }
-        return shorts;
-    }
-
-    private void ShortToByteWithBytes(byte[] bytes, short[] shorts) {
-        for (int i = 0; i < shorts.length; i++) {
-            bytes[2 * i] = (byte) (shorts[i] & 0xff);
-            bytes[2 * i + 1] = (byte) ((shorts[i] >> 8) & 0xff);
-        }
+        mKikaBuffer.onData(data, length);
     }
 
     public boolean mIsOpened() {
