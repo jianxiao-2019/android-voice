@@ -5,6 +5,8 @@ import com.kikatech.voice.util.log.Logger;
 
 public class AudioPlayBack {
 
+    public static final int RAW_DATA_AVAILABLE_LENGTH = 600;
+
     private static KikaGoDeviceDataSource sKikaGoDeviceDataSource;
     private static OnAudioPlayBackWriteListener mListener;
 
