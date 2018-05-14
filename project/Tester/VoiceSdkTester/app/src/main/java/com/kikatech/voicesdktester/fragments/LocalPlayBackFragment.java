@@ -129,7 +129,9 @@ public class LocalPlayBackFragment extends Fragment implements
 
             @Override
             public void run() {
-                attachService();
+                if (getActivity() != null && !getActivity().isDestroyed()) {
+                    attachService();
+                }
             }
         }, 2000);
 

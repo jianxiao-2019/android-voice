@@ -58,7 +58,7 @@ public class KikaGoVoiceSource implements IVoiceSource {
     private IUsbDataSource.OnDataListener mOnDataListener = new IUsbDataSource.OnDataListener () {
         @Override
         public void onData(byte[] data, int length) {
-            Logger.d("KikaGoVoiceSource onData length = " + length);
+            Logger.v("KikaGoVoiceSource onData length = " + length);
             byte[] leftResult = new byte[length / 2];
             byte[] rightResult = new byte[length / 2];
             DataUtil.separateChannelsToLeftAndRight(data, leftResult, rightResult);
