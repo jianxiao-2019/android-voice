@@ -87,7 +87,7 @@ public class DebugUtil {
         IVoiceSource source = conf.getVoiceSource();
         if (source == null) {
             return PRE_PHONE;
-        } else if (source.getClass().getSimpleName().contains("Usb")) {
+        } else if (source.getClass().getSimpleName().contains("Kika")) {
             return PRE_KIKA_GO;
         } else if (source.getClass().getSimpleName().contains("Local")) {
             return PRE_LOCAL;
