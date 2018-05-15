@@ -48,16 +48,16 @@ public abstract class WakeUpDetector {
         }
 
         @Override
-        public final void onData(byte[] data) {
+        public final void onData(byte[] data, int length) {
             if (isAwake()) {
                 if (mNextPath != null) {
-                    mNextPath.onData(data);
+                    mNextPath.onData(data, length);
                 }
             } else {
-                Logger.v("onData data.length = " + data.length);
+                Logger.v("onData data.length = " + length);
                 checkWakeUpCommand(data);
                 if (mFileWriter != null) {
-                    mFileWriter.onData(data);
+                    mFileWriter.onData(data, length);
                 }
             }
         }

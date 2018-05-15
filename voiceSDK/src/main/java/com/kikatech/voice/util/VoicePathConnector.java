@@ -7,6 +7,7 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.speex.SpeexEncoder;
 import com.kikatech.voice.util.log.Logger;
 
 /**
@@ -25,7 +26,8 @@ public class VoicePathConnector {
 
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
 
-        IDataPath dataPath = new VoiceDetector(wrapFileWriter(finalPath, conf, "_speex"));
+        IDataPath dataPath = new SpeexEncoder(wrapFileWriter(finalPath, conf, "_speex"));
+        dataPath = new VoiceDetector(dataPath);
         if (wakeUpDetector != null) {
 //            wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
             wakeUpDetector.setNextDataPath(dataPath);

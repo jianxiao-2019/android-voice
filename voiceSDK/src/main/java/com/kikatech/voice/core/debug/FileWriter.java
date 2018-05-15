@@ -3,6 +3,8 @@ package com.kikatech.voice.core.debug;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.util.log.FileLoggerUtil;
 
+import java.util.Arrays;
+
 /**
  * Created by ryanlin on 25/12/2017.
  * Update by ryanlin on 25/12/2017.
@@ -28,13 +30,16 @@ public class FileWriter extends IDataPath {
     }
 
     @Override
-    public void onData(final byte[] data) {
-        if(mFilePath != null) {
+    public void onData(byte[] data, int length) {
+        if (mFilePath != null) {
+            if (data.length != length) {
+                data = Arrays.copyOf(data, length);
+            }
             FileLoggerUtil.getIns().writeToFile(data, mFilePath);
         }
 
         if (mNextPath != null) {
-            mNextPath.onData(data);
+            mNextPath.onData(data, length);
         }
     }
 

@@ -102,14 +102,12 @@ public class VoiceRecorder {
     private class AudioRecordThread implements Runnable {
 
         private static final int FAIL_COUNT_THRESHOLD = 10;
-        private static final int S_BYTE_LEN = (int) (4096 * 1.5);//vad中的输入是一段4096字节的音频
+
+        private int mFailCount = 0;
 
         private boolean mIsRunning = true;
 
-        private byte[] mBuf = new byte[S_BYTE_LEN];
-        private int mBufLen = 0;
-
-        private int mFailCount = 0;
+        private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
         public void stop() {
             mIsRunning = false;
@@ -123,26 +121,26 @@ public class VoiceRecorder {
             mVoiceSource.start();
 
             Logger.v(VoiceRecorder.this + " [record] bufferSize = " + mVoiceSource.getBufferSize());
-            byte[] audioData = new byte[mVoiceSource.getBufferSize()];
-            int readSize;
+
             while (mIsRunning) {
-                readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
+                final byte[] audioData = new byte[mVoiceSource.getBufferSize()];
+                final int readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
 
                 if (mVoiceDataListener != null) {
                     mVoiceDataListener.onData(audioData, readSize);
                 }
 
-//                if (AudioRecord.ERROR_INVALID_OPERATION != readSize /*&& fos != null*/) {
                 if (readSize > 0) {
-                    copy(audioData, readSize);
+                    mExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDataPath.onData(audioData, readSize);
+                        }
+                    });
                     mFailCount = 0;
                 } else {
                     Logger.e("[AudioRecordThread] readSize = " + readSize + " " + mVoiceSource);
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
                     if (++mFailCount == FAIL_COUNT_THRESHOLD) {
                         Logger.e("[AudioRecordThread] FAIL_COUNT_THRESHOLD");
                         if (mListener != null) {
@@ -150,31 +148,19 @@ public class VoiceRecorder {
                         }
                         break;
                     }
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             Logger.v(VoiceRecorder.this + " [release]");
-            if (mBufLen > 0 && mDataPath != null) {
-                byte[] lastData = Arrays.copyOf(mBuf, mBufLen);
-                mDataPath.onData(lastData);
-            }
+
             mVoiceSource.stop();
         }
 
-        private void copy(byte[] audioData, int readSize) {
-            int tempLen = readSize;
-            int tempIdx = 0;
-            int length;
-            while (tempLen + mBufLen >= S_BYTE_LEN) {
-                length = S_BYTE_LEN - mBufLen;
-                System.arraycopy(audioData, tempIdx, mBuf, mBufLen, length);
-                tempLen -= length;
-                tempIdx += length;
-                mDataPath.onData(mBuf);
-                mBufLen = 0;
-            }
-            System.arraycopy(audioData, tempIdx, mBuf, mBufLen, tempLen);
-            mBufLen += tempLen;
-        }
     }
 }

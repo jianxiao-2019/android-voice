@@ -560,13 +560,17 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         @Override
-        public void onData(byte[] data) {
+        public void onData(byte[] data, int length) {
             Logger.v("[VoiceDataSender] onData");
             if (mWebService != null) {
                 if (ReportUtil.getInstance().isEverDetectedVad()
                         && !ReportUtil.getInstance().isEverSentDataToWeb()) {
                     ReportUtil.getInstance().sentDataToWeb();
                     ReportUtil.getInstance().logTimeStamp("first_send_data_to_web");
+                }
+
+                if (data.length != length) {
+                    data = Arrays.copyOf(data, length);
                 }
                 mWebService.sendData(data);
             }

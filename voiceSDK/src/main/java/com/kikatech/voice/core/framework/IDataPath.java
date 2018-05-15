@@ -34,12 +34,7 @@ public abstract class IDataPath {
         }
     }
 
-    // TODO : tmp version for mNoiseSuppression.
-    public IDataPath getNextPath() {
-        return mNextPath;
-    }
-
-    public abstract void onData(byte[] data);
+    public abstract void onData(byte[] data, int length);
 
     public String toString() {
         return "[" + getClass().getSimpleName() + "]";
