@@ -84,7 +84,7 @@ public class VoiceRecorder {
     }
 
     public void close() {
-        Logger.d("open");
+        Logger.d("close");
         if (mAudioRecordThread != null) {
             Logger.e("Please call stop() first.");
         }
