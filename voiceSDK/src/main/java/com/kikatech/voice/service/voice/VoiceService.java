@@ -97,6 +97,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                     }
                 }
             });
+        } else {
+            Logger.d("Don't invoke this method after destroyed.");
         }
     }
 
@@ -119,6 +121,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                     }
                 }
             });
+        } else {
+            Logger.d("Don't invoke this method after destroyed.");
         }
         startVadBosTimer();
     }
@@ -218,6 +222,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     public void start(int bosDuration) {
         Logger.d(Logger.TAG, "start", 1);
+        if (mMainThreadHandler == null) {
+            handleError(ERR_REASON_NOT_CREATED);
+            Logger.e("Check the voice service was been created before started it.");
+            return;
+        }
+
         mIsStarting = true;
 
         ReportUtil.getInstance().startTimeStamp("start record");
@@ -471,6 +481,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                         }
                     }
                 });
+            } else {
+                Logger.d("Don't invoke this method after destroyed.");
             }
             DebugUtil.logResultToFile(message);
         }
@@ -487,6 +499,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                         }
                     }
                 });
+            } else {
+                Logger.d("Don't invoke this method after destroyed.");
             }
         }
 
@@ -502,6 +516,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                         }
                     }
                 });
+            } else {
+                Logger.d("Don't invoke this method after destroyed.");
             }
         }
     };
