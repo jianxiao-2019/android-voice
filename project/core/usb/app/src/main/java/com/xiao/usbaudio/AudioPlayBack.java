@@ -7,6 +7,7 @@ public class AudioPlayBack {
 
     public static final int RAW_DATA_AVAILABLE_LENGTH = 600;
 
+    // TODO : change to week reference?
     private static KikaGoDeviceDataSource sKikaGoDeviceDataSource;
     private static OnAudioPlayBackWriteListener mListener;
 

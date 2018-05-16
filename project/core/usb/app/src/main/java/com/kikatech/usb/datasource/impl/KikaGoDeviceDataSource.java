@@ -69,16 +69,19 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
                 mConnection.getFileDescriptor(),
                 mDevice.getProductId(),
                 mDevice.getVendorId());
-        new Thread(new Runnable() {
+        Logger.d("KikaAudioDriver open success = " + success);
+        if (success) {
+            new Thread(new Runnable() {
 
-            @Override
-            public void run() {
-                Logger.v("KikaAudioDriver start loop");
-                mUsbAudio.loop();
-                Logger.v("KikaAudioDriver stop loop");
-            }
-        }).start();
-        setToDefaultVolume();
+                @Override
+                public void run() {
+                    Logger.v("KikaAudioDriver start loop");
+                    mUsbAudio.loop();
+                    Logger.v("KikaAudioDriver stop loop");
+                }
+            }).start();
+            setToDefaultVolume();
+        }
         return success;
     }
 

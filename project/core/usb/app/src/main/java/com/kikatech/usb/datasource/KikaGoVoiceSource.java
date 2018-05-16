@@ -121,7 +121,7 @@ public class KikaGoVoiceSource implements IVoiceSource {
     public boolean open() {
 
         boolean success = mUsbDataSource.open();
-        Logger.d("KikaAudioDriver open success = " + success);
+        Logger.d("KikaGoVoiceSource open success = " + success);
         if (success) {
             mIsOpened.set(true);
             mKikaBuffer.create();
