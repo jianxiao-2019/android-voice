@@ -63,7 +63,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private VoiceConfiguration mConf;
     private WebSocket mWebService;
 
-    private final IDataPath mDataPath;
     private final WakeUpDetector mWakeUpDetector;
     private final VoiceRecorder mVoiceRecorder;
 
@@ -159,8 +158,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         if (mWakeUpDetector != null) {
             mWakeUpDetector.setOnHotWordDetectListener(this);
         }
-        mDataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
-        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), mDataPath, this);
+        IDataPath dataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
+        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), dataPath, this);
 
         if (conf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
             mConf.getConnectionConfiguration().url = "ws://api-dev.kika.ai/v3/ns";
@@ -246,7 +245,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
             mWakeUpDetector.reset();
         }
 
-        mDataPath.start();
         mVoiceRecorder.start();
 
         if ((mWakeUpDetector == null || mWakeUpDetector.isAwake())
@@ -279,7 +277,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         mVoiceRecorder.stop();
-        mDataPath.stop();
 
         DebugUtil.convertCurrentPcmToWav();
         ReportUtil.getInstance().stopTimeStamp("stop record");

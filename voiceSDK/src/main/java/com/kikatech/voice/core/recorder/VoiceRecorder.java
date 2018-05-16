@@ -120,11 +120,19 @@ public class VoiceRecorder {
             
             mVoiceSource.start();
 
-            Logger.v(VoiceRecorder.this + " [record] bufferSize = " + mVoiceSource.getBufferSize());
+            int bufferSize = mVoiceSource.getBufferSize();
+            Logger.v(VoiceRecorder.this + " [record] bufferSize = " + bufferSize);
+
+            mExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mDataPath.start();
+                }
+            });
 
             while (mIsRunning) {
-                final byte[] audioData = new byte[mVoiceSource.getBufferSize()];
-                final int readSize = mVoiceSource.read(audioData, 0, mVoiceSource.getBufferSize());
+                final byte[] audioData = new byte[bufferSize];
+                final int readSize = mVoiceSource.read(audioData, 0, bufferSize);
 
                 if (mVoiceDataListener != null) {
                     mVoiceDataListener.onData(audioData, readSize);
@@ -158,6 +166,13 @@ public class VoiceRecorder {
             }
 
             Logger.v(VoiceRecorder.this + " [release]");
+
+            mExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mDataPath.stop();
+                }
+            });
 
             mVoiceSource.stop();
         }
