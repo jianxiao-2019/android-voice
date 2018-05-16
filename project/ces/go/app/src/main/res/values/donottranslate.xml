@@ -299,7 +299,7 @@ Now click OK and say “Hi Kika”!"</string>
     <string name="tutorial_command_title">"Say “Navigate”"</string>
     <string name="tutorial_command_description">"Great! You’ve woken up Kika! Let’s try to navigate.
 After the beep, say “Navigate” to continue."</string>
-    <string name="tutorial_address_title">"“Where do u want to go?”"</string>
+    <string name="tutorial_address_title">"“Where do you want to go?”"</string>
     <string name="tutorial_address_description">"Good job! Next step: Tell Kika your destination.
 Remember to wait for the beep first before you answer."</string>
     <string name="tutorial_confirm_title">"“Is it correct?”"</string>

@@ -15,6 +15,7 @@ import com.kikatech.go.tutorial.dialogflow.TutorialSceneManager;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
+import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
@@ -43,6 +44,25 @@ public class TutorialManager {
     private VoiceSourceHelper mVoiceSourceHelper = new VoiceSourceHelper();
     private Context mContext;
 
+    private CountingTimer mAskWakeUpTimer = new CountingTimer(DialogFlowConfig.BOS_DURATION_TUTORIAL, new CountingTimer.ICountingListener() {
+        @Override
+        public void onTimeTickStart() {
+        }
+
+        @Override
+        public void onTimeTick(long millis) {
+        }
+
+        @Override
+        public void onTimeTickEnd() {
+            doAskWakeUp();
+        }
+
+        @Override
+        public void onInterrupted(long stopMillis) {
+        }
+    });
+
     private IDialogFlowService.IServiceCallback mServiceCallback = new IDialogFlowService.IServiceCallback() {
         @Override
         public void onInitComplete() {
@@ -51,8 +71,12 @@ public class TutorialManager {
 
         @Override
         public void onWakeUp(String scene) {
+            if (mAskWakeUpTimer.isCounting()) {
+                mAskWakeUpTimer.stop();
+            }
             mUiManager.dispatchWakeUp(SceneTutorial.SCENE);
             onLocalIntent(SceneTutorial.SCENE, TutorialSceneActions.ACTION_NAV_START);
+            MediaPlayerUtil.playAlert(mContext, R.raw.alert_dot, null);
         }
 
         @Override
@@ -182,21 +206,6 @@ public class TutorialManager {
         @Override
         public void onRecorderSourceUpdate() {
         }
-
-        private void doAskWakeUp() {
-            String content[] = TutorialUtil.getAskWakeUp(mContext);
-            mDialogFlowService.disableWakeUpDetector();
-            mUiManager.dispatchTutorialDialog(null, 1, content[0], content[1], new GoLayout.IOnTutorialDialogClickListener() {
-                @Override
-                public void onApply() {
-                    if (LogUtil.DEBUG) {
-                        LogUtil.log(TAG, "onApply");
-                    }
-                    mDialogFlowService.enableWakeUpDetector();
-                    mUiManager.dispatchDismissTutorialDialog();
-                }
-            });
-        }
     };
 
     private IDialogFlowService.IAgentQueryStatus mAgentQueryStatus = new IDialogFlowService.IAgentQueryStatus() {
@@ -301,6 +310,22 @@ public class TutorialManager {
         for (BaseSceneManager bcm : mSceneManagers) {
             if (bcm != null) bcm.close();
         }
+    }
+
+    private void doAskWakeUp() {
+        String content[] = TutorialUtil.getAskWakeUp(mContext);
+        mDialogFlowService.disableWakeUpDetector();
+        mUiManager.dispatchTutorialDialog(null, 1, content[0], content[1], new GoLayout.IOnTutorialDialogClickListener() {
+            @Override
+            public void onApply() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.log(TAG, "onApply");
+                }
+                mAskWakeUpTimer.start();
+                mDialogFlowService.enableWakeUpDetector();
+                mUiManager.dispatchDismissTutorialDialog();
+            }
+        });
     }
 
     private void onLocalIntent(String scene, String action) {

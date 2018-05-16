@@ -24,7 +24,7 @@ public class DialogFlowConfig {
     private static final int BOS_DURATION = 6800;
     private static final int EOS_DURATION = 3000;
 
-    private static final int BOS_DURATION_TUTORIAL = 15000;
+    public static final int BOS_DURATION_TUTORIAL = 15000;
 
     public static VoiceConfiguration getVoiceConfig(Context ctx, KikaGoVoiceSource audioSource) {
         VoiceConfiguration conf = new VoiceConfiguration();

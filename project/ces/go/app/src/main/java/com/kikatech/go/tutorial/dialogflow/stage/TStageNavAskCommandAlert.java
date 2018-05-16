@@ -3,7 +3,6 @@ package com.kikatech.go.tutorial.dialogflow.stage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.tutorial.TutorialUtil;
 import com.kikatech.go.tutorial.dialogflow.SceneTutorial;
