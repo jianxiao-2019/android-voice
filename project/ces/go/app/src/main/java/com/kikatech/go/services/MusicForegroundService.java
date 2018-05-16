@@ -141,6 +141,15 @@ public class MusicForegroundService extends BaseForegroundService {
     }
 
     @Override
+    protected void onServiceAlreadyStarted() {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "onServiceAlreadyStarted");
+        }
+        registerReceiver();
+        doStartMusic(YouTubeExtractorManager.getIns().getPlayingList());
+    }
+
+    @Override
     protected void onStopForeground() {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "onStopForeground");

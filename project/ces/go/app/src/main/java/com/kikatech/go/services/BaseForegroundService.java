@@ -19,6 +19,8 @@ public abstract class BaseForegroundService extends Service {
 
     protected abstract void onStartForeground();
 
+    protected abstract void onServiceAlreadyStarted();
+
     protected abstract void onStopForeground();
 
     protected abstract void onStopForegroundWithConfirm();
@@ -74,6 +76,8 @@ public abstract class BaseForegroundService extends Service {
             startForeground(getServiceId(), getForegroundNotification());
             onStartForeground();
             mIsStarted = true;
+        } else {
+            onServiceAlreadyStarted();
         }
     }
 

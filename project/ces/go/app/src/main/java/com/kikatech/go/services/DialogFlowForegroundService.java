@@ -332,6 +332,13 @@ public class DialogFlowForegroundService extends BaseForegroundService {
     }
 
     @Override
+    protected void onServiceAlreadyStarted() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "onServiceAlreadyStarted");
+        }
+    }
+
+    @Override
     protected void onStopForeground() {
         Toast.makeText(DialogFlowForegroundService.this, "KikaGo is closed", Toast.LENGTH_SHORT).show();
         releaseWakeLock();
