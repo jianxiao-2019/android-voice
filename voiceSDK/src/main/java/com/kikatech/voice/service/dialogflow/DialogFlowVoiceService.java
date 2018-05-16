@@ -213,6 +213,7 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
     public synchronized void enableWakeUpDetector() {
         if (mVoiceService != null) {
             mVoiceService.setWakeUpDetectorEnable(true);
+            startListening(-1);
         }
     }
 
@@ -220,6 +221,7 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
     public synchronized void disableWakeUpDetector() {
         if (mVoiceService != null) {
             mVoiceService.setWakeUpDetectorEnable(false);
+            cancelListening();
         }
     }
 
