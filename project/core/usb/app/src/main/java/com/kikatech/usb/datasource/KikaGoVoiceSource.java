@@ -30,6 +30,11 @@ public class KikaGoVoiceSource implements IVoiceSource {
     public static final int ERROR_VOLUME_FW_NOT_SUPPORT = 255;
     public static final int ERROR_VERSION = -1;
 
+    private static final int[] VERSIONS_TO_INVERSE = {
+            0x1221,
+            0x1224,
+    };
+
     private IUsbDataSource mUsbDataSource;
 
     private KikaBuffer mKikaBuffer;
@@ -121,8 +126,7 @@ public class KikaGoVoiceSource implements IVoiceSource {
             mIsOpened.set(true);
             mKikaBuffer.create();
 
-            // fw version 1221 means one of the channels has inverse-phase issue
-            mIsInversePhase = Integer.toHexString(checkFwVersion()).equals("1221");
+            mIsInversePhase = isIsInversePhase(checkFwVersion());
         } else {
             Logger.e("KikaGoVoiceSource open fail.");
         }
@@ -260,5 +264,14 @@ public class KikaGoVoiceSource implements IVoiceSource {
 
     public int getNcVersion() {
         return KikaNcBuffer.getVersion();
+    }
+
+    private boolean isIsInversePhase(int ver) {
+        for (int version : VERSIONS_TO_INVERSE) {
+            if (ver == version) {
+                return true;
+            }
+        }
+        return false;
     }
 }
