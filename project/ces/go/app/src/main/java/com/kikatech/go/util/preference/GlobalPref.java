@@ -274,6 +274,16 @@ public class GlobalPref {
         return sPref.getBoolean(Key.KEY_HAS_SHOW_DIALOG_MORE_COMMANDS, false);
     }
 
+    public void setHasDoneTutorial(boolean hasDone) {
+        sEditor.putBoolean(Key.KEY_HAS_DONE_TUTORILA, hasDone);
+        apply();
+    }
+
+    public boolean getHasDoneTutorial() {
+        return sPref.getBoolean(Key.KEY_HAS_DONE_TUTORILA, false);
+    }
+
+
     // ----- Remote Configurations -----
 
     public void saveRemoteConfigConfigVersion(long version) {

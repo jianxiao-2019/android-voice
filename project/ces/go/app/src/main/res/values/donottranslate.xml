@@ -11,7 +11,7 @@
 
     <string name="ui_confirm_address">"\"%s\""</string>
     <string-array name="tts_confirm_address">
-        <item>"Taking you to \"%s\"..."</item> <!-- %s: address/name of place -->
+        <item>"No problem, taking you to %s"</item> <!-- %s: address/name of place -->
     </string-array>
 
     <string name="ui_ask_address_again">"Please say again"</string>
@@ -64,7 +64,7 @@
 
     <string name="ui_confirm_msg">"\"%s\""</string>
     <string-array name="tts_confirm_msg">
-        <item>""%s" ready to send?"</item>
+        <item>""%s" Do you want to send now?"</item>
     </string-array>
 
     <string name="ui_ask_emoji">"%s"</string>
@@ -233,6 +233,8 @@ immediately"</item>
     <string name="faq_title_general_question">"GENERAL QUESTIONS"</string>
     <string name="faq_title_tip">"CONTACT US"</string>
 
+    <string name="faq_q0_title">"Learn tips on practice mode"</string>
+
     <string name="faq_q1_title">"KikaGo Smart Mic User Tips"</string>
     <string-array name="faq_q1_subtitles">
         <item>"Face up"</item>
@@ -289,6 +291,24 @@ immediately"</item>
     <string name="faq_q3_p4_done_description">"It has been uploaded. Please update KikaGo when the next version is available for a better experience."</string>
 
     <string name="faq_t1_title">"Report problems"</string>
+
+
+    <string name="tutorial_wake_up_title">"Say “Hi Kika”"</string>
+    <string name="tutorial_wake_up_description">"Say “Hi Kika” first before giving a command.
+Now click OK and say “Hi Kika”!"</string>
+    <string name="tutorial_command_title">"Say “Navigate”"</string>
+    <string name="tutorial_command_description">"Great! You’ve woken up Kika! Let’s try to navigate.
+After the beep, say “Navigate” to continue."</string>
+    <string name="tutorial_address_title">"“Where do u want to go?”"</string>
+    <string name="tutorial_address_description">"Good job! Next step: Tell Kika your destination.
+Remember to wait for the beep first before you answer."</string>
+    <string name="tutorial_confirm_title">"“Is it correct?”"</string>
+    <string name="tutorial_confirm_description">"Confirm your destination with Kika.
+Say “OK” after the beep if it is correct."</string>
+    <string name="tutorial_done_title">"You got it!!"</string>
+    <string name="tutorial_done_description">"See how easy it is to use KikaGo.
+Now you can try other features,
+and revisit this practice anytime in Settings."</string>
 
 
     <string name="report_description">"Is something not working? Really sorry for the inconvenience. Please let us know what the problem is. Your report is greatly appreciated so we can make the product better!"</string>

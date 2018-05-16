@@ -109,4 +109,14 @@
         android:layout_marginRight="30dp"
         android:layout_marginTop="70dp"/>
 
+    <include
+        android:id="@+id/go_layout_tutorial_dialog"
+        layout="@layout/go_layout_tutorial_dialog"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/go_layout_tutorial_dialog_done"
+        layout="@layout/go_layout_tutorial_dialog_done"
+        android:visibility="gone"/>
+
 </RelativeLayout>

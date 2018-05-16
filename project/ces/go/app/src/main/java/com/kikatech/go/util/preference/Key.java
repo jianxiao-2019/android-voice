@@ -41,6 +41,8 @@ class Key {
     static final String KEY_CAN_SHOW_DIALOG_MORE_COMMANDS = "key_can_show_dialog_commands";
     static final String KEY_HAS_SHOW_DIALOG_MORE_COMMANDS = "key_has_show_dialog_commands";
 
+    static final String KEY_HAS_DONE_TUTORILA = "key_has_done_tutorial";
+
 
     // Remote Configs
     static final String KEY_REMOTE_CONFIG_CONFIG_VERSION = "key_remote_config_config_version";

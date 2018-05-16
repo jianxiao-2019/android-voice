@@ -25,6 +25,8 @@ public class ToDFServiceEvent extends BaseEvent {
     public static final String ACTION_DISABLE_WAKE_UP_DETECTOR = "action_disable_wake_up_detector";
     public static final String ACTION_ENABLE_WAKE_UP_DETECTOR = "action_enable_wake_up_detector";
     public static final String ACTION_ON_NEW_MSG = "action_on_new_msg";
+    public static final String ACTION_DO_TUTORIAL = "action_do_tutorial";
+    public static final String ACTION_STOP_TUTORIAL = "action_stop_tutorial";
 
     public static final String PARAM_STATUS = "param_status";
     public static final String PARAM_TEXT = "param_text";

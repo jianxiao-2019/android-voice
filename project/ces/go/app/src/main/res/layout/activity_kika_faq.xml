@@ -52,6 +52,36 @@
                 android:textColor="@color/drawer_subtitle_text"/>
 
             <LinearLayout
+                android:id="@+id/faq_q0"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_submenu_faq_item_height"
+                android:background="@drawable/selector_bg_faq_item"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/drawer_submenu_faq_item_padding_left"
+                android:paddingRight="@dimen/drawer_submenu_faq_item_padding_right">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/faq_q0_title"
+                    android:textColor="@color/drawer_item_text"
+                    android:textSize="@dimen/drawer_submenu_faq_item_text_size"/>
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/kika_faq_ic_more"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_underline_height"
+                android:background="@color/drawer_underline"/>
+
+            <LinearLayout
                 android:id="@+id/faq_q1"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/drawer_submenu_faq_item_height"

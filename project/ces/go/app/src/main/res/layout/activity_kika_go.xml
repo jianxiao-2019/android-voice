@@ -38,6 +38,12 @@
                 android:src="@drawable/kika_ic_help"/>
 
             <ImageView
+                android:id="@+id/go_layout_ic_tutorial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/kika_ic_sandbox_tips"/>
+
+            <ImageView
                 android:id="@+id/go_layout_ic_connection_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

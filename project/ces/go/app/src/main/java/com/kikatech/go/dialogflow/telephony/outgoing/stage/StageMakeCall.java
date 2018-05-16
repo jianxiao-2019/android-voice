@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.telephony.TelephonyServiceManager;
+import com.kikatech.go.tutorial.TutorialUtil;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.LogUtil;
@@ -84,6 +85,7 @@ public class StageMakeCall extends StageOutgoing {
         BackgroundThread.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                TutorialUtil.setHasDoneTutorial();
                 TipsHelper.setCanShowDialogMoreCommands(true);
                 exitScene();
             }

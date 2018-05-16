@@ -223,6 +223,10 @@ public class FAQHelper {
     }
 
 
+    public void doFAQ0() {
+        DialogFlowForegroundService.processDoTutorial();
+    }
+
     public void doFAQ1() {
         DialogUtil.showFAQ1(mContext, null);
     }

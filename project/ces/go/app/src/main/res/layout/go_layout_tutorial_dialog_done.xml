@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:background="@color/window_bg"
+                tools:ignore="SpUsage">
+
+    <ImageView
+        android:id="@+id/go_layout_tutorial_dialog_done_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="125dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/kika_bg_sandbox_tips_done_deco"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/go_layout_tutorial_dialog_done_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="33dp"
+        android:paddingRight="33dp">
+
+        <TextView
+            android:id="@+id/go_layout_tutorial_dialog_done_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:textColor="#eaf1ff"
+            android:textSize="24dp"/>
+
+        <TextView
+            android:id="@+id/go_layout_tutorial_dialog_done_des"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:gravity="center"
+            android:textColor="#8e94a9"
+            android:textSize="14dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/go_layout_tutorial_dialog_done_btn_apply"
+        android:layout_width="139dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="59dp"
+        android:background="@drawable/selector_kika_tutorial_dialog_btn"
+        android:gravity="center"
+        android:text="DONE"
+        android:textColor="#3274e6"
+        android:textSize="16dp"/>
+</RelativeLayout>

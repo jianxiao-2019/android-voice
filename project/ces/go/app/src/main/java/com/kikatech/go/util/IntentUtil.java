@@ -7,6 +7,7 @@ import android.net.Uri;
 
 import com.kikatech.go.ui.activity.KikaGoActivity;
 import com.kikatech.go.ui.activity.KikaPermissionsActivity;
+import com.kikatech.go.ui.activity.KikaTutorialActivity;
 
 /**
  * @author SkeeterWang Created on 2017/11/29.
@@ -19,6 +20,12 @@ public class IntentUtil {
 
     public static boolean openKikaGo(Context context) {
         Intent intent = new Intent(context, KikaGoActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return sendPendingIntent(context, intent);
+    }
+
+    public static boolean openKikaTutorial(Context context) {
+        Intent intent = new Intent(context, KikaTutorialActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return sendPendingIntent(context, intent);
     }

@@ -39,6 +39,7 @@ public class KikaFAQsActivity extends BaseActivity implements View.OnClickListen
 
     private void bindListener() {
         findViewById(R.id.drawer_title_icon).setOnClickListener(this);
+        findViewById(R.id.faq_q0).setOnClickListener(this);
         findViewById(R.id.faq_q1).setOnClickListener(this);
         findViewById(R.id.faq_q2).setOnClickListener(this);
         findViewById(R.id.faq_q3).setOnClickListener(this);
@@ -53,6 +54,9 @@ public class KikaFAQsActivity extends BaseActivity implements View.OnClickListen
         switch (view.getId()) {
             case R.id.drawer_title_icon:
                 finish();
+                break;
+            case R.id.faq_q0:
+                mFAQHelper.doFAQ0();
                 break;
             case R.id.faq_q1:
                 mFAQHelper.doFAQ1();

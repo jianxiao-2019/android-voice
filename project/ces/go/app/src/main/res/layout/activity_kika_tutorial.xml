@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="SpUsage,RtlHardcoded">
+
+    <com.kikatech.go.view.GoLayout
+        android:id="@+id/go_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/tutorial_btn_exit"
+        android:layout_width="74dp"
+        android:layout_height="32dp"
+        android:layout_gravity="right"
+        android:layout_marginRight="13dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/kika_tutorial_btn_exit_normal"
+        android:gravity="center"
+        android:text="Exit"
+        android:textColor="#6d7390"
+        android:textSize="16dp"/>
+
+</FrameLayout>

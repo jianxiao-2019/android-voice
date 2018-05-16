@@ -138,6 +138,17 @@ public class GoLayout extends FrameLayout {
     private View mMsgSentLayout;
     private View mMsgSentFailedLayout;
 
+    private View mTutorialDialogLayout;
+    private TextView mTutorialDialogIndex;
+    private TextView mTutorialDialogTitle;
+    private TextView mTutorialDialogDescription;
+    private View mTutorialDialogBtnApply;
+
+    private View mTutorialDialogDoneLayout;
+    private TextView mTutorialDialogDoneTitle;
+    private TextView mTutorialDialogDoneDescription;
+    private View mTutorialDialogDoneBtnApply;
+
     private View mSleepLayout;
 
     private View mStatusLayout;
@@ -145,6 +156,7 @@ public class GoLayout extends FrameLayout {
     private GlideDrawableImageViewTarget mRepeatTarget;
     private GlideDrawableImageViewTarget mNonRepeatTarget;
 
+    private boolean isTouchWakeUpEnabled = true;
 
     public GoLayout(Context context) {
         this(context, null);
@@ -214,6 +226,17 @@ public class GoLayout extends FrameLayout {
 
         mMsgSentFailedLayout = findViewById(R.id.go_layout_msg_sent_failed);
 
+        mTutorialDialogLayout = findViewById(R.id.go_layout_tutorial_dialog);
+        mTutorialDialogIndex = (TextView) findViewById(R.id.go_layout_tutorial_dialog_index);
+        mTutorialDialogTitle = (TextView) findViewById(R.id.go_layout_tutorial_dialog_title);
+        mTutorialDialogDescription = (TextView) findViewById(R.id.go_layout_tutorial_dialog_des);
+        mTutorialDialogBtnApply = findViewById(R.id.go_layout_tutorial_dialog_btn_apply);
+
+        mTutorialDialogDoneLayout = findViewById(R.id.go_layout_tutorial_dialog_done);
+        mTutorialDialogDoneTitle = (TextView) findViewById(R.id.go_layout_tutorial_dialog_done_title);
+        mTutorialDialogDoneDescription = (TextView) findViewById(R.id.go_layout_tutorial_dialog_done_des);
+        mTutorialDialogDoneBtnApply = findViewById(R.id.go_layout_tutorial_dialog_done_btn_apply);
+
         mSleepLayout = findViewById(R.id.go_layout_sleep);
 
         mStatusLayout = findViewById(R.id.go_layout_status);
@@ -234,7 +257,9 @@ public class GoLayout extends FrameLayout {
 
             @Override
             public void onClick(View view, MotionEvent event) {
-                DialogFlowForegroundService.processDialogFlowWakeUp();
+                if (isTouchWakeUpEnabled) {
+                    DialogFlowForegroundService.processDialogFlowWakeUp();
+                }
             }
 
             @Override
@@ -249,6 +274,13 @@ public class GoLayout extends FrameLayout {
             public void onUp(View view, MotionEvent event, long timeSpentFromStart) {
             }
         }));
+    }
+
+    public void setTouchWakeUpEnabled(boolean toEnabled) {
+        isTouchWakeUpEnabled = toEnabled;
+        if (!isTouchWakeUpEnabled) {
+            disableTouchWakeUpPanel();
+        }
     }
 
 
@@ -384,7 +416,7 @@ public class GoLayout extends FrameLayout {
     }
 
     public synchronized void enableTouchWakeUpPanel() {
-        mTouchWakeUpPanel.setVisibility(VISIBLE);
+        mTouchWakeUpPanel.setVisibility(isTouchWakeUpEnabled ? VISIBLE : GONE);
     }
 
     public synchronized void disableTouchWakeUpPanel() {
@@ -764,9 +796,43 @@ public class GoLayout extends FrameLayout {
         mUsrMsgLayout.setVisibility(GONE);
         mMsgSentLayout.setVisibility(GONE);
         mMsgSentFailedLayout.setVisibility(GONE);
+        mTutorialDialogLayout.setVisibility(GONE);
         if (componentsToShow != null) {
             componentsToShow.setVisibility(VISIBLE);
         }
+    }
+
+    public synchronized void displayTutorialDialog(int index, String title, String description, final IOnTutorialDialogClickListener listener) {
+        mTutorialDialogLayout.setVisibility(VISIBLE);
+        mTutorialDialogIndex.setText(String.format("%s/5", index));
+        mTutorialDialogTitle.setText(title);
+        mTutorialDialogDescription.setText(description);
+        mTutorialDialogBtnApply.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onApply();
+                }
+            }
+        });
+    }
+
+    public synchronized void displayTutorialDialogDone(String title, String description, final IOnTutorialDialogClickListener listener) {
+        mTutorialDialogDoneLayout.setVisibility(VISIBLE);
+        mTutorialDialogDoneTitle.setText(title);
+        mTutorialDialogDoneDescription.setText(description);
+        mTutorialDialogDoneBtnApply.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onApply();
+                }
+            }
+        });
+    }
+
+    public synchronized void dismissTutorialDialog() {
+        mTutorialDialogLayout.setVisibility(GONE);
     }
 
 
@@ -777,6 +843,9 @@ public class GoLayout extends FrameLayout {
     public synchronized void onStatusChanged(final ViewStatus status, IGifStatusListener listener) {
         ViewStatus nextStatus = getNextStatus(status);
         if (nextStatus == null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logv(TAG, String.format("status: %s, nextStatus: null", status.name()));
+            }
             return;
         }
         onNewStatus(nextStatus, listener);
@@ -793,6 +862,9 @@ public class GoLayout extends FrameLayout {
             case AWAKE:
                 if (mCurrentStatus == null) {
                     nextStatus = status;
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logv(TAG, String.format("status: %s, nextStatus: %s", status.name(), nextStatus.name()));
+                    }
                     break;
                 } else if (mCurrentStatus.equals(status)) {
                     break;
@@ -841,7 +913,7 @@ public class GoLayout extends FrameLayout {
         return nextStatus;
     }
 
-    private synchronized void onNewStatus(ViewStatus status, final IGifStatusListener listener) {
+    public synchronized void onNewStatus(ViewStatus status, final IGifStatusListener listener) {
         mCurrentStatus = status;
         boolean toRepeat = listener == null;
         switch (status) {
@@ -1020,6 +1092,10 @@ public class GoLayout extends FrameLayout {
 
     public interface IOnOptionSelectListener {
         void onSelected(byte requestType, int index, Option option);
+    }
+
+    public interface IOnTutorialDialogClickListener {
+        void onApply();
     }
 
     public interface IOnLockStateChangeListener {

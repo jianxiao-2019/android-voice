@@ -3,6 +3,7 @@ package com.kikatech.go.dialogflow;
 import android.content.Context;
 
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
+import com.kikatech.go.dialogflow.apiai.TutorialAgentCreator;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
@@ -22,6 +23,8 @@ public class DialogFlowConfig {
 
     private static final int BOS_DURATION = 6800;
     private static final int EOS_DURATION = 3000;
+
+    private static final int BOS_DURATION_TUTORIAL = 15000;
 
     public static VoiceConfiguration getVoiceConfig(Context ctx, KikaGoVoiceSource audioSource) {
         VoiceConfiguration conf = new VoiceConfiguration();
@@ -43,6 +46,31 @@ public class DialogFlowConfig {
                 .build());
         conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
         conf.setBosDuration(BOS_DURATION);
+        conf.setEosDuration(EOS_DURATION);
+        conf.setWakeUpDetector(new SnowBoyDetector());
+        return conf;
+    }
+
+    public static VoiceConfiguration getTutorialConfig(Context ctx, KikaGoVoiceSource audioSource) {
+        VoiceConfiguration conf = new VoiceConfiguration();
+        conf.agent(new TutorialAgentCreator())
+                .source(audioSource);
+        conf.setDebugFileTag(APP_NAME);
+        conf.setIsDebugMode(true);
+        conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
+                .setAppName(APP_NAME)
+                .setUrl(UserSettings.getDbgAsrServer())
+                .setSign(RequestManager.getSign(ctx))
+                .setUserAgent(RequestManager.generateUserAgent(ctx))
+                .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))
+                .build());
+        conf.setExternalConfig(new VoiceConfiguration.ExternalConfig.Builder()
+                .setDebugLogAliveDays(FILE_ALIVE_DAYS)
+                .addFolderConfig(LogUtil.LOG_FOLDER, FILE_ALIVE_DAYS)
+                .addFolderConfig(Logger.LOG_FOLDER, FILE_ALIVE_DAYS)
+                .build());
+        conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
+        conf.setBosDuration(BOS_DURATION_TUTORIAL);
         conf.setEosDuration(EOS_DURATION);
         conf.setWakeUpDetector(new SnowBoyDetector());
         return conf;

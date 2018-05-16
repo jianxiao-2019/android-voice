@@ -450,6 +450,7 @@ public class DialogFlowServicePresenter {
 
         @Override
         public void onRecorderSourceUpdate() {
+            mDFServiceStatus.setInit(true);
             String voiceSource = mVoiceSourceHelper.getUsbVoiceSource() == null ? VoiceSourceHelper.VOICE_SOURCE_ANDROID : VoiceSourceHelper.VOICE_SOURCE_USB;
             String action = DFServiceEvent.ACTION_ON_VOICE_SRC_CHANGE;
             DFServiceEvent event = new DFServiceEvent(action);
@@ -565,6 +566,7 @@ public class DialogFlowServicePresenter {
                 VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(mContext, mVoiceSourceHelper.getUsbVoiceSource());
                 mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
                 mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus);
+                mDialogFlowService.init();
                 registerScenes();
             }
         });
@@ -672,6 +674,21 @@ public class DialogFlowServicePresenter {
             }
             mDialogFlowService.sleep();
             mDialogFlowService.disableWakeUpDetector();
+        }
+    }
+
+    public void doOnStartTutorial() {
+        if (mDialogFlowService != null) {
+            mDialogFlowService.sleep();
+            mDialogFlowService.disableWakeUpDetector();
+            mDialogFlowService.stopListening();
+//            quitService();
+        }
+    }
+
+    public void doOnStopTutorial() {
+        if (mDialogFlowService != null) {
+            mDialogFlowService.enableWakeUpDetector();
         }
     }
 

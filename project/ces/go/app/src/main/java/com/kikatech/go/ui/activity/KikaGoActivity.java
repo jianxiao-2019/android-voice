@@ -17,6 +17,7 @@ import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.navigation.location.LocationMgr;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.services.presenter.VoiceSourceHelper;
+import com.kikatech.go.tutorial.TutorialUtil;
 import com.kikatech.go.ui.fragment.DrawerAdvancedFragment;
 import com.kikatech.go.ui.fragment.DrawerImFragment;
 import com.kikatech.go.ui.fragment.DrawerMainFragment;
@@ -55,6 +56,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
     private ImageView mIconUsbHardwareStatus;
     private View mIconUsbAttached;
     private View mIconHelp;
+    private View mIconTutorial;
     private View mIconUpdateApp;
 
     private boolean triggerDialogViaClick;
@@ -62,7 +64,8 @@ public class KikaGoActivity extends BaseDrawerActivity {
     private boolean mIsUsbSource = false;
     private boolean mIsAudioDataCorrect = true;
 
-    private int mIconHelpVisibility = View.VISIBLE;
+    private int mIconTutorialVisibility;
+    private int mIconHelpVisibility;
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -266,11 +269,14 @@ public class KikaGoActivity extends BaseDrawerActivity {
                     case AWAKE:
                         mBtnOpenDrawer.setVisibility(View.GONE);
                         mIconHelpVisibility = View.INVISIBLE;
+                        mIconTutorialVisibility = View.INVISIBLE;
                         updateTopIconStatus();
                         break;
                     case SLEEP:
                         mBtnOpenDrawer.setVisibility(View.VISIBLE);
-                        mIconHelpVisibility = View.VISIBLE;
+                        boolean hasDoneTutorial = TutorialUtil.hasDoneTutorial();
+                        mIconHelpVisibility = hasDoneTutorial ? View.VISIBLE : View.INVISIBLE;
+                        mIconTutorialVisibility = hasDoneTutorial ? View.INVISIBLE : View.VISIBLE;
                         updateTopIconStatus();
                         break;
                 }
@@ -300,7 +306,6 @@ public class KikaGoActivity extends BaseDrawerActivity {
                 initUiTaskManager();
                 DialogFlowForegroundService.processStart(KikaGoActivity.this, DialogFlowForegroundService.class);
                 DialogFlowForegroundService.processPingDialogFlowStatus();
-                updateTopIconStatus();
 
                 if (GlobalPref.getIns().isFirstLaunch()) {
                     CustomConfig.removeAllCustomConfigFiles();
@@ -321,6 +326,10 @@ public class KikaGoActivity extends BaseDrawerActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        boolean hasDoneTutorial = TutorialUtil.hasDoneTutorial();
+        mIconHelpVisibility = hasDoneTutorial ? View.VISIBLE : View.INVISIBLE;
+        mIconTutorialVisibility = hasDoneTutorial ? View.INVISIBLE : View.VISIBLE;
+        updateTopIconStatus();
         DialogFlowForegroundService.processScanUsbDevices();
         if (TipsHelper.shouldShowDialogMoreCommands()) {
             TipsHelper.showDialogMoreCommands(KikaGoActivity.this, new DialogUtil.IDialogListener() {
@@ -354,6 +363,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
         mIconUsbHardwareStatus = (ImageView) findViewById(R.id.go_layout_ic_hardware_status);
         mIconUsbAttached = findViewById(R.id.go_layout_ic_usb_attached);
         mIconHelp = findViewById(R.id.go_layout_ic_help);
+        mIconTutorial = findViewById(R.id.go_layout_ic_tutorial);
         mIconUpdateApp = findViewById(R.id.go_layout_ic_update_app);
     }
 
@@ -380,6 +390,12 @@ public class KikaGoActivity extends BaseDrawerActivity {
             @Override
             public void onClick(View v) {
                 startAnotherActivity(KikaFAQsActivity.class, false);
+            }
+        });
+        mIconTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFlowForegroundService.processDoTutorial();
             }
         });
         mIconUpdateApp.setOnClickListener(new View.OnClickListener() {
@@ -421,6 +437,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
             mIconConnectionStatus.setVisibility(View.GONE);
             mIconUsbHardwareStatus.setVisibility(View.GONE);
             mIconHelp.setVisibility(mIconHelpVisibility);
+            mIconTutorial.setVisibility(mIconTutorialVisibility);
         }
         mUiManager.dispatchConnectionStatusChanged(hasNetwork);
     }

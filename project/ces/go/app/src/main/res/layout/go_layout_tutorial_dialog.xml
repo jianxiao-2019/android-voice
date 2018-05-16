@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
+                android:background="#991c1e2c"
+                tools:ignore="SpUsage">
+
+    <TextView
+        android:id="@+id/go_layout_tutorial_dialog_index"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/go_layout_tutorial_dialog_bg"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="2dp"
+        android:textColor="#bccff0"
+        android:textSize="14dp"/>
+
+    <ImageView
+        android:id="@+id/go_layout_tutorial_dialog_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="7dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/kika_bg_sandbox_tips_card"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/go_layout_tutorial_dialog_bg"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-30dp"
+        android:src="@drawable/kika_ic_sandbox_tips_dialogue_lightbulb"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/go_layout_tutorial_dialog_btn_apply"
+        android:layout_alignTop="@+id/go_layout_tutorial_dialog_bg"
+        android:layout_marginTop="33dp"
+        android:orientation="vertical"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp">
+
+        <TextView
+            android:id="@+id/go_layout_tutorial_dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:id="@+id/go_layout_tutorial_dialog_des"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="#bccff0"
+            android:textSize="13dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/go_layout_tutorial_dialog_btn_apply"
+        android:layout_width="90dp"
+        android:layout_height="32dp"
+        android:layout_alignBottom="@+id/go_layout_tutorial_dialog_bg"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/selector_kika_tutorial_dialog_btn"
+        android:gravity="center"
+        android:text="OK"
+        android:textColor="#3274e6"
+        android:textSize="16dp"/>
+</RelativeLayout>

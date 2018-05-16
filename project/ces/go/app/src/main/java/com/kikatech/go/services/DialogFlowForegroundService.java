@@ -193,6 +193,17 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     mDFPresenter.doOnReceiveNewMsg(msgCommend, msgTimestamp);
                 }
                 break;
+            case ToDFServiceEvent.ACTION_DO_TUTORIAL:
+                if (mDFPresenter != null) {
+                    mDFPresenter.doOnStartTutorial();
+                    IntentUtil.openKikaTutorial(DialogFlowForegroundService.this);
+                }
+                break;
+            case ToDFServiceEvent.ACTION_STOP_TUTORIAL:
+                if (mDFPresenter != null) {
+                    mDFPresenter.doOnStopTutorial();
+                }
+                break;
         }
     }
 
@@ -548,6 +559,16 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_ON_NEW_MSG);
         event.putExtra(ToDFServiceEvent.PARAM_MSG_COMMEND, commend);
         event.putExtra(ToDFServiceEvent.PARAM_TIMESTAMP, msgTimestamp);
+        event.send();
+    }
+
+    public synchronized static void processDoTutorial() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_DO_TUTORIAL);
+        event.send();
+    }
+
+    public synchronized static void processStopTutorial() {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_STOP_TUTORIAL);
         event.send();
     }
 

@@ -14,6 +14,7 @@ import com.kikatech.go.dialogflow.model.UserInfo;
 import com.kikatech.go.dialogflow.model.UserMsg;
 import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
+import com.kikatech.go.tutorial.dialogflow.SceneTutorial;
 import com.kikatech.go.util.MediaPlayerUtil;
 import com.kikatech.go.util.AppInfo;
 import com.kikatech.go.util.LogUtil;
@@ -59,7 +60,7 @@ public class UiTaskManager {
     private String wakeUpFrom;
 
 
-    public UiTaskManager(GoLayout layout, IUiManagerFeedback feedback) {
+    public UiTaskManager(GoLayout layout, final IUiManagerFeedback feedback) {
         mLayout = layout;
         mFeedback = feedback;
         mLayout.setOnModeChangedListener(new GoLayout.IOnModeChangedListener() {
@@ -72,11 +73,12 @@ public class UiTaskManager {
                     case AWAKE:
                         boolean toDisplayDefaultOptionList = !SceneReplyIM.SCENE.equals(wakeUpFrom)
                                 && !SceneReplySms.SCENE.equals(wakeUpFrom)
-                                && !SceneIncoming.SCENE.equals(wakeUpFrom);
+                                && !SceneIncoming.SCENE.equals(wakeUpFrom)
+                                && !SceneTutorial.SCENE.equals(wakeUpFrom);
                         if (toDisplayDefaultOptionList) {
                             displayOptions(mDefaultOptionList);
+                            unlock();
                         }
-                        unlock();
                         break;
                     case SLEEP:
                         break;
@@ -226,10 +228,16 @@ public class UiTaskManager {
         onStatusChanged(GoLayout.ViewStatus.ANALYZE_TO_TTS, new GoLayout.IGifStatusListener() {
             @Override
             public void onStart() {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "onStart");
+                }
             }
 
             @Override
             public void onStop(Exception e) {
+                if (LogUtil.DEBUG) {
+                    LogUtil.logv(TAG, "onStop");
+                }
                 stage.doAction();
             }
         });
@@ -250,6 +258,21 @@ public class UiTaskManager {
         } else {
             listen(speech, isFinished);
         }
+    }
+
+    public synchronized void dispatchTutorialDialog(OptionList optionList, int index, String title, String description, GoLayout.IOnTutorialDialogClickListener listener) {
+        if (optionList != null && !optionList.isEmpty()) {
+            displayOptions(optionList);
+        }
+        displayTutorialDialog(index, title, description, listener);
+    }
+
+    public synchronized void dispatchTutorialDialogDone(String title, String description, GoLayout.IOnTutorialDialogClickListener listener) {
+        displayTutorialDialogDone(title, description, listener);
+    }
+
+    public synchronized void dispatchDismissTutorialDialog() {
+        dismissTutorialDialog();
     }
 
     public synchronized void onStageActionDone(int bosDuration) {
@@ -460,6 +483,45 @@ public class UiTaskManager {
         });
     }
 
+    private void displayTutorialDialog(final int index, final String title, final String description, final GoLayout.IOnTutorialDialogClickListener listener) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.displayTutorialDialog(index, title, description, listener);
+            }
+        });
+    }
+
+    private void displayTutorialDialogDone(final String title, final String description, final GoLayout.IOnTutorialDialogClickListener listener) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.displayTutorialDialogDone(title, description, listener);
+            }
+        });
+    }
+
+    private void dismissTutorialDialog() {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.dismissTutorialDialog();
+            }
+        });
+    }
+
     private void onStatusChanged(final GoLayout.ViewStatus status) {
         onStatusChanged(status, null);
     }
@@ -467,6 +529,9 @@ public class UiTaskManager {
     private void onStatusChanged(final GoLayout.ViewStatus status, GoLayout.IGifStatusListener listener) {
         final GoLayout layout = mLayout;
         if (layout == null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "layout is null");
+            }
             return;
         }
         layout.onStatusChanged(status, listener);

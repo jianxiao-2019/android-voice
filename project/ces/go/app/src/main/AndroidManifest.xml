@@ -63,6 +63,8 @@
         <activity android:name=".ui.activity.KikaBlockActivity"
                   android:launchMode="singleInstance"
                   android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.KikaTutorialActivity"
+                  android:screenOrientation="portrait"/>
 
 
         <service

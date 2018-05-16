@@ -17,6 +17,7 @@ import com.kikatech.go.dialogflow.im.send.IMContent;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
 import com.kikatech.go.accessibility.processor.IMProcessor;
 import com.kikatech.go.services.DialogFlowForegroundService;
+import com.kikatech.go.tutorial.TutorialUtil;
 import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
@@ -108,6 +109,7 @@ public class StageSendIMConfirm extends BaseSendIMStage {
                                 args.putBoolean(SceneUtil.EXTRA_SEND_SUCCESS, msgSentSuccess);
                                 args.putBoolean(SceneUtil.EXTRA_OPEN_KIKA_GO, openKikaGo);
                                 send(args);
+                                TutorialUtil.setHasDoneTutorial();
                                 TipsHelper.setCanShowDialogMoreCommands(true);
                                 uiHandler.postDelayed(new Runnable() {
                                     @Override

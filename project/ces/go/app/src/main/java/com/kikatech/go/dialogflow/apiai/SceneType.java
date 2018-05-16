@@ -13,6 +13,7 @@ import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.dialogflow.stop.SceneStopIntent;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
+import com.kikatech.go.tutorial.dialogflow.SceneTutorial;
 
 /**
  * @author SkeeterWang Created on 2017/11/6.
@@ -32,7 +33,8 @@ public enum SceneType {
     MUSIC(SceneMusic.SCENE),
     ERROR(SceneError.SCENE),
     CLOSE(SceneClose.SCENE),
-    HELP(SceneHelp.SCENE);
+    HELP(SceneHelp.SCENE),
+    TUTORIAL(SceneTutorial.SCENE);
 
     SceneType(String scene) {
         this.scene = scene;

@@ -7,6 +7,7 @@ import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.model.TtsText;
 import com.kikatech.go.music.model.YouTubeVideoList;
 import com.kikatech.go.services.MusicForegroundService;
+import com.kikatech.go.tutorial.TutorialUtil;
 import com.kikatech.go.util.TipsHelper;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
 import com.kikatech.voice.core.dialogflow.scene.SceneBase;
@@ -57,6 +58,7 @@ class StagePlaySong extends BaseMusicStage {
 
     @Override
     public void onStageActionDone(boolean isInterrupted) {
+        TutorialUtil.setHasDoneTutorial();
         TipsHelper.setCanShowDialogMoreCommands(true);
         exitScene();
     }
