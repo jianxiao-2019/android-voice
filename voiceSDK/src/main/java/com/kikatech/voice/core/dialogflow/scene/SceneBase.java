@@ -56,10 +56,15 @@ public abstract class SceneBase implements DialogObserver {
 
     protected abstract SceneStage idle();
 
+
     protected abstract SceneStage onOverCounts();
 
     protected String getTransformSceneInfo() {
         return null;
+    }
+
+    protected int getMaxStageStayCount() {
+        return BACK_TO_MAIN_ERR_COUNT;
     }
 
     boolean supportEmoji() {
@@ -99,7 +104,7 @@ public abstract class SceneBase implements DialogObserver {
             boolean isOverrideUnknownAction = mStage != null && mStage.overrideUnknownAction;
 
             boolean toStayCurrentStage = !isDefaultUnknown && !isDefaultUncaught && !isOverrideUncaughtAction && (isUnknownIntent || isUncaughtIntent);
-            boolean toCheckStayCount = isUserInput || isUnknownIntent || isUncaughtIntent;
+            boolean toCheckStayCount = getMaxStageStayCount() > 0 && (isUserInput || isUnknownIntent || isUncaughtIntent);
 
             SceneStage nextStage;
             if (toStayCurrentStage && !isOverrideUncaughtAction && !isOverrideUnknownAction) {
@@ -129,7 +134,7 @@ public abstract class SceneBase implements DialogObserver {
             }
 
             mStage = nextStage;
-            if(Logger.DEBUG) Logger.w(TAG, "set mStage:" + mStage);
+            if (Logger.DEBUG) Logger.w(TAG, "set mStage:" + mStage);
             mStage.isUncaughtLoop = isUncaughtIntent && !isOverrideUncaughtAction;
             mStage.isDefaultUncaught = isDefaultUncaught;
             mStage.prepareAction(scene(), action, mStage);
@@ -151,13 +156,14 @@ public abstract class SceneBase implements DialogObserver {
     public void nextStage(SceneStage stage) {
         if (stage != null) {
             mStage = stage;
-            if(Logger.DEBUG) Logger.w(TAG, "set mStage:" + mStage);
+            if (Logger.DEBUG) Logger.w(TAG, "set mStage:" + mStage);
             stage.prepareAction(scene(), "", stage);
         }
     }
 
     /**
      * Perform cross interactions between different Scene
+     *
      * @param intent re-wrapped Intent to a different Scene
      */
     public void redirectIntent(final Intent intent) {

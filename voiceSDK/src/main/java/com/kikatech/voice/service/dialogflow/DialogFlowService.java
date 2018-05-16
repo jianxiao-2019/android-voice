@@ -29,6 +29,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     private static final String TAG = "DialogFlowService";
 
+    private VoiceConfiguration mConfig;
 
     private final IAgentQueryStatus mQueryStatusCallback;
 
@@ -46,9 +47,15 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
         mQueryStatusCallback = queryStatus;
         mSceneManager = new SceneManager(mSceneCallback, mSceneQueryWordsStatusCallback);
-        initDialogFlow(conf);
-        initVoiceService(conf);
-        initTts(conf);
+        mConfig = conf;
+    }
+
+    @Override
+    public void init() {
+        initDialogFlow(mConfig);
+        initVoiceService(mConfig);
+        initTts(mConfig);
+        mServiceCallback.onInitComplete();
     }
 
     @Override
@@ -234,11 +241,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         initVoiceService(config);
         // Voice is re-initialized, go back to the
         resetContexts();
-        if (mServiceCallback != null) {
-            mServiceCallback.onRecorderSourceUpdate();
-            // Notify that the service is now sleeping
-            mServiceCallback.onSleep();
-        }
+        mServiceCallback.onRecorderSourceUpdate();
+        // Notify that the service is now sleeping
+        mServiceCallback.onSleep();
     }
 
     public ISceneFeedback getTtsFeedback() {

@@ -62,6 +62,8 @@ public interface IDialogFlowService extends IDialogFlowVoiceService {
         void onError(Exception e);
     }
 
+    void init();
+
     void registerScene(SceneBase scene);
 
     void unregisterScene(SceneBase scene);

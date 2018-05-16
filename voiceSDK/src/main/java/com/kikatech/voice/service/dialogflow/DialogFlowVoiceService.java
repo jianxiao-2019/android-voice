@@ -132,7 +132,6 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
         mVoiceService.create();
         mVoiceService.start();
 
-        mServiceCallback.onInitComplete();
         mServiceCallback.onAsrConfigChange(mAsrConfiguration);
         mServiceCallback.onRecorderSourceUpdate();
 
