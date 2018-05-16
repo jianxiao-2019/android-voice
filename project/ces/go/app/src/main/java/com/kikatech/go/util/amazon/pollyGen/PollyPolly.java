@@ -62,7 +62,7 @@ public class PollyPolly {
             new AssetPolly("Please say again"),
             new AssetPolly("I didn't get what you say."),
             new AssetPolly("I didn't catch you."),
-            new AssetPolly("OK, let's play!"),
+            new AssetPolly("OK! Buffering now, please wait."),
             new AssetPolly("What's the song do you like?"),
             new AssetPolly("Can not connect to KikaGo service."),
             new AssetPolly("Can not connect to language understanding service."),

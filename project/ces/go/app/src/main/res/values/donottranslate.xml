@@ -128,9 +128,9 @@
         <item>"What's the song do you like?"</item>
     </string-array>
 
-    <string name="ui_play_music">"OK, let's play!"</string>
+    <string name="ui_play_music">"OK! Buffering now, please wait."</string>
     <string-array name="tts_play_music">
-        <item>"OK, let's play!"</item>
+        <item>"OK! Buffering now, please wait."</item>
     </string-array>
 
     <string-array name="tts_help">
