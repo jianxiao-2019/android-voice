@@ -56,9 +56,6 @@ public class UsbAudioService {
     public void closeDevice() {
         if (mUsbAudioDriver != null) {
             mUsbAudioDriver.closeUsb();
-            if (mListener != null) {
-                mListener.onDeviceDetached();
-            }
         }
     }
 
