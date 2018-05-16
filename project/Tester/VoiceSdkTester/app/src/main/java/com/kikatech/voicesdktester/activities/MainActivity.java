@@ -158,30 +158,19 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onCurrentDB(int curDB) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mDbTextView != null) {
-                        mDbTextView.setText(String.valueOf(curDB));
-                    }
+            runOnUiThread(() -> {
+                if (mDbTextView != null) {
+                    mDbTextView.setText(String.valueOf(curDB));
                 }
             });
         }
     };
 
-    private KikaGoVoiceSource.OnOpenedCallback mOnOpenedCallback = new KikaGoVoiceSource.OnOpenedCallback() {
-        @Override
-        public void onOpened(int state) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    checkVersions();
-                    checkVolume();
-                    checkNsParameters();
-                }
-            });
-        }
-    };
+    private KikaGoVoiceSource.OnOpenedCallback mOnOpenedCallback = state -> runOnUiThread(() -> {
+        checkVersions();
+        checkVolume();
+        checkNsParameters();
+    });
 
     private void checkNsParameters() {
         if (mKikaGoVoiceSource != null) {
@@ -204,23 +193,20 @@ public class MainActivity extends AppCompatActivity implements
 
         Logger.i("onCreate");
         mPermissionButton = (Button) findViewById(R.id.button_permission);
-        mPermissionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.RECORD_AUDIO);
-                int storagePermissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        mPermissionButton.setOnClickListener(v -> {
+            int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.RECORD_AUDIO);
+            int storagePermissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-                if (permissionCheck != PackageManager.PERMISSION_GRANTED
-                        || storagePermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            mPermissions, REQUEST_RECORD_AUDIO_PERMISSION);
-                } else {
-                    showToast("You already have these permission.");
-                }
-                updatePermissionButtonState();
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED
+                    || storagePermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        mPermissions, REQUEST_RECORD_AUDIO_PERMISSION);
+            } else {
+                showToast("You already have these permission.");
             }
+            updatePermissionButtonState();
         });
 
         mSpinner = (Spinner) findViewById(R.id.spinner);
@@ -230,83 +216,71 @@ public class MainActivity extends AppCompatActivity implements
         mSpinner.setSelection(2);
 
         mStartButton = (Button) findViewById(R.id.button_start);
-        mStartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVoiceService != null) {
-                    mVoiceService.start();
+        mStartButton.setOnClickListener(v -> {
+            if (mVoiceService != null) {
+                mVoiceService.start();
 
-                    Logger.d("MainActivity onStartListening");
-                    waveStartDraw();
-                    mResultAdapter.clearResults();
-                    mResultAdapter.notifyDataSetChanged();
+                Logger.d("MainActivity onStartListening");
+                waveStartDraw();
+                mResultAdapter.clearResults();
+                mResultAdapter.notifyDataSetChanged();
 
-                    writeTimeToFile();
-                    writeNoteToFile();
-                    writeVersionsToFile();
-                    writeVolumeToFile();
+                writeTimeToFile();
+                writeNoteToFile();
+                writeVersionsToFile();
+                writeVolumeToFile();
 
-                    if (mTextView != null) {
-                        mTextView.setText("starting.");
-                    }
-                    mStartButton.setEnabled(false);
-                    mStopButton.setEnabled(true);
-                    mReportButton.setEnabled(false);
-                } else {
-                    if (mTextView != null) {
-                        mTextView.setText("Select an audio source first.");
-                    }
+                if (mTextView != null) {
+                    mTextView.setText("starting.");
+                }
+                mStartButton.setEnabled(false);
+                mStopButton.setEnabled(true);
+                mReportButton.setEnabled(false);
+            } else {
+                if (mTextView != null) {
+                    mTextView.setText("Select an audio source first.");
                 }
             }
         });
         mStartButton.setEnabled(false);
 
         mStopButton = (Button) findViewById(R.id.button_stop);
-        mStopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVadTextView != null) {
-                    mVadTextView.setText("0.0");
-                }
-                if (mNoteText!= null) {
-                    String note = mNoteText.getText().toString();
-                    String originalHint = getResources().getString(R.string.note_hint);
-                    mNoteText.setHint((note!=null && note.length()>0)? originalHint + note : originalHint);
-                    mNoteText.setText("", TextView.BufferType.EDITABLE);
-                }
-                if (mVoiceService != null) {
-                    writeTimeToFile();
-                    mVoiceService.stop(VoiceService.StopType.NORMAL);
+        mStopButton.setOnClickListener(v -> {
+            if (mVadTextView != null) {
+                mVadTextView.setText("0.0");
+            }
+            if (mNoteText!= null) {
+                String note = mNoteText.getText().toString();
+                String originalHint = getResources().getString(R.string.note_hint);
+                mNoteText.setHint((note!=null && note.length()>0)? originalHint + note : originalHint);
+                mNoteText.setText("", TextView.BufferType.EDITABLE);
+            }
+            if (mVoiceService != null) {
+                writeTimeToFile();
+                mVoiceService.stop(VoiceService.StopType.NORMAL);
 
-                    Logger.d("MainActivity onStopListening");
-                    waveStopDraw();
-                    if (mTextView != null) {
-                        mTextView.setText("stopped.");
-                    }
-                    mStartButton.setEnabled(true);
-                    mStopButton.setEnabled(false);
-                    mReportButton.setEnabled(true);
+                Logger.d("MainActivity onStopListening");
+                waveStopDraw();
+                if (mTextView != null) {
+                    mTextView.setText("stopped.");
                 }
+                mStartButton.setEnabled(true);
+                mStopButton.setEnabled(false);
+                mReportButton.setEnabled(true);
             }
         });
         mStopButton.setEnabled(false);
 
         if (IS_WAKE_UP_MODE) {
-            findViewById(R.id.button_wake).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mVoiceService != null) {
-                        mVoiceService.wakeUp();
-                    }
+            findViewById(R.id.button_wake).setOnClickListener(v -> {
+                if (mVoiceService != null) {
+                    mVoiceService.wakeUp();
                 }
             });
 
-            findViewById(R.id.button_sleep).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mVoiceService != null) {
-                        mVoiceService.sleep();
-                    }
+            findViewById(R.id.button_sleep).setOnClickListener(v -> {
+                if (mVoiceService != null) {
+                    mVoiceService.sleep();
                 }
             });
         } else {
@@ -314,48 +288,37 @@ public class MainActivity extends AppCompatActivity implements
             findViewById(R.id.button_sleep).setVisibility(View.GONE);
         }
 
-        findViewById(R.id.button_tts).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mResultRecyclerView == null || mResultRecyclerView.getChildCount() == 0) {
-                    mTtsSource.speak("Hi! Nice to meet you.");
-                } else {
-                    // mTtsSource.speak(((TextView) mResultRecyclerView.getChildAt(0).findViewById(R.id.text_result)).getText().toString());
-                    Pair<String, Integer>[] playList = new Pair[3];
-                    playList[0] = new Pair<>("The top one in your result list is :", TtsSource.TTS_SPEAKER_1);
-                    playList[1] = new Pair<>(((TextView) mResultRecyclerView.getChildAt(0).findViewById(R.id.text_result)).getText().toString(), TtsSource.TTS_SPEAKER_2);
-                    playList[2] = new Pair<>("Is that correct?", TtsSource.TTS_SPEAKER_1);
-                    mTtsSource.speak(playList);
-                }
-
+        findViewById(R.id.button_tts).setOnClickListener(v -> {
+            if (mResultRecyclerView == null || mResultRecyclerView.getChildCount() == 0) {
+                mTtsSource.speak("Hi! Nice to meet you.");
+            } else {
+                // mTtsSource.speak(((TextView) mResultRecyclerView.getChildAt(0).findViewById(R.id.text_result)).getText().toString());
+                Pair<String, Integer>[] playList = new Pair[3];
+                playList[0] = new Pair<>("The top one in your result list is :", TtsSource.TTS_SPEAKER_1);
+                playList[1] = new Pair<>(((TextView) mResultRecyclerView.getChildAt(0).findViewById(R.id.text_result)).getText().toString(), TtsSource.TTS_SPEAKER_2);
+                playList[2] = new Pair<>("Is that correct?", TtsSource.TTS_SPEAKER_1);
+                mTtsSource.speak(playList);
             }
+
         });
 
-        findViewById(R.id.button_interrupt_tts).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTtsSource.interrupt();
-            }
-        });
+        findViewById(R.id.button_interrupt_tts).setOnClickListener(v -> mTtsSource.interrupt());
 
-        findViewById(R.id.button_update_asr).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVoiceService != null) {
-                    mAsrConfiguration.setAlterEnabled(
-                            ((CheckBox) findViewById(R.id.check_alter)).isChecked());
-                    mAsrConfiguration.setEmojiEnabled(
-                            ((CheckBox) findViewById(R.id.check_emoji)).isChecked());
-                    mAsrConfiguration.setPunctuationEnabled(
-                            ((CheckBox) findViewById(R.id.check_punctuation)).isChecked());
-                    mAsrConfiguration.setSpellingEnabled(
-                            ((CheckBox) findViewById(R.id.check_spelling)).isChecked());
-                    mAsrConfiguration.setVprEnabled(
-                            ((CheckBox) findViewById(R.id.check_vpr)).isChecked());
-                    mAsrConfiguration.setEosPackets((mSpinner.getSelectedItemPosition() + 1) * 3);
-                    Logger.d("onMessage conf = " + mAsrConfiguration.toJsonString());
-                    mVoiceService.updateAsrSettings(mAsrConfiguration);
-                }
+        findViewById(R.id.button_update_asr).setOnClickListener(v -> {
+            if (mVoiceService != null) {
+                mAsrConfiguration.setAlterEnabled(
+                        ((CheckBox) findViewById(R.id.check_alter)).isChecked());
+                mAsrConfiguration.setEmojiEnabled(
+                        ((CheckBox) findViewById(R.id.check_emoji)).isChecked());
+                mAsrConfiguration.setPunctuationEnabled(
+                        ((CheckBox) findViewById(R.id.check_punctuation)).isChecked());
+                mAsrConfiguration.setSpellingEnabled(
+                        ((CheckBox) findViewById(R.id.check_spelling)).isChecked());
+                mAsrConfiguration.setVprEnabled(
+                        ((CheckBox) findViewById(R.id.check_vpr)).isChecked());
+                mAsrConfiguration.setEosPackets((mSpinner.getSelectedItemPosition() + 1) * 3);
+                Logger.d("onMessage conf = " + mAsrConfiguration.toJsonString());
+                mVoiceService.updateAsrSettings(mAsrConfiguration);
             }
         });
 
@@ -372,121 +335,85 @@ public class MainActivity extends AppCompatActivity implements
         mResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mCurServerButton = (Button) findViewById(R.id.server_button);
-        mCurServerButton.setOnClickListener(new View.OnClickListener() {
+        mCurServerButton.setOnClickListener(v -> {
+            int checkedItem = findCheckedServer(PreferenceUtil.getString(MainActivity.this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.KIKAGO_SQ));
+            new AlertDialog.Builder(MainActivity.this)
+                    .setSingleChoiceItems(mServerList, checkedItem, (dialog, which) -> {
+                        PreferenceUtil.setString(MainActivity.this,
+                                PreferenceUtil.KEY_SERVER_LOCATION,
+                                mServerList[which]);
+                        dialog.dismiss();
 
-            @Override
-            public void onClick(View v) {
-                int checkedItem = findCheckedServer(PreferenceUtil.getString(MainActivity.this, PreferenceUtil.KEY_SERVER_LOCATION, VoiceConfiguration.HostUrl.KIKAGO_SQ));
-                new AlertDialog.Builder(MainActivity.this)
-                        .setSingleChoiceItems(mServerList, checkedItem, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                PreferenceUtil.setString(MainActivity.this,
-                                        PreferenceUtil.KEY_SERVER_LOCATION,
-                                        mServerList[which]);
-                                dialog.dismiss();
+                        updateServerButtonText();
+                        attachService();
+                    }).show();
+        });
 
-                                updateServerButtonText();
-                                attachService();
-                            }
-                        }).show();
+        findViewById(R.id.button_source_usb).setOnClickListener(v -> scanUsbDevices());
+
+        findViewById(R.id.button_source_android).setOnClickListener(v -> {
+            mKikaGoVoiceSource = null;
+            attachService();
+
+            mTextView.setText("Using Android source");
+            mNcParamLayout.setVisibility(View.GONE);
+            if (mDbTitleView != null) {
+                mDbTitleView.setVisibility(View.GONE);
+            }
+            if (mDbTextView != null) {
+                mDbTextView.setVisibility(View.GONE);
             }
         });
 
-        findViewById(R.id.button_source_usb).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                scanUsbDevices();
-            }
-        });
-
-        findViewById(R.id.button_source_android).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mKikaGoVoiceSource = null;
-                attachService();
-
-                mTextView.setText("Using Android source");
-                mNcParamLayout.setVisibility(View.GONE);
-                if (mDbTitleView != null) {
-                    mDbTitleView.setVisibility(View.GONE);
-                }
-                if (mDbTextView != null) {
-                    mDbTextView.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        findViewById(R.id.button_use_note).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mNoteText != null) {
-                    String note = mNoteText.getText().toString();
-                    if (note != null && note.length() > 0) {
-                        try {
-                            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-                            inputMethodManager.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
-                        } catch (Exception e) {
-                        }
-                    } else {
-                        String hint = mNoteText.getHint().toString();
-                        String originalHint = getResources().getString(R.string.note_hint);
-                        if (hint != null && originalHint != null) {
-                            mNoteText.setText(hint.replace(originalHint,""), TextView.BufferType.EDITABLE);
-                        }
+        findViewById(R.id.button_use_note).setOnClickListener(v -> {
+            if (mNoteText != null) {
+                String note = mNoteText.getText().toString();
+                if (note != null && note.length() > 0) {
+                    try {
+                        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
+                    } catch (Exception e) {
+                    }
+                } else {
+                    String hint = mNoteText.getHint().toString();
+                    String originalHint = getResources().getString(R.string.note_hint);
+                    if (hint != null && originalHint != null) {
+                        mNoteText.setText(hint.replace(originalHint,""), TextView.BufferType.EDITABLE);
                     }
                 }
             }
         });
 
-        findViewById(R.id.button_alignment).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVoiceService != null) {
-                    mVoiceService.sendAlignment(new String[]{"Yes", "No"});
-                }
+        findViewById(R.id.button_alignment).setOnClickListener(v -> {
+            if (mVoiceService != null) {
+                mVoiceService.sendAlignment(new String[]{"Yes", "No"});
             }
         });
 
-        findViewById(R.id.button_enter_local_playback).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LocalPlayBackActivity.class);
-                startActivity(intent);
-            }
+        findViewById(R.id.button_enter_local_playback).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, LocalPlayBackActivity.class);
+            startActivity(intent);
         });
 
-        findViewById(R.id.button_enter_play).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PlayActivity.class);
-                startActivity(intent);
-            }
+        findViewById(R.id.button_enter_play).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, PlayActivity.class);
+            startActivity(intent);
         });
 
-        findViewById(R.id.button_auto_testr).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AutoTestActivity.class);
-                startActivity(intent);
-            }
+        findViewById(R.id.button_auto_testr).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AutoTestActivity.class);
+            startActivity(intent);
         });
 
-        findViewById(R.id.button_wake_up_tester).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WakeUpTestActivity.class);
-                startActivity(intent);
-            }
+        findViewById(R.id.button_wake_up_tester).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, WakeUpTestActivity.class);
+            startActivity(intent);
         });
 
         mReportButton = (Button) findViewById(R.id.button_report_log);
-        mReportButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ReportActivity.class);
-                startActivity(intent);
-            }
+        mReportButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+            startActivity(intent);
         });
         mReportButton.setEnabled(false);
 
@@ -514,15 +441,12 @@ public class MainActivity extends AppCompatActivity implements
         });
         mTextAngle = (TextView) findViewById(R.id.text_angle);
         mButtonAngle = (Button) findViewById(R.id.button_angle);
-        mButtonAngle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.setNoiseCancellationParameters(
-                            KikaNcBuffer.CONTROL_ANGLE, mSeekAngle.getProgress());
-                    if (mTextView != null) {
-                        mTextView.setText("Set the Angle to " + mSeekAngle.getProgress());
-                    }
+        mButtonAngle.setOnClickListener(v -> {
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.setNoiseCancellationParameters(
+                        KikaNcBuffer.CONTROL_ANGLE, mSeekAngle.getProgress());
+                if (mTextView != null) {
+                    mTextView.setText("Set the Angle to " + mSeekAngle.getProgress());
                 }
             }
         });
@@ -549,16 +473,13 @@ public class MainActivity extends AppCompatActivity implements
         });
         mTextNc = (TextView) findViewById(R.id.text_nc);
         mButtonNc = (Button) findViewById(R.id.button_nc);
-        mButtonNc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.setNoiseCancellationParameters(
-                            KikaNcBuffer.CONTROL_NC, mSeekNc.getProgress());
-                }
-                if (mTextView != null) {
-                    mTextView.setText("Set the NC to " + mSeekNc.getProgress());
-                }
+        mButtonNc.setOnClickListener(v -> {
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.setNoiseCancellationParameters(
+                        KikaNcBuffer.CONTROL_NC, mSeekNc.getProgress());
+            }
+            if (mTextView != null) {
+                mTextView.setText("Set the NC to " + mSeekNc.getProgress());
             }
         });
         mButtonNc.setEnabled(false);
@@ -584,48 +505,34 @@ public class MainActivity extends AppCompatActivity implements
         });
         mTextMode = (TextView) findViewById(R.id.text_mode);
         mButtonMode = (Button) findViewById(R.id.button_mode);
-        mButtonMode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.setNoiseCancellationParameters(
-                            KikaNcBuffer.CONTROL_MODE, mSeekMode.getProgress());
-                }
-                if (mTextView != null) {
-                    mTextView.setText("Set the Mode to " + mSeekMode.getProgress());
-                }
+        mButtonMode.setOnClickListener(v -> {
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.setNoiseCancellationParameters(
+                        KikaNcBuffer.CONTROL_MODE, mSeekMode.getProgress());
+            }
+            if (mTextView != null) {
+                mTextView.setText("Set the Mode to " + mSeekMode.getProgress());
             }
         });
         mButtonMode.setEnabled(false);
 
         mVolumeText = (TextView) findViewById(R.id.text_volume);
 
-        findViewById(R.id.button_volume_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.volumeUp();
-                    checkVolume();
-                }
-            }
-        });
-
-        findViewById(R.id.button_volume_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.volumeDown();
-                    checkVolume();
-                }
-            }
-        });
-
-        findViewById(R.id.button_check_volume).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        findViewById(R.id.button_volume_up).setOnClickListener(v -> {
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.volumeUp();
                 checkVolume();
             }
         });
+
+        findViewById(R.id.button_volume_down).setOnClickListener(v -> {
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.volumeDown();
+                checkVolume();
+            }
+        });
+
+        findViewById(R.id.button_check_volume).setOnClickListener(v -> checkVolume());
 
         checkVersions();
         waveCreateView();
@@ -739,19 +646,11 @@ public class MainActivity extends AppCompatActivity implements
             mTtsSource.init(this, null);
             mTtsSource.setTtsStateChangedListener(MainActivity.this);
         }
-        AudioPlayBack.setListener(new AudioPlayBack.OnAudioPlayBackWriteListener() {
-            @Override
-            public void onWrite(final int len) {
-                mStatus2TextView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mStatus2TextView != null) {
-                            mStatus2TextView.setText("size : " + len);
-                        }
-                    }
-                });
+        AudioPlayBack.setListener(len -> mStatus2TextView.post(() -> {
+            if (mStatus2TextView != null) {
+                mStatus2TextView.setText("size : " + len);
             }
-        });
+        }));
 
         scanUsbDevices();
     }
@@ -783,8 +682,6 @@ public class MainActivity extends AppCompatActivity implements
             mVoiceService.destroy();
             mVoiceService = null;
         }
-        // Debug
-// TODO :       mAudioIdText.setText("File : " + mDebugFileName.substring(mDebugFileName.lastIndexOf("/") + 1));
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
                 .setAlterEnabled(((CheckBox) findViewById(R.id.check_alter)).isChecked())
@@ -982,6 +879,7 @@ public class MainActivity extends AppCompatActivity implements
             mKikaGoVoiceSource = audioSource;
             attachService();
 
+            Logger.d("onDeviceAttached. mKikaGoVoiceSource = " + mKikaGoVoiceSource);
             if (mKikaGoVoiceSource == null) {
                 return;
             }
