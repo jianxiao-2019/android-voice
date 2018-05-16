@@ -396,11 +396,7 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_source_usb).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mKikaGoVoiceSource == null) {
-                    mUsbAudioService = UsbAudioService.getInstance(MainActivity.this);
-                    mUsbAudioService.setListener(mIUsbAudioListener);
-                    mUsbAudioService.scanDevices();
-                }
+                scanUsbDevices();
             }
         });
 
@@ -633,12 +629,19 @@ public class MainActivity extends AppCompatActivity implements
 
         checkVersions();
         waveCreateView();
-        attachService();
 
         mStartButton.setEnabled(true);
         mStopButton.setEnabled(false);
         mTextView.setText("Using Android source");
         mNcParamLayout.setVisibility(View.GONE);
+    }
+
+    private void scanUsbDevices() {
+        if (mKikaGoVoiceSource == null) {
+            mUsbAudioService = UsbAudioService.getInstance(MainActivity.this);
+            mUsbAudioService.setListener(mIUsbAudioListener);
+            mUsbAudioService.scanDevices();
+        }
     }
 
     private void checkVersions() {
@@ -749,6 +752,8 @@ public class MainActivity extends AppCompatActivity implements
                 });
             }
         });
+
+        scanUsbDevices();
     }
 
     public String getVersionName(Context context) {
