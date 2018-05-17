@@ -77,9 +77,7 @@ public class KikaGoVoiceSource implements IVoiceSource {
             }
 
             if (mFileWriter != null) {
-                byte[] writeData = new byte[length];
-                System.arraycopy(data, 0, writeData, 0, length);
-                mFileWriter.onData(writeData);
+                mFileWriter.onData(data, length);
             }
 
             mKikaBuffer.onData(data, length);
