@@ -158,7 +158,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         if (mWakeUpDetector != null) {
             mWakeUpDetector.setOnHotWordDetectListener(this);
         }
-        IDataPath dataPath = VoicePathConnector.genDataPath(mConf, mWakeUpDetector, finalPath);
+        IDataPath dataPath = VoicePathConnector.genDataPath(mConf, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), dataPath, this);
 
         if (conf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {

@@ -17,8 +17,7 @@ import com.kikatech.voice.util.log.Logger;
 
 public class VoicePathConnector {
 
-    public static IDataPath genDataPath(VoiceConfiguration conf,
-                                        WakeUpDetector wakeUpDetector, IDataPath finalPath) {
+    public static IDataPath genDataPath(VoiceConfiguration conf, IDataPath finalPath) {
 
         if (conf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
             return wrapFileWriter(finalPath, conf, "_upload");
@@ -27,7 +26,11 @@ public class VoicePathConnector {
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
 
         IDataPath dataPath = new SpeexEncoder(wrapFileWriter(finalPath, conf, "_speex"));
-        dataPath = new VoiceDetector(dataPath);
+        if (conf.getIsClientVadEnabled()) {
+            dataPath = new VoiceDetector(dataPath);
+        }
+
+        WakeUpDetector wakeUpDetector = conf.getWakeUpDetector();
         if (wakeUpDetector != null) {
 //            wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
             wakeUpDetector.setNextDataPath(dataPath);

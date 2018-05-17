@@ -49,6 +49,8 @@ public class VoiceConfiguration {
     private IVoiceSource mVoiceSource;
     private AgentCreator mAgentCreator;
 
+    private boolean mIsClientVadEnabled = false;
+
     private ConnectionConfiguration mConnConf;
 
     private int bosDuration = DEFAULT_BOS_DURATION;
@@ -117,6 +119,14 @@ public class VoiceConfiguration {
 
     public WakeUpDetector getWakeUpDetector() {
         return mWakeUpDetector;
+    }
+
+    public void setIsClientVadEnabled(boolean isClientVadEnabled) {
+        mIsClientVadEnabled = isClientVadEnabled;
+    }
+
+    public boolean getIsClientVadEnabled() {
+        return mIsClientVadEnabled;
     }
 
     public void setIsSupportNBest(boolean isNBest) {
