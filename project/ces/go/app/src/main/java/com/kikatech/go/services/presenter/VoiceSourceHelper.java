@@ -47,6 +47,15 @@ public class VoiceSourceHelper {
             }
             if (mUsbVoiceSource == null && audioSource != null) {
                 mUsbVoiceSource = audioSource;
+                mUsbVoiceSource.setOnOpenedCallback(new KikaGoVoiceSource.OnOpenedCallback() {
+                    @Override
+                    public void onOpened(int state) {
+                        if (LogUtil.DEBUG && mUsbVoiceSource != null) {
+                            LogUtil.log(TAG, "fw version : 0x" + Integer.toHexString(mUsbVoiceSource.checkFwVersion())
+                                    + " driver version : 0x" + Integer.toHexString(mUsbVoiceSource.checkDriverVersion()));
+                        }
+                    }
+                });
                 dispatchEvent(Event.USB_ATTACHED);
             } else {
                 dispatchEvent(Event.NON_CHANGED);

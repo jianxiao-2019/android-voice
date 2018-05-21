@@ -160,7 +160,7 @@ public class RecorderFragment extends PageFragment implements
         version.append("[app : ").append(getVersionName(getContext())).append("]\n");
         if (mKikaGoVoiceSource != null) {
             version.append("[fw : 0x").append(Integer.toHexString(mKikaGoVoiceSource.checkFwVersion())).append("]\n");
-            version.append("[driver : ").append(mKikaGoVoiceSource.checkDriverVersion()).append("]\n");
+            version.append("[driver : 0x").append(String.format("%03X", mKikaGoVoiceSource.checkDriverVersion())).append("]\n");
             version.append("[nc : ").append(mKikaGoVoiceSource.getNcVersion()).append("]\n");
         }
         mVersionText.setText("version : \n" + version);

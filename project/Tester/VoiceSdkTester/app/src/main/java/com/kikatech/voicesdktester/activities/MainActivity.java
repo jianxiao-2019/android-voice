@@ -556,7 +556,7 @@ public class MainActivity extends AppCompatActivity implements
         version.append("[app : ").append(getVersionName(this)).append("] ");
         if (mKikaGoVoiceSource != null && mKikaGoVoiceSource.mIsOpened()) {
             version.append("[fw : 0x").append(Integer.toHexString(mKikaGoVoiceSource.checkFwVersion())).append("] ");
-            version.append("[driver : ").append(mKikaGoVoiceSource.checkDriverVersion()).append("] ");
+            version.append("[driver : 0x").append(String.format("%03X", mKikaGoVoiceSource.checkDriverVersion())).append("] ");
             version.append("[nc : ").append(mKikaGoVoiceSource.getNcVersion()).append("] ");
         }
         ((TextView) findViewById(R.id.text_version)).setText("version : \n" + version);
