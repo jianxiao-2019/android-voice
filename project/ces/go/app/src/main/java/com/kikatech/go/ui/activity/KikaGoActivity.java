@@ -1,15 +1,16 @@
 package com.kikatech.go.ui.activity;
 
 import android.content.res.Configuration;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.widget.ImageView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.ActivityKikaGoBinding;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -49,16 +50,8 @@ import org.greenrobot.eventbus.ThreadMode;
 public class KikaGoActivity extends BaseDrawerActivity {
     private static final String TAG = "KikaGoActivity";
 
-    private GoLayout mGoLayout;
+    private ActivityKikaGoBinding mBinding;
     private UiTaskManager mUiManager;
-    private ImageView mBtnOpenDrawer;
-    private View mIconConnectionStatus;
-    private View mIconUsbHardwareErr;
-    private View mIconMicrophoneErr;
-    private View mIconUsbAttached;
-    private View mIconHelp;
-    private View mIconTutorial;
-    private View mIconUpdateApp;
 
     private boolean triggerDialogViaClick;
 
@@ -228,7 +221,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
      * must called after GoLayout and DialogFlowService initialized
      **/
     private void initUiTaskManager() {
-        mUiManager = new UiTaskManager(mGoLayout, new UiTaskManager.IUiManagerFeedback() {
+        mUiManager = new UiTaskManager(mBinding.goLayout, new UiTaskManager.IUiManagerFeedback() {
             @Override
             public void onOptionSelected(byte requestType, int index, Option option) {
                 String textToSend = null;
@@ -268,13 +261,13 @@ public class KikaGoActivity extends BaseDrawerActivity {
             public void onLayoutModeChanged(GoLayout.DisplayMode mode) {
                 switch (mode) {
                     case AWAKE:
-                        mBtnOpenDrawer.setVisibility(View.GONE);
+                        mBinding.goLayoutBtnOpenDrawer.setVisibility(View.GONE);
                         mIconHelpVisibility = View.INVISIBLE;
                         mIconTutorialVisibility = View.INVISIBLE;
                         updateTopIconStatus();
                         break;
                     case SLEEP:
-                        mBtnOpenDrawer.setVisibility(View.VISIBLE);
+                        mBinding.goLayoutBtnOpenDrawer.setVisibility(View.VISIBLE);
                         boolean hasDoneTutorial = TutorialUtil.hasDoneTutorial();
                         mIconHelpVisibility = hasDoneTutorial ? View.VISIBLE : View.INVISIBLE;
                         mIconTutorialVisibility = hasDoneTutorial ? View.INVISIBLE : View.VISIBLE;
@@ -288,8 +281,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_kika_go);
-        bindView();
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_kika_go);
         bindListener();
 
         @VersionControlUtil.AppVersionStatus int status = VersionControlUtil.checkAppVersion();
@@ -298,7 +290,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
                 startAnotherActivity(KikaBlockActivity.class, true);
                 break;
             case VersionControlUtil.AppVersionStatus.UPDATE:
-                mIconUpdateApp.setVisibility(View.VISIBLE);
+                mBinding.goLayoutIcUpdateApp.setVisibility(View.VISIBLE);
             case VersionControlUtil.AppVersionStatus.LATEST:
                 // TODO fine tune init timing
                 ContactManager.getIns().init(this);
@@ -357,56 +349,44 @@ public class KikaGoActivity extends BaseDrawerActivity {
         super.onDestroy();
     }
 
-    private void bindView() {
-        mGoLayout = (GoLayout) findViewById(R.id.go_layout);
-        mBtnOpenDrawer = (ImageView) findViewById(R.id.go_layout_btn_open_drawer);
-        mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
-        mIconUsbHardwareErr = findViewById(R.id.go_layout_ic_hardware_err);
-        mIconMicrophoneErr = findViewById(R.id.go_layout_ic_microphone_err);
-        mIconUsbAttached = findViewById(R.id.go_layout_ic_usb_attached);
-        mIconHelp = findViewById(R.id.go_layout_ic_help);
-        mIconTutorial = findViewById(R.id.go_layout_ic_tutorial);
-        mIconUpdateApp = findViewById(R.id.go_layout_ic_update_app);
-    }
-
     private void bindListener() {
-        mBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
+        mBinding.goLayoutBtnOpenDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openDrawer();
             }
         });
-        mIconConnectionStatus.setOnClickListener(new View.OnClickListener() {
+        mBinding.goLayoutIcConnectionStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogUtil.showDialogConnectionError(KikaGoActivity.this, null);
             }
         });
-        mIconUsbHardwareErr.setOnClickListener(new View.OnClickListener() {
+        mBinding.goLayoutIcHardwareErr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogUtil.showAudioRecordError(KikaGoActivity.this, true, null);
             }
         });
-        mIconMicrophoneErr.setOnClickListener(new View.OnClickListener() {
+        mBinding.goLayoutIcMicrophoneErr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogUtil.showAudioRecordError(KikaGoActivity.this, false, null);
             }
         });
-        mIconHelp.setOnClickListener(new View.OnClickListener() {
+        mBinding.goLayoutIcHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startAnotherActivity(KikaFAQsActivity.class, false);
             }
         });
-        mIconTutorial.setOnClickListener(new View.OnClickListener() {
+        mBinding.goLayoutIcTutorial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogFlowForegroundService.processDoTutorial();
             }
         });
-        mIconUpdateApp.setOnClickListener(new View.OnClickListener() {
+        mBinding.goLayoutIcUpdateApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogUtil.showUpdateApp(KikaGoActivity.this, null);
@@ -431,28 +411,28 @@ public class KikaGoActivity extends BaseDrawerActivity {
     private synchronized void updateTopIconStatus() {
         boolean hasNetwork = NetworkUtil.isNetworkAvailable(KikaGoActivity.this);
         if (!hasNetwork) { // do not have network connection
-            mIconUsbHardwareErr.setVisibility(View.GONE);
-            mIconMicrophoneErr.setVisibility(View.GONE);
-            mIconHelp.setVisibility(View.INVISIBLE);
+            mBinding.goLayoutIcHardwareErr.setVisibility(View.GONE);
+            mBinding.goLayoutIcMicrophoneErr.setVisibility(View.GONE);
+            mBinding.goLayoutIcHelp.setVisibility(View.INVISIBLE);
             animateNetworkError();
         } else if (!mIsAudioDataCorrect) { // has network connection, but audio data incorrect
-            mIconConnectionStatus.clearAnimation();
-            mIconConnectionStatus.setVisibility(View.GONE);
+            mBinding.goLayoutIcConnectionStatus.clearAnimation();
+            mBinding.goLayoutIcConnectionStatus.setVisibility(View.GONE);
             if (mIsUsbSource) {
-                mIconUsbHardwareErr.setVisibility(View.VISIBLE);
-                mIconMicrophoneErr.setVisibility(View.GONE);
+                mBinding.goLayoutIcHardwareErr.setVisibility(View.VISIBLE);
+                mBinding.goLayoutIcMicrophoneErr.setVisibility(View.GONE);
             } else {
-                mIconUsbHardwareErr.setVisibility(View.GONE);
-                mIconMicrophoneErr.setVisibility(View.VISIBLE);
+                mBinding.goLayoutIcHardwareErr.setVisibility(View.GONE);
+                mBinding.goLayoutIcMicrophoneErr.setVisibility(View.VISIBLE);
             }
-            mIconHelp.setVisibility(View.INVISIBLE);
+            mBinding.goLayoutIcHelp.setVisibility(View.INVISIBLE);
         } else { // has network connection, and usb data correct
-            mIconConnectionStatus.clearAnimation();
-            mIconConnectionStatus.setVisibility(View.GONE);
-            mIconUsbHardwareErr.setVisibility(View.GONE);
-            mIconMicrophoneErr.setVisibility(View.GONE);
-            mIconHelp.setVisibility(mIconHelpVisibility);
-            mIconTutorial.setVisibility(mIconTutorialVisibility);
+            mBinding.goLayoutIcConnectionStatus.clearAnimation();
+            mBinding.goLayoutIcConnectionStatus.setVisibility(View.GONE);
+            mBinding.goLayoutIcHardwareErr.setVisibility(View.GONE);
+            mBinding.goLayoutIcMicrophoneErr.setVisibility(View.GONE);
+            mBinding.goLayoutIcHelp.setVisibility(mIconHelpVisibility);
+            mBinding.goLayoutIcTutorial.setVisibility(mIconTutorialVisibility);
         }
         mUiManager.dispatchConnectionStatusChanged(hasNetwork);
     }
@@ -467,11 +447,11 @@ public class KikaGoActivity extends BaseDrawerActivity {
             return;
         }
         isAnimating = true;
-        mIconConnectionStatus.setVisibility(View.VISIBLE);
+        mBinding.goLayoutIcConnectionStatus.setVisibility(View.VISIBLE);
         AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
         animation.setDuration(750);
         animation.setRepeatCount(1);
-        AnimationUtils.getIns().animate(mIconConnectionStatus, animation, new AnimationUtils.IAnimationEndCallback() {
+        AnimationUtils.getIns().animate(mBinding.goLayoutIcConnectionStatus, animation, new AnimationUtils.IAnimationEndCallback() {
             @Override
             public void onEnd(View view) {
                 isAnimating = false;
@@ -481,13 +461,13 @@ public class KikaGoActivity extends BaseDrawerActivity {
 
     private void onUsbAttachedStatusChanged(boolean isUsbAttach) {
         if (isUsbAttach) {
-            boolean isStatusChanged = mIconUsbAttached.getVisibility() != View.VISIBLE;
+            boolean isStatusChanged = mBinding.goLayoutIcUsbAttached.getVisibility() != View.VISIBLE;
             if (isStatusChanged) {
-                mIconUsbAttached.setVisibility(View.VISIBLE);
+                mBinding.goLayoutIcUsbAttached.setVisibility(View.VISIBLE);
                 showToast("Smart Mic connected");
             }
         } else {
-            mIconUsbAttached.setVisibility(View.GONE);
+            mBinding.goLayoutIcUsbAttached.setVisibility(View.GONE);
         }
     }
 
