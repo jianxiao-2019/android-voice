@@ -193,6 +193,10 @@
     <string name="dialog_common_confirm">"OK"</string>
     <string name="dialog_common_cancel">"Cancel"</string>
 
+    <string name="dialog_audio_record_err_hardware">"Please pull out KikaGo Smart Mic and plug-in to your phone again. If the problem persists, please contact us.
+kikago@kikatech.com"</string>
+    <string name="dialog_audio_record_err_microphone">"The microphone is in use for another app."</string>
+
 
     <string-array name="feature_highlight_titles">
         <item>"KikaGo"</item>

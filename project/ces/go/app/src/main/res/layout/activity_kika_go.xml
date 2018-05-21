@@ -52,7 +52,15 @@
                 android:visibility="gone"/>
 
             <ImageView
-                android:id="@+id/go_layout_ic_hardware_status"
+                android:id="@+id/go_layout_ic_microphone_err"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/kika_settings_ic_microphone_error"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/go_layout_ic_hardware_err"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

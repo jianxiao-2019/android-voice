@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -19,6 +20,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.DialogAudioRecordErrorBinding;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.ui.adapter.FAQ1DialogAdapter;
 import com.kikatech.go.util.IntentUtil;
@@ -230,7 +232,7 @@ public class DialogUtil {
         mDialog.show();
     }
 
-    public static void showDialogUsbHardwareError(final Context context, final IDialogListener listener) {
+    public static void showAudioRecordError(final Context context, boolean isHardwareError, final IDialogListener listener) {
         safeDismissDialog();
 
         mDialog = new Dialog(context);
@@ -238,11 +240,12 @@ public class DialogUtil {
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDialog.setCancelable(false);
 
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_usb_hardware_status_error, null);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_audio_record_error, null);
 
-        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
+        DialogAudioRecordErrorBinding mBinding = DataBindingUtil.bind(dialogView);
 
-        mBtnApply.setOnClickListener(new View.OnClickListener() {
+        mBinding.dialogContent.setText(context.getString(isHardwareError ? R.string.dialog_audio_record_err_hardware : R.string.dialog_audio_record_err_microphone));
+        mBinding.dialogBtnApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (listener != null) {

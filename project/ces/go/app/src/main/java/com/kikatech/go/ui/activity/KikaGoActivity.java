@@ -26,10 +26,10 @@ import com.kikatech.go.ui.fragment.DrawerNavigationFragment;
 import com.kikatech.go.ui.fragment.DrawerTipFragment;
 import com.kikatech.go.util.AnimationUtils;
 import com.kikatech.go.util.AsyncThreadPool;
-import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.NetworkUtil;
 import com.kikatech.go.util.StringUtil;
+import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.VersionControlUtil;
 import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
@@ -53,7 +53,8 @@ public class KikaGoActivity extends BaseDrawerActivity {
     private UiTaskManager mUiManager;
     private ImageView mBtnOpenDrawer;
     private View mIconConnectionStatus;
-    private ImageView mIconUsbHardwareStatus;
+    private View mIconUsbHardwareErr;
+    private View mIconMicrophoneErr;
     private View mIconUsbAttached;
     private View mIconHelp;
     private View mIconTutorial;
@@ -360,7 +361,8 @@ public class KikaGoActivity extends BaseDrawerActivity {
         mGoLayout = (GoLayout) findViewById(R.id.go_layout);
         mBtnOpenDrawer = (ImageView) findViewById(R.id.go_layout_btn_open_drawer);
         mIconConnectionStatus = findViewById(R.id.go_layout_ic_connection_status);
-        mIconUsbHardwareStatus = (ImageView) findViewById(R.id.go_layout_ic_hardware_status);
+        mIconUsbHardwareErr = findViewById(R.id.go_layout_ic_hardware_err);
+        mIconMicrophoneErr = findViewById(R.id.go_layout_ic_microphone_err);
         mIconUsbAttached = findViewById(R.id.go_layout_ic_usb_attached);
         mIconHelp = findViewById(R.id.go_layout_ic_help);
         mIconTutorial = findViewById(R.id.go_layout_ic_tutorial);
@@ -380,10 +382,16 @@ public class KikaGoActivity extends BaseDrawerActivity {
                 DialogUtil.showDialogConnectionError(KikaGoActivity.this, null);
             }
         });
-        mIconUsbHardwareStatus.setOnClickListener(new View.OnClickListener() {
+        mIconUsbHardwareErr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogUtil.showDialogUsbHardwareError(KikaGoActivity.this, null);
+                DialogUtil.showAudioRecordError(KikaGoActivity.this, true, null);
+            }
+        });
+        mIconMicrophoneErr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogUtil.showAudioRecordError(KikaGoActivity.this, false, null);
             }
         });
         mIconHelp.setOnClickListener(new View.OnClickListener() {
@@ -423,19 +431,26 @@ public class KikaGoActivity extends BaseDrawerActivity {
     private synchronized void updateTopIconStatus() {
         boolean hasNetwork = NetworkUtil.isNetworkAvailable(KikaGoActivity.this);
         if (!hasNetwork) { // do not have network connection
-            mIconUsbHardwareStatus.setVisibility(View.GONE);
+            mIconUsbHardwareErr.setVisibility(View.GONE);
+            mIconMicrophoneErr.setVisibility(View.GONE);
             mIconHelp.setVisibility(View.INVISIBLE);
             animateNetworkError();
         } else if (!mIsAudioDataCorrect) { // has network connection, but audio data incorrect
             mIconConnectionStatus.clearAnimation();
             mIconConnectionStatus.setVisibility(View.GONE);
-            mIconUsbHardwareStatus.setImageResource(mIsUsbSource ? R.drawable.kika_settings_ic_hardware_error : R.drawable.kika_settings_ic_microphone_error);
-            mIconUsbHardwareStatus.setVisibility(View.VISIBLE);
+            if (mIsUsbSource) {
+                mIconUsbHardwareErr.setVisibility(View.VISIBLE);
+                mIconMicrophoneErr.setVisibility(View.GONE);
+            } else {
+                mIconUsbHardwareErr.setVisibility(View.GONE);
+                mIconMicrophoneErr.setVisibility(View.VISIBLE);
+            }
             mIconHelp.setVisibility(View.INVISIBLE);
         } else { // has network connection, and usb data correct
             mIconConnectionStatus.clearAnimation();
             mIconConnectionStatus.setVisibility(View.GONE);
-            mIconUsbHardwareStatus.setVisibility(View.GONE);
+            mIconUsbHardwareErr.setVisibility(View.GONE);
+            mIconMicrophoneErr.setVisibility(View.GONE);
             mIconHelp.setVisibility(mIconHelpVisibility);
             mIconTutorial.setVisibility(mIconTutorialVisibility);
         }

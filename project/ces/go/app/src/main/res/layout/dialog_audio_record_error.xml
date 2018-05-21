@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="305dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dialog_usb_detached"
+        android:orientation="vertical"
+        tools:ignore="SpUsage">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="20dp"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:id="@+id/dialog_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#8e94a9"
+                android:textSize="14dp"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#c4c8d9"/>
+
+        <TextView
+            android:id="@+id/dialog_btn_apply"
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/dialog_common_confirm"
+            android:textColor="#3274e6"
+            android:textSize="16dp"/>
+
+    </LinearLayout>
+</layout>
