@@ -173,7 +173,7 @@ public class DialogFlowServicePresenter {
                 mCloseSceneManager = new CloseSceneManager(mContext, mDialogFlowService);
                 mSceneManagers.add(mCloseSceneManager);
             }
-            if (!mSceneManagers.contains(mCloseSceneManager)) {
+            if (!mSceneManagers.contains(mHelpSceneManager)) {
                 mHelpSceneManager = new HelpSceneManager(mContext, mDialogFlowService);
                 mSceneManagers.add(mHelpSceneManager);
             }
