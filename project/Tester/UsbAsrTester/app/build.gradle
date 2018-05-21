@@ -6,8 +6,8 @@ android {
         applicationId "com.kika.usbasrtester"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 10
-        versionName "2018_0518_1"
+        versionCode 11
+        versionName "2018_0521_1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
