@@ -24,17 +24,6 @@ public class SpeexEncoder extends IDataPath {
     }
 
     @Override
-    public void stop() {
-        super.stop();
-
-        if (mBufLen > 0 && mNextPath != null) {
-            byte[] bytes = speexEncodeFunc(mBuf, mBufLen);
-            mNextPath.onData(bytes, bytes.length);
-            mBufLen = 0;
-        }
-    }
-
-    @Override
     public void onData(byte[] data, int dataLen) {
 
         short[] vadData = DataUtils.byteToShort(data, dataLen / 2);
