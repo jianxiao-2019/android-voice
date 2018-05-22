@@ -290,7 +290,8 @@ immediately"</item>
 
 
     <string name="tutorial_wake_up_title">"Say “Hi Kika”"</string>
-    <string name="tutorial_wake_up_description">"Say “Hi Kika” first before giving a command.
+    <string name="tutorial_wake_up_description">"We are going to guide you through this practice now!
+First, you have to say “Hi Kika” to wake Kika up.
 Now click OK and say “Hi Kika”!"</string>
     <string name="tutorial_command_title">"Say “Navigate”"</string>
     <string name="tutorial_command_description">"Great! You’ve woken up Kika! Let’s try to navigate.
@@ -298,7 +299,7 @@ After the beep, say “Navigate” to continue."</string>
     <string name="tutorial_address_title">"“Where do you want to go?”"</string>
     <string name="tutorial_address_description">"Good job! Next step: Tell Kika your destination.
 Remember to wait for the beep first before you answer."</string>
-    <string name="tutorial_confirm_title">"“Is it correct?”"</string>
+    <string name="tutorial_confirm_title">"Say “OK” to continue"</string>
     <string name="tutorial_confirm_description">"Confirm your destination with Kika.
 Say “OK” after the beep if it is correct."</string>
     <string name="tutorial_done_title">"You got it!!"</string>
