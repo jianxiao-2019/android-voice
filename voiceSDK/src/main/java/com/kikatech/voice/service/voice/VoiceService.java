@@ -9,8 +9,8 @@ import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.WebSocket;
+import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.BosMessage;
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -50,6 +50,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     public static final int ERR_RECORD_DATA_FAIL = 5;
 
     public static final String SERVER_COMMAND_NBEST = "NBEST";
+    public static final String SERVER_COMMAND_ALTERING = "ALTERING";
     private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
     private static final String SERVER_COMMAND_TOKEN = "TOKEN";
     private static final String SERVER_COMMAND_STOP = "STOP";           // stop and drop current results
@@ -199,10 +200,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
         Message.register(Message.MSG_TYPE_BOS, BosMessage.class);
 
+        Message.register(Message.MSG_TYPE_ALTER, AlterMessage.class);
+
         AsrConfiguration asrConfiguration = mConf.getConnectionConfiguration().getAsrConfiguration();
-        if (asrConfiguration.getAlterEnabled()) {
-            Message.register(Message.MSG_TYPE_ALTER, EditTextMessage.class);
-        }
         if (asrConfiguration.getEmojiEnabled()) {
             Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
         }
@@ -402,9 +402,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
     }
 
-    public void sendCommand(String command, String alter) {
+    public void sendCommand(String command, String payload) {
         if (mWebService != null) {
-            mWebService.sendCommand(command, alter);
+            mWebService.sendCommand(command, payload);
         } else {
             Logger.w("Don't send command after destroyed");
         }
@@ -527,9 +527,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         } else if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
             cid = textMessage.cid;
-        } else if (message instanceof EditTextMessage) {
-            EditTextMessage editTextMessage = (EditTextMessage) message;
-            cid = editTextMessage.cid;
+        } else if (message instanceof AlterMessage) {
+            AlterMessage alterMessage = (AlterMessage) message;
+            cid = alterMessage.cid;
         } else if (message instanceof EmojiRecommendMessage) {
             EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
             cid = emoji.cid;

@@ -104,7 +104,6 @@ public class WebSocket {
                 AsrConfiguration asrConf = conf.getAsrConfiguration();
                 if (asrConf != null) {
                     httpHeaders.put("spellingEnabled", String.valueOf(asrConf.getSpellingEnabled()));
-                    httpHeaders.put("alterEnabled", String.valueOf(asrConf.getAlterEnabled()));
                     httpHeaders.put("emojiEnabled", String.valueOf(asrConf.getEmojiEnabled()));
                     httpHeaders.put("punctuationEnabled", String.valueOf(asrConf.getPunctuationEnabled()));
                     httpHeaders.put("vprEnabled", String.valueOf(asrConf.getVprEnabled()));

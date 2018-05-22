@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.util.LongSparseArray;
 
 import com.kikatech.voice.core.recorder.IVoiceSource;
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
@@ -186,9 +186,9 @@ public class DebugUtil {
         if (message instanceof TextMessage) {
             text = ((TextMessage) message).text[0];
             cid = ((TextMessage) message).cid;
-        } else if (message instanceof EditTextMessage) {
-            text = ((EditTextMessage) message).text[0];
-            cid = ((EditTextMessage) message).cid;
+        } else if (message instanceof AlterMessage) {
+            text = ((AlterMessage) message).text[0];
+            cid = ((AlterMessage) message).cid;
         } else if (message instanceof IntermediateMessage) {
             IntermediateMessage iMessage = (IntermediateMessage) message;
             cid = iMessage.cid;

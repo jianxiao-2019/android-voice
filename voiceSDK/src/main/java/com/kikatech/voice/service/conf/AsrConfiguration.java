@@ -15,30 +15,27 @@ public class AsrConfiguration {
     }
 
     private boolean spellingEnabled;
-    private boolean alterEnabled;
     private boolean emojiEnabled;
     private boolean punctuationEnabled;
     private boolean vprEnabled;
     private int eosPackets;
     private String locale;
 
-    private AsrConfiguration(boolean spellingEnabled, boolean alterEnabled,
+    private AsrConfiguration(boolean spellingEnabled,
                              boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled,
                              int eosPackets, String locale) {
-        setConfig(spellingEnabled, alterEnabled,
-                emojiEnable, punctuationEnabled, vprEnabled, eosPackets, locale);
+        setConfig(spellingEnabled, emojiEnable, punctuationEnabled, vprEnabled, eosPackets, locale);
     }
 
     public void copyConfig(AsrConfiguration conf) {
-        setConfig(conf.spellingEnabled, conf.alterEnabled, conf.emojiEnabled,
+        setConfig(conf.spellingEnabled, conf.emojiEnabled,
                 conf.punctuationEnabled, conf.vprEnabled, conf.eosPackets, conf.locale);
     }
 
-    private void setConfig(boolean spellingEnabled, boolean alterEnabled,
+    private void setConfig(boolean spellingEnabled,
                            boolean emojiEnable, boolean punctuationEnabled, boolean vprEnabled,
                            int eosPackets, String locale) {
         this.spellingEnabled = spellingEnabled;
-        this.alterEnabled = alterEnabled;
         this.emojiEnabled = emojiEnable;
         this.punctuationEnabled = punctuationEnabled;
         this.vprEnabled = vprEnabled;
@@ -47,8 +44,7 @@ public class AsrConfiguration {
     }
 
     private boolean sameValue(AsrConfiguration asrConfig) {
-        return alterEnabled == asrConfig.alterEnabled &&
-                emojiEnabled == asrConfig.emojiEnabled &&
+        return emojiEnabled == asrConfig.emojiEnabled &&
                 punctuationEnabled == asrConfig.punctuationEnabled &&
                 spellingEnabled == asrConfig.spellingEnabled &&
                 vprEnabled == asrConfig.vprEnabled &&
@@ -62,14 +58,6 @@ public class AsrConfiguration {
 
     public boolean getSpellingEnabled() {
         return this.spellingEnabled;
-    }
-
-    public void setAlterEnabled(boolean alterEnabled) {
-        this.alterEnabled = alterEnabled;
-    }
-
-    public boolean getAlterEnabled() {
-        return this.alterEnabled;
     }
 
     public void setEmojiEnabled(boolean emojiEnabled) {
@@ -167,7 +155,7 @@ public class AsrConfiguration {
         }
 
         public AsrConfiguration build() {
-            return new AsrConfiguration(spellingEnabled, alterEnabled, emojiEnabled,
+            return new AsrConfiguration(spellingEnabled, emojiEnabled,
                     punctuationEnabled, vprEnabled, eosPackets, locale);
         }
     }

@@ -3,7 +3,7 @@ package com.kikatech.voice.service.dialogflow;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -74,8 +74,8 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
                 asrResult = textMessage.text[0];
                 asrNbestResult = textMessage.text;
                 queryDialogFlow = true;
-            } else if (message instanceof EditTextMessage) {
-                EditTextMessage editTextMessage = (EditTextMessage) message;
+            } else if (message instanceof AlterMessage) {
+                AlterMessage editTextMessage = (AlterMessage) message;
                 String alter = editTextMessage.altered;
                 if (Logger.DEBUG) {
                     Logger.d(TAG, "EditTextMessage altered = " + alter);
