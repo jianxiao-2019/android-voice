@@ -1,29 +1,29 @@
 package com.kikatech.go.services.view.item;
 
+import android.databinding.ViewDataBinding;
 import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.GoLayoutGmapTipBinding;
 
 /**
  * @author SkeeterWang Created on 2017/12/18.
  */
 
 public class ItemTip extends WindowFloatingItem {
-    private TextView mTitleView;
-    private TextView mTextView;
+
+    private GoLayoutGmapTipBinding mBinding;
 
     public ItemTip(View view, View.OnTouchListener listener) {
         super(view, listener);
     }
 
     @Override
-    protected void bindView() {
-        mTitleView = (TextView) mItemView.findViewById(R.id.item_tip_title);
-        mTextView = (TextView) mItemView.findViewById(R.id.item_tip_text);
+    protected <T extends ViewDataBinding> void onBindView(T binding) {
+        mBinding = (GoLayoutGmapTipBinding) binding;
     }
 
     @Override
@@ -38,11 +38,11 @@ public class ItemTip extends WindowFloatingItem {
     }
 
     public void setTitle(String title) {
-        mTitleView.setText(title);
+        mBinding.itemTipTitle.setText(title);
     }
 
     public void setText(String text) {
-        mTextView.setText(text);
+        mBinding.itemTipText.setText(text);
     }
 
     public void updateBackgroundRes(int gravity) {

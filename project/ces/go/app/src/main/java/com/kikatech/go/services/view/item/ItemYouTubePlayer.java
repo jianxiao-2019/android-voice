@@ -1,5 +1,6 @@
 package com.kikatech.go.services.view.item;
 
+import android.databinding.ViewDataBinding;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
 import android.view.Gravity;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.YoutubePlayerBinding;
 import com.kikatech.go.music.model.YouTubeVideo;
 import com.kikatech.go.view.widget.MarqueeTextView;
 import com.kikatech.go.view.youtube.model.VideoInfo;
@@ -22,10 +24,7 @@ import com.kikatech.go.view.youtube.playercontroller.impl.SkPlayerController.ICo
 public class ItemYouTubePlayer extends WindowFloatingItem {
     private static final String TAG = "ItemYouTubePlayer";
 
-    private View mPlayerView;
-    private SkVideoPlayerView mPlayer;
-    private SkPlayerController mPlayerController;
-    private MarqueeTextView mVideoTitle;
+    private YoutubePlayerBinding mBinding;
 
 
     public ItemYouTubePlayer(View view, View.OnTouchListener listener) {
@@ -35,167 +34,164 @@ public class ItemYouTubePlayer extends WindowFloatingItem {
     }
 
     @Override
-    protected void bindView() {
-        mPlayerView = mItemView.findViewById(R.id.youtube_bar_player_view);
-        mPlayer = (SkVideoPlayerView) mItemView.findViewById(R.id.play_video_texture);
-        mPlayerController = (SkPlayerController) mItemView.findViewById(R.id.play_video_controller);
-        mVideoTitle = (MarqueeTextView) mItemView.findViewById(R.id.youtube_bar_title);
+    protected <T extends ViewDataBinding> void onBindView(T binding) {
+        mBinding = (YoutubePlayerBinding) binding;
         bindListener();
     }
 
     private void bindListener() {
-        mPlayerController.setMediaPlayer(mPlayer);
-        mPlayer.setPlayerController(mPlayerController);
-        mPlayer.setVideoStatusListener(mPlayerController);
+        mBinding.playVideoController.setMediaPlayer(mBinding.playVideoTexture);
+        mBinding.playVideoTexture.setPlayerController(mBinding.playVideoController);
+        mBinding.playVideoTexture.setVideoStatusListener(mBinding.playVideoController);
     }
 
     private void initPlayer() {
-        switch (mPlayerController.getPlayerSize()) {
+        switch (mBinding.playVideoController.getPlayerSize()) {
             case SkVideoPlayerView.PlayerSize.MINIMUM:
-                mVideoTitle.setVisibility(View.GONE);
+                mBinding.youtubeBarTitle.setVisibility(View.GONE);
                 break;
             case SkVideoPlayerView.PlayerSize.MEDIUM:
             case SkVideoPlayerView.PlayerSize.FULLSCREEN:
-                mVideoTitle.setVisibility(View.VISIBLE);
+                mBinding.youtubeBarTitle.setVisibility(View.VISIBLE);
                 break;
         }
     }
 
     public View getPlayerView() {
-        return mPlayerView;
+        return mBinding.youtubeBarPlayerView;
     }
 
 
     public void setControllerVideoCallback(IControllerCallback.IVideoCallback callback) {
-        if (mPlayerController != null) {
-            mPlayerController.setControllerVideoCallback(callback);
+        if (mBinding.playVideoController != null) {
+            mBinding.playVideoController.setControllerVideoCallback(callback);
         }
     }
 
     public void setControllerPlayerCallback(IControllerCallback.IPlayerCallback callback) {
-        if (mPlayerController != null) {
-            mPlayerController.setControllerPlayerCallback(callback);
+        if (mBinding.playVideoController != null) {
+            mBinding.playVideoController.setControllerPlayerCallback(callback);
         }
     }
 
     public void setControllerBehaviorCallback(IControllerCallback.IBehaviorCallback callback) {
-        if (mPlayerController != null) {
-            mPlayerController.setControllerBehaviorCallback(callback);
+        if (mBinding.playVideoController != null) {
+            mBinding.playVideoController.setControllerBehaviorCallback(callback);
         }
     }
 
     public void setControllerStatusCallback(IControllerCallback.IStatusCallback callback) {
-        if (mPlayerController != null) {
-            mPlayerController.setControllerStatusCallback(callback);
+        if (mBinding.playVideoController != null) {
+            mBinding.playVideoController.setControllerStatusCallback(callback);
         }
     }
 
     public void setOnPreparedListener(MediaPlayer.OnPreparedListener listener) {
-        if (mPlayer != null) {
-            mPlayer.setOnPreparedListener(listener);
+        if (mBinding.playVideoTexture != null) {
+            mBinding.playVideoTexture.setOnPreparedListener(listener);
         }
     }
 
     public void setOnCompletionListener(MediaPlayer.OnCompletionListener listener) {
-        if (mPlayer != null) {
-            mPlayer.setOnCompletionListener(listener);
+        if (mBinding.playVideoTexture != null) {
+            mBinding.playVideoTexture.setOnCompletionListener(listener);
         }
     }
 
     public void setOnErrorListener(MediaPlayer.OnErrorListener listener) {
-        if (mPlayer != null) {
-            mPlayer.setOnErrorListener(listener);
+        if (mBinding.playVideoTexture != null) {
+            mBinding.playVideoTexture.setOnErrorListener(listener);
         }
     }
 
     public void setOnSeekCompleteListener(MediaPlayer.OnSeekCompleteListener listener) {
-        if (mPlayer != null) {
-            mPlayer.setOnSeekCompleteListener(listener);
+        if (mBinding.playVideoTexture != null) {
+            mBinding.playVideoTexture.setOnSeekCompleteListener(listener);
         }
     }
 
     public void setOnTimeTextListener(MediaPlayer.OnTimedTextListener listener) {
-        if (mPlayer != null) {
-            mPlayer.setOnTimeTextListener(listener);
+        if (mBinding.playVideoTexture != null) {
+            mBinding.playVideoTexture.setOnTimeTextListener(listener);
         }
     }
 
 
     public void play(final YouTubeVideo videoToPlay) {
         VideoInfo videoInfo = new VideoInfo.Builder().setPath(videoToPlay.getStreamUrl()).build();
-        mPlayer.setVideo(videoInfo);
+        mBinding.playVideoTexture.setVideo(videoInfo);
         setVideoTitle(videoToPlay.getTitle());
-        mPlayer.start();
-        mPlayerController.updatePausePlay();
+        mBinding.playVideoTexture.start();
+        mBinding.playVideoController.updatePausePlay();
     }
 
     public void pause() {
-        mPlayer.pause();
-        mPlayerController.updatePausePlay();
+        mBinding.playVideoTexture.pause();
+        mBinding.playVideoController.updatePausePlay();
     }
 
     public void resume() {
-        mPlayer.resume();
-        mPlayerController.updatePausePlay();
+        mBinding.playVideoTexture.resume();
+        mBinding.playVideoController.updatePausePlay();
     }
 
     public void stop() {
-        mPlayer.stop();
-        mPlayerController.updatePausePlay();
+        mBinding.playVideoTexture.stop();
+        mBinding.playVideoController.updatePausePlay();
     }
 
     public void volumeUp() {
-        mPlayer.volumeUp();
+        mBinding.playVideoTexture.volumeUp();
     }
 
     public void volumeDown() {
-        mPlayer.volumeDown();
+        mBinding.playVideoTexture.volumeDown();
     }
 
     public void mute() {
-        mPlayer.mute();
+        mBinding.playVideoTexture.mute();
     }
 
     public void unmute() {
-        mPlayer.unmute();
+        mBinding.playVideoTexture.unmute();
     }
 
 
     public void onControllerViewClickEvent(MotionEvent event) {
-        if (mPlayerController != null) {
-            mPlayerController.onClickedEvent(event);
+        if (mBinding.playVideoController != null) {
+            mBinding.playVideoController.onClickedEvent(event);
         }
     }
 
 
     private void setVideoTitle(final String videoTitle) {
-        if (mVideoTitle != null) {
-            mVideoTitle.setText(videoTitle);
+        if (mBinding.youtubeBarTitle != null) {
+            mBinding.youtubeBarTitle.setText(videoTitle);
         }
     }
 
 
     public void scale(@SkVideoPlayerView.PlayerSize int targetSize) {
-        if (mPlayerController != null) {
-            mPlayerController.setPlayerSize(targetSize);
+        if (mBinding.playVideoController != null) {
+            mBinding.playVideoController.setPlayerSize(targetSize);
         }
-        mPlayerView.requestLayout();
+        mBinding.youtubeBarPlayerView.requestLayout();
         initPlayer();
     }
 
 
     @SkVideoPlayerView.PlayerSize
     public int getPlayerSize() {
-        return mPlayerController.getPlayerSize();
+        return mBinding.playVideoController.getPlayerSize();
     }
 
 
     public boolean isPlaying() {
-        return mPlayer != null && mPlayer.isPlaying();
+        return mBinding.playVideoTexture != null && mBinding.playVideoTexture.isPlaying();
     }
 
     public boolean isPrepared() {
-        return mPlayer != null && mPlayer.isPrepared();
+        return mBinding.playVideoTexture != null && mBinding.playVideoTexture.isPrepared();
     }
 
 

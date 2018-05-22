@@ -1,43 +1,46 @@
 package com.kikatech.go.services.view.item;
 
+import android.databinding.ViewDataBinding;
 import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.GoLayoutGmapMsgBinding;
 
 /**
  * @author SkeeterWang Created on 2017/12/18.
  */
 
 public class ItemMsg extends WindowFloatingItem {
-    private TextView mMsgViewText;
+
+    private GoLayoutGmapMsgBinding mBinding;
 
     public ItemMsg(View view, View.OnTouchListener listener) {
         super(view, listener);
     }
 
     @Override
-    protected void bindView() {
-        mMsgViewText = (TextView) mItemView.findViewById(R.id.gmap_msg);
+    protected <T extends ViewDataBinding> void onBindView(T binding) {
+        mBinding = (GoLayoutGmapMsgBinding) binding;
     }
 
     public void setText(String text) {
-        mMsgViewText.setText(text);
+        mBinding.gmapMsg.setText(text);
     }
 
     @Override
     public int getMeasuredWidth() {
-        mMsgViewText.measure(0, 0);
+
+        mBinding.gmapMsg.measure(0, 0);
         mItemView.measure(0, 0);
         return mItemView.getMeasuredWidth();
     }
 
     @Override
     public int getMeasuredHeight() {
-        mMsgViewText.measure(0, 0);
+        mBinding.gmapMsg.measure(0, 0);
         mItemView.measure(0, 0);
         return mItemView.getMeasuredHeight();
     }
@@ -56,10 +59,10 @@ public class ItemMsg extends WindowFloatingItem {
     public void updateBackgroundRes(int gravity) {
         switch (gravity) {
             case Gravity.LEFT:
-                mMsgViewText.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
+                mBinding.gmapMsg.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
                 break;
             case Gravity.RIGHT:
-                mMsgViewText.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
+                mBinding.gmapMsg.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
                 break;
         }
     }

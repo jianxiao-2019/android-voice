@@ -1,5 +1,6 @@
 package com.kikatech.go.services.view.item;
 
+import android.databinding.ViewDataBinding;
 import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.View;
@@ -7,37 +8,38 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.GoLayoutGmapAsrResultBinding;
 
 /**
  * @author SkeeterWang Created on 2018/1/25.
  */
 
 public class ItemAsrResult extends WindowFloatingItem {
-    private TextView mTvAsrResult;
+    private GoLayoutGmapAsrResultBinding mBinding;
 
     public ItemAsrResult(View view, View.OnTouchListener listener) {
         super(view, listener);
     }
 
     @Override
-    protected void bindView() {
-        mTvAsrResult = (TextView) mItemView.findViewById(R.id.gmap_tv_asr_result);
+    protected <T extends ViewDataBinding> void onBindView(T binding) {
+        mBinding = (GoLayoutGmapAsrResultBinding) binding;
     }
 
     public void setText(String text) {
-        mTvAsrResult.setText(text);
+        mBinding.gmapTvAsrResult.setText(text);
     }
 
     @Override
     public int getMeasuredWidth() {
-        mTvAsrResult.measure(0, 0);
+        mBinding.gmapTvAsrResult.measure(0, 0);
         mItemView.measure(0, 0);
         return mItemView.getMeasuredWidth();
     }
 
     @Override
     public int getMeasuredHeight() {
-        mTvAsrResult.measure(0, 0);
+        mBinding.gmapTvAsrResult.measure(0, 0);
         mItemView.measure(0, 0);
         return mItemView.getMeasuredHeight();
     }
@@ -56,10 +58,10 @@ public class ItemAsrResult extends WindowFloatingItem {
     public void updateBackgroundRes(int gravity) {
         switch (gravity) {
             case Gravity.LEFT:
-                mTvAsrResult.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
+                mBinding.gmapTvAsrResult.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
                 break;
             case Gravity.RIGHT:
-                mTvAsrResult.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
+                mBinding.gmapTvAsrResult.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
                 break;
         }
     }

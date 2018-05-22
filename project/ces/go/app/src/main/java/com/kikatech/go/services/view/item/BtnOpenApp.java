@@ -1,14 +1,14 @@
 package com.kikatech.go.services.view.item;
 
+import android.databinding.ViewDataBinding;
 import android.graphics.PixelFormat;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.GoLayoutGmapBtnOpenAppBinding;
 import com.kikatech.go.util.IntentUtil;
 import com.kikatech.go.util.LogUtil;
 
@@ -19,12 +19,15 @@ import com.kikatech.go.util.LogUtil;
 public class BtnOpenApp extends WindowFloatingButton {
     private static final String TAG = "BtnOpenApp";
 
+    private GoLayoutGmapBtnOpenAppBinding mBinding;
+
     public BtnOpenApp(View view, View.OnTouchListener listener) {
         super(view, listener);
     }
 
     @Override
-    protected void bindView() {
+    protected <T extends ViewDataBinding> void onBindView(T binding) {
+        mBinding = (GoLayoutGmapBtnOpenAppBinding) binding;
     }
 
     @Override
@@ -42,18 +45,12 @@ public class BtnOpenApp extends WindowFloatingButton {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "onEnter");
         }
-        TextView mBtnText = (TextView) mItemView.findViewById(R.id.btn_text);
-        if (mBtnText != null) {
-            mBtnText.setTextColor(mBtnText.getContext().getResources().getColor(R.color.floating_btn_open));
-        }
-        ImageView mBtnIcon = (ImageView) mItemView.findViewById(R.id.btn_icon);
-        if (mBtnIcon != null) {
-            Glide.with(mBtnIcon.getContext().getApplicationContext())
-                    .load(R.drawable.kika_floating_open_pressed)
-                    .dontTransform()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .into(mBtnIcon);
-        }
+        mBinding.btnText.setTextColor(mBinding.btnText.getContext().getResources().getColor(R.color.floating_btn_open));
+        Glide.with(mBinding.btnIcon.getContext().getApplicationContext())
+                .load(R.drawable.kika_floating_open_pressed)
+                .dontTransform()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(mBinding.btnIcon);
     }
 
     @Override
@@ -61,18 +58,12 @@ public class BtnOpenApp extends WindowFloatingButton {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "onLeaved");
         }
-        TextView mBtnText = (TextView) mItemView.findViewById(R.id.btn_text);
-        if (mBtnText != null) {
-            mBtnText.setTextColor(mBtnText.getContext().getResources().getColor(android.R.color.white));
-        }
-        ImageView mBtnIcon = (ImageView) mItemView.findViewById(R.id.btn_icon);
-        if (mBtnIcon != null) {
-            Glide.with(mBtnIcon.getContext().getApplicationContext())
-                    .load(R.drawable.kika_floating_open)
-                    .dontTransform()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .into(mBtnIcon);
-        }
+        mBinding.btnText.setTextColor(mBinding.btnText.getContext().getResources().getColor(android.R.color.white));
+        Glide.with(mBinding.btnIcon.getContext().getApplicationContext())
+                .load(R.drawable.kika_floating_open)
+                .dontTransform()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(mBinding.btnIcon);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.kikatech.go.services.view.item;
 
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -10,7 +12,7 @@ import android.view.WindowManager;
 @SuppressWarnings("WeakerAccess")
 public abstract class WindowFloatingItem implements IFloatingItem {
 
-    protected abstract void bindView();
+    protected abstract <T extends ViewDataBinding> void onBindView(T binding);
 
     protected abstract WindowManager.LayoutParams getDefaultParam();
 
@@ -24,7 +26,10 @@ public abstract class WindowFloatingItem implements IFloatingItem {
         if (defaultParams != null) {
             mLayoutParams.copyFrom(defaultParams);
         }
-        bindView();
+        try {
+            onBindView(DataBindingUtil.bind(mItemView));
+        } catch (Exception ignore) {
+        }
         mItemView.setOnTouchListener(listener);
     }
 

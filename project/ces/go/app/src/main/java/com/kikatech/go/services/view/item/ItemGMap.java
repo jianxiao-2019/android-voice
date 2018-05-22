@@ -1,6 +1,8 @@
 package com.kikatech.go.services.view.item;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.graphics.PixelFormat;
 import android.view.View;
 import android.view.WindowManager;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.GoLayoutGmapBinding;
 import com.kikatech.go.view.GoLayout;
 
 /**
@@ -17,24 +20,20 @@ import com.kikatech.go.view.GoLayout;
 
 public class ItemGMap extends WindowFloatingItem {
 
-    private ImageView mStatusView;
-    private View mStatusWrapperView;
-    private ImageView mMsgStatusView;
+    private GoLayoutGmapBinding mBinding;
 
     public ItemGMap(View view, View.OnTouchListener listener) {
         super(view, listener);
     }
 
     @Override
-    protected void bindView() {
-        mStatusWrapperView = mItemView.findViewById(R.id.gmap_status_wrapper);
-        mStatusView = (ImageView) mItemView.findViewById(R.id.gmap_status);
-        mMsgStatusView = (ImageView) mItemView.findViewById(R.id.gmap_msg_status);
+    protected <T extends ViewDataBinding> void onBindView(T binding) {
+        mBinding = (GoLayoutGmapBinding) binding;
     }
 
     public void updateStatus(Context context, GoLayout.ViewStatus status) {
-        if (mStatusWrapperView.getVisibility() == View.GONE) {
-            mStatusWrapperView.setVisibility(View.VISIBLE);
+        if (mBinding.gmapStatusWrapper.getVisibility() == View.GONE) {
+            mBinding.gmapStatusWrapper.setVisibility(View.VISIBLE);
         }
 
         Glide.with(context.getApplicationContext())
@@ -42,12 +41,12 @@ public class ItemGMap extends WindowFloatingItem {
                 .dontTransform()
                 .dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(mStatusView);
+                .into(mBinding.gmapStatus);
     }
 
     public void showMsgStatusView(Context context, boolean isSucceed) {
-        if (mMsgStatusView.getVisibility() == View.GONE) {
-            mMsgStatusView.setVisibility(View.VISIBLE);
+        if (mBinding.gmapMsgStatus.getVisibility() == View.GONE) {
+            mBinding.gmapMsgStatus.setVisibility(View.VISIBLE);
         }
 
         Glide.with(context.getApplicationContext())
@@ -56,11 +55,11 @@ public class ItemGMap extends WindowFloatingItem {
                 .dontTransform()
                 .dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(mMsgStatusView);
+                .into(mBinding.gmapMsgStatus);
     }
 
     public void hideMsgStatusView() {
-        mMsgStatusView.setVisibility(View.GONE);
+        mBinding.gmapMsgStatus.setVisibility(View.GONE);
     }
 
     @Override

@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:orientation="vertical">
+<layout>
 
-    <ImageView
-        android:id="@+id/btn_icon"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:src="@drawable/kika_floating_close"/>
-
-    <TextView
-        android:id="@+id/btn_text"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="42dp"
-        android:gravity="center"
-        android:text="@string/floating_button_stop"
-        android:textColor="@android:color/white"
-        android:textSize="12dp"/>
+        android:orientation="vertical">
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/btn_icon"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:src="@drawable/kika_floating_close"/>
+
+        <TextView
+            android:id="@+id/btn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="42dp"
+            android:gravity="center"
+            android:text="@string/floating_button_stop"
+            android:textColor="@android:color/white"
+            android:textSize="12dp"/>
+
+    </RelativeLayout>
+</layout>
