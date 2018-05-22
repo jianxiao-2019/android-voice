@@ -190,14 +190,6 @@
     </string-array>
 
 
-    <string name="dialog_common_confirm">"OK"</string>
-    <string name="dialog_common_cancel">"Cancel"</string>
-
-    <string name="dialog_audio_record_err_hardware">"Please pull out KikaGo Smart Mic and plug-in to your phone again. If the problem persists, please contact us.
-kikago@kikatech.com"</string>
-    <string name="dialog_audio_record_err_microphone">"The microphone is in use for another app."</string>
-
-
     <string-array name="feature_highlight_titles">
         <item>"KikaGo"</item>
         <item>"Voice Command
@@ -314,7 +306,6 @@ Say “OK” after the beep if it is correct."</string>
 Now you can try other features,
 and revisit this practice anytime in Settings."</string>
 
-
     <string name="report_description">"Is something not working? Really sorry for the inconvenience. Please let us know what the problem is. Your report is greatly appreciated so we can make the product better!"</string>
     <string name="report_title">"What is the problem?"</string>
     <string name="report_title_hint">"Title"</string>
@@ -331,6 +322,19 @@ and revisit this practice anytime in Settings."</string>
     <string name="block_description">"Oops! Looks like your current version is no longer available. Please update to the latest version to continue driving hands-free with KikaGo!"</string>
     <string name="block_btn_update">"Update"</string>
 
+
+    <string name="dialog_common_confirm">"OK"</string>
+    <string name="dialog_common_cancel">"Cancel"</string>
+
+    <string name="dialog_usb_detached_title">"Plug-in KikaGo Smart Mic"</string>
+    <string name="dialog_usb_detached_content">"Connect KikaGo Smart Mic to your phone face-up and adjust the phone faced you to get the proper voice recognition."</string>
+    <string name="dialog_usb_detached_btn_no_kikago">"No KikaGo?"</string>
+    <string name="dialog_usb_detached_btn_no_got_it">"Got it"</string>
+
+    <string name="dialog_audio_record_err_hardware">"Please pull out KikaGo Smart Mic and plug-in to your phone again. If the problem persists, please contact us.
+kikago@kikatech.com"</string>
+    <string name="dialog_audio_record_err_microphone">"The microphone is in use for another app."</string>
+
     <string name="dialog_update_app_title">"Update"</string>
     <string name="dialog_update_app_description">"We have a new version. Please update your KikaGo for a better experience!"</string>
     <string name="dialog_update_app_btn_update">"Update"</string>
@@ -338,6 +342,7 @@ and revisit this practice anytime in Settings."</string>
     <string name="dialog_more_commands_title">"Quick commands"</string>
     <string name="dialog_more_commands_description">"There are more commands on KikaGo waiting for you to discover."</string>
     <string name="dialog_more_commands_button">"Show me"</string>
+
 
     <string name="drawer_main_title">"Settings"</string>
     <string name="drawer_item_navigation">"Navigation"</string>

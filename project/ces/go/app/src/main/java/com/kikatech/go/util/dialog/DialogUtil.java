@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.kikatech.go.R;
 import com.kikatech.go.databinding.DialogAudioRecordErrorBinding;
+import com.kikatech.go.databinding.DialogUsbDetachedBinding;
 import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.ui.adapter.FAQ1DialogAdapter;
 import com.kikatech.go.util.IntentUtil;
@@ -151,7 +152,7 @@ public class DialogUtil {
         mDialog.show();
     }
 
-    public static void showDialogAlertUsbInstallation(final Context context, final IDialogListener listener) {
+    public static void showUsbDetached(final Context context, final IDialogListener listener) {
         safeDismissDialog();
 
         mDialog = new Dialog(context);
@@ -159,12 +160,11 @@ public class DialogUtil {
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDialog.setCancelable(false);
 
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_usb_detached_alert, null);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_usb_detached, null);
 
-        View mBtnApply = dialogView.findViewById(R.id.dialog_btn_apply);
-        View mBtnCancel = dialogView.findViewById(R.id.dialog_btn_cancel);
+        DialogUsbDetachedBinding mBinding = DataBindingUtil.bind(dialogView);
 
-        mBtnApply.setOnClickListener(new View.OnClickListener() {
+        mBinding.dialogBtnApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (listener != null) {
@@ -175,7 +175,7 @@ public class DialogUtil {
             }
         });
 
-        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+        mBinding.dialogBtnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 IntentUtil.openKikaGoProductWeb(context);

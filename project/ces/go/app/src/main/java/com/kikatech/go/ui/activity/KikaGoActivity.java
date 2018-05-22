@@ -107,14 +107,14 @@ public class KikaGoActivity extends BaseDrawerActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    DialogUtil.showDialogAlertUsbInstallation(KikaGoActivity.this, null);
+                                    DialogUtil.showUsbDetached(KikaGoActivity.this, null);
                                 }
                             });
                         }
                     }, 1200);
                 } else if (triggerDialogViaClick) {
                     triggerDialogViaClick = false;
-                    DialogUtil.showDialogAlertUsbInstallation(KikaGoActivity.this, null);
+                    DialogUtil.showUsbDetached(KikaGoActivity.this, null);
                 }
                 break;
             case DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT:
