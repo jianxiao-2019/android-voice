@@ -9,6 +9,7 @@ import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
 import com.kikatech.go.dialogflow.navigation.NaviSceneActions;
+import com.kikatech.go.ui.KikaMultiDexApplication;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.core.dialogflow.scene.ISceneFeedback;
@@ -69,7 +70,8 @@ public class StageConfirmAddress extends BaseNaviStage {
     public void action() {
 //        supportAsrInterrupted = true;
         Context context = mSceneBase.getContext();
-        String[] uiAndTtsText = SceneUtil.getConfirmAddress(context, mUserInput);
+        boolean isAppForeground = KikaMultiDexApplication.isApplicationInForeground();
+        String[] uiAndTtsText = isAppForeground ? SceneUtil.getConfirmAddress(context, mUserInput) : SceneUtil.getConfirmAddressFloating(context, mUserInput);
         if (uiAndTtsText.length > 0) {
             String[] options = SceneUtil.getOptionsCommon2(context);
             requestAsrAlignment(options);

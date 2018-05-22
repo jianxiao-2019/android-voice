@@ -63,6 +63,13 @@ public class SceneUtil {
         return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(address)), tryFormat(getStringFromArray(ttsArray), address)};
     }
 
+    public static String[] getConfirmAddressFloating(Context context, String address) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_confirm_address);
+        String[] ttsArray = resource.getStringArray(R.array.tts_confirm_address_floating);
+        return new String[]{tryFormat(ui, StringUtil.upperCaseFirstWord(address)), tryFormat(getStringFromArray(ttsArray), address)};
+    }
+
     public static String[] getAskAddressAgain(Context context) {
         Resources resource = context.getResources();
         String ui = resource.getString(R.string.ui_ask_address_again);
