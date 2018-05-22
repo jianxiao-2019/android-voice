@@ -52,42 +52,36 @@ public class AsrConfigUtil {
     static AsrConfiguration getConfig(@NonNull AsrConfiguration asrConf, @ASRMode int mode) {
         switch (mode) {
             case ASR_MODE_CONVERSATION_COMMAND:
-                asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
                 asrConf.setEosPackets(10); // 1200 ms
                 break;
             case ASR_MODE_CONVERSATION:
-                asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 asrConf.setSpellingEnabled(false);
                 asrConf.setEosPackets(13); // 1560 ms
                 break;
             case ASR_MODE_CONVERSATION_CMD_ALTER:
-                asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
                 asrConf.setEosPackets(5); // 600 ms
                 break;
             case ASR_MODE_CONVERSATION_ALTER:
-                asrConf.setAlterEnabled(true);
                 asrConf.setEmojiEnabled(true);
                 asrConf.setPunctuationEnabled(true);
                 asrConf.setSpellingEnabled(false);
                 asrConf.setEosPackets(5); // 600 ms
                 break;
             case ASR_MODE_SHORT_COMMAND:
-                asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(false);
                 asrConf.setEosPackets(5); // 600 ms
                 break;
             case ASR_MODE_SHORT_COMMAND_SPELLING:
-                asrConf.setAlterEnabled(false);
                 asrConf.setEmojiEnabled(false);
                 asrConf.setPunctuationEnabled(false);
                 asrConf.setSpellingEnabled(true);
