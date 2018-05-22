@@ -82,7 +82,7 @@ public abstract class WakeUpPresenter implements
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.setDebugFileTag(DEBUG_FILE_PATH);
         conf.setIsDebugMode(true);
-        conf.setWakeUpDetector(new SnowBoyDetector());
+        conf.setWakeUpDetector(new SnowBoyDetector(mContext));
         conf.source(mVoiceSource);
         conf.setConnectionConfiguration(new VoiceConfiguration.ConnectionConfiguration.Builder()
                 .setAppName("KikaGoTest")

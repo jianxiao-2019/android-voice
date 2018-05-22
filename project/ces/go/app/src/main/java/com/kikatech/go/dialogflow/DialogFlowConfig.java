@@ -47,7 +47,7 @@ public class DialogFlowConfig {
         conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
         conf.setBosDuration(BOS_DURATION);
         conf.setEosDuration(EOS_DURATION);
-        conf.setWakeUpDetector(new SnowBoyDetector());
+        conf.setWakeUpDetector(new SnowBoyDetector(ctx));
         return conf;
     }
 
@@ -72,7 +72,7 @@ public class DialogFlowConfig {
         conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
         conf.setBosDuration(BOS_DURATION_TUTORIAL);
         conf.setEosDuration(EOS_DURATION);
-        conf.setWakeUpDetector(new SnowBoyDetector());
+        conf.setWakeUpDetector(new SnowBoyDetector(ctx));
         return conf;
     }
 }
