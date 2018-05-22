@@ -394,6 +394,13 @@
                 android:text="Alignment Yes/No" />
 
             <Button
+                android:id="@+id/button_altering"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:text="Altering" />
+
+            <Button
                 android:id="@+id/button_update_asr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
