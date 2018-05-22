@@ -7,11 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kikatech.voice.core.webservice.message.EditTextMessage;
+import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
-import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.R;
 
 import java.util.ArrayList;
@@ -51,10 +50,10 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultItem
             holder.resultText.setText(((IntermediateMessage) message).text);
             holder.cidText.setText(
                     String.format(mContext.getString(R.string.cid_text), ((IntermediateMessage) message).cid));
-        } else if (message instanceof EditTextMessage) {
-            holder.resultText.setText(((EditTextMessage) message).text[0]);
+        } else if (message instanceof AlterMessage) {
+            holder.resultText.setText(((AlterMessage) message).text[0]);
             holder.cidText.setText(
-                    String.format(mContext.getString(R.string.cid_text), ((EditTextMessage) message).cid));
+                    String.format(mContext.getString(R.string.cid_text), ((AlterMessage) message).cid));
         }
 
     }
@@ -83,7 +82,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultItem
     public void addResult(Message message) {
         if (message instanceof TextMessage
                 || message instanceof IntermediateMessage
-                || message instanceof EditTextMessage) {
+                || message instanceof AlterMessage) {
             mCurrentResults.add(0, message);
         }
     }

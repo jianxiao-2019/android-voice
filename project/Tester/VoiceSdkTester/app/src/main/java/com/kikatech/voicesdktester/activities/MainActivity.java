@@ -305,8 +305,6 @@ public class MainActivity extends AppCompatActivity implements
 
         findViewById(R.id.button_update_asr).setOnClickListener(v -> {
             if (mVoiceService != null) {
-                mAsrConfiguration.setAlterEnabled(
-                        ((CheckBox) findViewById(R.id.check_alter)).isChecked());
                 mAsrConfiguration.setEmojiEnabled(
                         ((CheckBox) findViewById(R.id.check_emoji)).isChecked());
                 mAsrConfiguration.setPunctuationEnabled(
@@ -386,6 +384,12 @@ public class MainActivity extends AppCompatActivity implements
         findViewById(R.id.button_alignment).setOnClickListener(v -> {
             if (mVoiceService != null) {
                 mVoiceService.sendAlignment(new String[]{"Yes", "No"});
+            }
+        });
+
+        findViewById(R.id.button_altering).setOnClickListener(v -> {
+            if (mVoiceService != null) {
+                mVoiceService.sendCommand(VoiceService.SERVER_COMMAND_ALTERING, "Send me a taxi in 5 minutes");
             }
         });
 
