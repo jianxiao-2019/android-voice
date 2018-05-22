@@ -7,7 +7,7 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
-import com.kikatech.voice.speex.SpeexEncoder;
+import com.kikatech.voice.core.speex.SpeexEncoder;
 import com.kikatech.voice.util.log.Logger;
 
 /**

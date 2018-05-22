@@ -1,9 +1,8 @@
-package com.kikatech.voice.speex;
+package com.kikatech.voice.core.speex;
 
 import com.kikatech.androidspeex.Speex;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.util.DataUtils;
-import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by ryanlin on 2018/5/14.
