@@ -247,13 +247,13 @@ public class GlobalPref {
         return sPref.getBoolean(Key.KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION, false);
     }
 
-    public void setKeepShowingFloatingUiTip(boolean toShow) {
-        sEditor.putBoolean(Key.KEY_KEEP_SHOWING_FLOATING_UI_TIP, toShow);
+    public void setFloatingWakeUpTipShowingCount(int count) {
+        sEditor.putInt(Key.KEY_FLOATING_WAKE_UP_TIP_SHOWS_COUNT, count);
         apply();
     }
 
-    public boolean getKeepShowingFloatingUiTip() {
-        return sPref.getBoolean(Key.KEY_KEEP_SHOWING_FLOATING_UI_TIP, true);
+    public int getFloatingWakeUpTipShowingCount() {
+        return sPref.getInt(Key.KEY_FLOATING_WAKE_UP_TIP_SHOWS_COUNT, 0);
     }
 
     public void setCanShowDialogMoreCommands(boolean canShow) {

@@ -57,7 +57,9 @@ public class StageNavigationGo extends BaseNaviStage {
         } else {
             uiAndTtsText = SceneUtil.getStartNavigation(context);
         }
-        String extraTtsTip = GlobalPref.getIns().getKeepShowingFloatingUiTip() ? SceneUtil.getFirstSleepTip(context) : "";
+        int showsCount = TipsHelper.getFloatingWakeUpTipShowingCount();
+        boolean toTipWithTts = showsCount < TipsHelper.WAKE_UP_TIP_TTS_COUNT;
+        String extraTtsTip = toTipWithTts ? SceneUtil.getFirstSleepTip(context) : "";
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1] + extraTtsTip;

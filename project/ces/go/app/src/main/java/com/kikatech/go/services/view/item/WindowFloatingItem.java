@@ -111,6 +111,9 @@ public abstract class WindowFloatingItem implements IFloatingItem {
         mLayoutParams.alpha = alpha;
     }
 
+    public void updateBackgroundRes(int gravity) {
+    }
+
     public int getMeasuredWidth() {
         mItemView.measure(0, 0);
         return mItemView.getMeasuredWidth();

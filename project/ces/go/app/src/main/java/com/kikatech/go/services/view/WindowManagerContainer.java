@@ -24,7 +24,10 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     public synchronized void setItemX(WindowFloatingItem item, int xPosition) {
         if (isViewAdded(item)) {
             item.setViewX(xPosition);
-            mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            try {
+                mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            } catch (Exception ignore) {
+            }
         }
     }
 
@@ -32,7 +35,10 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
     public synchronized void setItemY(WindowFloatingItem item, int yPosition) {
         if (isViewAdded(item)) {
             item.setViewX(yPosition);
-            mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            try {
+                mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            } catch (Exception ignore) {
+            }
         }
     }
 
@@ -77,14 +83,20 @@ public class WindowManagerContainer implements IFloatingContainer<WindowFloating
         if (isViewAdded(item)) {
             item.setViewX(xPosition);
             item.setViewY(yPosition);
-            mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            try {
+                mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            } catch (Exception ignore) {
+            }
         }
     }
 
     @Override
     public synchronized void requestLayout(WindowFloatingItem item) {
         if (isViewAdded(item)) {
-            mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            try {
+                mWindowManager.updateViewLayout(item.getItemView(), item.getLayoutParams());
+            } catch (Exception ignore) {
+            }
         }
     }
 

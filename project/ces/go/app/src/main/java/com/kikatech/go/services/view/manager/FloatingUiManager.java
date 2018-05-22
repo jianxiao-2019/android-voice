@@ -16,11 +16,13 @@ import com.kikatech.go.services.view.item.ItemAsrResult;
 import com.kikatech.go.services.view.item.ItemGMap;
 import com.kikatech.go.services.view.item.ItemMsg;
 import com.kikatech.go.services.view.item.ItemTip;
+import com.kikatech.go.services.view.item.ItemWakeUpTip;
 import com.kikatech.go.services.view.item.WindowFloatingButton;
 import com.kikatech.go.services.view.item.WindowFloatingItem;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MathUtil;
 import com.kikatech.go.util.ResolutionUtil;
+import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.preference.GlobalPref;
 import com.kikatech.go.view.FlexibleOnTouchListener;
 import com.kikatech.go.view.GoLayout;
@@ -41,6 +43,7 @@ public class FloatingUiManager extends BaseFloatingManager {
     private IOnFloatingItemAction mListener;
 
     private ItemGMap mItemGMap;
+    private ItemWakeUpTip mItemWakeUpTip;
     private ItemTip mItemTip;
     private ItemAsrResult mItemAsrResult;
     private ItemMsg mItemMsg;
@@ -49,7 +52,7 @@ public class FloatingUiManager extends BaseFloatingManager {
     private BtnOpenApp mBtnOpenApp;
     private List<WindowFloatingButton> mButtonList = new ArrayList<>();
 
-    private boolean isTipViewShown;
+    private boolean isWakeUpTipViewShown;
     private boolean isGMapShown;
 
     private int mGravity = Gravity.LEFT;
@@ -81,6 +84,7 @@ public class FloatingUiManager extends BaseFloatingManager {
         public void onDown(View view, MotionEvent event) {
             viewOriginalXY = mItemGMap.getViewXY();
             eventOriginalXY = new float[]{event.getRawX(), event.getRawY()};
+            mItemWakeUpTip.setViewVisibility(View.GONE);
             mItemTip.setViewVisibility(View.GONE);
             mItemAsrResult.setViewVisibility(View.GONE);
             mItemMsg.setViewVisibility(View.GONE);
@@ -133,9 +137,11 @@ public class FloatingUiManager extends BaseFloatingManager {
             }
             mContainer.moveItem(mItemGMap, gmapX, gmapY);
             hideButtons();
-            mItemTip.setViewVisibility(View.VISIBLE);
-            mItemAsrResult.setViewVisibility(View.VISIBLE);
-            mItemMsg.setViewVisibility(View.VISIBLE);
+
+            updateItemOnUp(mItemWakeUpTip);
+            updateItemOnUp(mItemTip);
+            updateItemOnUp(mItemAsrResult);
+            updateItemOnUp(mItemMsg);
         }
 
         private int getValidX(int viewOriginalX, int deltaX) {
@@ -169,6 +175,21 @@ public class FloatingUiManager extends BaseFloatingManager {
             }
             return nearestItem;
         }
+
+        private void updateItemOnUp(final WindowFloatingItem item) {
+            mUiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mContainer.isViewAdded(item)) {
+                        item.setGravity(Gravity.TOP | mGravity);
+                        item.setViewY(mItemGMap.getViewY());
+                        mContainer.requestLayout(item);
+                    }
+                    item.updateBackgroundRes(mGravity);
+                    item.setViewVisibility(View.VISIBLE);
+                }
+            });
+        }
     });
 
 
@@ -181,6 +202,7 @@ public class FloatingUiManager extends BaseFloatingManager {
 
     private void initItems() {
         mItemGMap = new ItemGMap(inflate(R.layout.go_layout_gmap), onGMapTouchListener);
+        mItemWakeUpTip = new ItemWakeUpTip(inflate(R.layout.go_layout_gmap_msg), null);
         mItemTip = new ItemTip(inflate(R.layout.go_layout_gmap_tip), null);
         mItemAsrResult = new ItemAsrResult(inflate(R.layout.go_layout_gmap_asr_result), null);
         mItemMsg = new ItemMsg(inflate(R.layout.go_layout_gmap_msg), null);
@@ -248,6 +270,14 @@ public class FloatingUiManager extends BaseFloatingManager {
     }
 
 
+    private Runnable removeWakeUpTipViewRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mContainer.removeItem(mItemWakeUpTip);
+            mItemGMap.hideMsgStatusView();
+        }
+    };
+
     private Runnable removeTipViewRunnable = new Runnable() {
         @Override
         public void run() {
@@ -285,12 +315,13 @@ public class FloatingUiManager extends BaseFloatingManager {
         mContainer.addItem(mItemGMap);
         mItemGMap.updateStatus(mContext, GoLayout.ViewStatus.STAND_BY_SLEEP);
 
-        isTipViewShown = false;
+        isWakeUpTipViewShown = false;
         showAllItems();
     }
 
     public synchronized void removeGMap() {
         mContainer.removeItem(mItemGMap);
+        mContainer.removeItem(mItemWakeUpTip);
         mContainer.removeItem(mItemTip);
         mContainer.removeItem(mItemAsrResult);
         mContainer.removeItem(mItemMsg);
@@ -299,12 +330,55 @@ public class FloatingUiManager extends BaseFloatingManager {
         removeCallbacks(removeMsgViewRunnable);
     }
 
-    private synchronized void showTipView() {
-        long displayMillis = GlobalPref.getIns().getKeepShowingFloatingUiTip() ? 0 : 5000;
-        showTipView("Ｗake me up by saying...", "\"Hi Kika\"", displayMillis);
+    private synchronized void showWakeUpTipView() {
+        int showsCount = TipsHelper.getFloatingWakeUpTipShowingCount();
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("Wake up tip has shown %s times", showsCount));
+        }
+        boolean shouldSticky = showsCount < TipsHelper.WAKE_UP_TIP_STICKY_COUNT;
+        long displayMillis;
+        if (shouldSticky) {
+            TipsHelper.setFloatingWakeUpTipShowingCount(showsCount + 1);
+            displayMillis = 0;
+        } else {
+            displayMillis = 5000;
+        }
+        showWakeUpTipView(displayMillis);
     }
 
-    private synchronized void showTipView(String title, String text, long displayMillis) {
+    private synchronized void showWakeUpTipView(long displayMillis) {
+        removeWakeUpTipView();
+
+        mItemWakeUpTip.setText("\"Hi Kika\"");
+
+        int deviceWidth = getDeviceWidthByOrientation();
+        int itemWidth = mItemWakeUpTip.getMeasuredWidth();
+
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("deviceWidth: %1$s, itemWidth: %2$s", deviceWidth, itemWidth));
+        }
+
+        mItemWakeUpTip.setGravity(Gravity.TOP | mGravity);
+        mItemWakeUpTip.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
+        mItemWakeUpTip.setViewY(mItemGMap.getViewY());
+        mItemWakeUpTip.setAnimation(android.R.style.Animation_Toast);
+        mItemWakeUpTip.updateBackgroundRes(mGravity);
+
+        mContainer.addItem(mItemWakeUpTip);
+
+        if (displayMillis > 0) {
+            postDelay(removeTipViewRunnable, displayMillis);
+        }
+    }
+
+    private synchronized void removeWakeUpTipView() {
+        if (mContainer.isViewAdded(mItemWakeUpTip)) {
+            mContainer.removeItem(mItemWakeUpTip);
+            removeCallbacks(removeWakeUpTipViewRunnable);
+        }
+    }
+
+    private synchronized void showTipView(String title, String text) {
         removeTipView();
 
         mItemTip.setTitle(title);
@@ -321,9 +395,7 @@ public class FloatingUiManager extends BaseFloatingManager {
 
         mContainer.addItem(mItemTip);
 
-        if (displayMillis > 0) {
-            postDelay(removeTipViewRunnable, displayMillis);
-        }
+        postDelay(removeTipViewRunnable, 2800);
     }
 
     private synchronized void removeTipView() {
@@ -407,12 +479,8 @@ public class FloatingUiManager extends BaseFloatingManager {
             LogUtil.logv(TAG, "handleStatusChanged: status: " + status.name());
         }
 
-        if (GoLayout.ViewStatus.STAND_BY_AWAKE.equals(status)) {
-            removeTipView();
-            if (GlobalPref.getIns().getKeepShowingFloatingUiTip()) {
-                GlobalPref.getIns().setKeepShowingFloatingUiTip(false);
-            }
-        }
+        removeWakeUpTipView();
+
         mItemGMap.updateStatus(mContext, status);
     }
 
@@ -437,7 +505,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             return;
         }
         removeTipView();
-        showTipView(title, text, 2800);
+        showTipView(title, text);
     }
 
     public synchronized void handleMsgSentStatusChanged(final boolean isSucceed) {
@@ -459,6 +527,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             @Override
             public void run() {
                 mItemGMap.setViewVisibility(View.GONE);
+                mItemWakeUpTip.setViewVisibility(View.GONE);
                 mItemTip.setViewVisibility(View.GONE);
                 mItemAsrResult.setViewVisibility(View.GONE);
                 mItemMsg.setViewVisibility(View.GONE);
@@ -471,13 +540,14 @@ public class FloatingUiManager extends BaseFloatingManager {
             @Override
             public void run() {
                 mItemGMap.setViewVisibility(View.VISIBLE);
+                mItemWakeUpTip.setViewVisibility(View.VISIBLE);
                 mItemTip.setViewVisibility(View.VISIBLE);
                 mItemAsrResult.setViewVisibility(View.VISIBLE);
                 mItemMsg.setViewVisibility(View.VISIBLE);
 
-                if (!isTipViewShown) {
-                    showTipView();
-                    isTipViewShown = true;
+                if (!isWakeUpTipViewShown) {
+                    showWakeUpTipView();
+                    isWakeUpTipViewShown = true;
                 }
             }
         });
