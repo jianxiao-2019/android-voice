@@ -246,13 +246,13 @@ public class ContactManager {
 
     private String getPhoneType(int phonetype) {
         switch (phonetype) {
-            case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
+            case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
                 return "Home";
-            case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
+            case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
                 return "Work";
-            case ContactsContract.CommonDataKinds.Email.TYPE_OTHER:
+            case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
                 return "Other";
-            case ContactsContract.CommonDataKinds.Email.TYPE_MOBILE:
+            case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                 return "Mobile";
             default:
                 return "Custom";
@@ -277,8 +277,12 @@ public class ContactManager {
             this.type = type;
         }
 
-        public String getTypeOrNumber() {
-            return TextUtils.isEmpty(type) ? number : type;
+        public String getType() {
+            return type;
+        }
+
+        public String getNumber() {
+            return number;
         }
     }
 
