@@ -1,5 +1,6 @@
 package com.kikatech.voice.wakeup;
 
+import android.content.Context;
 import android.util.SparseIntArray;
 
 import com.kikatech.voice.core.hotword.WakeUpDetector;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import ai.kitt.snowboy.AppResCopy;
 import ai.kitt.snowboy.Constants;
 import ai.kitt.snowboy.SnowboyDetect;
 
@@ -44,8 +46,9 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     private boolean mEnableDetection = true;
 
-    public SnowBoyDetector() {
+    public SnowBoyDetector(Context context) {
         long t = System.currentTimeMillis();
+        AppResCopy.copyResFromAssetsToSD(context);
         String sensitivity = CustomConfig.getSnowboySensitivity();
 
         if (Logger.DEBUG) {
