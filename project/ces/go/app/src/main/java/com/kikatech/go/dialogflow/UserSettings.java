@@ -184,6 +184,15 @@ public class UserSettings {
     }
 
 
+    public static void saveSettingVolume(float volume) {
+        GlobalPref.getIns().saveSettingVolume(volume);
+    }
+
+    public static float getSettingVolume() {
+        return GlobalPref.getIns().getSettingVolume();
+    }
+
+
     public static void saveSettingAsrLocale(@UserSettings.AsrLocale int locale) {
         GlobalPref.getIns().saveSettingAsrLocale(locale);
     }

@@ -524,7 +524,7 @@ public class DialogUtil {
             mBtnExtra.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MediaPlayerUtil.playAlert(context, R.raw.wake_up_example, null);
+                    MediaPlayerUtil.getIns().playAlert(context, R.raw.wake_up_example, null);
                 }
             });
         }

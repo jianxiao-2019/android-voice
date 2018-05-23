@@ -204,6 +204,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
                     mDFPresenter.doOnStopTutorial();
                 }
                 break;
+            case ToDFServiceEvent.ACTION_SET_VOLUME:
+                float volume = event.getExtras().getFloat(ToDFServiceEvent.PARAM_VOLUME, -1);
+                if (mDFPresenter != null) {
+                    mDFPresenter.setVolume(volume);
+                }
+                break;
         }
     }
 
@@ -576,6 +582,12 @@ public class DialogFlowForegroundService extends BaseForegroundService {
 
     public synchronized static void processStopTutorial() {
         ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_STOP_TUTORIAL);
+        event.send();
+    }
+
+    public synchronized static void processSetTtsVolume(float volume) {
+        ToDFServiceEvent event = new ToDFServiceEvent(ToDFServiceEvent.ACTION_SET_VOLUME);
+        event.putExtra(ToDFServiceEvent.PARAM_VOLUME, volume);
         event.send();
     }
 

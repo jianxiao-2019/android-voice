@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 
 import com.kikatech.go.R;
 import com.kikatech.go.databinding.ActivityKikaGoBinding;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.model.Option;
 import com.kikatech.go.dialogflow.model.OptionList;
@@ -347,6 +349,49 @@ public class KikaGoActivity extends BaseDrawerActivity {
         unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaGoActivity.this, DialogFlowForegroundService.class);
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event != null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, String.format("KeyEvent: %s", event.toString()));
+            }
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                final float VOLUME_INTERVAL = 0.2f;
+                float currentVolume;
+                float newVolume;
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_VOLUME_DOWN:
+                        currentVolume = UserSettings.getSettingVolume();
+                        if (currentVolume != 0) {
+                            newVolume = Math.max(currentVolume - VOLUME_INTERVAL, 0);
+                            if (LogUtil.DEBUG) {
+                                LogUtil.logd(TAG, String.format("currentVolume: %s, newVolume: %s", currentVolume, newVolume));
+                            }
+                            UserSettings.saveSettingVolume(newVolume);
+                            DialogFlowForegroundService.processSetTtsVolume(newVolume);
+                            ((DrawerMainFragment) mDrawerMainFragment).updateVolume(newVolume);
+                        }
+                        return true;
+                    case KeyEvent.KEYCODE_VOLUME_UP:
+                        currentVolume = UserSettings.getSettingVolume();
+                        if (currentVolume != 1) {
+                            newVolume = Math.min(currentVolume + VOLUME_INTERVAL, 1);
+                            if (LogUtil.DEBUG) {
+                                LogUtil.logd(TAG, String.format("currentVolume: %s, newVolume: %s", currentVolume, newVolume));
+                            }
+                            UserSettings.saveSettingVolume(newVolume);
+                            DialogFlowForegroundService.processSetTtsVolume(newVolume);
+                            ((DrawerMainFragment) mDrawerMainFragment).updateVolume(newVolume);
+                        }
+                        return true;
+                    default:
+                        return super.onKeyDown(keyCode, event);
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void bindListener() {

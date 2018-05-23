@@ -45,6 +45,10 @@ class BaseEvent {
         extras.putByte(key, value);
     }
 
+    public void putExtra(String key, float value) {
+        extras.putFloat(key, value);
+    }
+
     public void putExtra(String key, Serializable value) {
         extras.putSerializable(key, value);
     }

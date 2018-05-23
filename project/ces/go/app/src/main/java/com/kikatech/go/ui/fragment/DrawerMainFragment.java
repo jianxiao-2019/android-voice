@@ -1,17 +1,22 @@
 package com.kikatech.go.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.SeekBar;
 
 import com.kikatech.go.BuildConfig;
 import com.kikatech.go.R;
+import com.kikatech.go.databinding.GoLayoutDrawerMainBinding;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.services.DialogFlowForegroundService;
 import com.kikatech.go.services.presenter.VoiceSourceHelper;
@@ -28,6 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 
 public class DrawerMainFragment extends Fragment {
+    private static final String TAG = "DrawerMainFragment";
 
     public static DrawerMainFragment newInstance(IDrawerMainListener listener) {
         DrawerMainFragment fragment = new DrawerMainFragment();
@@ -41,6 +47,8 @@ public class DrawerMainFragment extends Fragment {
         mListener = listener;
     }
 
+
+    private GoLayoutDrawerMainBinding mBinding;
 
     /**
      * <p>Reflection subscriber method used by EventBus,
@@ -72,27 +80,24 @@ public class DrawerMainFragment extends Fragment {
     }
 
     private void updateMicStatus(String source) {
-        if (mMicStatusView != null) {
+        if (mBinding.drawerItemMicStatusText != null) {
             if (VoiceSourceHelper.VOICE_SOURCE_USB.equals(source)) {
-                mMicStatusView.setText(getString(R.string.drawer_item_mic_status_connected));
-                mMicStatusView.setTextColor(getResources().getColor(R.color.drawer_subtitle_text));
+                mBinding.drawerItemMicStatusText.setText(getString(R.string.drawer_item_mic_status_connected));
+                mBinding.drawerItemMicStatusText.setTextColor(getResources().getColor(R.color.drawer_subtitle_text));
             } else {
-                mMicStatusView.setText(getString(R.string.drawer_item_mic_status_disconnected));
-                mMicStatusView.setTextColor(getResources().getColor(R.color.drawer_subtitle_text_disable));
+                mBinding.drawerItemMicStatusText.setText(getString(R.string.drawer_item_mic_status_disconnected));
+                mBinding.drawerItemMicStatusText.setTextColor(getResources().getColor(R.color.drawer_subtitle_text_disable));
                 updateUsbDataStatus(true);
             }
         }
     }
 
     private void updateUsbDataStatus(boolean isDataCorrect) {
-        if (mUsbDataStatusErrorView != null) {
-            mUsbDataStatusErrorView.setVisibility(isDataCorrect ? View.GONE : View.VISIBLE);
+        if (mBinding.drawerItemUsbDataStatusErrorText != null) {
+            mBinding.drawerItemUsbDataStatusErrorText.setVisibility(isDataCorrect ? View.GONE : View.VISIBLE);
         }
     }
 
-
-    private TextView mMicStatusView;
-    private View mUsbDataStatusErrorView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,12 +110,11 @@ public class DrawerMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mView = inflater.inflate(R.layout.go_layout_drawer_main, null);
 
-        mMicStatusView = (TextView) mView.findViewById(R.id.drawer_item_mic_status_text);
-        mUsbDataStatusErrorView = mView.findViewById(R.id.drawer_item_usb_data_status_error_text);
+        mBinding = DataBindingUtil.bind(mView);
 
-        ((TextView) mView.findViewById(R.id.drawer_item_exit_app_version_text)).setText(String.format("V. %s", BuildConfig.VERSION_NAME));
+        mBinding.drawerItemExitAppVersionText.setText(String.format("V. %s", BuildConfig.VERSION_NAME));
 
-        mView.findViewById(R.id.drawer_title_icon).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerTitleIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -118,7 +122,34 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_navigation).setOnClickListener(new View.OnClickListener() {
+        initItemVolume();
+        mBinding.itemVolumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (seekBar == null) {
+                    return;
+                }
+                float MAX_VALUE = seekBar.getMax();
+                float value = seekBar.getProgress();
+                float newVolume = value / MAX_VALUE;
+                if (LogUtil.DEBUG) {
+                    LogUtil.logd(TAG, String.format("MAX_VALUE: %s, value: %s, newVolume: %s", MAX_VALUE, value, newVolume));
+                }
+                if (newVolume >= 0 && newVolume <= 1) {
+                    UserSettings.saveSettingVolume(newVolume);
+                    DialogFlowForegroundService.processSetTtsVolume(newVolume);
+                }
+            }
+        });
+        mBinding.drawerItemNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -126,7 +157,7 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_im).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerItemIm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -134,7 +165,7 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_music).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerItemMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -142,7 +173,7 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_mic).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerItemMic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -150,7 +181,7 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_tip).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerItemTip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -158,7 +189,7 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_advanced).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerItemAdvanced.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -166,7 +197,7 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_faq).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerItemFaq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -174,7 +205,7 @@ public class DrawerMainFragment extends Fragment {
                 }
             }
         });
-        mView.findViewById(R.id.drawer_item_exit).setOnClickListener(new View.OnClickListener() {
+        mBinding.drawerItemExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -184,11 +215,9 @@ public class DrawerMainFragment extends Fragment {
         });
 
         if (LogUtil.DEBUG && !FlavorUtil.isFlavorManufacturer()) {
-            View mItemDebug = mView.findViewById(R.id.drawer_item_debug);
-            View mItemDebugUnderline = mView.findViewById(R.id.drawer_item_debug_underline);
-            mItemDebug.setVisibility(View.VISIBLE);
-            mItemDebugUnderline.setVisibility(View.VISIBLE);
-            mItemDebug.setOnClickListener(new View.OnClickListener() {
+            mBinding.drawerItemDebug.setVisibility(View.VISIBLE);
+            mBinding.drawerItemDebugUnderline.setVisibility(View.VISIBLE);
+            mBinding.drawerItemDebug.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), KikaDebugLogActivity.class);
@@ -213,6 +242,36 @@ public class DrawerMainFragment extends Fragment {
     }
 
 
+    private void initItemVolume() {
+        float MAX_VALUE = mBinding.itemVolumeSeekBar.getMax();
+        float volume = UserSettings.getSettingVolume();
+        int value = (int) (volume * MAX_VALUE);
+        mBinding.itemVolumeSeekBar.setProgress(value);
+        mBinding.itemVolumeSeekBar.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow Drawer to intercept touch events.
+                        view.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow Drawer to intercept touch events.
+                        view.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                // Handle seekbar touch events.
+                view.onTouchEvent(event);
+                return true;
+            }
+        });
+    }
+
+
     private void registerReceivers() {
         try {
             EventBus.getDefault().register(this);
@@ -225,6 +284,13 @@ public class DrawerMainFragment extends Fragment {
             EventBus.getDefault().unregister(this);
         } catch (Exception ignore) {
         }
+    }
+
+
+    public synchronized void updateVolume(float volume) {
+        float MAX_VALUE = mBinding.itemVolumeSeekBar.getMax();
+        int value = (int) (volume * MAX_VALUE);
+        mBinding.itemVolumeSeekBar.setProgress(value);
     }
 
 

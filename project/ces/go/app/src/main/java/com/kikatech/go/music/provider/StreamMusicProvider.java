@@ -54,7 +54,7 @@ public class StreamMusicProvider implements IMusicProvider {
     public synchronized void play(Object musicModel) {
         reset();
         try {
-            MediaPlayerUtil.safeSetMediaPlayerSource(mMediaPlayer, STREAM_LINK);
+            MediaPlayerUtil.getIns().safeSetMediaPlayerSource(mMediaPlayer, STREAM_LINK);
             mMediaPlayer.setOnPreparedListener(onPreparedListener);
             //mediaPlayer.prepare(); // might take long! (for buffering, etc)   //@@
             mMediaPlayer.prepareAsync();

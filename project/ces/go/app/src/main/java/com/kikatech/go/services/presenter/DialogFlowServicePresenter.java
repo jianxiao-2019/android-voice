@@ -8,6 +8,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.SceneUtil;
+import com.kikatech.go.dialogflow.UserSettings;
 import com.kikatech.go.dialogflow.close.CloseSceneManager;
 import com.kikatech.go.dialogflow.close.SceneClose;
 import com.kikatech.go.dialogflow.common.CommonSceneManager;
@@ -34,6 +35,7 @@ import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.activity.KikaGoActivity;
+import com.kikatech.go.util.AudioManagerUtil;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
@@ -102,6 +104,7 @@ public class DialogFlowServicePresenter {
                 LogUtil.log(TAG, "onInitComplete");
             }
             mDFServiceStatus.setInit(true);
+            setVolume(UserSettings.getSettingVolume());
             String action = DFServiceEvent.ACTION_ON_DIALOG_FLOW_INIT;
             DFServiceEvent event = new DFServiceEvent(action);
             event.send();
@@ -128,7 +131,7 @@ public class DialogFlowServicePresenter {
                     startAsr();
                     break;
                 default:
-                    MediaPlayerUtil.playAlert(mContext, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
+                    MediaPlayerUtil.getIns().playAlert(mContext, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
                         @Override
                         public void onStart() {
                         }
@@ -371,7 +374,7 @@ public class DialogFlowServicePresenter {
             }
 
             if (!isInterrupted) {
-                MediaPlayerUtil.playAlert(mContext, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
+                MediaPlayerUtil.getIns().playAlert(mContext, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
                     @Override
                     public void onStart() {
                     }
@@ -407,7 +410,7 @@ public class DialogFlowServicePresenter {
                 boolean isSentSuccess = extras.getBoolean(SceneUtil.EXTRA_SEND_SUCCESS, true);
                 int alertRes = extras.getInt(SceneUtil.EXTRA_ALERT, 0);
                 mManager.handleMsgSentStatusChanged(isSentSuccess);
-                MediaPlayerUtil.playAlert(mContext, alertRes, null);
+                MediaPlayerUtil.getIns().playAlert(mContext, alertRes, null);
                 NavigationManager.getIns().showMap(mContext, false);
             }
             String action = DFServiceEvent.ACTION_ON_STAGE_EVENT;
@@ -526,6 +529,17 @@ public class DialogFlowServicePresenter {
         }
     };
 
+    private IDialogFlowService.ITtsStatusCallback mTtsStatusCallback = new IDialogFlowService.ITtsStatusCallback() {
+        @Override
+        public void onStart() {
+            AudioManagerUtil.getIns().maximumVolume();
+        }
+
+        @Override
+        public void onStop() {
+            AudioManagerUtil.getIns().recoveryVolume();
+        }
+    };
 
     private void initVoiceSource() {
         mVoiceSourceHelper.setVoiceSourceListener(new VoiceSourceHelper.IVoiceSourceListener() {
@@ -565,7 +579,7 @@ public class DialogFlowServicePresenter {
             public void run() {
                 VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(mContext, mVoiceSourceHelper.getUsbVoiceSource());
                 mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
-                mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus);
+                mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus, mTtsStatusCallback);
                 mDialogFlowService.init();
                 registerScenes();
             }
@@ -692,6 +706,16 @@ public class DialogFlowServicePresenter {
         }
     }
 
+
+    /**
+     * @param volume range 0.0 to 1.0
+     */
+    public void setVolume(float volume) {
+        MediaPlayerUtil.getIns().setVolume(volume);
+        if (mDialogFlowService != null) {
+            mDialogFlowService.setTtsVolume(volume);
+        }
+    }
 
     public void talk(String text, boolean proactive) {
         cancelAsr();

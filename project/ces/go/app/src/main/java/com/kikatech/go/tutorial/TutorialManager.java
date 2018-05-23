@@ -12,6 +12,7 @@ import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.tutorial.dialogflow.SceneTutorial;
 import com.kikatech.go.tutorial.dialogflow.TutorialSceneActions;
 import com.kikatech.go.tutorial.dialogflow.TutorialSceneManager;
+import com.kikatech.go.util.AudioManagerUtil;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
@@ -76,7 +77,7 @@ public class TutorialManager {
             }
             mUiManager.dispatchWakeUp(SceneTutorial.SCENE);
             onLocalIntent(SceneTutorial.SCENE, TutorialSceneActions.ACTION_NAV_START);
-            MediaPlayerUtil.playAlert(mContext, R.raw.alert_dot, null);
+            MediaPlayerUtil.getIns().playAlert(mContext, R.raw.alert_dot, null);
         }
 
         @Override
@@ -181,7 +182,7 @@ public class TutorialManager {
                     break;
                 case TutorialUtil.StageActionType.ASR:
                     mUiManager.dispatchDismissTutorialDialog();
-                    MediaPlayerUtil.playAlert(mContext, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
+                    MediaPlayerUtil.getIns().playAlert(mContext, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {
                         @Override
                         public void onStart() {
                         }
@@ -220,6 +221,18 @@ public class TutorialManager {
 
         @Override
         public void onError(Exception e) {
+        }
+    };
+
+    private IDialogFlowService.ITtsStatusCallback mTtsStatusCallback = new IDialogFlowService.ITtsStatusCallback() {
+        @Override
+        public void onStart() {
+            AudioManagerUtil.getIns().maximumVolume();
+        }
+
+        @Override
+        public void onStop() {
+            AudioManagerUtil.getIns().recoveryVolume();
         }
     };
 
@@ -265,7 +278,7 @@ public class TutorialManager {
             public void run() {
                 KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
                 VoiceConfiguration config = DialogFlowConfig.getTutorialConfig(mContext, usbSource);
-                mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus);
+                mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus, mTtsStatusCallback);
                 mDialogFlowService.init();
                 registerScenes();
             }

@@ -5,8 +5,6 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
-import com.kikatech.go.util.LogUtil;
-
 import java.io.FileDescriptor;
 import java.io.IOException;
 
@@ -19,10 +17,38 @@ public class MediaPlayerUtil {
 
     private static final int STREAM_TYPE_ALERT = AudioManager.STREAM_MUSIC;
 
-    private static MediaPlayer mMediaPlayer = new MediaPlayer();
-    private static IPlayStatusListener playStatusListener;
 
-    public synchronized static void playAlert(Context context, int alertRes, IPlayStatusListener listener) {
+    private static MediaPlayerUtil sIns;
+
+    public static synchronized MediaPlayerUtil getIns() {
+        if (sIns == null) {
+            sIns = new MediaPlayerUtil();
+        }
+        return sIns;
+    }
+
+
+    private MediaPlayer mMediaPlayer = new MediaPlayer();
+    private IPlayStatusListener playStatusListener;
+    private IPlayStatusListener mVolumeControlListener = new IPlayStatusListener() {
+        @Override
+        public void onStart() {
+            AudioManagerUtil.getIns().maximumVolume();
+        }
+
+        @Override
+        public void onStop() {
+            AudioManagerUtil.getIns().recoveryVolume();
+        }
+    };
+    private float mVolume = -1;
+
+    private MediaPlayerUtil() {
+        mMediaPlayer = new MediaPlayer();
+    }
+
+
+    public synchronized void playAlert(Context context, int alertRes, IPlayStatusListener listener) {
         try {
             playStatusListener = listener;
 
@@ -46,10 +72,7 @@ public class MediaPlayerUtil {
                     mMediaPlayer.stop();
                     mMediaPlayer.reset();
 
-                    if (playStatusListener != null) {
-                        playStatusListener.onStop();
-                        playStatusListener = null;
-                    }
+                    onStop();
 
                     return false;
                 }
@@ -61,10 +84,7 @@ public class MediaPlayerUtil {
                         LogUtil.log(TAG, "Audio onCompletion()");
                     }
 
-                    if (playStatusListener != null) {
-                        playStatusListener.onStop();
-                        playStatusListener = null;
-                    }
+                    onStop();
 
                     mMediaPlayer.stop();
                     mMediaPlayer.reset();
@@ -73,26 +93,48 @@ public class MediaPlayerUtil {
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    if (playStatusListener != null) {
-                        playStatusListener.onStart();
-                    }
+                    onStart();
                 }
             });
             mMediaPlayer.prepare();
             mMediaPlayer.start();
+            if (mVolume >= 0 && mVolume <= 1) {
+                mMediaPlayer.setVolume(mVolume, mVolume);
+            }
         } catch (Exception e) {
             if (LogUtil.DEBUG) {
                 LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
-            if (playStatusListener != null) {
-                playStatusListener.onStop();
-                playStatusListener = null;
-            }
-
+            onStop();
         }
     }
 
-    private synchronized static void safeSetMediaPlayerSource(MediaPlayer mediaPlayer, FileDescriptor fd, long offset, long length) throws IOException {
+
+    private synchronized void onStart() {
+        mVolumeControlListener.onStart();
+        if (playStatusListener != null) {
+            playStatusListener.onStart();
+        }
+    }
+
+    private synchronized void onStop() {
+        mVolumeControlListener.onStop();
+        if (playStatusListener != null) {
+            playStatusListener.onStop();
+            playStatusListener = null;
+        }
+    }
+
+
+    /**
+     * @param volume range 0.0 to 1.0
+     */
+    public void setVolume(float volume) {
+        mVolume = volume;
+    }
+
+
+    private synchronized void safeSetMediaPlayerSource(MediaPlayer mediaPlayer, FileDescriptor fd, long offset, long length) throws IOException {
         // http://stackoverflow.com/questions/7816551/java-lang-illegalstateexception-what-does-it-mean
         if (mediaPlayer != null) {
             try {
@@ -104,7 +146,7 @@ public class MediaPlayerUtil {
         }
     }
 
-    public synchronized static void safeSetMediaPlayerSource(MediaPlayer mediaPlayer, String path) throws IOException {
+    public synchronized void safeSetMediaPlayerSource(MediaPlayer mediaPlayer, String path) throws IOException {
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.setDataSource(path);

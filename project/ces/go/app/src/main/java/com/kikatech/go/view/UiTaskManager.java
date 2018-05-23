@@ -559,7 +559,7 @@ public class UiTaskManager {
         layout.post(new Runnable() {
             @Override
             public void run() {
-                MediaPlayerUtil.playAlert(layout.getContext(), alertRes, null);
+                MediaPlayerUtil.getIns().playAlert(layout.getContext(), alertRes, null);
             }
         });
     }

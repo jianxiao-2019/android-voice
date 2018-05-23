@@ -27,11 +27,13 @@ public class ToDFServiceEvent extends BaseEvent {
     public static final String ACTION_ON_NEW_MSG = "action_on_new_msg";
     public static final String ACTION_DO_TUTORIAL = "action_do_tutorial";
     public static final String ACTION_STOP_TUTORIAL = "action_stop_tutorial";
+    public static final String ACTION_SET_VOLUME = "action_set_volume";
 
     public static final String PARAM_STATUS = "param_status";
     public static final String PARAM_TEXT = "param_text";
     public static final String PARAM_MSG_COMMEND = "param_msg_commend";
     public static final String PARAM_TIMESTAMP = "param_timestamp";
+    public static final String PARAM_VOLUME = "param_volume";
 
     public ToDFServiceEvent(String action) {
         super(action);

@@ -217,6 +217,15 @@ public class GlobalPref {
         return sPref.getBoolean(Key.KEY_SETTING_RECOMMEND_LIST_INDIE, false);
     }
 
+    public void saveSettingVolume(float volume) {
+        sEditor.putFloat(Key.KEY_SETTING_VOLUME, volume);
+        apply();
+    }
+
+    public float getSettingVolume() {
+        return sPref.getFloat(Key.KEY_SETTING_VOLUME, 1.0f);
+    }
+
 
     public boolean isFirstLaunch() {
         boolean isFirst = sPref.getBoolean(Key.KEY_FIRST_LAUNCH, true);

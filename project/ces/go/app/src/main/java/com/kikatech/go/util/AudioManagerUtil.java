@@ -26,6 +26,7 @@ public class AudioManagerUtil {
 
         private int type;
         private boolean isMuted;
+        private int volume = -1;
 
         StreamType(int type) {
             this.type = type;
@@ -49,6 +50,19 @@ public class AudioManagerUtil {
 
     private AudioManagerUtil() {
         mAudioManager = (AudioManager) KikaMultiDexApplication.getAppContext().getSystemService(Context.AUDIO_SERVICE);
+    }
+
+
+    public synchronized void maximumVolume() {
+        fetchVolume(StreamType.STREAM_MUSIC);
+        fetchVolume(StreamType.STREAM_RING);
+        setVolume(StreamType.STREAM_MUSIC, getMaxVolume(StreamType.STREAM_MUSIC));
+        setVolume(StreamType.STREAM_RING, getMaxVolume(StreamType.STREAM_RING));
+    }
+
+    public synchronized void recoveryVolume() {
+        setVolume(StreamType.STREAM_MUSIC, StreamType.STREAM_MUSIC.volume);
+        setVolume(StreamType.STREAM_RING, StreamType.STREAM_RING.volume);
     }
 
 
@@ -124,6 +138,21 @@ public class AudioManagerUtil {
 
     private boolean isWiredHeadsetOn() {
         return mAudioManager.isWiredHeadsetOn();
+    }
+
+
+    private void fetchVolume(StreamType streamType) {
+        streamType.volume = mAudioManager.getStreamVolume(streamType.type);
+    }
+
+    private int getMaxVolume(StreamType streamType) {
+        return mAudioManager.getStreamMaxVolume(streamType.type);
+    }
+
+    private void setVolume(StreamType streamType, int volume) {
+        if (volume >= 0) {
+            mAudioManager.setStreamVolume(streamType.type, volume, 0);
+        }
     }
 
 

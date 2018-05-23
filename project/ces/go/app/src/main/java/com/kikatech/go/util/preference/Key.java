@@ -35,6 +35,9 @@ class Key {
     static final String KEY_SETTING_RECOMMEND_LIST_INDIE = "key_setting_recommend_list_indie";
 
 
+    static final String KEY_SETTING_VOLUME = "key_setting_volume";
+
+
     static final String KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION = "key_has_show_dialog_usb_illustration";
     static final String KEY_FLOATING_WAKE_UP_TIP_SHOWS_COUNT = "key_floating_wake_up_tip_shows_count";
 
