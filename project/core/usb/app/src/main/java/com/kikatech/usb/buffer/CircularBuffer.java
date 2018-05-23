@@ -31,13 +31,20 @@ public class CircularBuffer {
             }
             if (mWriteIndex + sizeInBytes < mBufferSize) {
                 System.arraycopy(audioData, 0, mBuffer, mWriteIndex, sizeInBytes);
+                if (mWriteIndex < mReadIndex && mReadIndex < mWriteIndex + sizeInBytes) {
+                    Logger.w("Some data was been overflowed. 1");
+                    mReadIndex = mWriteIndex + sizeInBytes + 1;
+                }
             } else {
                 int half = mBufferSize - mWriteIndex;
                 System.arraycopy(audioData, 0, mBuffer, mWriteIndex, half);
                 System.arraycopy(audioData, half, mBuffer, 0, sizeInBytes - half);
-                if (mReadIndex < (sizeInBytes - half)) {
-                    Logger.w("Some data was been overridden.");
-                    mReadIndex = sizeInBytes - half;
+                if (mWriteIndex < mReadIndex) {
+                    Logger.w("Some data was been overflowed. 2");
+                    mReadIndex = mWriteIndex + 1;
+                } else if (mReadIndex < (sizeInBytes - half)) {
+                    Logger.w("Some data was been overflowed. 3");
+                    mReadIndex = sizeInBytes - half + 1;
                 }
             }
             mWriteIndex = (mWriteIndex + sizeInBytes) % mBufferSize;

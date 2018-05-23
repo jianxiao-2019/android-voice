@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class LocalVoiceSource implements IVoiceSource {
 
+    private static final int FRAME_LENGTH = 16;
+
     private String mTargetFilePath;
     private BufferedInputStream mBuffer;
 
@@ -56,11 +58,18 @@ public abstract class LocalVoiceSource implements IVoiceSource {
                 int bufferSize = getBufferSize();
                 byte[] audioData = new byte[bufferSize];
                 mBuffer = new BufferedInputStream(new FileInputStream(mTargetFilePath));
-                int result;
-                while (!mIsStopped.get() &&(result = mBuffer.read(audioData, 0, bufferSize)) > 0) {
+                while (!mIsStopped.get()) {
+                    long begin = System.currentTimeMillis();
+                    int result = mBuffer.read(audioData, 0, bufferSize);
+                    if (result <= 0) {
+                        break;
+                    }
                     mKikaBuffer.onData(audioData, result);
-                    Logger.i("LocalVoiceSource read from local (d) result = " + result);
-                    Thread.sleep(20);
+                    Logger.v("LocalVoiceSource read from local (d) result = " + result);
+                    long sleepTime = FRAME_LENGTH - (System.currentTimeMillis() - begin);
+                    if (sleepTime > 0) {
+                        Thread.sleep(sleepTime);
+                    }
                 }
                 if (mEofListener != null) {
                     mEofListener.onEndOfFile();
