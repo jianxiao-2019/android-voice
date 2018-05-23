@@ -149,6 +149,8 @@ public class GoLayout extends FrameLayout {
     private TextView mTutorialDialogDoneDescription;
     private View mTutorialDialogDoneBtnApply;
 
+    private ImageView mSceneBg;
+
     private View mSleepLayout;
 
     private View mStatusLayout;
@@ -236,6 +238,8 @@ public class GoLayout extends FrameLayout {
         mTutorialDialogDoneTitle = (TextView) findViewById(R.id.go_layout_tutorial_dialog_done_title);
         mTutorialDialogDoneDescription = (TextView) findViewById(R.id.go_layout_tutorial_dialog_done_des);
         mTutorialDialogDoneBtnApply = findViewById(R.id.go_layout_tutorial_dialog_done_btn_apply);
+
+        mSceneBg = (ImageView) findViewById(R.id.scene_bg);
 
         mSleepLayout = findViewById(R.id.go_layout_sleep);
 
@@ -833,6 +837,10 @@ public class GoLayout extends FrameLayout {
 
     public synchronized void dismissTutorialDialog() {
         mTutorialDialogLayout.setVisibility(GONE);
+    }
+
+    public synchronized void updateSceneBackground(int bgRes) {
+        mSceneBg.setImageResource(bgRes);
     }
 
 

@@ -164,6 +164,10 @@ public class KikaGoActivity extends BaseDrawerActivity {
                 extras = event.getExtras().getBundle(DFServiceEvent.PARAM_EXTRAS);
                 mUiManager.dispatchEventTask(extras);
                 break;
+            case DFServiceEvent.ACTION_ON_SCENE_ENTERED:
+                int bgRes = event.getExtras().getInt(DFServiceEvent.PARAM_SCENE_UI_BG);
+                mUiManager.onSceneEntered(bgRes);
+                break;
             case DFServiceEvent.ACTION_ON_SCENE_EXIT:
                 proactive = event.getExtras().getBoolean(DFServiceEvent.PARAM_IS_PROACTIVE);
                 mUiManager.onSceneExit(proactive);

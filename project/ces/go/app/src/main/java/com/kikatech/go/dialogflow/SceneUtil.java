@@ -35,6 +35,11 @@ public class SceneUtil {
     public static final int ICON_TELEPHONY = R.drawable.kika_ic_call;
     public static final int ICON_MUSIC = R.drawable.kika_ic_music;
 
+    public static final int BG_MSG = R.drawable.kika_bg_deco_msg;
+    public static final int BG_NAVIGATION = R.drawable.kika_bg_deco_navi;
+    public static final int BG_TELEPHONY = R.drawable.kika_bg_deco_call;
+    public static final int BG_MUSIC = R.drawable.kika_bg_deco_music;
+
 
     public static final String EXTRA_EVENT = "extra_event";
     public static final String EXTRA_ALERT = "extra_alert";

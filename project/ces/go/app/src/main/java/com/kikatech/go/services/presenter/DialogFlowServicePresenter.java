@@ -2,6 +2,7 @@ package com.kikatech.go.services.presenter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.kikatech.go.R;
@@ -21,15 +22,20 @@ import com.kikatech.go.dialogflow.help.HelpSceneManager;
 import com.kikatech.go.dialogflow.help.SceneHelp;
 import com.kikatech.go.dialogflow.im.IMSceneManager;
 import com.kikatech.go.dialogflow.im.reply.SceneReplyIM;
+import com.kikatech.go.dialogflow.im.send.SceneSendIM;
 import com.kikatech.go.dialogflow.model.DFServiceStatus;
 import com.kikatech.go.dialogflow.music.MusicSceneManager;
+import com.kikatech.go.dialogflow.music.SceneMusic;
 import com.kikatech.go.dialogflow.navigation.NaviSceneManager;
 import com.kikatech.go.dialogflow.navigation.NaviSceneUtil;
+import com.kikatech.go.dialogflow.navigation.SceneNavigation;
 import com.kikatech.go.dialogflow.sms.SmsSceneManager;
 import com.kikatech.go.dialogflow.sms.reply.SceneReplySms;
+import com.kikatech.go.dialogflow.sms.send.SceneSendSms;
 import com.kikatech.go.dialogflow.stop.SceneStopIntentManager;
 import com.kikatech.go.dialogflow.telephony.TelephonySceneManager;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
+import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
 import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.MusicForegroundService;
@@ -419,6 +425,39 @@ public class DialogFlowServicePresenter {
             serviceEvent.send();
             if (LogOnViewUtil.ENABLE_LOG_FILE) {
                 LogOnViewUtil.getIns().addLog(LogOnViewUtil.getIns().getDbgActionLog(action), "Parameters:" + extras);
+            }
+        }
+
+        @Override
+        public void onSceneEntered(String scene) {
+            if (TextUtils.isEmpty(scene)) {
+                return;
+            }
+            if (LogUtil.DEBUG) {
+                LogUtil.logd("SkTest", String.format("scene: %s", scene));
+            }
+            DFServiceEvent event = new DFServiceEvent(DFServiceEvent.ACTION_ON_SCENE_ENTERED);
+            switch (scene) {
+                case SceneNavigation.SCENE:
+                    event.putExtra(DFServiceEvent.PARAM_SCENE_UI_BG, SceneUtil.BG_NAVIGATION);
+                    event.send();
+                    break;
+                case SceneReplySms.SCENE:
+                case SceneSendSms.SCENE:
+                case SceneReplyIM.SCENE:
+                case SceneSendIM.SCENE:
+                    event.putExtra(DFServiceEvent.PARAM_SCENE_UI_BG, SceneUtil.BG_MSG);
+                    event.send();
+                    break;
+                case SceneIncoming.SCENE:
+                case SceneOutgoing.SCENE:
+                    event.putExtra(DFServiceEvent.PARAM_SCENE_UI_BG, SceneUtil.BG_TELEPHONY);
+                    event.send();
+                    break;
+                case SceneMusic.SCENE:
+                    event.putExtra(DFServiceEvent.PARAM_SCENE_UI_BG, SceneUtil.BG_MUSIC);
+                    event.send();
+                    break;
             }
         }
 

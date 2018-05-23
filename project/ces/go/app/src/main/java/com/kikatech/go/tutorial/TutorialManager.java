@@ -197,6 +197,10 @@ public class TutorialManager {
         }
 
         @Override
+        public void onSceneEntered(String scene) {
+        }
+
+        @Override
         public void onSceneExit(boolean proactive) {
         }
 

@@ -282,12 +282,17 @@ public class UiTaskManager {
         }
     }
 
+    public synchronized void onSceneEntered(int bgRes) {
+        updateSceneBackground(bgRes);
+    }
+
     public synchronized void onSceneExit(boolean proactive) {
         if (LogUtil.DEBUG) {
             LogUtil.logv(TAG, "onSceneExit");
         }
         clearQueue();
         if (proactive) {
+            updateSceneBackground(0);
             displayOptions(mDefaultOptionList);
             unlock();
         }
@@ -518,6 +523,19 @@ public class UiTaskManager {
             @Override
             public void run() {
                 layout.dismissTutorialDialog();
+            }
+        });
+    }
+
+    private void updateSceneBackground(final int bgRes) {
+        final GoLayout layout = mLayout;
+        if (layout == null) {
+            return;
+        }
+        layout.post(new Runnable() {
+            @Override
+            public void run() {
+                layout.updateSceneBackground(bgRes);
             }
         });
     }

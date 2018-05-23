@@ -23,6 +23,7 @@ public class DFServiceEvent extends BaseEvent {
     public static final String ACTION_ON_STAGE_PREPARED = "action_on_stage_prepared";
     public static final String ACTION_ON_STAGE_ACTION_DONE = "action_on_stage_action_done";
     public static final String ACTION_ON_STAGE_EVENT = "action_on_stage_event";
+    public static final String ACTION_ON_SCENE_ENTERED = "action_on_scene_entered";
     public static final String ACTION_ON_SCENE_EXIT = "action_on_scene_exit";
     public static final String ACTION_ON_AGENT_QUERY_START = "action_on_agent_query_start";
     public static final String ACTION_ON_AGENT_QUERY_COMPLETE = "action_on_agent_query_done";
@@ -44,6 +45,7 @@ public class DFServiceEvent extends BaseEvent {
     public static final String PARAM_ASR_CONFIG_JSON = "param_asr_config_json";
     public static final String PARAM_AUDIO_SOURCE = "param_audio_source";
     public static final String PARAM_IS_AUDIO_DATA_CORRECT = "param_is_audio_data_correct";
+    public static final String PARAM_SCENE_UI_BG = "param_scene_ui_bg";
 
     public static final String PARAM_DBG_INTENT_ACTION = "param_dbg_intent_action";
     public static final String PARAM_DBG_INTENT_PARMS = "param_dbg_intent_parms";
