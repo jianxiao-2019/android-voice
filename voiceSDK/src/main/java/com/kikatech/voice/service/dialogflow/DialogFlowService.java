@@ -32,6 +32,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     private VoiceConfiguration mConfig;
 
     private final IAgentQueryStatus mQueryStatusCallback;
+    private final ITtsStatusCallback mTtsStatusCallback;
 
     private DialogFlow mDialogFlow;
     private boolean mQueryAnyWords = false;
@@ -42,10 +43,12 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     private DialogFlowService(@NonNull Context ctx, @NonNull VoiceConfiguration conf,
                               @NonNull IServiceCallback callback,
-                              @NonNull IAgentQueryStatus queryStatus) {
+                              @NonNull IAgentQueryStatus queryStatus,
+                              @NonNull ITtsStatusCallback ttsStatusCallback) {
         super(ctx, callback);
 
         mQueryStatusCallback = queryStatus;
+        mTtsStatusCallback = ttsStatusCallback;
         mSceneManager = new SceneManager(mSceneCallback, mSceneQueryWordsStatusCallback);
         mConfig = conf;
     }
@@ -56,6 +59,13 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         initVoiceService(mConfig);
         initTts(mConfig);
         mServiceCallback.onInitComplete();
+    }
+
+    @Override
+    public void setTtsVolume(float volume) {
+        if (mTtsSource != null) {
+            mTtsSource.setVolume(volume);
+        }
     }
 
     @Override
@@ -148,8 +158,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     public static synchronized IDialogFlowService queryService(
             @NonNull Context ctx, @NonNull VoiceConfiguration conf,
-            @NonNull IServiceCallback callback, @NonNull IAgentQueryStatus queryStatus) {
-        return new DialogFlowService(ctx, conf, callback, queryStatus);
+            @NonNull IServiceCallback callback, @NonNull IAgentQueryStatus queryStatus,
+            @NonNull ITtsStatusCallback ttsStatusCallback) {
+        return new DialogFlowService(ctx, conf, callback, queryStatus, ttsStatusCallback);
     }
 
     @Override
@@ -252,6 +263,13 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     private final ISceneFeedback mSceneFeedback = new ISceneFeedback() {
         @Override
+        public void onTtsVolumeChanged(float volume) {
+            if (mTtsSource != null) {
+                mTtsSource.setVolume(volume);
+            }
+        }
+
+        @Override
         public void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, ISceneStageFeedback feedback) {
             mServiceCallback.onTextPairs(pairs, extras);
             tts(pairs, feedback);
@@ -337,6 +355,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
             if (listener != null) {
                 listener.onStageActionStart();
             }
+            mTtsStatusCallback.onStart();
         }
 
         @Override
@@ -352,6 +371,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
                         feedback.onStageActionDone(false);
                     }
                 });
+                mTtsStatusCallback.onStop();
             }
         }
 
@@ -368,6 +388,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
                         feedback.onStageActionDone(true);
                     }
                 });
+                mTtsStatusCallback.onStop();
             }
         }
 

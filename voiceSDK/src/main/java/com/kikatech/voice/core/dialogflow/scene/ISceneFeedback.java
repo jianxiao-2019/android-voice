@@ -8,6 +8,8 @@ import android.util.Pair;
  */
 
 public interface ISceneFeedback {
+    void onTtsVolumeChanged(float volume);
+
     void onTextPairs(Pair<String, Integer>[] pairs, Bundle extras, ISceneStageFeedback feedback);
 
     void onText(String text, Bundle extras, ISceneStageFeedback feedback);

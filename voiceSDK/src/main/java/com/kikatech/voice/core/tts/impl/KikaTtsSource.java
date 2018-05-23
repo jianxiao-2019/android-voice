@@ -33,6 +33,7 @@ public class KikaTtsSource implements TtsSource {
     private final TtsSource mBackupAndroidTts;
 
     private boolean mIsTtsInterrupted = false;
+    private float mVolume = INVALID_VOLUME;
 
     static class TtsInfo {
         private final String jsonString;
@@ -81,6 +82,12 @@ public class KikaTtsSource implements TtsSource {
         }
         mMediaPlayer.release();
         mBackupAndroidTts.close();
+    }
+
+    @Override
+    public void setVolume(float volume) {
+        mVolume = volume;
+        mBackupAndroidTts.setVolume(volume);
     }
 
     @Override
@@ -255,7 +262,6 @@ public class KikaTtsSource implements TtsSource {
                     }
                 }
             });
-            mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -273,6 +279,10 @@ public class KikaTtsSource implements TtsSource {
                     }
                 }
             });
+            mMediaPlayer.prepareAsync();
+            if (mVolume >= 0 && mVolume <= 1) {
+                mMediaPlayer.setVolume(mVolume, mVolume);
+            }
         } catch (Exception e) {
             if (Logger.DEBUG) {
                 Logger.printStackTrace(TAG, e.getMessage(), e);

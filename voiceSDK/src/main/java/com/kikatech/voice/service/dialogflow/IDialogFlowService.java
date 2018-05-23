@@ -62,7 +62,18 @@ public interface IDialogFlowService extends IDialogFlowVoiceService {
         void onError(Exception e);
     }
 
+    interface ITtsStatusCallback {
+        void onStart();
+
+        void onStop();
+    }
+
     void init();
+
+    /**
+     * @param volume range 0.0 to 1.0
+     */
+    void setTtsVolume(float volume);
 
     void registerScene(SceneBase scene);
 

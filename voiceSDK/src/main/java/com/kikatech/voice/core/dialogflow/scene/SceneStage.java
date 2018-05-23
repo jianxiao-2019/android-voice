@@ -77,6 +77,12 @@ public abstract class SceneStage implements ISceneStageFeedback, Serializable {
         onStageActionDone(false);
     }
 
+    protected void setTtsVolume(float volume) {
+        if (mFeedback != null) {
+            mFeedback.onTtsVolumeChanged(volume);
+        }
+    }
+
     protected void speak(String text) {
         speak(text, null);
     }

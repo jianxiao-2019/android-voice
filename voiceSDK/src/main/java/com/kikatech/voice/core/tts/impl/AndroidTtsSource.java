@@ -45,6 +45,7 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
     private TtsStateChangedListener mStateChangedListener;
     private final LinkedList<Pair<String, Integer>> mPlayList = new LinkedList<>();
     private int mPlayListSize;
+    private float mVolume = INVALID_VOLUME;
 
     private boolean mIsTtsInterrupted;
 
@@ -234,6 +235,11 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
     }
 
     @Override
+    public void setVolume(float volume) {
+        mVolume = volume;
+    }
+
+    @Override
     public void speak(final String text) {
         mPlayList.clear();
         mPlayListSize = 0;
@@ -293,6 +299,9 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
         HashMap<String, String> args = new HashMap<>();
         args.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, speakerUid);
         args.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(DEFAULT_STREAM));
+        if (mVolume >= 0 && mVolume <= 1) {
+            args.put(TextToSpeech.Engine.KEY_PARAM_VOLUME, String.valueOf(mVolume));
+        }
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, args);
     }
 
@@ -343,5 +352,9 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
 
     public Voice[] getVoice() {
         return mAvailableVoices;
+    }
+
+    private boolean isVolumeValid() {
+        return mVolume >= 0 && mVolume <= 1;
     }
 }

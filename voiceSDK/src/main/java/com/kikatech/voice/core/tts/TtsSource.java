@@ -8,6 +8,7 @@ import android.util.Pair;
  */
 
 public interface TtsSource {
+    int INVALID_VOLUME = -1;
 
     int SUPPORTED_VOICE_COUNT = 2;
     int TTS_SPEAKER_1 = 0;
@@ -33,6 +34,11 @@ public interface TtsSource {
     void init(Context context, OnTtsInitListener listener);
 
     void close();
+
+    /**
+     * @param volume range 0.0 to 1.0
+     */
+    void setVolume(float volume);
 
     void speak(String text);
 
