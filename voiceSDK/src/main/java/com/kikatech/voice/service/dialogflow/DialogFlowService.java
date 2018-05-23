@@ -412,6 +412,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     private final SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
         @Override
         public void onSceneEnter(String scene) {
+            mServiceCallback.onSceneEntered(scene);
         }
 
         @Override

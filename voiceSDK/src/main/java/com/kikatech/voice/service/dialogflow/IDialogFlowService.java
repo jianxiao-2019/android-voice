@@ -47,6 +47,8 @@ public interface IDialogFlowService extends IDialogFlowVoiceService {
 
         void onStageEvent(Bundle extras);
 
+        void onSceneEntered(String scene);
+
         void onSceneExit(boolean proactive);
 
         void onAsrConfigChange(AsrConfiguration asrConfig);
