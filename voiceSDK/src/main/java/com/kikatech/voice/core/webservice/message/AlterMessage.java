@@ -15,6 +15,7 @@ public class AlterMessage extends Message {
     public long cid;
     public int alterStart;  // 10
     public int alterEnd;    // 14
+    public int type;
 
     @Override
     protected void parseData(JSONObject dataObj) {
@@ -24,6 +25,8 @@ public class AlterMessage extends Message {
 
         alterStart = dataObj.optInt("alterStart");
         alterEnd = dataObj.optInt("alterEnd");
+
+        type = dataObj.optInt("type");
 
         cid = dataObj.optLong("cid");
         parseTextResults(dataObj.optJSONArray("transcripts"));
@@ -47,7 +50,7 @@ public class AlterMessage extends Message {
                     + "\ncontext <" + context + ">"
                     + "\naltered <" + altered + ">"
                     + "\nAt[" + alterStart + "," + alterEnd + "]"
-                    + "\n(" + cid + ")";
+                    + "\n(" + cid + ")(" + type + ")";
         } else {
             return super.toString();
         }
