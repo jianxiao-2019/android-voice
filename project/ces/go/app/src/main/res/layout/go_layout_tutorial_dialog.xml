@@ -61,7 +61,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textColor="#bccff0"
-            android:textSize="13dp"/>
+            android:textSize="14dp"/>
     </LinearLayout>
 
     <TextView
