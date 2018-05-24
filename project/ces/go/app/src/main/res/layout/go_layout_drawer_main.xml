@@ -66,8 +66,8 @@
                         android:layout_marginTop="15dp"
                         android:max="100"
                         android:progressBackgroundTint="@android:color/white"
-                        android:progressTint="@android:color/white"
-                        android:thumbTint="@color/drawer_item_text"/>
+                        android:progressTint="#7ca9f9"
+                        android:thumbTint="#3274e6"/>
 
                 </LinearLayout>
 

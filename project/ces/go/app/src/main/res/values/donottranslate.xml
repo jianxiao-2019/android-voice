@@ -330,14 +330,14 @@ and revisit this practice anytime in Settings."</string>
     <string name="dialog_common_confirm">"OK"</string>
     <string name="dialog_common_cancel">"Cancel"</string>
 
-    <string name="dialog_usb_detached_title">"Plug-in KikaGo Smart Mic"</string>
-    <string name="dialog_usb_detached_content">"Connect KikaGo Smart Mic to your phone face-up and adjust the phone faced you to get the proper voice recognition."</string>
+    <string name="dialog_usb_detached_title">"Plug in KikaGo Smart Mic"</string>
+    <string name="dialog_usb_detached_content">"Connect KikaGo Smart Mic to your phone with the front side facing you and turn the phone to you for better capture of your voice"</string>
     <string name="dialog_usb_detached_btn_no_kikago">"No KikaGo?"</string>
     <string name="dialog_usb_detached_btn_no_got_it">"Got it"</string>
 
     <string name="dialog_audio_record_err_hardware">"Please pull out KikaGo Smart Mic and plug-in to your phone again. If the problem persists, please contact us.
 kikago@kikatech.com"</string>
-    <string name="dialog_audio_record_err_microphone">"The microphone is in use for another app."</string>
+    <string name="dialog_audio_record_err_microphone">"Oops... seems like some apps are using your microphone at the same time. Please turn them off first and restart KikaGo."</string>
 
     <string name="dialog_update_app_title">"Update"</string>
     <string name="dialog_update_app_description">"We have a new version. Please update your KikaGo for a better experience!"</string>
