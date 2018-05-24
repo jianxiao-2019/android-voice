@@ -52,7 +52,7 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
     private UtteranceProgressListener mUtteranceProgressListener = new UtteranceProgressListener() {
         @Override
         public void onStart(String utteranceId) {
-            if (mPlayListSize == mPlayList.size() + 1) {
+            if (mPlayListSize == 0 || mPlayListSize == mPlayList.size() + 1) {
                 if (mStateChangedListener != null) {
                     mStateChangedListener.onTtsStart();
                 }
@@ -309,6 +309,9 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
     private void speakGreaterLollipop(@NonNull TextToSpeech tts, Voice voice, String text, String speakerUid) {
         Bundle args = new Bundle();
         args.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, DEFAULT_STREAM);
+        if (mVolume >= 0 && mVolume <= 1) {
+            args.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, mVolume);
+        }
         if (voice != null) {
             int voiceAvailable = tts.setVoice(voice);
             switch (voiceAvailable) {
