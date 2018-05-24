@@ -8,7 +8,8 @@ import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
-import com.kikatech.voice.core.webservice.WebSocket;
+import com.kikatech.voice.core.webservice.IWebSocket;
+import com.kikatech.voice.core.webservice.WebSocketUtil;
 import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.BosMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
@@ -62,7 +63,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private static final int MSG_VAD_EOS = 2;
 
     private VoiceConfiguration mConf;
-    private WebSocket mWebService;
+    private IWebSocket mWebService;
 
     private final WakeUpDetector mWakeUpDetector;
     private final VoiceRecorder mVoiceRecorder;
@@ -184,7 +185,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mMainThreadHandler = new Handler();
         mTimerHandler = new TimerHandler();
 
-        mWebService = WebSocket.openConnection(mWebSocketListener);
+        mWebService = WebSocketUtil.openConnection(mWebSocketListener);
         mWebService.connect(mConf);
 
         mVoiceRecorder.open();
@@ -406,7 +407,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mConf.updateAsrConfiguration(conf);
     }
 
-    private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
+    private IWebSocket.OnWebSocketListener mWebSocketListener = new IWebSocket.OnWebSocketListener() {
         @Override
         public void onMessage(final Message message) {
             if (mMainThreadHandler != null) {

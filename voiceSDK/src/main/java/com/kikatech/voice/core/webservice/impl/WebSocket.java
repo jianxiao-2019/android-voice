@@ -1,7 +1,8 @@
-package com.kikatech.voice.core.webservice;
+package com.kikatech.voice.core.webservice.impl;
 
 import android.text.TextUtils;
 
+import com.kikatech.voice.core.webservice.IWebSocket;
 import com.kikatech.voice.core.webservice.data.SendingData;
 import com.kikatech.voice.core.webservice.data.SendingDataByte;
 import com.kikatech.voice.core.webservice.data.SendingDataString;
@@ -29,15 +30,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.kikatech.voice.core.webservice.WebSocket.SocketState.CONNECTED;
-import static com.kikatech.voice.core.webservice.WebSocket.SocketState.CONNECTING;
-import static com.kikatech.voice.core.webservice.WebSocket.SocketState.DISCONNECTED;
+import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.CONNECTED;
+import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.CONNECTING;
+import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.DISCONNECTED;
 
 /**
  * Created by tianli on 17-10-28.
  */
 
-public class WebSocket {
+public class WebSocket implements IWebSocket {
     private static final String VERSION = "3";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
@@ -66,22 +67,11 @@ public class WebSocket {
         CONNECTED,
     }
 
-    public static WebSocket openConnection(OnWebSocketListener l) {
-        return new WebSocket(l);
-    }
-
-    public interface OnWebSocketListener {
-        void onMessage(Message message);
-
-        void onWebSocketClosed();
-
-        void onWebSocketError();
-    }
-
-    private WebSocket(OnWebSocketListener l) {
+    public WebSocket(OnWebSocketListener l) {
         mListener = l;
     }
 
+    @Override
     public void connect(VoiceConfiguration voiceConfiguration) {
         Logger.d("connect");
         if (mReleased.get()) {
@@ -142,6 +132,7 @@ public class WebSocket {
         Logger.d("------------------------------");
     }
 
+    @Override
     public void release() {
         Logger.d("release");
         if (mReleased.compareAndSet(false, true)) {
@@ -167,6 +158,7 @@ public class WebSocket {
         }
     }
 
+    @Override
     public void sendData(byte[] data) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");
@@ -185,6 +177,7 @@ public class WebSocket {
         });
     }
 
+    @Override
     public void sendCommand(final String command, final String payload) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore command ");
@@ -207,6 +200,7 @@ public class WebSocket {
         });
     }
 
+    @Override
     public boolean isConnected() {
         return mSocketState == CONNECTED;
     }
