@@ -479,7 +479,9 @@ public class FloatingUiManager extends BaseFloatingManager {
             LogUtil.logv(TAG, "handleStatusChanged: status: " + status.name());
         }
 
-        removeWakeUpTipView();
+        if (GoLayout.ViewStatus.STAND_BY_AWAKE.equals(status)) {
+            removeWakeUpTipView();
+        }
 
         mItemGMap.updateStatus(mContext, status);
     }
