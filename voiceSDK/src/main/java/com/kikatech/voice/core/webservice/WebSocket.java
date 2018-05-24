@@ -6,6 +6,8 @@ import com.kikatech.voice.core.webservice.data.SendingData;
 import com.kikatech.voice.core.webservice.data.SendingDataByte;
 import com.kikatech.voice.core.webservice.data.SendingDataString;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.helper.MsgHelper;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration.ConnectionConfiguration;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
@@ -52,8 +54,10 @@ public class WebSocket {
 
     private final LinkedList<SendingData> mSendBuffer = new LinkedList<>();
 
-    private ConnectionConfiguration mConf;
+    private VoiceConfiguration mVoiceConfiguration;
     private Timer mTimer;
+
+    private MsgHelper mMsgHelper = new MsgHelper();;
 
     private SocketState mSocketState = DISCONNECTED;
     enum SocketState {
@@ -78,12 +82,16 @@ public class WebSocket {
         mListener = l;
     }
 
-    public void connect(final ConnectionConfiguration conf) {
+    public void connect(VoiceConfiguration voiceConfiguration) {
         Logger.d("connect");
         if (mReleased.get()) {
             Logger.e("WebSocket already released, can not connect again");
             return;
         }
+        mVoiceConfiguration = voiceConfiguration;
+        mMsgHelper.registerMessage(mVoiceConfiguration);
+
+        final ConnectionConfiguration conf = voiceConfiguration.getConnectionConfiguration();
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -91,7 +99,6 @@ public class WebSocket {
                     Logger.w("WebSocket is connecting or it's already connected.");
                     return;
                 }
-                mConf = conf;
                 Map<String, String> httpHeaders = new HashMap<>();
                 httpHeaders.put("version", VERSION);
                 httpHeaders.put("sign", conf.sign);
@@ -156,6 +163,7 @@ public class WebSocket {
                     mSocketState = DISCONNECTED;
                 }
             });
+            mMsgHelper.unregisterMessage();
         }
     }
 
@@ -221,7 +229,7 @@ public class WebSocket {
     private Message handleMessage(String msg) {
         try {
             JSONObject json = new JSONObject(msg);
-            Message message = Message.create(json.optString("type", "NONE"));
+            Message message = mMsgHelper.create(json.optString("type", "NONE"));
             if (message != null) {
                 message.fromJson(json);
             }
@@ -298,7 +306,7 @@ public class WebSocket {
         if (!success) {
             mSendBuffer.add(data);
             if (mSocketState == DISCONNECTED) {
-                connect(mConf);
+                connect(mVoiceConfiguration);
             }
         }
     }
@@ -372,7 +380,7 @@ public class WebSocket {
             Logger.d("reconnect mReconnectTimes = " + mReconnectTimes);
             if (mReconnectTimes < MAX_RECONNECT_TIME && !mReleased.get()) {
                 mReconnectTimes++;
-                WebSocket.this.connect(mConf);
+                WebSocket.this.connect(mVoiceConfiguration);
                 return true;
             }
             return false;

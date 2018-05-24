@@ -185,34 +185,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mTimerHandler = new TimerHandler();
 
         mWebService = WebSocket.openConnection(mWebSocketListener);
-        mWebService.connect(mConf.getConnectionConfiguration());
+        mWebService.connect(mConf);
 
         mVoiceRecorder.open();
         EventBus.getDefault().register(this);
 
-        registerMessage();
-
         DebugUtil.updateCacheDir(mConf);
-    }
-
-    private void registerMessage() {
-        Message.register(Message.MSG_TYPE_INTERMEDIATE, IntermediateMessage.class);
-        Message.register(Message.MSG_TYPE_ASR, TextMessage.class);
-        Message.register(Message.MSG_TYPE_BOS, BosMessage.class);
-
-        Message.register(Message.MSG_TYPE_ALTER, AlterMessage.class);
-
-        AsrConfiguration asrConfiguration = mConf.getConnectionConfiguration().getAsrConfiguration();
-        if (asrConfiguration.getEmojiEnabled()) {
-            Message.register(Message.MSG_TYPE_EMOJI, EmojiRecommendMessage.class);
-        }
-        if (mConf.getIsSupportNBest()) {
-            Message.register(Message.MSG_TYPE_NBEST, NBestMessage.class);
-        }
-    }
-
-    private void unregisterMessage() {
-        Message.unregisterAll();
     }
 
     public void start() {
@@ -369,8 +347,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         if (mWakeUpDetector != null) {
             mWakeUpDetector.close();
         }
-
-        unregisterMessage();
 
         checkFiles();
     }
