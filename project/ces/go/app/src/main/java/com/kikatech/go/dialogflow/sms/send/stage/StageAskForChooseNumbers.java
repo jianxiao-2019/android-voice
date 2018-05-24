@@ -112,7 +112,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
         List<ContactManager.NumberType> numbers = getSmsContent().getPhoneNumbers();
         if (numbers.size() > 1) {
             Context context = mSceneBase.getContext();
-            String[] uiAndTtsText = SceneUtil.getOptionListCommon(context);
+            String[] uiAndTtsText = SceneUtil.getSmsChoiceNumber(context);
             if (uiAndTtsText.length > 0) {
                 Bundle args = new Bundle();
                 String uiText = uiAndTtsText[0];
@@ -129,8 +129,7 @@ public class StageAskForChooseNumbers extends BaseSendSmsStage {
                     optionList.add(new Option(display));
                 }
                 args.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
-                String speech = optionList.getTextToSpeak(ttsText);
-                speak(speech, args);
+                speak(ttsText, args);
             }
         } else {
             speak("Error, only one phone number");

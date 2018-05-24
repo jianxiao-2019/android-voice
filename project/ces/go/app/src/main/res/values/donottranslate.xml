@@ -140,6 +140,14 @@
         <item>"Hello, here's what you can do next: After the beep, you can start by saying one of the commands shown here like navigate. You can also say cancel to stop the conversation. If you’d like to see more commands, please check Frequently asked questions in Settings."</item>
     </string-array>
 
+    <string-array name="tts_call_choice_number">
+        <item>"Which number do you want to call? The first one or the second one?"</item>
+    </string-array>
+
+    <string-array name="tts_sms_choice_number">
+        <item>"Which number do you want to send to? The first one or the second one?"</item>
+    </string-array>
+
 
     <string name="tts_response_not_get">"I didn't get what you say."</string><!-- previous tts content -->
     <string-array name="tts_intent_unknown">
@@ -172,8 +180,6 @@
     <string name="tts_emoji_added">"Emoji added"</string>
 
     <string name="ui_option_list_title_common">"Which one?"</string>
-    <string name="tts_option_list_title_common">"Which one do you like?"</string>
-    <string name="tts_option_list_split_common">"or"</string>
 
     <string name="ui_stop_common">"Canceling conversation"</string>
     <string-array name="tts_stop_common">

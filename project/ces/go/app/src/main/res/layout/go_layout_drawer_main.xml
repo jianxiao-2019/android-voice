@@ -44,6 +44,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+
+                <!--Item Volume-->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/drawer_item_area_height"
@@ -68,6 +71,80 @@
                         android:progressBackgroundTint="@android:color/white"
                         android:progressTint="#7ca9f9"
                         android:thumbTint="#3274e6"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/drawer_underline_height"
+                    android:background="@color/drawer_underline"/>
+
+
+                <!--Item Mic-->
+
+                <LinearLayout
+                    android:id="@+id/drawer_item_mic"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/drawer_item_area_height"
+                    android:background="@drawable/selector_bg_drawer_item"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="35dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/selector_settings_ic_mic"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/drawer_item_mic_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-light"
+                            android:singleLine="true"
+                            android:text="@string/drawer_item_mic_status"
+                            android:textColor="@drawable/selector_text_drawer_item"
+                            android:textSize="@dimen/drawer_item_text_size"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/drawer_item_mic_status_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:fontFamily="sans-serif-light"
+                                android:singleLine="true"
+                                android:text="@string/drawer_item_mic_status_disconnected"
+                                android:textColor="@color/drawer_subtitle_text_disable"
+                                android:textSize="18dp"/>
+
+                            <TextView
+                                android:id="@+id/drawer_item_usb_data_status_error_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="6dp"
+                                android:ellipsize="end"
+                                android:fontFamily="sans-serif-light"
+                                android:singleLine="true"
+                                android:text="@string/drawer_item_mic_usb_data_status_error"
+                                android:textColor="#f66b6b"
+                                android:textSize="14dp"
+                                android:visibility="gone"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -163,80 +240,6 @@
                         android:text="@string/drawer_item_music"
                         android:textColor="@drawable/selector_text_drawer_item"
                         android:textSize="@dimen/drawer_item_text_size"/>
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/drawer_underline_height"
-                    android:background="@color/drawer_underline"/>
-
-
-                <!--Item Mic-->
-
-                <LinearLayout
-                    android:id="@+id/drawer_item_mic"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/drawer_item_area_height"
-                    android:background="@drawable/selector_bg_drawer_item"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="35dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/selector_settings_ic_mic"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="25dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/drawer_item_mic_status"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-light"
-                            android:singleLine="true"
-                            android:text="@string/drawer_item_mic_status"
-                            android:textColor="@drawable/selector_text_drawer_item"
-                            android:textSize="@dimen/drawer_item_text_size"/>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/drawer_item_mic_status_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:ellipsize="end"
-                                android:fontFamily="sans-serif-light"
-                                android:singleLine="true"
-                                android:text="@string/drawer_item_mic_status_disconnected"
-                                android:textColor="@color/drawer_subtitle_text_disable"
-                                android:textSize="18dp"/>
-
-                            <TextView
-                                android:id="@+id/drawer_item_usb_data_status_error_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="6dp"
-                                android:ellipsize="end"
-                                android:fontFamily="sans-serif-light"
-                                android:singleLine="true"
-                                android:text="@string/drawer_item_mic_usb_data_status_error"
-                                android:textColor="#f66b6b"
-                                android:textSize="14dp"
-                                android:visibility="gone"/>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
                 </LinearLayout>
 
                 <View

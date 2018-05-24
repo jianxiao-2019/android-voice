@@ -95,7 +95,7 @@ public class StageConfirmNumber extends StageOutgoing {
         if (mContact != null) {
             if (!mContact.phoneNumbers.isEmpty()) {
                 Context context = mSceneBase.getContext();
-                String[] uiAndTtsText = SceneUtil.getOptionListCommon(context);
+                String[] uiAndTtsText = SceneUtil.getCallChoiceNumber(context);
                 if (uiAndTtsText.length > 0) {
                     extras = new Bundle();
                     String uiText = uiAndTtsText[0];
@@ -113,7 +113,7 @@ public class StageConfirmNumber extends StageOutgoing {
                         mOptions.add(display);
                     }
                     extras.putParcelable(SceneUtil.EXTRA_OPTIONS_LIST, optionList);
-                    speech = optionList.getTextToSpeak(ttsText);
+                    speech = ttsText;
                 }
             }
         }

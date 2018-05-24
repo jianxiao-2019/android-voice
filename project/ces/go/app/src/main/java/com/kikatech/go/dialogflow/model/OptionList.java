@@ -1,7 +1,6 @@
 package com.kikatech.go.dialogflow.model;
 
 import android.os.Parcel;
-import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.SceneUtil;
 
@@ -64,29 +63,6 @@ public class OptionList extends UiModel {
 
     public boolean isDefaultList() {
         return isDefaultList;
-    }
-
-
-    public String getTextToSpeak(String title) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (!TextUtils.isEmpty(title)) {
-            stringBuilder.append(title).append("\n");
-        }
-        if (options != null && !options.isEmpty()) {
-            int LIST_SIZE = options.size();
-            Option option;
-            for (int i = 0; i < LIST_SIZE; i++) {
-                option = options.get(i);
-                if (option != null) {
-                    boolean isLast = (i == LIST_SIZE - 1);
-                    stringBuilder.append(option.getDisplayText());
-                    if (!isLast) {
-                        stringBuilder.append(" or ");
-                    }
-                }
-            }
-        }
-        return stringBuilder.toString();
     }
 
 

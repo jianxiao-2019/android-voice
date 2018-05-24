@@ -239,6 +239,20 @@ public class SceneUtil {
         return getStringFromArray(ttsArray);
     }
 
+    public static String[] getCallChoiceNumber(Context context) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_option_list_title_common);
+        String[] ttsArray = resource.getStringArray(R.array.tts_call_choice_number);
+        return new String[]{ui, getStringFromArray(ttsArray)};
+    }
+
+    public static String[] getSmsChoiceNumber(Context context) {
+        Resources resource = context.getResources();
+        String ui = resource.getString(R.string.ui_option_list_title_common);
+        String[] ttsArray = resource.getStringArray(R.array.tts_sms_choice_number);
+        return new String[]{ui, getStringFromArray(ttsArray)};
+    }
+
     public static String getResponseNotGet(Context context) {
         Resources resource = context.getResources();
         return resource.getString(R.string.tts_response_not_get);
@@ -311,14 +325,6 @@ public class SceneUtil {
     public static String getEmojiAdded(Context context) {
         Resources resource = context.getResources();
         return resource.getString(R.string.tts_emoji_added);
-    }
-
-    public static String[] getOptionListCommon(Context context) {
-        Resources resource = context.getResources();
-        String uiTitle = resource.getString(R.string.ui_option_list_title_common);
-        String ttsTitle = resource.getString(R.string.tts_option_list_title_common);
-        String ttsSplit = resource.getString(R.string.tts_option_list_split_common);
-        return new String[]{uiTitle, ttsTitle, ttsSplit};
     }
 
     public static String[] getStopCommon(Context context) {
