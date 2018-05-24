@@ -223,7 +223,7 @@ public class GlobalPref {
     }
 
     public float getSettingVolume() {
-        return sPref.getFloat(Key.KEY_SETTING_VOLUME, 1.0f);
+        return sPref.getFloat(Key.KEY_SETTING_VOLUME, 0.5f);
     }
 
 
