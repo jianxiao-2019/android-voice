@@ -13,6 +13,7 @@ android {
         jackOptions {
             enabled true
         }
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -40,6 +41,7 @@ dependencies {
     compile project(':voiceSDK')
     compile project(':wakeup')
     compile project(path: ':usb')
+    compile 'com.android.support:multidex:1.0.0'
 //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
 //    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 //    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
