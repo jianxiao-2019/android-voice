@@ -13,7 +13,7 @@ import com.kikatech.go.util.preference.GlobalPref;
 public class TipsHelper {
     private static final String TAG = "TipsHelper";
 
-    public static final int WAKE_UP_TIP_STICKY_COUNT = 28;
+    public static final int WAKE_UP_TIP_STICKY_COUNT = 7;
     public static final int WAKE_UP_TIP_TTS_COUNT = 1;
 
     public static synchronized void setFloatingWakeUpTipShowingCount(int count) {

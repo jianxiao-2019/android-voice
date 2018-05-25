@@ -138,7 +138,7 @@ public class FloatingUiManager extends BaseFloatingManager {
             mContainer.moveItem(mItemGMap, gmapX, gmapY);
             hideButtons();
 
-            updateItemOnUp(mItemWakeUpTip);
+            updateItemWakeUpTipOnUp();
             updateItemOnUp(mItemTip);
             updateItemOnUp(mItemAsrResult);
             updateItemOnUp(mItemMsg);
@@ -177,12 +177,23 @@ public class FloatingUiManager extends BaseFloatingManager {
         }
 
         private void updateItemOnUp(final WindowFloatingItem item) {
+            updateItemPosition(item, mItemGMap.getViewY());
+        }
+
+        private void updateItemWakeUpTipOnUp() {
+            int itemHeight = mItemWakeUpTip.getMeasuredHeight();
+            int gmapHeight = mItemGMap.getMeasuredHeight();
+            int y = mItemGMap.getViewY() + gmapHeight - itemHeight;
+            updateItemPosition(mItemWakeUpTip, y);
+        }
+
+        private void updateItemPosition(final WindowFloatingItem item, final int y) {
             mUiHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (mContainer.isViewAdded(item)) {
                         item.setGravity(Gravity.TOP | mGravity);
-                        item.setViewY(mItemGMap.getViewY());
+                        item.setViewY(y);
                         mContainer.requestLayout(item);
                     }
                     item.updateBackgroundRes(mGravity);
@@ -349,10 +360,13 @@ public class FloatingUiManager extends BaseFloatingManager {
     private synchronized void showWakeUpTipView(long displayMillis) {
         removeWakeUpTipView();
 
-        mItemWakeUpTip.setText("\"Hi Kika\"");
+        mItemWakeUpTip.setText("Say \"Hi Kika\"");
 
         int deviceWidth = getDeviceWidthByOrientation();
         int itemWidth = mItemWakeUpTip.getMeasuredWidth();
+        int itemHeight = mItemWakeUpTip.getMeasuredHeight();
+        int gmapHeight = mItemGMap.getMeasuredHeight();
+
 
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, String.format("deviceWidth: %1$s, itemWidth: %2$s", deviceWidth, itemWidth));
@@ -360,14 +374,14 @@ public class FloatingUiManager extends BaseFloatingManager {
 
         mItemWakeUpTip.setGravity(Gravity.TOP | mGravity);
         mItemWakeUpTip.setViewX(deviceWidth - itemWidth - ResolutionUtil.dp2px(mContext, 82));
-        mItemWakeUpTip.setViewY(mItemGMap.getViewY());
+        mItemWakeUpTip.setViewY(mItemGMap.getViewY() + gmapHeight - itemHeight);
         mItemWakeUpTip.setAnimation(android.R.style.Animation_Toast);
         mItemWakeUpTip.updateBackgroundRes(mGravity);
 
         mContainer.addItem(mItemWakeUpTip);
 
         if (displayMillis > 0) {
-            postDelay(removeTipViewRunnable, displayMillis);
+            postDelay(removeWakeUpTipViewRunnable, displayMillis);
         }
     }
 
