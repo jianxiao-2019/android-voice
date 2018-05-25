@@ -110,6 +110,8 @@ dependencies {
     protobuf 'com.google.protobuf:protobuf-java:3.3.1'
 
     // OAuth2 for Google API
+//    compile 'com.google.cloud:google-cloud-speech:0.46.0-alpha'
+//    compile 'com.google.api.grpc:grpc-google-cloud-speech-v1:0.0.7';
     compile('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
         exclude module: 'httpclient'
     }
