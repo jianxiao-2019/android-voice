@@ -21,6 +21,10 @@ public interface IWebSocket {
 
     void release();
 
+    void startListening();
+
+    void stopListening();
+
     void sendCommand(final String command, final String payload);
 
     void sendData(byte[] data);

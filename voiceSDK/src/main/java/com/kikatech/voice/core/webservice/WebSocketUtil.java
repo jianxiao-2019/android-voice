@@ -1,5 +1,6 @@
 package com.kikatech.voice.core.webservice;
 
+import com.kikatech.voice.core.webservice.impl.GoogleApi;
 import com.kikatech.voice.core.webservice.impl.WebSocket;
 
 /**
@@ -9,6 +10,6 @@ import com.kikatech.voice.core.webservice.impl.WebSocket;
 public class WebSocketUtil {
 
     public static IWebSocket openConnection(WebSocket.OnWebSocketListener l) {
-        return new WebSocket(l);
+        return new GoogleApi(l);
     }
 }

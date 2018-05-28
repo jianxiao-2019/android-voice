@@ -159,6 +159,16 @@ public class WebSocket implements IWebSocket {
     }
 
     @Override
+    public void startListening() {
+
+    }
+
+    @Override
+    public void stopListening() {
+
+    }
+
+    @Override
     public void sendData(byte[] data) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");

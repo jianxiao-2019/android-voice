@@ -25,19 +25,19 @@ public class VoicePathConnector {
 
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
 
-        IDataPath dataPath = new SpeexEncoder(wrapFileWriter(finalPath, conf, "_speex"));
-        if (conf.getIsClientVadEnabled()) {
-            dataPath = new VoiceDetector(dataPath);
-        }
+//        IDataPath dataPath = new SpeexEncoder(wrapFileWriter(finalPath, conf, "_speex"));
+//        if (conf.getIsClientVadEnabled()) {
+//            dataPath = new VoiceDetector(dataPath);
+//        }
 
         WakeUpDetector wakeUpDetector = conf.getWakeUpDetector();
         if (wakeUpDetector != null) {
 //            wakeUpDetector.setNextDataPath(wrapFileWriter(dataPath, conf, "_AWAKE"));
-            wakeUpDetector.setNextDataPath(dataPath);
-            dataPath = wakeUpDetector.getDataPath();
+//            wakeUpDetector.setNextDataPath(dataPath);
+//            dataPath = wakeUpDetector.getDataPath();
         }
 
-        dataPath = wrapFileWriter(dataPath, conf, isUsbVoiceSource ? "_NC" : "_SRC");
+        IDataPath dataPath = wrapFileWriter(finalPath, conf, isUsbVoiceSource ? "_NC" : "_SRC");
         if (Logger.DEBUG) {
             dataPath.dump();
         }

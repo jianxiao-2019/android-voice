@@ -15,6 +15,13 @@ public class IntermediateMessage extends Message {
     public String engine;       // asr engine
     public long cid;          // conversation id
 
+    public IntermediateMessage(int state, String text, String engine, long cid) {
+        this.state = state;
+        this.text = text;
+        this.engine = engine;
+        this.cid = cid;
+    }
+
     @Override
     protected void parseData(JSONObject dataObj) {
         state = dataObj.optInt("state");

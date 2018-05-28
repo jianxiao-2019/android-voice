@@ -534,6 +534,22 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         @Override
+        public void start() {
+            super.start();
+            if (mWebService != null) {
+                mWebService.startListening();
+            }
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            if (mWebService != null) {
+                mWebService.stopListening();
+            }
+        }
+
+        @Override
         public void onData(byte[] data, int length) {
             Logger.v("[VoiceDataSender] onData");
             if (mWebService != null) {

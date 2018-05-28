@@ -17,6 +17,13 @@ public class TextMessage extends Message {
     public TextMessage() {
     }
 
+    public TextMessage(int state, String[] text, String engine, long cid) {
+        this.state = state;
+        this.text = text;
+        this.engine = engine;
+        this.cid = cid;
+    }
+
     public TextMessage(IntermediateMessage intermediateMessage) {
         if (intermediateMessage != null) {
             this.state = intermediateMessage.state;
