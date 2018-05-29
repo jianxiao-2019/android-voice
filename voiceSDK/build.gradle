@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.google.protobuf'
 
 android {
     compileSdkVersion 25
@@ -54,6 +55,36 @@ def isRelease() {
 
 apply from: 'gradle-mvn-push.gradle'
 
+ext {
+    // supportLibraryVersion = '25.4.0'
+    grpcVersion = '1.4.0'
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.3.0'
+    }
+    plugins {
+        javalite {
+            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
+        }
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                javalite {}
+                grpc {
+                    // Options added to --grpc_out
+                    option 'lite'
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -61,7 +92,7 @@ dependencies {
     })
     annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.7'
     compile 'com.bluelinelabs:logansquare:1.3.7'
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.kikatech.androidspeex:speex:1.5'
     compile 'org.java-websocket:Java-WebSocket:1.3.4'
@@ -70,6 +101,19 @@ dependencies {
     compile 'ai.api:libai:1.6.11'
     compile 'ai.api:sdk:2.0.7@aar'
     compile 'me.xdrop:fuzzywuzzy:1.1.9'
+
+    // gRPC
+    compile "io.grpc:grpc-okhttp:$grpcVersion"
+    compile "io.grpc:grpc-protobuf-lite:$grpcVersion"
+    compile "io.grpc:grpc-stub:$grpcVersion"
+    compile 'javax.annotation:javax.annotation-api:1.2'
+    protobuf 'com.google.protobuf:protobuf-java:3.3.1'
+
+    // OAuth2 for Google API
+    compile('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
+        exclude module: 'httpclient'
+    }
+
     testCompile 'junit:junit:4.12'
 }
 
