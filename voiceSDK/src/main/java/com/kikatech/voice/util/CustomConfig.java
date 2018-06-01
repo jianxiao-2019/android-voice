@@ -86,7 +86,7 @@ public class CustomConfig {
 
     private static String __getSensitivity() throws JSONException, IOException {
         String sen = DEFAULT_SNOWBOY_SENSITIVITY;
-        if (Logger.DEBUG) {
+//        if (Logger.DEBUG) {
             File config = getConfigFile(CONFIG_FILE_SNOWBOY);
             if (Logger.DEBUG)
                 Logger.i(TAG, "config file :" + config);
@@ -121,7 +121,7 @@ public class CustomConfig {
                         Logger.i(TAG, CONFIG_FILE_SNOWBOY + " :" + jsonConfig);
                 }
             }
-        }
+//        }
         if (Logger.DEBUG)
             Logger.i(TAG, "Snowboy sensitivity : " + sen);
         return sen;
