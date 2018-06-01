@@ -60,7 +60,7 @@ public class KikaGoVoiceSource implements IVoiceSource {
         void onCurrentDB(int curDB);
     }
 
-    private IUsbDataSource.OnDataListener mOnDataListener = new IUsbDataSource.OnDataListener () {
+    private IUsbDataSource.OnDataListener mOnDataListener = new IUsbDataSource.OnDataListener() {
         @Override
         public void onData(byte[] data, int length) {
             byte[] leftResult = new byte[length / 2];
@@ -107,7 +107,7 @@ public class KikaGoVoiceSource implements IVoiceSource {
         mUsbDataSource = source;
         mUsbDataSource.setOnDataListener(mOnDataListener);
 
-        mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.TYPE_NOISC_CANCELLATION);
+        mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.BufferType.STEREO_TO_MONO);
 
         mDbUtil = new DbUtil();
         mDbUtil.setDbCallback(mDbCallback);
@@ -181,6 +181,12 @@ public class KikaGoVoiceSource implements IVoiceSource {
     @Override
     public int getBufferSize() {
         return KikaNcBuffer.BUFFER_SIZE;
+    }
+
+    public void updateBufferType(@KikaBuffer.BufferType int type) {
+        mKikaBuffer.close();
+        mKikaBuffer = KikaBuffer.getKikaBuffer(type);
+        mKikaBuffer.create();
     }
 
     public void setNoiseCancellationParameters(int mode, int value) {

@@ -5,6 +5,7 @@ import android.support.annotation.IntDef;
 
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.usb.IUsbAudioListener;
+import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.usb.UsbAudioService;
 
@@ -127,6 +128,18 @@ public class VoiceSourceHelper {
 
     public synchronized KikaGoVoiceSource getUsbVoiceSource() {
         return mUsbVoiceSource;
+    }
+
+    public synchronized void enableNoiseCancellation() {
+        if (mUsbVoiceSource != null) {
+            mUsbVoiceSource.updateBufferType(KikaBuffer.BufferType.NOISE_CANCELLATION);
+        }
+    }
+
+    public synchronized void disableNoiseCancellation() {
+        if (mUsbVoiceSource != null) {
+            mUsbVoiceSource.updateBufferType(KikaBuffer.BufferType.STEREO_TO_MONO);
+        }
     }
 
     public synchronized void usbVolumeUp() {
