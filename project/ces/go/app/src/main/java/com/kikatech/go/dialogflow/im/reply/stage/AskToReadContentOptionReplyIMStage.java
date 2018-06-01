@@ -49,8 +49,9 @@ public class AskToReadContentOptionReplyIMStage extends BaseReplyIMStage {
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getAskReadMsg(context);
         if (uiAndTtsText.length > 0) {
+            String[] alignments = SceneUtil.getAlignmentCommon(context);
+            requestAsrAlignment(alignments);
             String[] options = SceneUtil.getOptionsCommon(context);
-            requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);

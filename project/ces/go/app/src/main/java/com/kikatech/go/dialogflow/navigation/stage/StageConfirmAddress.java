@@ -73,8 +73,9 @@ public class StageConfirmAddress extends BaseNaviStage {
         boolean isAppForeground = KikaMultiDexApplication.isApplicationInForeground();
         String[] uiAndTtsText = isAppForeground ? SceneUtil.getConfirmAddress(context, mUserInput) : SceneUtil.getConfirmAddressFloating(context, mUserInput);
         if (uiAndTtsText.length > 0) {
+            String[] alignments = SceneUtil.getAlignmentCommon(context);
+            requestAsrAlignment(alignments);
             String[] options = SceneUtil.getOptionsCommon2(context);
-            requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             OptionList optionList = new OptionList(OptionList.REQUEST_TYPE_TEXT);

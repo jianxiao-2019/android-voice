@@ -344,6 +344,11 @@ public class SceneUtil {
         return resource.getStringArray(R.array.options_common_2);
     }
 
+    public static String[] getAlignmentCommon(Context context) {
+        Resources resources = context.getResources();
+        return resources.getStringArray(R.array.alignment_common);
+    }
+
     private static String tryFormat(String string, Object... variables) {
         try {
             return String.format(string, variables);

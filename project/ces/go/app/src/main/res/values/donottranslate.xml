@@ -198,6 +198,13 @@
         <item>"Cancel"</item>
     </string-array>
 
+    <string-array name="alignment_common">
+        <item>"Yes"</item>
+        <item>"No"</item>
+        <item>"OK"</item>
+        <item>"Change"</item>
+        <item>"Cancel"</item>
+    </string-array>
 
     <string-array name="feature_highlight_titles">
         <item>"KikaGo"</item>
