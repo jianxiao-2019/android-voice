@@ -67,8 +67,9 @@ public class StageConfirmName extends StageOutgoing {
         Context context = mSceneBase.getContext();
         String[] uiAndTtsText = SceneUtil.getConfirmContact(context, mContact.displayName);
         if (uiAndTtsText.length > 0) {
+            String[] alignments = SceneUtil.getAlignmentCommon(context);
+            requestAsrAlignment(alignments);
             String[] options = SceneUtil.getOptionsCommon(context);
-            requestAsrAlignment(options);
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
             ContactOptionList contactOptionList = new ContactOptionList(OptionList.REQUEST_TYPE_TEXT);
