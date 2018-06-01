@@ -15,8 +15,6 @@ import lib.android.anc.NoiseCancellation;
 
 public class KikaNcBuffer extends KikaBuffer {
 
-    public static final int BUFFER_SIZE = 512;
-
     public static final int CONTROL_ANGLE = 0;
     public static final int CONTROL_NC = 1;
     public static final int CONTROL_MODE = 2;

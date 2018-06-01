@@ -125,6 +125,7 @@ public class DialogFlowServicePresenter {
                 LogUtil.log(TAG, "onWakeUp, scene:" + scene);
             }
             mDFServiceStatus.setAwake(true);
+            mVoiceSourceHelper.enableNoiseCancellation();
             MusicForegroundService.pauseMusic();
             String action = DFServiceEvent.ACTION_ON_WAKE_UP;
             DFServiceEvent event = new DFServiceEvent(action);
@@ -161,6 +162,7 @@ public class DialogFlowServicePresenter {
                 LogUtil.log(TAG, "onSleep");
             }
             mDFServiceStatus.setAwake(false);
+            mVoiceSourceHelper.disableNoiseCancellation();
             if (mDialogFlowService != null) {
                 mDialogFlowService.startListening(-1);
             }
