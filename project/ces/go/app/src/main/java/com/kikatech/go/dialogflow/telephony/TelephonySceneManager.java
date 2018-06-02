@@ -60,7 +60,7 @@ public class TelephonySceneManager extends BaseSceneManager {
 
         @Override
         public void onOutgoingCallEnded() {
-
+            TelephonyServiceManager.getIns().turnOffSpeaker(mContext);
         }
     };
 }
