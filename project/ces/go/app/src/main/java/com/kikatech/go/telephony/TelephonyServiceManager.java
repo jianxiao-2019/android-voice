@@ -60,16 +60,25 @@ public class TelephonyServiceManager {
 
 
     public void turnOnSpeaker(Context context) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "turnOnSpeaker");
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "turnOnSpeaker");
+        }
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+        if (audioManager == null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "audioManager is null");
+            }
+            return;
+        }
 
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
 
         if (!audioManager.isSpeakerphoneOn()) {
             audioManager.setSpeakerphoneOn(true);
             /*
-			audioManager.setStreamVolume( AudioManager.STREAM_VOICE_CALL,
+            audioManager.setStreamVolume( AudioManager.STREAM_VOICE_CALL,
 										  audioManager.getStreamMaxVolume( AudioManager.STREAM_VOICE_CALL ),
 										  AudioManager.STREAM_VOICE_CALL );
 										  */
@@ -77,15 +86,26 @@ public class TelephonyServiceManager {
     }
 
     public void turnOffSpeaker(Context context) {
-        if (LogUtil.DEBUG) LogUtil.log(TAG, "turnOffSpeaker");
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "turnOffSpeaker");
+        }
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+        if (audioManager == null) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "audioManager is null");
+            }
+            return;
+        }
 
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
 
         if (audioManager.isSpeakerphoneOn()) {
             audioManager.setSpeakerphoneOn(false);
         }
+
+        audioManager.setMode(AudioManager.MODE_NORMAL);
     }
 
     public boolean isSpeakerOn(Context context) {
