@@ -111,12 +111,18 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
 
     DialogFlowVoiceService(@NonNull Context ctx, @NonNull IDialogFlowService.IServiceCallback callback) {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService constructor");
+        }
         mContext = ctx;
         mServiceCallback = callback;
     }
 
 
     void initVoiceService(@NonNull VoiceConfiguration conf) {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService initVoiceService");
+        }
         if (mVoiceService != null) {
             mVoiceService.destroy();
             mVoiceService = null;
@@ -136,7 +142,7 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
         mServiceCallback.onRecorderSourceUpdate();
 
         if (Logger.DEBUG) {
-            Logger.i(TAG, "idle VoiceService ... Done");
+            Logger.i(TAG, "DialogFlowVoiceService initVoiceService ... Done");
         }
     }
 
@@ -175,36 +181,66 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
     @Override
     public synchronized void startListening() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService startListening");
+        }
         if (mVoiceService != null) {
             mVoiceService.start();
+        }
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService startListening ... Done");
         }
     }
 
     @Override
     public void startListening(int bosDuration) {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, String.format("DialogFlowVoiceService startListening, bosDuration: %s ", bosDuration));
+        }
         if (mVoiceService != null) {
             mVoiceService.start(bosDuration);
+        }
+        if (Logger.DEBUG) {
+            Logger.i(TAG, String.format("DialogFlowVoiceService startListening, bosDuration: %s ... Done", bosDuration));
         }
     }
 
     @Override
     public synchronized void stopListening() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService stopListening");
+        }
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.NORMAL);
+        }
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService stopListening ... Done");
         }
     }
 
     @Override
     public synchronized void completeListening() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService completeListening");
+        }
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.COMPLETE);
+        }
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService completeListening ... Done");
         }
     }
 
     @Override
     public synchronized void cancelListening() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService cancelListening");
+        }
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.CANCEL);
+        }
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService cancelListening ... Done");
         }
     }
 
@@ -243,9 +279,15 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
     @Override
     public synchronized void releaseVoiceService() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService releaseVoiceService");
+        }
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.CANCEL);
             mVoiceService.destroy();
+        }
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "DialogFlowVoiceService releaseVoiceService ... Done");
         }
     }
 }

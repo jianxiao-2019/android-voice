@@ -115,6 +115,10 @@ public class VoiceRecorder {
 
         @Override
         public void run() {
+            if (!mIsRunning) {
+                Logger.v("terminate");
+                return;
+            }
             Logger.v(VoiceRecorder.this + " [prepare]");
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
             
