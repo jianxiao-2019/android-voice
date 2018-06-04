@@ -720,6 +720,10 @@ public class MainActivity extends AppCompatActivity implements
         mVoiceService.setVoiceRecognitionListener(this);
         mVoiceService.setVoiceDataListener(this);
         mVoiceService.create();
+
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource.updateFileWriter();
+        }
     }
 
     @Override

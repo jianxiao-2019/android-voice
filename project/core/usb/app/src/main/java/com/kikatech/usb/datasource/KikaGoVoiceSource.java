@@ -113,7 +113,13 @@ public class KikaGoVoiceSource implements IVoiceSource {
         mDbUtil = new DbUtil();
         mDbUtil.setDbCallback(mDbCallback);
 
-        mFileWriter = DebugUtil.isDebug() ? new FileWriter("_USB", null) : null;
+        updateFileWriter();
+    }
+
+    public void updateFileWriter() {
+        if (mFileWriter == null) {
+            mFileWriter = DebugUtil.isDebug() ? new FileWriter("_USB", null) : null;
+        }
     }
 
     @Override
