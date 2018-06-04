@@ -111,10 +111,16 @@ public class SnowBoyDetector extends WakeUpDetector {
                     // sendMessage(MsgEnum.MSG_ACTIVE, null);
                     // Log.i("Snowboy: ", "Hotword " + Integer.toString(result) + " detected!");
                     // player.start();
-                    if (Logger.DEBUG) Logger.i(TAG, "checkWakeUpCommand result wake up");
+                    if (Logger.DEBUG) {
+                        Logger.i(TAG, "checkWakeUpCommand result wake up");
+                    }
                     isAwake = true;
                     if (mListener != null) {
                         mListener.onDetected();
+                    } else {
+                        if (Logger.DEBUG) {
+                            Logger.w(TAG, "mListener::OnHotWordDetectListener is null");
+                        }
                     }
                 }
                 break;
@@ -169,17 +175,25 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     @Override
     public void goSleep() {
+        if (Logger.DEBUG) {
+            Logger.d(TAG, "goSleep");
+        }
         isAwake = false;
     }
 
     @Override
     public void wakeUp() {
+        if (Logger.DEBUG) {
+            Logger.d(TAG, "wakeUp");
+        }
         isAwake = true;
     }
 
     @Override
     public synchronized void close() {
-        if (Logger.DEBUG) Logger.i(TAG, "close, mSnowboyDetect:" + mSnowboyDetect);
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "close, mSnowboyDetect:" + mSnowboyDetect);
+        }
         if (mSnowboyDetect != null) {
             mSnowboyDetect.delete();
             mSnowboyDetect = null;
@@ -194,7 +208,9 @@ public class SnowBoyDetector extends WakeUpDetector {
 
     @Override
     public synchronized void enableDetector(boolean enable) {
-        if (Logger.DEBUG) Logger.i(TAG, "enableDetector: " + enable);
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "enableDetector: " + enable);
+        }
         mEnableDetection = enable;
     }
 
