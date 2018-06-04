@@ -522,11 +522,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mVoiceWakeUpListener = listener;
     }
 
-    public void setVoiceDataListener(VoiceDataListener listener) {
-        mVoiceDataListener = listener;
-        mVoiceRecorder.setVoiceDataListener(listener);
-    }
-
     private class VoiceDataSender extends IDataPath {
 
         VoiceDataSender(IDataPath nextPath) {
