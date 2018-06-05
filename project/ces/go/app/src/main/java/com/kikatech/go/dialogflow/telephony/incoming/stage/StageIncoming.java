@@ -1,6 +1,7 @@
 package com.kikatech.go.dialogflow.telephony.incoming.stage;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.AsrConfigUtil;
 import com.kikatech.go.dialogflow.BaseSceneStage;
@@ -22,7 +23,11 @@ public class StageIncoming extends BaseSceneStage {
 
     public StageIncoming(SceneBase scene, ISceneFeedback feedback, String caller) {
         super(scene, feedback);
-        mCaller = caller;
+        if (TextUtils.isEmpty(caller)) {
+            mCaller = "Unknown number";
+        } else {
+            mCaller = caller;
+        }
     }
 
     @Override
