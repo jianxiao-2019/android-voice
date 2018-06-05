@@ -1,5 +1,7 @@
 package com.kikatech.voice.core.recorder.executor;
 
+import com.kikatech.voice.util.log.Logger;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +23,11 @@ public class AudioRecordExecutor extends BaseExecutor {
 
     private AudioRecordExecutor() {
         super();
+    }
+
+    @Override
+    protected boolean isLogAvailable() {
+        return Logger.DEBUG;
     }
 
     @Override
