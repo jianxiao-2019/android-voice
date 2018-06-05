@@ -2,7 +2,6 @@ package com.kikatech.voice.core.recorder;
 
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.recorder.executor.AudioRecordExecutor;
-import com.kikatech.voice.core.recorder.executor.IRunnable;
 import com.kikatech.voice.util.log.Logger;
 
 /**
@@ -57,16 +56,7 @@ public class VoiceRecorder {
             Logger.i(TAG, "open");
         }
         AudioRecordExecutor.getIns().cleanAll();
-        AudioRecordExecutor.getIns().execute(new IRunnable() {
-            @Override
-            public void cancel() {
-            }
-
-            @Override
-            public boolean isRunning() {
-                return false;
-            }
-
+        AudioRecordExecutor.getIns().execute(new Runnable() {
             @Override
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
@@ -111,16 +101,7 @@ public class VoiceRecorder {
         }
         stop();
         AudioRecordExecutor.getIns().cleanAll();
-        AudioRecordExecutor.getIns().execute(new IRunnable() {
-            @Override
-            public void cancel() {
-            }
-
-            @Override
-            public boolean isRunning() {
-                return false;
-            }
-
+        AudioRecordExecutor.getIns().execute(new Runnable() {
             @Override
             public void run() {
                 if (mVoiceSource != null) {

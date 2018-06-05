@@ -14,18 +14,22 @@ import java.util.concurrent.Future;
 abstract class BaseExecutor {
     private static final String TAG = "BaseExecutor";
 
+    protected abstract boolean isLogAvailable();
+
     protected abstract ExecutorService getExecutor();
 
     ExecutorService mExecutor;
 
-    private Map<IRunnable, Future> mTasks = new HashMap<>();
+    private Map<Runnable, Future> mTasks = new HashMap<>();
+
 
     BaseExecutor() {
         mExecutor = getExecutor();
     }
 
-    public synchronized void execute(IRunnable runnable) {
-        if (Logger.DEBUG) {
+
+    public synchronized void execute(Runnable runnable) {
+        if (isLogAvailable()) {
             Logger.d(TAG, String.format("execute: %s", runnable));
         }
         if (mExecutor == null) {
@@ -38,7 +42,7 @@ abstract class BaseExecutor {
         mTasks.put(runnable, task);
     }
 
-    public synchronized void remove(IRunnable runnable) {
+    public synchronized void remove(Runnable runnable) {
         if (Logger.DEBUG) {
             Logger.d(TAG, String.format("remove: %s", runnable));
         }
@@ -48,41 +52,8 @@ abstract class BaseExecutor {
             }
             return;
         }
-        cancel(runnable);
-        if (mTasks.containsKey(runnable)) {
-            mTasks.remove(runnable);
-        }
-    }
-
-    private synchronized void cancel(IRunnable runnable) {
-        if (Logger.DEBUG) {
-            Logger.d(TAG, String.format("cancel: %s", runnable));
-        }
-        if (mExecutor == null || runnable == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid executor");
-            }
-            return;
-        }
-        boolean isTaskRunning = runnable.isRunning();
-        if (Logger.DEBUG) {
-            Logger.d(TAG, String.format("isRunning: %s", isTaskRunning));
-        }
-        if (isTaskRunning) {
-            runnable.cancel();
-        } else {
-            Future task = mTasks.get(runnable);
-            if (task != null) {
-                boolean cancelled = task.cancel(true);
-                if (Logger.DEBUG) {
-                    Logger.d(TAG, String.format("try to cancel the task, cancelled: %s", cancelled));
-                }
-            } else {
-                if (Logger.DEBUG) {
-                    Logger.w(TAG, "error, task not found.");
-                }
-            }
-        }
+        __cancel(runnable);
+        __removeFromTaskMap(runnable);
     }
 
     public synchronized void cleanAll() {
@@ -96,10 +67,58 @@ abstract class BaseExecutor {
             return;
         }
         mExecutor.shutdown();
-        for (IRunnable runnable : mTasks.keySet()) {
-            cancel(runnable);
+        for (Runnable runnable : mTasks.keySet()) {
+            remove(runnable);
         }
         mTasks.clear();
         mExecutor = getExecutor();
     }
+
+
+    private synchronized void __cancel(Runnable runnable) {
+        if (Logger.DEBUG) {
+            Logger.d(TAG, String.format("cancel: %s", runnable));
+        }
+        if (mExecutor == null || runnable == null) {
+            if (Logger.DEBUG) {
+                Logger.w(TAG, "invalid executor");
+            }
+            return;
+        }
+        if (runnable instanceof IRunnable) {
+            IRunnable iRunnable = ((IRunnable) runnable);
+            boolean isTaskRunning = iRunnable.isRunning();
+            if (Logger.DEBUG) {
+                Logger.d(TAG, String.format("isRunning: %s", isTaskRunning));
+            }
+            if (isTaskRunning) {
+                iRunnable.cancel();
+            } else {
+                __cancelFuture(runnable);
+            }
+        } else {
+            __cancelFuture(runnable);
+        }
+    }
+
+    private synchronized void __cancelFuture(Runnable runnable) {
+        Future task = mTasks.get(runnable);
+        if (task != null) {
+            boolean cancelled = task.cancel(true);
+            if (Logger.DEBUG) {
+                Logger.d(TAG, String.format("try to cancel the task, cancelled: %s", cancelled));
+            }
+        } else {
+            if (Logger.DEBUG) {
+                Logger.w(TAG, "error, task not found.");
+            }
+        }
+    }
+
+    private synchronized void __removeFromTaskMap(Runnable runnable) {
+        if (mTasks.containsKey(runnable)) {
+            mTasks.remove(runnable);
+        }
+    }
+
 }

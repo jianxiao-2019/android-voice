@@ -3,6 +3,7 @@ package com.kikatech.voice.core.recorder;
 import android.support.annotation.IntDef;
 
 import com.kikatech.voice.core.framework.IDataPath;
+import com.kikatech.voice.core.recorder.executor.DataPathExecutor;
 import com.kikatech.voice.core.recorder.executor.IRunnable;
 import com.kikatech.voice.util.log.Logger;
 
@@ -41,6 +42,8 @@ public class AudioRecordTask implements IRunnable {
     private IVoiceSource mVoiceSource;
     private IDataPath mDataPath;
     private IRecordingListener mListener;
+
+    private final DataPathExecutor mDataPathExecutor = new DataPathExecutor();
 
     @RecordingState
     private int mStatus;
@@ -89,7 +92,12 @@ public class AudioRecordTask implements IRunnable {
             final int readSize = mVoiceSource.read(audioData, 0, BUFFER_SIZE);
 
             if (readSize > 0) {
-                mDataPath.onData(audioData, readSize);
+                mDataPathExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDataPath.onData(audioData, readSize);
+                    }
+                });
                 mFailCount = 0;
             } else {
                 if (Logger.DEBUG) {
@@ -123,7 +131,12 @@ public class AudioRecordTask implements IRunnable {
             mVoiceSource.start();
         }
         if (mDataPath != null) {
-            mDataPath.start();
+            mDataPathExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mDataPath.start();
+                }
+            });
         }
     }
 
@@ -132,8 +145,14 @@ public class AudioRecordTask implements IRunnable {
         if (mVoiceSource != null) {
             mVoiceSource.stop();
         }
+        mDataPathExecutor.cleanAll();
         if (mDataPath != null) {
-            mDataPath.stop();
+            mDataPathExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mDataPath.stop();
+                }
+            });
         }
     }
 
