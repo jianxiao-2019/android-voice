@@ -134,6 +134,7 @@ public class UiTaskManager {
 
     public synchronized void dispatchSleep() {
         sleep();
+        updateSceneBackground(0);
     }
 
     public synchronized void dispatchConnectionStatusChanged(boolean connected) {
