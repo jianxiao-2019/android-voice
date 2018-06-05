@@ -135,7 +135,8 @@ public class DialogFlowServicePresenter {
                 case SceneReplyIM.SCENE:
                 case SceneReplySms.SCENE:
                 case SceneIncoming.SCENE:
-                    startAsr();
+                    cancelAsr();
+//                    startAsr();
                     break;
                 default:
                     MediaPlayerUtil.getIns().playAlert(mContext, R.raw.alert_dot, new MediaPlayerUtil.IPlayStatusListener() {

@@ -26,7 +26,8 @@ public class StageIncoming extends BaseSceneStage {
     }
 
     @Override
-    protected @AsrConfigUtil.ASRMode int getAsrMode() {
+    protected @AsrConfigUtil.ASRMode
+    int getAsrMode() {
         return AsrConfigUtil.ASR_MODE_SHORT_COMMAND;
     }
 
@@ -56,6 +57,7 @@ public class StageIncoming extends BaseSceneStage {
     public void action() {
         AudioManagerUtil.getIns().muteRing();
         String[] uiAndTtsText = SceneUtil.getAskActionForIncoming(mSceneBase.getContext(), mCaller);
+        requestAsrAlignment(new String[]{"answer", "reject", "ignore"});
         if (uiAndTtsText.length > 0) {
             String uiText = uiAndTtsText[0];
             String ttsText = uiAndTtsText[1];
