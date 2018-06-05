@@ -1,6 +1,7 @@
 package com.kikatech.go.services;
 
 import android.annotation.SuppressLint;
+import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -28,6 +29,7 @@ import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.util.ImageUtil;
 import com.kikatech.go.util.IntentUtil;
+import com.kikatech.go.util.KeyguardUtil;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.NetworkUtil;
@@ -263,18 +265,31 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             if (TextUtils.isEmpty(action)) {
                 return;
             }
+            boolean isScreenLocked;
             switch (action) {
+                case Intent.ACTION_SCREEN_ON:
+                    isScreenLocked = KeyguardUtil.isScreenLocked(DialogFlowForegroundService.this);
+                    if (LogUtil.DEBUG) {
+                        LogUtil.log(TAG, "onScreenOn");
+                        LogUtil.logv(TAG, String.format("isScreenLocked: %s", isScreenLocked));
+                    }
+                    break;
                 case Intent.ACTION_SCREEN_OFF:
+                    isScreenLocked = KeyguardUtil.isScreenLocked(DialogFlowForegroundService.this);
                     if (LogUtil.DEBUG) {
                         LogUtil.log(TAG, "onScreenOff");
+                        LogUtil.logv(TAG, String.format("isScreenLocked: %s", isScreenLocked));
                     }
-                    if (mDFPresenter != null) {
-                        mDFPresenter.doOnScreenLock();
+                    if (isScreenLocked) {
+                        if (mDFPresenter != null) {
+                            mDFPresenter.doOnScreenLock();
+                        }
                     }
                     break;
                 case Intent.ACTION_USER_PRESENT:
                     if (LogUtil.DEBUG) {
                         LogUtil.log(TAG, "onScreenUnlock");
+                        LogUtil.logv(TAG, String.format("isScreenLocked: %s", KeyguardUtil.isScreenLocked(DialogFlowForegroundService.this)));
                     }
                     if (mDFPresenter != null) {
                         mDFPresenter.doOnScreenUnlock();
@@ -414,6 +429,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
         try {
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_USER_PRESENT);
+            filter.addAction(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
             filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(mReceiver, filter);
