@@ -113,6 +113,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     @Override
     public void onDetected() {
         Logger.d("onDetected");
+        startVadBosTimer();
         if (mMainThreadHandler != null) {
             mMainThreadHandler.post(new Runnable() {
                 @Override
@@ -125,7 +126,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         } else {
             Logger.d("Don't invoke this method after destroyed.");
         }
-        startVadBosTimer();
     }
 
     public interface VoiceRecognitionListener {
@@ -320,11 +320,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         Logger.d("wake up");
         if (mWakeUpDetector != null && !mWakeUpDetector.isAwake()) {
             mWakeUpDetector.wakeUp();
+            startVadBosTimer();
             if (mVoiceWakeUpListener != null) {
                 mVoiceWakeUpListener.onWakeUp();
             }
         }
-        startVadBosTimer();
     }
 
     public void destroy() {
