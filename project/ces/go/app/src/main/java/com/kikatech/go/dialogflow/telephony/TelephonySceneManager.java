@@ -2,8 +2,10 @@ package com.kikatech.go.dialogflow.telephony;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.kikatech.go.dialogflow.BaseSceneManager;
+import com.kikatech.go.dialogflow.SceneUtil;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneActions;
 import com.kikatech.go.dialogflow.telephony.incoming.SceneIncoming;
 import com.kikatech.go.dialogflow.telephony.outgoing.SceneOutgoing;
@@ -44,7 +46,7 @@ public class TelephonySceneManager extends BaseSceneManager {
             mService.resetContexts();
             mService.stopListening();
             mService.wakeUp(SceneIncoming.SCENE);
-            String incoming = String.format(SceneActions.KIKA_PROCESS_INCOMING_CALL, phoneNumber);
+            String incoming = String.format(SceneActions.KIKA_PROCESS_INCOMING_CALL, TextUtils.isEmpty(phoneNumber) ? SceneUtil.UNKNOWN_CALLER : phoneNumber);
             mService.talk(incoming, false);
         }
 

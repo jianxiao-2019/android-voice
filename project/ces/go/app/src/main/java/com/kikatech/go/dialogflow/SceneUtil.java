@@ -19,6 +19,7 @@ import java.util.Random;
 public class SceneUtil {
     private static final String TAG = "SceneUtil";
 
+    public static final String UNKNOWN_CALLER = "Unknown number";
     public static final String EVENT_SYNONYM_RESULT = "event_synonym_result";
     public static final String EVENT_RECEIVE_MSG = "event_receive_msg";
     public static final String EVENT_DISPLAY_MSG_SENT = "event_display_msg_sent";

@@ -24,7 +24,7 @@ public class StageIncoming extends BaseSceneStage {
     public StageIncoming(SceneBase scene, ISceneFeedback feedback, String caller) {
         super(scene, feedback);
         if (TextUtils.isEmpty(caller)) {
-            mCaller = "Unknown number";
+            mCaller = SceneUtil.UNKNOWN_CALLER;
         } else {
             mCaller = caller;
         }
