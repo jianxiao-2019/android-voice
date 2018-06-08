@@ -74,6 +74,8 @@ public class LocalPlayBackFragment extends Fragment implements
 
     private Handler mUiHandler;
 
+    private String mItemStr = null;
+
     public static LocalPlayBackFragment getInstance(FragmentType fragmentType) {
         LocalPlayBackFragment fragment = new LocalPlayBackFragment();
         fragment.setFragmentType(fragmentType);
@@ -115,6 +117,7 @@ public class LocalPlayBackFragment extends Fragment implements
                     mResultAdapter.clearResults();
                     mResultAdapter.notifyDataSetChanged();
 
+                    writeOriginalFileNameToFile();
                     writeTimeToFile();
                     if (mTextView != null) {
                         mTextView.setText("starting.");
@@ -275,6 +278,7 @@ public class LocalPlayBackFragment extends Fragment implements
             @Override
             public void run() {
                 writeTimeToFile();
+                mItemStr = null;
                 mVoiceService.stop(VoiceService.StopType.NORMAL);
 
                 if (mTextView != null) {
@@ -293,6 +297,7 @@ public class LocalPlayBackFragment extends Fragment implements
                 return;
             }
             getLocalVoiceSource(mFragmentType).setTargetFile(path + itemStr);
+            mItemStr = itemStr;
         }
         if (mStartButton != null) {
             mStartButton.setEnabled(true);
@@ -328,5 +333,11 @@ public class LocalPlayBackFragment extends Fragment implements
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String currentDateAndTime = sdf.format(new Date());
         DebugUtil.logTextToFile("time", currentDateAndTime);
+    }
+
+    private void writeOriginalFileNameToFile(){
+        if (mItemStr != null && mItemStr.length() > 0) {
+            DebugUtil.logTextToFile("Original File", mItemStr);
+        }
     }
 }
