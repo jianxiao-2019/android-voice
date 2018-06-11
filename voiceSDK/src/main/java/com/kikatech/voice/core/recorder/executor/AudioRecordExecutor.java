@@ -12,16 +12,7 @@ import java.util.concurrent.Executors;
 public class AudioRecordExecutor extends BaseExecutor {
     private static final String TAG = "AudioRecordExecutor";
 
-    private static AudioRecordExecutor sIns;
-
-    public static synchronized AudioRecordExecutor getIns() {
-        if (sIns == null) {
-            sIns = new AudioRecordExecutor();
-        }
-        return sIns;
-    }
-
-    private AudioRecordExecutor() {
+    public AudioRecordExecutor() {
         super();
     }
 

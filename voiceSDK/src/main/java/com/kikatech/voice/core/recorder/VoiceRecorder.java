@@ -14,6 +14,8 @@ public class VoiceRecorder {
     public static final int ERR_OPEN_FAIL = 1;
     public static final int ERR_RECORD_FAIL = 2;
 
+    private final AudioRecordExecutor mAudioRecordExecutor = new AudioRecordExecutor();
+
     private final IDataPath mDataPath;
     private final IVoiceSource mVoiceSource;
     private AudioRecordTask mTask;
@@ -55,8 +57,7 @@ public class VoiceRecorder {
         if (Logger.DEBUG) {
             Logger.i(TAG, "open");
         }
-        AudioRecordExecutor.getIns().cleanAll();
-        AudioRecordExecutor.getIns().execute(new Runnable() {
+        mAudioRecordExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
@@ -79,10 +80,10 @@ public class VoiceRecorder {
             Logger.i(TAG, String.format("start, mTask: %s", mTask));
         }
         if (mTask != null) {
-            AudioRecordExecutor.getIns().remove(mTask);
+            mAudioRecordExecutor.remove(mTask);
         }
         mTask = new AudioRecordTask(mVoiceSource, mDataPath, mRecordingListener);
-        AudioRecordExecutor.getIns().execute(mTask);
+        mAudioRecordExecutor.execute(mTask);
     }
 
     public void stop() {
@@ -90,7 +91,7 @@ public class VoiceRecorder {
             Logger.i(TAG, String.format("stop, mTask: %s", mTask));
         }
         if (mTask != null) {
-            AudioRecordExecutor.getIns().remove(mTask);
+            mAudioRecordExecutor.remove(mTask);
             mTask = null;
         }
     }
@@ -100,8 +101,8 @@ public class VoiceRecorder {
             Logger.i(TAG, "close");
         }
         stop();
-        AudioRecordExecutor.getIns().cleanAll();
-        AudioRecordExecutor.getIns().execute(new Runnable() {
+        mAudioRecordExecutor.cleanAll();
+        mAudioRecordExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 if (mVoiceSource != null) {
