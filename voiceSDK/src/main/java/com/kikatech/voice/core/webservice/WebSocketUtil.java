@@ -1,7 +1,6 @@
 package com.kikatech.voice.core.webservice;
 
 import com.kikatech.voice.core.webservice.impl.GoogleApi;
-import com.kikatech.voice.core.webservice.impl.WebSocket;
 
 /**
  * Created by ryanlin on 2018/5/24.
@@ -9,7 +8,7 @@ import com.kikatech.voice.core.webservice.impl.WebSocket;
 
 public class WebSocketUtil {
 
-    public static IWebSocket openConnection(WebSocket.OnWebSocketListener l) {
+    public static IWebSocket openConnection(IWebSocket.OnWebSocketListener l) {
         return new GoogleApi(l);
     }
 }
