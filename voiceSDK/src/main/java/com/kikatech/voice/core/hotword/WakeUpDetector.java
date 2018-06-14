@@ -41,7 +41,9 @@ public abstract class WakeUpDetector {
 
         @Override
         public void start() {
-            super.start();
+            if (isAwake()) {
+                super.start();
+            }
             if (mFileWriter != null) {
                 mFileWriter.start();
             }

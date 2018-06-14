@@ -453,36 +453,36 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         @Override
-        public void onWebSocketClosed() {
-            Logger.d("[WebSocketListener] onWebSocketClosed");
-            if (mMainThreadHandler != null) {
-                mMainThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mIsStarting) {
-                            handleError(ERR_CONNECTION_ERROR);
-                        }
-                    }
-                });
-            } else {
-                Logger.d("Don't invoke this method after destroyed.");
+        public void onError(int errorCode) {
+            Logger.d(String.format("[WebSocketListener] onError: %s", errorCode));
+            if (mMainThreadHandler == null) {
+                Logger.w("Don't invoke this method after destroyed.");
+                return;
             }
-        }
-
-        @Override
-        public void onWebSocketError() {
-            Logger.d("[WebSocketListener] onWebSocketError");
-            if (mMainThreadHandler != null) {
-                mMainThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mIsStarting) {
-                            handleError(ERR_CONNECTION_ERROR);
+            switch (errorCode) {
+                case IWebSocket.WebSocketError.WEB_SOCKET_CLOSED:
+                    mMainThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mIsStarting) {
+                                handleError(ERR_CONNECTION_ERROR);
+                            }
                         }
-                    }
-                });
-            } else {
-                Logger.d("Don't invoke this method after destroyed.");
+                    });
+                    break;
+                case IWebSocket.WebSocketError.DATA_ERROR:
+                    mMainThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mIsStarting) {
+                                handleError(ERR_CONNECTION_ERROR);
+                            }
+                        }
+                    });
+                    break;
+                case IWebSocket.WebSocketError.EMPTY_RESULT:
+                    handleError(ERR_NO_SPEECH);
+                    break;
             }
         }
     };
@@ -523,7 +523,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         public void start() {
             super.start();
             if (mWebService != null) {
-                mWebService.startListening();
+                mWebService.onStart();
             }
         }
 
@@ -531,7 +531,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         public void stop() {
             super.stop();
             if (mWebService != null) {
-                mWebService.stopListening();
+                mWebService.onStop();
             }
         }
 

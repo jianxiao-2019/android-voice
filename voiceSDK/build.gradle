@@ -23,6 +23,12 @@ android {
             minifyEnabled false
         }
     }
+
+    configurations.all {
+        resolutionStrategy {
+            force "com.google.guava:guava:18.0"
+        }
+    }
 }
 
 def getVersionName(String versionName) {

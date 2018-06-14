@@ -8,7 +8,7 @@ import com.kikatech.voice.core.webservice.impl.GoogleApi;
 
 public class WebSocketUtil {
 
-    public static IWebSocket openConnection(IWebSocket.OnWebSocketListener l) {
-        return new GoogleApi(l);
+    public static IWebSocket openConnection(IWebSocket.OnWebSocketListener listener) {
+        return new GoogleApi(listener);
     }
 }

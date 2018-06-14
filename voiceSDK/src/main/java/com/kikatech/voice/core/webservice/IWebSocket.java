@@ -9,21 +9,25 @@ import com.kikatech.voice.service.conf.VoiceConfiguration;
 
 public interface IWebSocket {
 
+    @interface WebSocketError {
+        int WEB_SOCKET_CLOSED = 0;
+        int DATA_ERROR = 1;
+        int EMPTY_RESULT = 2;
+    }
+
     interface OnWebSocketListener {
         void onMessage(Message message);
 
-        void onWebSocketClosed();
-
-        void onWebSocketError();
+        void onError(@WebSocketError int errorCode);
     }
 
     void connect(VoiceConfiguration voiceConfiguration);
 
     void release();
 
-    void startListening();
+    void onStart();
 
-    void stopListening();
+    void onStop();
 
     void sendCommand(final String command, final String payload);
 

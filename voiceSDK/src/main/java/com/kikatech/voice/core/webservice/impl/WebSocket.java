@@ -2,15 +2,14 @@ package com.kikatech.voice.core.webservice.impl;
 
 import android.text.TextUtils;
 
-import com.kikatech.voice.core.webservice.IWebSocket;
 import com.kikatech.voice.core.webservice.data.SendingData;
 import com.kikatech.voice.core.webservice.data.SendingDataByte;
 import com.kikatech.voice.core.webservice.data.SendingDataString;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.helper.MsgHelper;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration.ConnectionConfiguration;
-import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 
 import org.java_websocket.client.WebSocketClient;
@@ -38,7 +37,7 @@ import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.DISC
  * Created by tianli on 17-10-28.
  */
 
-public class WebSocket implements IWebSocket {
+public class WebSocket extends BaseWebSocket {
     private static final String VERSION = "3";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
@@ -47,7 +46,6 @@ public class WebSocket implements IWebSocket {
     private static final int HEARTBEAT_DURATION = 10 * 1000;
 
     private VoiceWebSocketClient mClient;
-    private OnWebSocketListener mListener;
 
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mReleased = new AtomicBoolean(false);
@@ -58,17 +56,18 @@ public class WebSocket implements IWebSocket {
     private VoiceConfiguration mVoiceConfiguration;
     private Timer mTimer;
 
-    private MsgHelper mMsgHelper = new MsgHelper();;
+    private MsgHelper mMsgHelper = new MsgHelper();
 
     private SocketState mSocketState = DISCONNECTED;
+
     enum SocketState {
         DISCONNECTED,
         CONNECTING,
         CONNECTED,
     }
 
-    public WebSocket(OnWebSocketListener l) {
-        mListener = l;
+    public WebSocket(OnWebSocketListener listener) {
+        super(listener);
     }
 
     @Override
@@ -159,13 +158,11 @@ public class WebSocket implements IWebSocket {
     }
 
     @Override
-    public void startListening() {
-
+    public void onStart() {
     }
 
     @Override
-    public void stopListening() {
-
+    public void onStop() {
     }
 
     @Override
@@ -173,7 +170,7 @@ public class WebSocket implements IWebSocket {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");
             if (mListener != null) {
-                mListener.onWebSocketClosed();
+                mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
             }
             return;
         }
@@ -192,7 +189,7 @@ public class WebSocket implements IWebSocket {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore command ");
             if (mListener != null) {
-                mListener.onWebSocketClosed();
+                mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
             }
             return;
         }
@@ -359,7 +356,7 @@ public class WebSocket implements IWebSocket {
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
                 if (mListener != null) {
-                    mListener.onWebSocketClosed();
+                    mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
                 }
             }
         }
@@ -375,7 +372,7 @@ public class WebSocket implements IWebSocket {
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
                 if (mListener != null) {
-                    mListener.onWebSocketError();
+                    mListener.onError(WebSocketError.DATA_ERROR);
                 }
             }
         }

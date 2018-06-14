@@ -1,40 +1,35 @@
 package com.kikatech.voice.core.webservice.impl;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.util.Log;
-
-import com.kikatech.voice.core.webservice.IWebSocket;
-import com.kikatech.voice.core.webservice.message.IntermediateMessage;
-import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.core.webservice.message.TextMessage;
-import com.kikatech.voice.service.conf.VoiceConfiguration;
+import android.text.TextUtils;
 
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
-
-import com.google.auth.Credentials;
-import com.google.auth.oauth2.AccessToken;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.speech.v1.RecognitionAudio;
 import com.google.cloud.speech.v1.RecognitionConfig;
-import com.google.cloud.speech.v1.RecognizeRequest;
-import com.google.cloud.speech.v1.RecognizeResponse;
 import com.google.cloud.speech.v1.SpeechGrpc;
 import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
-import com.google.cloud.speech.v1.SpeechRecognitionResult;
 import com.google.cloud.speech.v1.StreamingRecognitionConfig;
 import com.google.cloud.speech.v1.StreamingRecognitionResult;
 import com.google.cloud.speech.v1.StreamingRecognizeRequest;
 import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
+import com.kikatech.voice.core.webservice.message.IntermediateMessage;
+import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
+import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.util.BackgroundThread;
 import com.kikatech.voice.util.log.Logger;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -50,109 +45,124 @@ import io.grpc.internal.DnsNameResolverProvider;
 import io.grpc.okhttp.OkHttpChannelProvider;
 import io.grpc.stub.StreamObserver;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created by ryanlin on 2018/5/24.
  */
 
-public class GoogleApi implements IWebSocket {
+public class GoogleApi extends BaseWebSocket {
 
-    private static final String TAG = "SpeechService";
+    private static final String TAG = "GoogleApi";
 
-    private static final String PREFS = "SpeechService";
-    private static final String PREF_ACCESS_TOKEN_VALUE = "access_token_value";
-    private static final String PREF_ACCESS_TOKEN_EXPIRATION_TIME = "access_token_expiration_time";
-
-    /** We reuse an access token if its expiration time is longer than this. */
+    /**
+     * We reuse an access token if its expiration time is longer than this.
+     */
     private static final int ACCESS_TOKEN_EXPIRATION_TOLERANCE = 30 * 60 * 1000; // thirty minutes
-    /** We refresh the current access token before it expires. */
+    /**
+     * We refresh the current access token before it expires.
+     */
     private static final int ACCESS_TOKEN_FETCH_MARGIN = 60 * 1000; // one minute
 
-    public static final List<String> SCOPE =
-            Collections.singletonList("https://www.googleapis.com/auth/cloud-platform");
-    private static final String HOSTNAME = "speech.googleapis.com";
-    private static final int PORT = 443;
+    private static final List<String> SCOPE = Collections.singletonList("https://www.googleapis.com/auth/cloud-platform");
+    private static final String API_HOST = "speech.googleapis.com";
+    private static final int API_HOST_PORT = 443;
 
-//    private final SpeechBinder mBinder = new SpeechBinder();
-//    private final ArrayList<Listener> mListeners = new ArrayList<>();
-    private volatile AccessTokenTask mAccessTokenTask;
     private SpeechGrpc.SpeechStub mApi;
-    private static Handler mHandler;
-
-    private OnWebSocketListener mListener;
-
     private StreamObserver<StreamingRecognizeRequest> mRequestObserver;
+    private final StreamObserver<StreamingRecognizeResponse> mResponseObserver = new StreamObserver<StreamingRecognizeResponse>() {
+        private long mCid = 0;
 
-    public GoogleApi(OnWebSocketListener l) {
-        mListener = l;
-    }
-
-    private long mCid = 0;
-    private final StreamObserver<StreamingRecognizeResponse> mResponseObserver
-            = new StreamObserver<StreamingRecognizeResponse>() {
         @Override
         public void onNext(StreamingRecognizeResponse response) {
-            String text = null;
-            boolean isFinal = false;
-            if (response.getResultsCount() > 0) {
-                final StreamingRecognitionResult result = response.getResults(0);
-                isFinal = result.getIsFinal();
-                if (result.getAlternativesCount() > 0) {
-                    final SpeechRecognitionAlternative alternative = result.getAlternatives(0);
-                    text = alternative.getTranscript();
+            ResultHolder holder = getResultHolder(response);
+            if (holder == null) {
+                if (Logger.DEBUG) {
+                    Logger.w(TAG, "invalid result holder");
                 }
+                return;
             }
-            Logger.v("onNext text = " + text + " isFinal = " + isFinal);
-            if (text != null) {
-                Message msg;
-                if (isFinal) {
-                    msg = new TextMessage(1, new String[] {text}, "google", mCid);
-                    mCid = 0;
-                } else {
-                    if (mCid == 0) {
-                        mCid = System.currentTimeMillis();
-                    }
-                    msg = new IntermediateMessage(1, text, "google", mCid);
+            if (Logger.DEBUG) {
+                Logger.v(TAG, String.format("onNext, text: %s, isFinal: %s", holder.text, holder.isFinal));
+            }
+            Message msg;
+
+            if (!holder.isFinal) {
+                if (mCid == 0) {
+                    mCid = System.currentTimeMillis();
                 }
-                if (mListener != null) {
-                    mListener.onMessage(msg);
-                }
+                msg = new IntermediateMessage(1, holder.text, "google", mCid);
+            } else {
+                // TODO: process n-best result from #getResultHolder
+                msg = new TextMessage(1, new String[]{holder.text}, "google", mCid);
+                mCid = 0;
+            }
+            if (mListener != null) {
+                mListener.onMessage(msg);
             }
         }
 
+        /**
+         * parsing recognized result from StreamingRecognizeResponse
+         *
+         * @return holder
+         */
+        private ResultHolder getResultHolder(StreamingRecognizeResponse response) {
+            List<StreamingRecognitionResult> resultList = response != null ? response.getResultsList() : null;
+            if (resultList != null && !resultList.isEmpty()) {
+                for (StreamingRecognitionResult result : resultList) {
+                    List<SpeechRecognitionAlternative> alternativeList = result.getAlternativesList();
+                    if (alternativeList == null || alternativeList.isEmpty()) {
+                        continue;
+                    }
+                    for (SpeechRecognitionAlternative alternative : alternativeList) {
+                        String resultText = alternative.getTranscript();
+                        if (TextUtils.isEmpty(resultText)) {
+                            continue;
+                        }
+                        return new ResultHolder(resultText, result.getIsFinal());
+                    }
+                }
+            }
+            return null;
+        }
+
         @Override
-        public void onError(Throwable t) {
-            Log.e(TAG, "Error calling the API.", t);
+        public void onError(Throwable throwable) {
+            if (Logger.DEBUG) {
+                Logger.e(TAG, "Error calling the API.");
+                Logger.printStackTrace(TAG, throwable.getMessage(), throwable);
+            }
         }
 
         @Override
         public void onCompleted() {
-            Log.i(TAG, "API completed.");
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "API completed.");
+            }
         }
 
+        class ResultHolder {
+            private String text;
+            private boolean isFinal;
+
+            private ResultHolder(String text, boolean isFinal) {
+                this.text = text;
+                this.isFinal = isFinal;
+            }
+        }
     };
+
+    public GoogleApi(OnWebSocketListener listener) {
+        super(listener);
+    }
 
     @Override
     public void connect(VoiceConfiguration voiceConfiguration) {
-        mHandler = new Handler();
-        fetchAccessToken();
+        fetchToken();
     }
 
     @Override
     public void release() {
-        mHandler.removeCallbacks(mFetchAccessTokenRunnable);
-        mHandler = null;
+        BackgroundThread.removeCallbacks(fetchTokenRunnable);
         // Release the gRPC channel.
         if (mApi != null) {
             final ManagedChannel channel = (ManagedChannel) mApi.getChannel();
@@ -160,7 +170,8 @@ public class GoogleApi implements IWebSocket {
                 try {
                     channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
-                    Log.e(TAG, "Error shutting down the gRPC channel.", e);
+                    Logger.e(TAG, "Error shutting down the gRPC channel.");
+                    Logger.printStackTrace(TAG, e.getMessage(), e);
                 }
             }
             mApi = null;
@@ -168,9 +179,11 @@ public class GoogleApi implements IWebSocket {
     }
 
     @Override
-    public void startListening() {
+    public void onStart() {
         if (mApi == null) {
-            Log.w(TAG, "API not ready. Ignoring the request.");
+            if (Logger.DEBUG) {
+                Logger.w(TAG, "invalid api.");
+            }
             return;
         }
         // Configure the API
@@ -189,7 +202,7 @@ public class GoogleApi implements IWebSocket {
     }
 
     @Override
-    public void stopListening() {
+    public void onStop() {
         if (mRequestObserver == null) {
             return;
         }
@@ -199,15 +212,16 @@ public class GoogleApi implements IWebSocket {
 
     @Override
     public void sendCommand(String command, String payload) {
-
     }
 
     @Override
     public void sendData(byte[] data) {
         if (mRequestObserver == null) {
+            if (Logger.DEBUG) {
+                Logger.w(TAG, "invalid Request Observer");
+            }
             return;
         }
-        Logger.v("sendData data.length = " + data.length);
         // Call the streaming recognition API
         mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
                 .setAudioContent(ByteString.copyFrom(data, 0, data.length))
@@ -219,86 +233,78 @@ public class GoogleApi implements IWebSocket {
         return mApi != null;
     }
 
-    private void fetchAccessToken() {
-        if (mAccessTokenTask != null) {
-            return;
+
+    private void fetchToken() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "fetchToken");
         }
-        mAccessTokenTask = new AccessTokenTask();
-        mAccessTokenTask.execute();
+        BackgroundThread.post(fetchTokenRunnable);
     }
 
-    private final Runnable mFetchAccessTokenRunnable = new Runnable() {
+    private Runnable fetchTokenRunnable = new Runnable() {
         @Override
         public void run() {
-            fetchAccessToken();
+            doFetchToken();
+        }
+
+        private void doFetchToken() {
+            AccessToken token = getAccessToken();
+            if (token == null) {
+                if (Logger.DEBUG) {
+                    Logger.w(TAG, "invalid access token");
+                }
+                if (mListener != null) {
+                    mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
+                }
+                return;
+            }
+            if (Logger.DEBUG) {
+                Logger.d(TAG, String.format("token: %s", token));
+            }
+            initApi(token);
+            // Schedule access token refresh before it expires
+            long tokenExpiredTime = token.getExpirationTime().getTime() - System.currentTimeMillis() - ACCESS_TOKEN_FETCH_MARGIN;
+            long fetchAgainDelayTime = Math.max(tokenExpiredTime, ACCESS_TOKEN_EXPIRATION_TOLERANCE);
+            if (Logger.DEBUG) {
+                Logger.d(TAG, String.format("fetch token again after %s ms", fetchAgainDelayTime));
+            }
+            BackgroundThread.postDelayed(this, fetchAgainDelayTime);
         }
     };
 
-    private class AccessTokenTask extends AsyncTask<Void, Void, AccessToken> {
-
-        @Override
-        protected AccessToken doInBackground(Void... voids) {
-//            final SharedPreferences prefs =
-//                    getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-//            String tokenValue = prefs.getString(PREF_ACCESS_TOKEN_VALUE, null);
-//            long expirationTime = prefs.getLong(PREF_ACCESS_TOKEN_EXPIRATION_TIME, -1);
-//
-//            // Check if the current token is still valid for a while
-//            if (tokenValue != null && expirationTime > 0) {
-//                if (expirationTime
-//                        > System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TOLERANCE) {
-//                    return new AccessToken(tokenValue, new Date(expirationTime));
-//                }
-//            }
-
-            // ***** WARNING *****
-            // In this sample, we load the credential from a JSON file stored in a raw resource
-            // folder of this client app. You should never do this in your app. Instead, store
-            // the file in your server and obtain an access token from there.
-            // *******************
-//            final InputStream stream = getResources().openRawResource(R.raw.google_speech);
-            try {
-                final InputStream stream = new FileInputStream(new File("/sdcard/kikaVoiceSdk/google_speech"));
-                final GoogleCredentials credentials = GoogleCredentials.fromStream(stream)
-                        .createScoped(SCOPE);
-                final AccessToken token = credentials.refreshAccessToken();
-//                prefs.edit()
-//                        .putString(PREF_ACCESS_TOKEN_VALUE, token.getTokenValue())
-//                        .putLong(PREF_ACCESS_TOKEN_EXPIRATION_TIME,
-//                                token.getExpirationTime().getTime())
-//                        .apply();
-                return token;
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to obtain access token.", e);
+    private AccessToken getAccessToken() {
+        try {
+            // TODO: get auth json file from server
+            final InputStream stream = new FileInputStream(new File("/sdcard/kikaVoiceSdk/google_speech"));
+            final GoogleCredentials credentials = GoogleCredentials.fromStream(stream).createScoped(SCOPE);
+            final AccessToken token = credentials != null ? credentials.refreshAccessToken() : null;
+            if (Logger.DEBUG) {
+                Logger.d(TAG, String.format("getAccessToken, token: %s", token));
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(AccessToken accessToken) {
-            Logger.d("onPostExecute accessToken = " + accessToken);
-            mAccessTokenTask = null;
-            final ManagedChannel channel = new OkHttpChannelProvider()
-                    .builderForAddress(HOSTNAME, PORT)
-                    .nameResolverFactory(new DnsNameResolverProvider())
-                    .intercept(new GoogleCredentialsInterceptor(new GoogleCredentials(accessToken)
-                            .createScoped(SCOPE)))
-                    .build();
-            mApi = SpeechGrpc.newStub(channel);
-
-            // Schedule access token refresh before it expires
-            if (mHandler != null) {
-                mHandler.postDelayed(mFetchAccessTokenRunnable,
-                        Math.max(accessToken.getExpirationTime().getTime()
-                                - System.currentTimeMillis()
-                                - ACCESS_TOKEN_FETCH_MARGIN, ACCESS_TOKEN_EXPIRATION_TOLERANCE));
-            }
-            if (mApi == null) {
-                Log.w(TAG, "API not ready. Ignoring the request.");
-                return;
+            return token;
+        } catch (IOException e) {
+            if (Logger.DEBUG) {
+                Logger.e(TAG, "Failed to obtain access token.");
+                Logger.printStackTrace(TAG, e.getMessage(), e);
             }
         }
+        return null;
     }
+
+    private void initApi(AccessToken token) {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "initApi");
+        }
+        GoogleCredentials credentials = new GoogleCredentials(token).createScoped(SCOPE);
+        GoogleCredentialsInterceptor interceptor = new GoogleCredentialsInterceptor(credentials);
+        ManagedChannel channel = new OkHttpChannelProvider()
+                .builderForAddress(API_HOST, API_HOST_PORT)
+                .nameResolverFactory(new DnsNameResolverProvider())
+                .intercept(interceptor)
+                .build();
+        mApi = SpeechGrpc.newStub(channel);
+    }
+
 
     /**
      * Authenticates the gRPC channel using the specified {@link GoogleCredentials}.
@@ -311,7 +317,7 @@ public class GoogleApi implements IWebSocket {
 
         private Map<String, List<String>> mLastMetadata;
 
-        GoogleCredentialsInterceptor(Credentials credentials) {
+        private GoogleCredentialsInterceptor(Credentials credentials) {
             mCredentials = credentials;
         }
 
