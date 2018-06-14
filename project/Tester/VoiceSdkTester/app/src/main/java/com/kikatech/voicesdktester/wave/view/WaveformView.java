@@ -26,6 +26,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.kikatech.voicesdktester.R;
+import com.kikatech.voicesdktester.wave.utils.Pcm2Wav;
 import com.kikatech.voicesdktester.wave.utils.SoundFile;
 
 import java.io.File;
@@ -151,7 +152,7 @@ public class WaveformView extends View {
         mInitialized = false;
     }
 
-    public void loadFromFile(String filePath) {
+    public void loadFromFile(String filePath, boolean shouldConvertWav) {
         File file = new File(filePath + ".wav");
 
         // Load the sound file in a background thread
@@ -164,6 +165,17 @@ public class WaveformView extends View {
                         return;
                     }
                 } catch (final Exception e) {
+                    if (shouldConvertWav) {
+                        try {
+                            Pcm2Wav p2w = new Pcm2Wav();
+                            p2w.convertAudioFiles(filePath, filePath + ".wav");
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                            return;
+                        }
+                        loadFromFile(filePath, false);
+                        return;
+                    }
                     e.printStackTrace();
                     return;
                 }

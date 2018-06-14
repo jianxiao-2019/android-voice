@@ -316,7 +316,7 @@ public class WaveCanvas {
                 }
               
     			fos2wav.close();
-    			Pcm2Wav p2w = new Pcm2Wav();//将pcm格式转换成wav 其实就尼玛加了一个44字节的头信息
+    			Pcm2Wav p2w = new Pcm2Wav();//将pcm格式转换成wav 其实就加了一个44字节的头信息
     			p2w.convertAudioFiles(savePcmPath, saveWavPath);
             } catch (Throwable t) {
             }
