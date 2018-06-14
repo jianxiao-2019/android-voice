@@ -64,16 +64,15 @@ apply from: 'gradle-mvn-push.gradle'
 ext {
     // supportLibraryVersion = '25.4.0'
     grpcVersion = "1.4.0"
-    protobuf_version = "3.3.1"
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$protobuf_version"
+        artifact = "com.google.protobuf:protoc:3.3.0"
     }
     plugins {
         javalite {
-            artifact = "com.google.protobuf:protoc-gen-javalite:$protobuf_version"
+            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
         }
         grpc {
             artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
@@ -112,7 +111,7 @@ dependencies {
     implementation "io.grpc:grpc-protobuf-lite:$grpcVersion"
     implementation "io.grpc:grpc-stub:$grpcVersion"
     implementation 'javax.annotation:javax.annotation-api:1.2'
-    protobuf "com.google.protobuf:protobuf-java:$protobuf_version"
+    protobuf "com.google.protobuf:protobuf-java:3.3.1"
     // OAuth2 for Google API
     implementation('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
         exclude module: 'httpclient'
