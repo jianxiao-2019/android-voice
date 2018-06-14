@@ -63,7 +63,7 @@ apply from: 'gradle-mvn-push.gradle'
 
 ext {
     // supportLibraryVersion = '25.4.0'
-    grpcVersion = '1.4.0'
+    grpcVersion = "1.4.0"
     protobuf_version = "3.3.1"
 }
 
@@ -108,13 +108,13 @@ dependencies {
     implementation 'ai.api:sdk:2.0.7@aar'
     implementation 'me.xdrop:fuzzywuzzy:1.1.9'
     // gRPC
-    compile "io.grpc:grpc-okhttp:$grpcVersion"
-    compile "io.grpc:grpc-protobuf-lite:$grpcVersion"
-    compile "io.grpc:grpc-stub:$grpcVersion"
-    compile 'javax.annotation:javax.annotation-api:1.2'
+    implementation "io.grpc:grpc-okhttp:$grpcVersion"
+    implementation "io.grpc:grpc-protobuf-lite:$grpcVersion"
+    implementation "io.grpc:grpc-stub:$grpcVersion"
+    implementation 'javax.annotation:javax.annotation-api:1.2'
     protobuf "com.google.protobuf:protobuf-java:$protobuf_version"
     // OAuth2 for Google API
-    compile('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
+    implementation('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
         exclude module: 'httpclient'
     }
 }
