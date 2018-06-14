@@ -633,10 +633,10 @@ public class MainActivity extends AppCompatActivity implements
         if (permissionCheck != PackageManager.PERMISSION_GRANTED
                 || storagePermissionCheck != PackageManager.PERMISSION_GRANTED) {
             mPermissionButton.setEnabled(true);
-            mPermissionButton.setText("Need permission.");
+            mPermissionButton.setText("Need\npermission.");
         } else {
             mPermissionButton.setEnabled(false);
-            mPermissionButton.setText("Permission granted");
+            mPermissionButton.setText("Permission\ngranted");
         }
     }
 
