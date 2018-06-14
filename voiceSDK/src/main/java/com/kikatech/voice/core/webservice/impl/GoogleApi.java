@@ -13,6 +13,7 @@ import com.google.cloud.speech.v1.StreamingRecognitionResult;
 import com.google.cloud.speech.v1.StreamingRecognizeRequest;
 import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
+import com.kikatech.voice.core.webservice.command.SocketCommand;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
@@ -73,31 +74,38 @@ public class GoogleApi extends BaseWebSocket {
 
         @Override
         public void onNext(StreamingRecognizeResponse response) {
+            if (isCanceled) {
+                Logger.w(TAG, "recognition canceled");
+                mCid = 0;
+                return;
+            }
+            if (mListener == null) {
+                Logger.w(TAG, "no listener available.");
+                return;
+            }
             ResultHolder holder = getResultHolder(response);
             if (holder == null) {
                 if (Logger.DEBUG) {
-                    Logger.w(TAG, "invalid result holder");
+                    Logger.w(TAG, "invalid result holder --- empty result");
                 }
+                mListener.onError(WebSocketError.EMPTY_RESULT);
                 return;
             }
             if (Logger.DEBUG) {
                 Logger.v(TAG, String.format("onNext, text: %s, isFinal: %s", holder.text, holder.isFinal));
             }
             Message msg;
-
-            if (!holder.isFinal) {
+            if (!holder.isFinal) { // Partial Result
                 if (mCid == 0) {
                     mCid = System.currentTimeMillis();
                 }
                 msg = new IntermediateMessage(1, holder.text, "google", mCid);
-            } else {
+            } else { // Final Result
                 // TODO: process n-best result from #getResultHolder
                 msg = new TextMessage(1, new String[]{holder.text}, "google", mCid);
                 mCid = 0;
             }
-            if (mListener != null) {
-                mListener.onMessage(msg);
-            }
+            mListener.onMessage(msg);
         }
 
         /**
@@ -151,6 +159,8 @@ public class GoogleApi extends BaseWebSocket {
         }
     };
 
+    private boolean isCanceled;
+
     public GoogleApi(OnWebSocketListener listener) {
         super(listener);
     }
@@ -199,19 +209,28 @@ public class GoogleApi extends BaseWebSocket {
                         .setSingleUtterance(true)
                         .build())
                 .build());
+        isCanceled = false;
     }
 
     @Override
     public void onStop() {
-        if (mRequestObserver == null) {
-            return;
-        }
-        mRequestObserver.onCompleted();
-        mRequestObserver = null;
+        stop();
     }
 
     @Override
     public void sendCommand(String command, String payload) {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, String.format("sendCommand, command: %s, payload: %s", command, payload));
+        }
+        switch (command) {
+            case SocketCommand.STOP: // cancel
+                isCanceled = true;
+                stop();
+                break;
+            case SocketCommand.COMPLETE:
+                stop();
+                break;
+        }
     }
 
     @Override
@@ -305,6 +324,13 @@ public class GoogleApi extends BaseWebSocket {
         mApi = SpeechGrpc.newStub(channel);
     }
 
+    private void stop() {
+        if (mRequestObserver == null) {
+            return;
+        }
+        mRequestObserver.onCompleted();
+        mRequestObserver = null;
+    }
 
     /**
      * Authenticates the gRPC channel using the specified {@link GoogleCredentials}.
