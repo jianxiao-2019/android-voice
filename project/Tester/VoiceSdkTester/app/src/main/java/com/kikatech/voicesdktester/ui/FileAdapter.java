@@ -132,7 +132,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         //load file and draw wave
         if (filePath.contains("_SRC") || filePath.contains("_NC")) {
             holder.waveView.setVisibility(View.VISIBLE);
-            holder.waveView.loadFromFile(filePath);
+            holder.waveView.loadFromFile(filePath, true);
         } else {
             holder.waveView.setVisibility(View.GONE);
         }
