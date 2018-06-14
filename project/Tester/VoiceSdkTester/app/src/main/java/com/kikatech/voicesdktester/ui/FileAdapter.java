@@ -14,6 +14,7 @@ import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.wave.view.WaveformView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -25,13 +26,18 @@ import java.util.List;
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
     private CheckBox lastChecked = null;
+    private String lastCheckedStr = null;
     private final List<File> mFiles;
     private final String mFilePath;
+    private boolean mEnableMultipleCheck = false;
 
     private OnItemCheckedListener mListener = null;
 
+    ArrayList<String> mCheckedList = new ArrayList<String>();
+
     public interface OnItemCheckedListener {
         void onItemChecked(String itemStr);
+        void onItemUnchecked(String itemStr);
         void onNothingChecked();
     }
 
@@ -47,6 +53,8 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         mFiles.addAll(fileNames);
 
         sortFiles();
+
+        mCheckedList.clear();
     }
 
     private void sortFiles() {
@@ -72,21 +80,48 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         String fileName = mFiles.get(position).getName();
         holder.checkBox.setText(fileName);
         holder.checkBox.setTextColor(fileName.contains("_s") ? Color.GREEN : Color.LTGRAY);
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.checkBox.setChecked(mCheckedList.contains(fileName));
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String itemStr = buttonView.getText().toString();
                 if (isChecked) {
-                    if (lastChecked != null) {
-                        lastChecked.setChecked(false);
+                    if (mEnableMultipleCheck) {
+                        if (!mCheckedList.contains(itemStr)) {
+                            mCheckedList.add(itemStr);
+                        }
+                    } else {
+                        if (lastChecked != null && lastCheckedStr != null ) {
+                            mCheckedList.remove(lastCheckedStr);
+                            lastChecked.setChecked(false);
+                        }
+                        mCheckedList.add(itemStr);
                     }
                     lastChecked = (CheckBox) buttonView;
+                    lastCheckedStr = lastChecked.getText().toString();
                     if (mListener != null) {
-                        mListener.onItemChecked(buttonView.getText().toString());
+                        mListener.onItemChecked(itemStr);
                     }
                 } else {
-                    lastChecked = null;
+                    if (mEnableMultipleCheck) {
+                        if (mCheckedList.contains(itemStr)) {
+                            mCheckedList.remove(itemStr);
+                        }
+                        if (lastChecked != null && lastCheckedStr != null && lastCheckedStr.equals(itemStr)) {
+                            lastChecked = null;
+                            lastCheckedStr = null;
+                        }
+                    } else {
+                        mCheckedList.remove(itemStr);
+                        lastChecked = null;
+                        lastCheckedStr = null;
+                    }
                     if (mListener != null) {
-                        mListener.onNothingChecked();
+                        mListener.onItemUnchecked(itemStr);
+                        if (mCheckedList.size() == 0) {
+                            mListener.onNothingChecked();
+                        }
                     }
                 }
             }
@@ -150,5 +185,13 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public void setOnItemCheckedListener(OnItemCheckedListener listener) {
         mListener = listener;
+    }
+
+    public void setEnableMultipleCheck(boolean enable) {
+        mEnableMultipleCheck = enable;
+    }
+
+    public ArrayList<String> getCheckedList() {
+        return mCheckedList;
     }
 }

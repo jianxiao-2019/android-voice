@@ -74,6 +74,8 @@ public class LocalPlayBackFragment extends Fragment implements
 
     private Handler mUiHandler;
 
+    private ArrayList<String> mItemList = null;
+    private int totalItemsCount = 0;
     private String mItemStr = null;
 
     public static LocalPlayBackFragment getInstance(FragmentType fragmentType) {
@@ -111,19 +113,7 @@ public class LocalPlayBackFragment extends Fragment implements
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mVoiceService != null) {
-                    mVoiceService.start();
-
-                    mResultAdapter.clearResults();
-                    mResultAdapter.notifyDataSetChanged();
-
-                    writeOriginalFileNameToFile();
-                    writeTimeToFile();
-                    if (mTextView != null) {
-                        mTextView.setText("starting.");
-                    }
-                    mStartButton.setEnabled(false);
-                }
+                onRunNextPlayback();
             }
         });
         mStartButton.setEnabled(false);
@@ -151,6 +141,32 @@ public class LocalPlayBackFragment extends Fragment implements
         });
     }
 
+    private void onRunNextPlayback() {
+        if (mVoiceService != null && mItemList.size() > 0) {
+            mItemStr = mItemList.get(0);
+            mItemList.remove(mItemStr);
+
+            String path = DebugUtil.getDebugFolderPath();
+            if (TextUtils.isEmpty(path)) {
+                showStatusInfo("folder path error.");
+                onEndOfCurrentPlayback();
+                return;
+            }
+            getLocalVoiceSource(mFragmentType).setTargetFile(path + mItemStr);
+
+            mVoiceService.start();
+
+            mResultAdapter.clearResults();
+            mResultAdapter.notifyDataSetChanged();
+
+            writeOriginalFileNameToFile();
+            writeTimeToFile();
+
+            showStatusInfo("starting.");
+            mStartButton.setEnabled(false);
+        }
+    }
+
     public void scanFiles() {
         String path = DebugUtil.getDebugFolderPath();
         if (TextUtils.isEmpty(path)) {
@@ -172,6 +188,7 @@ public class LocalPlayBackFragment extends Fragment implements
         if (mFileAdapter == null) {
             mFileAdapter = new FileAdapter(path, fileNames);
             mFileAdapter.setOnItemCheckedListener(this);
+            mFileAdapter.setEnableMultipleCheck(true);
         } else {
             mFileAdapter.updateContent(fileNames);
             mFileAdapter.notifyDataSetChanged();
@@ -281,33 +298,70 @@ public class LocalPlayBackFragment extends Fragment implements
                 mItemStr = null;
                 mVoiceService.stop(VoiceService.StopType.NORMAL);
 
-                if (mTextView != null) {
-                    mTextView.setText("stopped.");
-                }
-                mStartButton.setEnabled(true);
+                onEndOfCurrentPlayback();
             }
-        }, 500);
+        }, 1000);
+    }
+
+    private void onEndOfCurrentPlayback() {
+        if (mLocalNcVoiceSource != null) {
+            mLocalNcVoiceSource = null;
+            attachService();
+        }
+
+        if (mItemList.size() == 0) {
+            if (mTextView != null) {
+                showStatusInfo("completed.");
+            }
+            scanFiles();
+        } else {
+            if (mTextView != null) {
+                showStatusInfo("stopped.");
+            }
+
+            mUiHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onRunNextPlayback();
+                }
+            }, 2000);
+        }
     }
 
     @Override
     public void onItemChecked(String itemStr) {
+        updateItemOjsAndInfo();
+
         if (getLocalVoiceSource(mFragmentType) != null) {
             String path = DebugUtil.getDebugFolderPath();
             if (TextUtils.isEmpty(path)) {
+                showStatusInfo("folder path error.");
                 return;
             }
-            getLocalVoiceSource(mFragmentType).setTargetFile(path + itemStr);
-            mItemStr = itemStr;
-        }
-        if (mStartButton != null) {
-            mStartButton.setEnabled(true);
         }
     }
 
     @Override
+    public void onItemUnchecked(String itemStr) {
+        updateItemOjsAndInfo();
+    }
+
+    @Override
     public void onNothingChecked() {
+        updateItemOjsAndInfo();
+    }
+
+    private void updateItemOjsAndInfo() {
+        mItemList = mFileAdapter.getCheckedList();
+        totalItemsCount = mItemList.size();
+        showStatusInfo("checked.");
+
         if (mStartButton != null) {
-            mStartButton.setEnabled(false);
+            if (totalItemsCount > 0) {
+                mStartButton.setEnabled(true);
+            } else {
+                mStartButton.setEnabled(false);
+            }
         }
     }
 
@@ -338,6 +392,12 @@ public class LocalPlayBackFragment extends Fragment implements
     private void writeOriginalFileNameToFile(){
         if (mItemStr != null && mItemStr.length() > 0) {
             DebugUtil.logTextToFile("Original File", mItemStr);
+        }
+    }
+
+    private void showStatusInfo(String info) {
+        if (mTextView != null && info != null && info.length() > 0) {
+            mTextView.setText(info + " " + String.valueOf(totalItemsCount - mItemList.size()) + "/" + String.valueOf(totalItemsCount));
         }
     }
 }
