@@ -5,20 +5,20 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.kikatech.voice.core.debug.DebugUtil;
+import com.kikatech.voice.core.debug.ReportUtil;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.IWebSocket;
 import com.kikatech.voice.core.webservice.WebSocketUtil;
+import com.kikatech.voice.core.webservice.command.SocketCommand;
 import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.BosMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
-import com.kikatech.voice.core.webservice.message.NBestMessage;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
-import com.kikatech.voice.core.debug.ReportUtil;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.event.EventMsg;
 import com.kikatech.voice.util.VoicePathConnector;
@@ -49,15 +49,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     public static final int ERR_NO_SPEECH = 3;
     public static final int ERR_RECORD_OPEN_FAIL = 4;
     public static final int ERR_RECORD_DATA_FAIL = 5;
-
-    public static final String SERVER_COMMAND_NBEST = "NBEST";
-    public static final String SERVER_COMMAND_ALTERING = "ALTERING";
-    private static final String SERVER_COMMAND_SETTINGS = "SETTINGS";
-    private static final String SERVER_COMMAND_TOKEN = "TOKEN";
-    private static final String SERVER_COMMAND_STOP = "STOP";           // stop and drop current results
-    private static final String SERVER_COMMAND_RESET = "RESET";          // stop, drop current results and start new conversation
-    private static final String SERVER_COMMAND_COMPLETE = "COMPLETE";       // stop and wait final results
-    private static final String SERVER_COMMAND_ALIGNMENT = "ALIGNMENT";
 
     private static final int MSG_VAD_BOS = 1;
     private static final int MSG_VAD_EOS = 2;
@@ -213,11 +204,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         mCurrentSpeechMode = mConf.getSpeechMode();
         if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
-            sendCommand(SERVER_COMMAND_TOKEN, "1");
-            sendCommand(SERVER_COMMAND_RESET, "");
+            sendCommand(SocketCommand.TOKEN, "1");
+            sendCommand(SocketCommand.RESET, "");
         } else if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.CONVERSATION) {
-            sendCommand(SERVER_COMMAND_TOKEN, "-1");
-            sendCommand(SERVER_COMMAND_RESET, "");
+            sendCommand(SocketCommand.TOKEN, "-1");
+            sendCommand(SocketCommand.RESET, "");
         }
 
         if (mWakeUpDetector != null) {
@@ -239,10 +230,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mIsStarting = false;
 
         if (stopType == StopType.COMPLETE) {
-            sendCommand(SERVER_COMMAND_COMPLETE, "");
+            sendCommand(SocketCommand.COMPLETE, "");
             cleanVadEosTimer();
         } else if (stopType == StopType.CANCEL) {
-            sendCommand(SERVER_COMMAND_STOP, "");
+            sendCommand(SocketCommand.STOP, "");
             cleanVadBosTimer();
             cleanVadEosTimer();
             if (mLastIntermediateMessage != null) {
@@ -392,7 +383,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("alignments", mJSONArray);
-            sendCommand(SERVER_COMMAND_ALIGNMENT, jsonObject.toString());
+            sendCommand(SocketCommand.ALIGNMENT, jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -403,7 +394,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void updateAsrSettings(AsrConfiguration conf) {
-        sendCommand(SERVER_COMMAND_SETTINGS, conf.toJsonString());
+        sendCommand(SocketCommand.SETTINGS, conf.toJsonString());
         mConf.updateAsrConfiguration(conf);
     }
 
