@@ -55,22 +55,20 @@ def isRelease() {
 apply from: 'gradle-mvn-push.gradle'
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.7'
-    compile 'com.bluelinelabs:logansquare:1.3.7'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.kikatech.androidspeex:speex:1.5'
-    compile 'org.java-websocket:Java-WebSocket:1.3.4'
-    compile 'org.greenrobot:eventbus:3.1.1'
+    implementation 'com.bluelinelabs:logansquare:1.3.7'
+    implementation 'com.kikatech.androidspeex:speex:1.5'
+    implementation 'org.java-websocket:Java-WebSocket:1.3.4'
+    implementation 'org.greenrobot:eventbus:3.1.1'
     // Api.ai
-    compile 'ai.api:libai:1.6.11'
-    compile 'ai.api:sdk:2.0.7@aar'
-    compile 'me.xdrop:fuzzywuzzy:1.1.9'
-    testCompile 'junit:junit:4.12'
+    implementation 'ai.api:libai:1.6.11'
+    implementation 'ai.api:sdk:2.0.7@aar'
+    implementation 'me.xdrop:fuzzywuzzy:1.1.9'
+    testImplementation 'junit:junit:4.12'
 }
 
 android {
