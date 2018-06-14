@@ -266,6 +266,11 @@ public class WakeUpVoiceFragment extends Fragment implements
     }
 
     @Override
+    public void onItemUnchecked(String itemStr) {
+
+    }
+
+    @Override
     public void onNothingChecked() {
         if (mWakeUpPresenter != null) {
             mWakeUpPresenter.setFilePath(null);
