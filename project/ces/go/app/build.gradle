@@ -4,7 +4,7 @@ apply plugin: 'io.fabric'
 ext {
     support_version = "25.4.0"
     firebase_version = "9.2.0"
-    guava_version = "20.0"
+    guava_version = "18.0"
 }
 
 android {
