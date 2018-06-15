@@ -1,5 +1,6 @@
 package com.kikatech.voice.core.webservice.impl;
 
+import android.os.Environment;
 import android.text.TextUtils;
 
 import com.google.auth.Credentials;
@@ -88,7 +89,7 @@ public class GoogleApi extends BaseWebSocket {
                 if (Logger.DEBUG) {
                     Logger.w(TAG, "invalid result holder --- empty result");
                 }
-                mListener.onError(WebSocketError.EMPTY_RESULT);
+//                mListener.onError(WebSocketError.EMPTY_RESULT);
                 return;
             }
             if (Logger.DEBUG) {
@@ -190,12 +191,16 @@ public class GoogleApi extends BaseWebSocket {
 
     @Override
     public void onStart() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "onStart");
+        }
         if (mApi == null) {
             if (Logger.DEBUG) {
                 Logger.w(TAG, "invalid api.");
             }
             return;
         }
+        isCanceled = false;
         // Configure the API
         mRequestObserver = mApi.streamingRecognize(mResponseObserver);
         mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
@@ -209,11 +214,13 @@ public class GoogleApi extends BaseWebSocket {
                         .setSingleUtterance(true)
                         .build())
                 .build());
-        isCanceled = false;
     }
 
     @Override
     public void onStop() {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "onStop");
+        }
         stop();
     }
 
@@ -294,7 +301,8 @@ public class GoogleApi extends BaseWebSocket {
     private AccessToken getAccessToken() {
         try {
             // TODO: get auth json file from server
-            final InputStream stream = new FileInputStream(new File("/sdcard/kikaVoiceSdk/google_speech"));
+            final String AUTH_FILE_PATH = String.format("%s/kikaVoiceSdk/wakeupRes/google_speech.json", Environment.getExternalStorageDirectory().getAbsolutePath());
+            final InputStream stream = new FileInputStream(new File(AUTH_FILE_PATH));
             final GoogleCredentials credentials = GoogleCredentials.fromStream(stream).createScoped(SCOPE);
             final AccessToken token = credentials != null ? credentials.refreshAccessToken() : null;
             if (Logger.DEBUG) {
