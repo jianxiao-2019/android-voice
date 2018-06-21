@@ -47,11 +47,8 @@ public class WebSocket extends BaseWebSocket {
 
     private VoiceWebSocketClient mClient;
 
-    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mReleased = new AtomicBoolean(false);
     private int mReconnectTimes = 0;
-
-    private final LinkedList<SendingData> mSendBuffer = new LinkedList<>();
 
     private VoiceConfiguration mVoiceConfiguration;
     private Timer mTimer;
@@ -64,10 +61,6 @@ public class WebSocket extends BaseWebSocket {
         DISCONNECTED,
         CONNECTING,
         CONNECTED,
-    }
-
-    public WebSocket(OnWebSocketListener listener) {
-        super(listener);
     }
 
     @Override
@@ -174,11 +167,14 @@ public class WebSocket extends BaseWebSocket {
             }
             return;
         }
+        Logger.d("SkTest", "0");
         final byte[] sendingData = new byte[data.length];
         System.arraycopy(data, 0, sendingData, 0, data.length);
+        Logger.d("SkTest", "1");
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
+                Logger.d("SkTest", "2");
                 checkConnectionAndSend(new SendingDataByte(sendingData));
             }
         });
@@ -301,10 +297,13 @@ public class WebSocket extends BaseWebSocket {
     private void checkConnectionAndSend(SendingData data) {
         boolean success = false;
         if (mSocketState == CONNECTED) {
+            Logger.d("SkTest", "0");
             success = data.send(mClient);
         }
+        Logger.d("SkTest", "1");
 
         if (!success) {
+            Logger.d("SkTest", "2");
             mSendBuffer.add(data);
             if (mSocketState == DISCONNECTED) {
                 connect(mVoiceConfiguration);

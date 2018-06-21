@@ -7,6 +7,7 @@ import com.kikatech.voice.core.dialogflow.AgentCreator;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.tts.TtsService;
+import com.kikatech.voice.core.webservice.IWebSocket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +19,14 @@ import java.util.List;
 public class VoiceConfiguration {
 
     public static final class HostUrl {
-        public static final String HAO_DEV              = "ws://speech.orctom.com:8080/v3/speech";  // for Hao dev testing
-        public static final String API_DEV              = "ws://api-dev.kika.ai/v3/speech";         // the dev environment for server team
+        public static final String HAO_DEV = "ws://speech.orctom.com:8080/v3/speech";  // for Hao dev testing
+        public static final String API_DEV = "ws://api-dev.kika.ai/v3/speech";         // the dev environment for server team
 
-        public static final String API_SQ               = "ws://api-sq.kika.ai/v3/speech";          // for Kika keyboard client dev
-        public static final String API_PRODUCTION       = "ws://api.kika.ai/v3/speech";             // final Kika keyboard release production server
+        public static final String API_SQ = "ws://api-sq.kika.ai/v3/speech";          // for Kika keyboard client dev
+        public static final String API_PRODUCTION = "ws://api.kika.ai/v3/speech";             // final Kika keyboard release production server
 
-        public static final String KIKAGO_SQ            = "ws://kikago-sq.kika.ai/v3/speech";       // for KikaGo client dev
-        public static final String KIKAGO_PRODUCTION    = "ws://kikago.kika.ai/v3/speech";          // final KikaGo release production server
+        public static final String KIKAGO_SQ = "ws://kikago-sq.kika.ai/v3/speech";       // for KikaGo client dev
+        public static final String KIKAGO_PRODUCTION = "ws://kikago.kika.ai/v3/speech";          // final KikaGo release production server
     }
 
     public interface Engine {
@@ -45,6 +46,7 @@ public class VoiceConfiguration {
     private static final int DEFAULT_BOS_DURATION = -1;
     private static final int DEFAULT_EOS_DURATION = -1;
 
+
     private WakeUpDetector mWakeUpDetector = null;
     private IVoiceSource mVoiceSource;
     private AgentCreator mAgentCreator;
@@ -62,6 +64,8 @@ public class VoiceConfiguration {
 
     private SpeechMode mSpeechMode = SpeechMode.CONVERSATION;
 
+    private IWebSocket mWebSocket;
+
     private boolean mIsDebugMode = false;
     private String mDebugFileTag = "Unknown";
 
@@ -75,13 +79,12 @@ public class VoiceConfiguration {
         return this;
     }
 
-    public VoiceConfiguration agent(AgentCreator creator) {
-        mAgentCreator = creator;
-        return this;
+    public IVoiceSource getVoiceSource() {
+        return mVoiceSource;
     }
 
-    public VoiceConfiguration tts(TtsService.TtsSourceType type) {
-        mTtsSource = type;
+    public VoiceConfiguration agent(AgentCreator creator) {
+        mAgentCreator = creator;
         return this;
     }
 
@@ -89,12 +92,22 @@ public class VoiceConfiguration {
         return mAgentCreator;
     }
 
-    public IVoiceSource getVoiceSource() {
-        return mVoiceSource;
+    public VoiceConfiguration tts(TtsService.TtsSourceType type) {
+        mTtsSource = type;
+        return this;
     }
 
     public TtsService.TtsSourceType getTtsType() {
         return mTtsSource;
+    }
+
+    public VoiceConfiguration setWebSocket(IWebSocket webSocket) {
+        mWebSocket = webSocket;
+        return this;
+    }
+
+    public IWebSocket getWebSocket() {
+        return mWebSocket;
     }
 
     public void setBosDuration(int bosDuration) {

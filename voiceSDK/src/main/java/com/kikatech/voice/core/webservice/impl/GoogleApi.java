@@ -1,6 +1,6 @@
 package com.kikatech.voice.core.webservice.impl;
 
-import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.auth.Credentials;
@@ -22,8 +22,7 @@ import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.BackgroundThread;
 import com.kikatech.voice.util.log.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -68,6 +67,7 @@ public class GoogleApi extends BaseWebSocket {
     private static final String API_HOST = "speech.googleapis.com";
     private static final int API_HOST_PORT = 443;
 
+    private String mAuthJson;
     private SpeechGrpc.SpeechStub mApi;
     private StreamObserver<StreamingRecognizeRequest> mRequestObserver;
     private final StreamObserver<StreamingRecognizeResponse> mResponseObserver = new StreamObserver<StreamingRecognizeResponse>() {
@@ -162,8 +162,8 @@ public class GoogleApi extends BaseWebSocket {
 
     private boolean isCanceled;
 
-    public GoogleApi(OnWebSocketListener listener) {
-        super(listener);
+    public GoogleApi(@NonNull String authJson) {
+        mAuthJson = authJson;
     }
 
     @Override
@@ -300,9 +300,7 @@ public class GoogleApi extends BaseWebSocket {
 
     private AccessToken getAccessToken() {
         try {
-            // TODO: get auth json file from server
-            final String AUTH_FILE_PATH = String.format("%s/kikaVoiceSdk/wakeupRes/google_speech.json", Environment.getExternalStorageDirectory().getAbsolutePath());
-            final InputStream stream = new FileInputStream(new File(AUTH_FILE_PATH));
+            final InputStream stream = new ByteArrayInputStream(mAuthJson.getBytes());
             final GoogleCredentials credentials = GoogleCredentials.fromStream(stream).createScoped(SCOPE);
             final AccessToken token = credentials != null ? credentials.refreshAccessToken() : null;
             if (Logger.DEBUG) {

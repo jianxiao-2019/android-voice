@@ -10,8 +10,8 @@ import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
 import com.kikatech.voice.core.webservice.IWebSocket;
-import com.kikatech.voice.core.webservice.WebSocketUtil;
 import com.kikatech.voice.core.webservice.command.SocketCommand;
+import com.kikatech.voice.core.webservice.impl.WebSocket;
 import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.BosMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
@@ -56,8 +56,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private VoiceConfiguration mConf;
     private IWebSocket mWebService;
 
-    private final WakeUpDetector mWakeUpDetector;
-    private final VoiceRecorder mVoiceRecorder;
+    private WakeUpDetector mWakeUpDetector;
+    private VoiceRecorder mVoiceRecorder;
 
     private VoiceRecognitionListener mVoiceRecognitionListener;
     private VoiceWakeUpListener mVoiceWakeUpListener;
@@ -145,22 +145,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         sEditor = sPref.edit();
 
         mConf = conf;
-
-        IDataPath finalPath = new VoiceService.VoiceDataSender(null);
-        mWakeUpDetector = mConf.getWakeUpDetector();
-        if (mWakeUpDetector != null) {
-            mWakeUpDetector.setOnHotWordDetectListener(this);
-        }
-        IDataPath dataPath = VoicePathConnector.genDataPath(mConf, finalPath);
-        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), dataPath, this);
-
-        if (conf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
-            mConf.getConnectionConfiguration().url = "ws://api-dev.kika.ai/v3/ns";
-
-            mConf.getConnectionConfiguration().bundle.putString("sid", "0");
-            mConf.getConnectionConfiguration().bundle.putString("type", "wakeup");
-            mConf.getConnectionConfiguration().bundle.putString("format", "pcm");
-        }
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
@@ -176,8 +160,31 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mMainThreadHandler = new Handler();
         mTimerHandler = new TimerHandler();
 
-        mWebService = WebSocketUtil.openConnection(mWebSocketListener);
+        IWebSocket configWebSocket = mConf.getWebSocket();
+        if (configWebSocket != null) {
+            mWebService = configWebSocket;
+        } else {
+            mWebService = new WebSocket();
+            mConf.setWebSocket(mWebService);
+        }
+        mWebService.setListener(mWebSocketListener);
         mWebService.connect(mConf);
+
+        IDataPath finalPath = new VoiceService.VoiceDataSender(null);
+        mWakeUpDetector = mConf.getWakeUpDetector();
+        if (mWakeUpDetector != null) {
+            mWakeUpDetector.setOnHotWordDetectListener(this);
+        }
+        IDataPath dataPath = VoicePathConnector.genDataPath(mConf, finalPath);
+        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), dataPath, this);
+
+        if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
+            mConf.getConnectionConfiguration().url = "ws://api-dev.kika.ai/v3/ns";
+
+            mConf.getConnectionConfiguration().bundle.putString("sid", "0");
+            mConf.getConnectionConfiguration().bundle.putString("type", "wakeup");
+            mConf.getConnectionConfiguration().bundle.putString("format", "pcm");
+        }
 
         mVoiceRecorder.open();
         EventBus.getDefault().register(this);
@@ -549,6 +556,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                     data = Arrays.copyOf(data, length);
                 }
                 mWebService.sendData(data);
+            } else {
+                Logger.v("SkTest", "invalid WebService");
             }
         }
     }

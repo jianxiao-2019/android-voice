@@ -21,6 +21,8 @@ public interface IWebSocket {
         void onError(@WebSocketError int errorCode);
     }
 
+    void setListener(OnWebSocketListener listener);
+
     void connect(VoiceConfiguration voiceConfiguration);
 
     void release();

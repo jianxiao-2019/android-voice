@@ -17,9 +17,10 @@ abstract class BaseWebSocket implements IWebSocket {
 
     final LinkedList<SendingData> mSendBuffer = new LinkedList<>();
 
-    final OnWebSocketListener mListener;
+    OnWebSocketListener mListener;
 
-    BaseWebSocket(OnWebSocketListener listener) {
-        mListener = listener;
+    @Override
+    public void setListener(OnWebSocketListener listener) {
+        this.mListener = listener;
     }
 }
