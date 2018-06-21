@@ -281,10 +281,14 @@ public class TutorialManager {
             @Override
             public void run() {
                 KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
-                VoiceConfiguration config = DialogFlowConfig.getTutorialConfig(mContext, usbSource);
-                mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus, mTtsStatusCallback);
-                mDialogFlowService.init();
-                registerScenes();
+                DialogFlowConfig.getTutorialConfig(mContext, usbSource, new DialogFlowConfig.IConfigListener() {
+                    @Override
+                    public void onDone(VoiceConfiguration config) {
+                        mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus, mTtsStatusCallback);
+                        mDialogFlowService.init();
+                        registerScenes();
+                    }
+                });
             }
         });
     }
@@ -310,9 +314,13 @@ public class TutorialManager {
                 public void run() {
                     unregisterScenes();
                     KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
-                    VoiceConfiguration config = DialogFlowConfig.getTutorialConfig(mContext, usbSource);
-                    mDialogFlowService.updateRecorderSource(config);
-                    registerScenes();
+                    DialogFlowConfig.getTutorialConfig(mContext, usbSource, new DialogFlowConfig.IConfigListener() {
+                        @Override
+                        public void onDone(VoiceConfiguration config) {
+                            mDialogFlowService.updateRecorderSource(config);
+                            registerScenes();
+                        }
+                    });
                 }
             });
         }

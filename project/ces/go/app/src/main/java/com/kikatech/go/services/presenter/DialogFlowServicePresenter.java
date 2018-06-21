@@ -619,11 +619,15 @@ public class DialogFlowServicePresenter {
         BackgroundThread.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(mContext, mVoiceSourceHelper.getUsbVoiceSource());
-                mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
-                mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus, mTtsStatusCallback);
-                mDialogFlowService.init();
-                registerScenes();
+                DialogFlowConfig.getVoiceConfig(mContext, mVoiceSourceHelper.getUsbVoiceSource(), new DialogFlowConfig.IConfigListener() {
+                    @Override
+                    public void onDone(VoiceConfiguration config) {
+                        mDFServiceStatus.setUsbDeviceAvailable(mVoiceSourceHelper.getUsbVoiceSource() != null);
+                        mDialogFlowService = DialogFlowService.queryService(mContext, config, mServiceCallback, mAgentQueryStatus, mTtsStatusCallback);
+                        mDialogFlowService.init();
+                        registerScenes();
+                    }
+                });
             }
         });
     }
@@ -680,12 +684,16 @@ public class DialogFlowServicePresenter {
                     if (mAsrMaxDurationTimer.isCounting()) {
                         mAsrMaxDurationTimer.stop();
                     }
-                    KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
-                    VoiceConfiguration config = DialogFlowConfig.getVoiceConfig(mContext, usbSource);
-                    mDFServiceStatus.setUsbDeviceAvailable(usbSource != null);
-                    mDFServiceStatus.setAudioDataCorrect(true);
-                    mDFServiceStatus.setInit(false);
-                    mDialogFlowService.updateRecorderSource(config);
+                    final KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
+                    DialogFlowConfig.getVoiceConfig(mContext, usbSource, new DialogFlowConfig.IConfigListener() {
+                        @Override
+                        public void onDone(VoiceConfiguration config) {
+                            mDFServiceStatus.setUsbDeviceAvailable(usbSource != null);
+                            mDFServiceStatus.setAudioDataCorrect(true);
+                            mDFServiceStatus.setInit(false);
+                            mDialogFlowService.updateRecorderSource(config);
+                        }
+                    });
                 }
             });
         }
