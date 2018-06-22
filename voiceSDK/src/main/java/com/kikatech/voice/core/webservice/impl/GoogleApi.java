@@ -55,7 +55,7 @@ public class GoogleApi extends BaseWebSocket {
     private static final String TAG = "GoogleApi";
 
     /**
-     * We reuse an access token if its expiration time is longer than this.
+     * We refresh an access token if its expiration time is longer than this.
      */
     private static final int ACCESS_TOKEN_EXPIRATION_TOLERANCE = 30 * 60 * 1000; // thirty minutes
     /**
@@ -290,7 +290,7 @@ public class GoogleApi extends BaseWebSocket {
             initApi(token);
             // Schedule access token refresh before it expires
             long tokenExpiredTime = token.getExpirationTime().getTime() - System.currentTimeMillis() - ACCESS_TOKEN_FETCH_MARGIN;
-            long fetchAgainDelayTime = Math.max(tokenExpiredTime, ACCESS_TOKEN_EXPIRATION_TOLERANCE);
+            long fetchAgainDelayTime = Math.min(tokenExpiredTime, ACCESS_TOKEN_EXPIRATION_TOLERANCE);
             if (Logger.DEBUG) {
                 Logger.d(TAG, String.format("fetch token again after %s ms", fetchAgainDelayTime));
             }
