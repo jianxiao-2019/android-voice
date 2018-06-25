@@ -1,105 +1,100 @@
 package com.kikatech.usb.driver;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.kikatech.usb.eventbus.UsbEvent;
 import com.kikatech.usb.util.DeviceUtil;
+import com.kikatech.voice.util.log.Logger;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by tianli on 17-11-6.
  */
 
-public class UsbDeviceReceiver extends BroadcastReceiver {
+public class UsbDeviceReceiver {
 
     final static String TAG = "UsbDeviceReceiver";
-
-    public static final String ACTION_USB_DEVICE_PERMISSION_GRANTED = "com.kikatech.usb.device.USB_PERMISSION";
-    public static final String ACTION_USB_ACCESSORY_PERMISSION_GRANTED = "com.kikatech.usb.accessory.USB_PERMISSION";
 
     private UsbDeviceListener mDeviceListener;
     private UsbAccessoryListener mAccessoryListener;
 
-    public UsbDeviceReceiver(UsbDeviceListener deviceListener,
-                             UsbAccessoryListener accessoryListener) {
+    UsbDeviceReceiver(UsbDeviceListener deviceListener,
+                      UsbAccessoryListener accessoryListener) {
         mDeviceListener = deviceListener;
         mAccessoryListener = accessoryListener;
     }
 
-    public void register(Context context) {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_USB_DEVICE_PERMISSION_GRANTED);
-        filter.addAction(ACTION_USB_ACCESSORY_PERMISSION_GRANTED);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        context.registerReceiver(this, filter);
+    public void register() {
+        EventBus.getDefault().register(this);
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        if (context == null || intent == null) {
+
+    /**
+     * <p>Reflection subscriber method used by EventBus,
+     * <p>do not remove this except the subscriber is no longer needed.
+     *
+     * @param event event from {@link com.kikatech.usb.driver.receiver.UsbSysIntentProcessor}
+     */
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onUsbEvent(UsbEvent event) {
+        if (event == null) {
+            if (Logger.DEBUG) {
+                Logger.w(TAG, "invalid UsbEvent");
+            }
             return;
         }
-        String action = intent.getAction();
-        Log.v(TAG, "action = " + action);
+
+        String action = event.getAction();
         if (TextUtils.isEmpty(action)) {
-            Log.e(TAG, "UsbDeviceReceiver receive an empty action.");
+            if (Logger.DEBUG) {
+                Logger.w(TAG, "invalid UsbEvent.action");
+            }
             return;
         }
 
         UsbDevice device;
         UsbAccessory accessory;
+
         switch (action) {
-            case UsbManager.ACTION_USB_DEVICE_ATTACHED:
-                device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (DeviceUtil.isKikaGoDevice(device)) { // we only provider audio device access
+            case UsbEvent.ACTION_USB_DEVICE_ATTACHED:
+                device = event.getExtras().getParcelable(UsbEvent.PARAM_USB_DEVICE);
+                if (DeviceUtil.isKikaGoDevice(device)) {
                     onUsbAttached(device);
                 }
                 break;
-            case UsbManager.ACTION_USB_DEVICE_DETACHED:
-                device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            case UsbEvent.ACTION_USB_DEVICE_DETACHED:
+                device = event.getExtras().getParcelable(UsbEvent.PARAM_USB_DEVICE);
                 if (DeviceUtil.isKikaGoDevice(device)) {
                     onUsbDetached(device);
                 }
                 break;
-            case ACTION_USB_DEVICE_PERMISSION_GRANTED:
-                device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
-                        && DeviceUtil.isKikaGoDevice(device)) {
+            case UsbEvent.ACTION_USB_DEVICE_PERMISSION_GRANTED:
+                device = event.getExtras().getParcelable(UsbEvent.PARAM_USB_DEVICE);
+                if (DeviceUtil.isKikaGoDevice(device)) {
                     onUsbPermissionGranted(device);
-                } else {
-                    Log.e(TAG, "permission denied for device " + device);
                 }
                 break;
-            case UsbManager.ACTION_USB_ACCESSORY_ATTACHED:
-                accessory = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (DeviceUtil.isKikaGoAccessory(accessory)) { // we only provider audio device access
+            case UsbEvent.ACTION_USB_ACCESSORY_ATTACHED:
+                accessory = event.getExtras().getParcelable(UsbEvent.PARAM_USB_ACCESSORY);
+                if (DeviceUtil.isKikaGoAccessory(accessory)) {
                     onUsbAccessoryAttached(accessory);
                 }
                 break;
-            case UsbManager.ACTION_USB_ACCESSORY_DETACHED:
-                accessory = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            case UsbEvent.ACTION_USB_ACCESSORY_DETACHED:
+                accessory = event.getExtras().getParcelable(UsbEvent.PARAM_USB_ACCESSORY);
                 if (DeviceUtil.isKikaGoAccessory(accessory)) {
                     onUsbAccessoryDetached(accessory);
                 }
                 break;
-            case ACTION_USB_ACCESSORY_PERMISSION_GRANTED:
-                accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
-                        && DeviceUtil.isKikaGoAccessory(accessory)) {
-                    onUsbAccessoryPermissionGranted(accessory);
-                } else {
-                    Log.e(TAG, "permission denied for accessory " + accessory);
-                }
-                break;
         }
     }
+
 
     private void onUsbAttached(UsbDevice device) {
         if (mDeviceListener != null) {
@@ -131,11 +126,6 @@ public class UsbDeviceReceiver extends BroadcastReceiver {
         }
     }
 
-    private void onUsbAccessoryPermissionGranted(UsbAccessory accessory) {
-        if (mAccessoryListener != null) {
-            mAccessoryListener.onUsbPermissionGranted(accessory);
-        }
-    }
 
     interface UsbDeviceListener {
 
@@ -151,7 +141,5 @@ public class UsbDeviceReceiver extends BroadcastReceiver {
         void onUsbAttached(UsbAccessory accessory);
 
         void onUsbDetached(UsbAccessory accessory);
-
-        void onUsbPermissionGranted(UsbAccessory accessory);
     }
 }

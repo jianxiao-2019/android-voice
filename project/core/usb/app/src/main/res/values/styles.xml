@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DialogActivity" parent="android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="DialogActivity.Translucent" parent="DialogActivity">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+</resources>
