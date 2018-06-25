@@ -9,6 +9,7 @@ import android.hardware.usb.UsbManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.kikatech.usb.driver.receiver.UsbSysReceiver;
 import com.kikatech.usb.util.DeviceUtil;
 import com.kikatech.voice.util.log.Logger;
 
@@ -42,7 +43,7 @@ public class UsbDeviceManager {
     public UsbDeviceManager(Context context, IUsbAudioDeviceListener listener) {
         mContext = context.getApplicationContext();
         mDeviceReceiver = new UsbDeviceReceiver(mDeviceListener, mAccessoryListener);
-        mDeviceReceiver.register(context);
+        mDeviceReceiver.register();
         mListener = listener;
     }
 
@@ -128,21 +129,18 @@ public class UsbDeviceManager {
         @Override
         public void onUsbAttached(UsbAccessory accessory) {
             Logger.i("onUsbAttached accessory = " + accessory);
-            if (hasPermission(accessory)) {
-                mListener.onAccessoryAttached(accessory);
-            } else {
-                requestPermission(accessory);
-            }
+            mListener.onAccessoryAttached(accessory);
+//    TODO: check if request accessory permission is needed in different android version
+//            if (hasPermission(accessory)) {
+//                mListener.onAccessoryAttached(accessory);
+//            } else {
+//                requestPermission(accessory);
+//            }
         }
 
         @Override
         public void onUsbDetached(@NonNull UsbAccessory accessory) {
             mListener.onAccessoryDetached();
-        }
-
-        @Override
-        public void onUsbPermissionGranted(@NonNull UsbAccessory accessory) {
-            mListener.onAccessoryAttached(accessory);
         }
     };
 
@@ -151,14 +149,15 @@ public class UsbDeviceManager {
         return manager != null && manager.hasPermission(device);
     }
 
-    private boolean hasPermission(UsbAccessory accessory) {
-        UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
-        return manager != null && manager.hasPermission(accessory);
-    }
+//    TODO: check if request accessory permission is needed in different android version
+//    private boolean hasPermission(UsbAccessory accessory) {
+//        UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
+//        return manager != null && manager.hasPermission(accessory);
+//    }
 
     private void requestPermission(UsbDevice device) {
         PendingIntent intent = PendingIntent.getBroadcast(mContext, 0,
-                new Intent(UsbDeviceReceiver.ACTION_USB_DEVICE_PERMISSION_GRANTED), 0);
+                new Intent(UsbSysReceiver.ACTION_USB_DEVICE_PERMISSION_GRANTED), 0);
         UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         if (device != null && manager != null && intent != null) {
             manager.requestPermission(device, intent);
@@ -167,14 +166,16 @@ public class UsbDeviceManager {
         }
     }
 
-    private void requestPermission(UsbAccessory accessory) {
-        PendingIntent intent = PendingIntent.getBroadcast(mContext, 0,
-                new Intent(UsbDeviceReceiver.ACTION_USB_ACCESSORY_PERMISSION_GRANTED), 0);
-        UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
-        if (accessory != null && manager != null && intent != null) {
-            manager.requestPermission(accessory, intent);
-        } else {
-            Log.e(TAG, "requestPermission exception.");
-        }
-    }
+//    TODO: check if request accessory permission is needed in different android version
+//    private void requestPermission(UsbAccessory accessory) {
+//        PendingIntent intent = PendingIntent.getBroadcast(mContext, 0,
+//                new Intent(UsbSysReceiver.ACTION_USB_DEVICE_PERMISSION_GRANTED), 0);
+//        UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
+//        if (accessory != null && manager != null && intent != null) {
+//            manager.requestPermission(accessory, intent);
+//        } else {
+//            Log.e(TAG, "requestPermission exception.");
+//        }
+//    }
+
 }

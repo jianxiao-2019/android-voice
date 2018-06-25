@@ -32,8 +32,12 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.4.0'
+    implementation 'com.android.support:appcompat-v7:25.4.0'
     api files('lib/nc.jar')
+
+    // EventBus
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
 //    implementation 'com.kikatech.voice:voice:1.0.7.5'
     implementation project(':voiceSDK')
 }
