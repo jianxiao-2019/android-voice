@@ -2,6 +2,7 @@ package com.kikatech.voicesdktester.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.voice.VoiceService;
@@ -31,7 +33,9 @@ import com.kikatech.voicesdktester.ui.FileAdapter;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,6 +81,9 @@ public class LocalPlayBackFragment extends Fragment implements
     private ArrayList<String> mItemList = null;
     private int totalItemsCount = 0;
     private String mItemStr = null;
+
+    private List<ResultModel> mResults = new ArrayList<>();
+    private Boolean enableAutoTestResult = true;
 
     public static LocalPlayBackFragment getInstance(FragmentType fragmentType) {
         LocalPlayBackFragment fragment = new LocalPlayBackFragment();
@@ -145,6 +152,7 @@ public class LocalPlayBackFragment extends Fragment implements
         if (mVoiceService != null && mItemList.size() > 0) {
             mItemStr = mItemList.get(0);
             mItemList.remove(mItemStr);
+            mResults.add(new ResultModel(mItemStr));
 
             String path = DebugUtil.getDebugFolderPath();
             if (TextUtils.isEmpty(path)) {
@@ -270,6 +278,13 @@ public class LocalPlayBackFragment extends Fragment implements
         }
         mResultAdapter.addResult(message);
         mResultAdapter.notifyDataSetChanged();
+
+        if (mResults.size() > 0) {
+            TextMessage textMessage = (TextMessage)message;
+            String str = textMessage.text[0].toString();
+            ResultModel resultModel = mResults.get(mResults.size()-1);
+            resultModel.addMessage(str.toLowerCase());
+        }
     }
 
     @Override
@@ -300,7 +315,7 @@ public class LocalPlayBackFragment extends Fragment implements
 
                 onEndOfCurrentPlayback();
             }
-        }, 1000);
+        }, 2000);
     }
 
     private void onEndOfCurrentPlayback() {
@@ -314,17 +329,22 @@ public class LocalPlayBackFragment extends Fragment implements
                 showStatusInfo("completed.");
             }
             scanFiles();
+
+            if (enableAutoTestResult) {
+                try {
+                    exportScliteReslut();
+                    exportAsrReslut();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mResults.clear();
+            }
         } else {
             if (mTextView != null) {
                 showStatusInfo("stopped.");
             }
 
-            mUiHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    onRunNextPlayback();
-                }
-            }, 2000);
+            onRunNextPlayback();
         }
     }
 
@@ -399,5 +419,54 @@ public class LocalPlayBackFragment extends Fragment implements
         if (mTextView != null && info != null && info.length() > 0) {
             mTextView.setText(info + " " + String.valueOf(totalItemsCount - mItemList.size()) + "/" + String.valueOf(totalItemsCount));
         }
+    }
+
+    class ResultModel {
+        private String mFileName;
+        private List<String> mMessages = new ArrayList<>();
+
+        ResultModel(String fileName) {
+            mFileName = fileName;
+        }
+
+        public void addMessage(String message) {
+            mMessages.add(message);
+        }
+    }
+
+    private void exportScliteReslut() throws Exception {
+        final String sdcardFilePath = getContext().getExternalFilesDir(
+                Environment.getDataDirectory().getAbsolutePath()).getAbsolutePath();
+        FileWriter fw = new FileWriter(sdcardFilePath + "/asrResult");
+        final BufferedWriter bw = new BufferedWriter(fw);
+
+        for (ResultModel model : mResults) {
+            for (String message : model.mMessages) {
+                if (message.length() > 0) {
+                    bw.write(message + " ");
+                }
+            }
+            bw.write("(" + model.mFileName + ")");
+            bw.write("\n");
+        }
+
+        bw.close();
+    }
+
+    private void exportAsrReslut() throws Exception {
+        final String sdcardFilePath = getContext().getExternalFilesDir(
+                Environment.getDataDirectory().getAbsolutePath()).getAbsolutePath();
+        FileWriter fw = new FileWriter(sdcardFilePath + "/asrResult.txt");
+        final BufferedWriter bw = new BufferedWriter(fw);
+
+        for (ResultModel model : mResults) {
+            bw.write("(" + model.mFileName + ")" + "\n");
+            for (String message : model.mMessages) {
+                bw.write(message + "\n");
+            }
+            bw.write("\n");
+        }
+
+        bw.close();
     }
 }
