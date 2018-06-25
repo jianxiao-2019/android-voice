@@ -22,4 +22,12 @@ public class DataUtils {
         return floats;
     }
 
+    public static byte[] shortToByte(short[] shorts) {
+        byte[] bytes = new byte[shorts.length * 2];
+        for (int i = 0; i < shorts.length; i++) {
+            bytes[2 * i] = (byte) (shorts[i] & 0xff);
+            bytes[2 * i + 1] = (byte) ((shorts[i] >> 8) & 0xff);
+        }
+        return bytes;
+    }
 }
