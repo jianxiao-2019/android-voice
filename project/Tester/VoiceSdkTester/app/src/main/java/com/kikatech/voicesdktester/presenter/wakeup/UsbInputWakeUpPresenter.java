@@ -41,7 +41,7 @@ public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
         public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached. mIsUsingNc = " + isUsingNc());
             mKikaGoVoiceSource = audioSource;
-            mKikaGoVoiceSource.setKikaBuffer(isUsingNc() ? KikaBuffer.TYPE_NOISC_CANCELLATION : KikaBuffer.TYPE_STEREO_TO_MONO);
+            mKikaGoVoiceSource.setKikaBuffer(isUsingNc() ? KikaBuffer.BufferType.NOISE_CANCELLATION : KikaBuffer.BufferType.STEREO_TO_MONO);
 
             mVoiceSource = mKikaGoVoiceSource;
             attachService();

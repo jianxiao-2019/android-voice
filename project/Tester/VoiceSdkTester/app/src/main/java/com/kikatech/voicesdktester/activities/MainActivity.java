@@ -36,6 +36,7 @@ import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.tts.TtsSource;
+import com.kikatech.voice.core.webservice.command.SocketCommand;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.conf.AsrConfiguration;
@@ -389,7 +390,7 @@ public class MainActivity extends AppCompatActivity implements
 
         findViewById(R.id.button_altering).setOnClickListener(v -> {
             if (mVoiceService != null) {
-                mVoiceService.sendCommand(VoiceService.SERVER_COMMAND_ALTERING, "Send me a taxi in 5 minutes");
+                mVoiceService.sendCommand(SocketCommand.ALTERING, "Send me a taxi in 5 minutes");
             }
         });
 
