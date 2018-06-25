@@ -20,13 +20,15 @@ public class VoiceRecorder {
     private final IVoiceSource mVoiceSource;
     private AudioRecordTask mTask;
 
-    private OnRecorderErrorListener mListener;
+    private IRecorderListener mListener;
 
-    public interface OnRecorderErrorListener {
+    public interface IRecorderListener {
+        void onRecorderData(byte[] data, int length);
+
         void onRecorderError(int errorCode);
     }
 
-    public VoiceRecorder(IVoiceSource voiceSource, IDataPath dataPath, OnRecorderErrorListener listener) {
+    public VoiceRecorder(IVoiceSource voiceSource, IDataPath dataPath, IRecorderListener listener) {
         mVoiceSource = voiceSource;
         mDataPath = dataPath;
         mListener = listener;
@@ -34,6 +36,11 @@ public class VoiceRecorder {
 
     @SuppressWarnings("FieldCanBeLocal")
     private final AudioRecordTask.IRecordingListener mRecordingListener = new AudioRecordTask.IRecordingListener() {
+        @Override
+        public void onData(byte[] data, int length) {
+            dispatchData(data, length);
+        }
+
         @Override
         public void onError(int error) {
             switch (error) {
@@ -43,6 +50,12 @@ public class VoiceRecorder {
                 case AudioRecordTask.RecordingError.RECORD_FAILED:
                     dispatchError(ERR_RECORD_FAIL);
                     break;
+            }
+        }
+
+        private synchronized void dispatchData(byte[] data, int length) {
+            if (mListener != null) {
+                mListener.onRecorderData(data, length);
             }
         }
 

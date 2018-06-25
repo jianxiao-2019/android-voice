@@ -91,6 +91,10 @@ public class AudioRecordTask implements IRunnable {
             final byte[] audioData = new byte[BUFFER_SIZE];
             final int readSize = mVoiceSource.read(audioData, 0, BUFFER_SIZE);
 
+            if (mListener != null) {
+                mListener.onData(audioData, readSize);
+            }
+
             if (readSize > 0) {
                 mDataPathExecutor.execute(new Runnable() {
                     @Override
@@ -157,6 +161,8 @@ public class AudioRecordTask implements IRunnable {
     }
 
     public interface IRecordingListener {
+        void onData(byte[] data, int length);
+
         void onError(@RecordingError int error);
     }
 }

@@ -39,7 +39,7 @@ import java.util.Arrays;
  */
 
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
-        VoiceRecorder.OnRecorderErrorListener {
+        VoiceRecorder.IRecorderListener {
     // TODO: refactor latter
     private SharedPreferences sPref;
     private SharedPreferences.Editor sEditor;
@@ -73,6 +73,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private boolean mIsStarting = false;
 
     private VoiceConfiguration.SpeechMode mCurrentSpeechMode = VoiceConfiguration.SpeechMode.CONVERSATION;
+
+    @Override
+    public void onRecorderData(byte[] data, int length) {
+        if (mVoiceDataListener != null) {
+            mVoiceDataListener.onData(data, length);
+        }
+    }
 
     @Override
     public void onRecorderError(final int errorCode) {
@@ -518,6 +525,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     public void setVoiceWakeUpListener(VoiceWakeUpListener listener) {
         mVoiceWakeUpListener = listener;
+    }
+
+    public void setVoiceDataListener(VoiceDataListener listener) {
+        mVoiceDataListener = listener;
     }
 
     private class VoiceDataSender extends IDataPath {
