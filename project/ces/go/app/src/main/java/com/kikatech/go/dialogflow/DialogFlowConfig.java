@@ -2,10 +2,13 @@ package com.kikatech.go.dialogflow;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.go.dialogflow.apiai.TutorialAgentCreator;
+import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.HttpClient.HttpClientExecutor;
 import com.kikatech.go.util.HttpClient.HttpClientTask;
 import com.kikatech.go.util.HttpClient.HttpClientUtil;
@@ -17,6 +20,14 @@ import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voice.wakeup.SnowBoyDetector;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * Created by bradchang on 2017/11/7.
@@ -36,25 +47,16 @@ public class DialogFlowConfig {
 
     private static final String API_GOOGLE_AUTH_JSON_URL = "http://api-dev.kika.ai/v3/auth/getGoogleKey";
 
+    private static final boolean DEBUG_AUTH = false;
+
+
     public static void getVoiceConfig(Context ctx, KikaGoVoiceSource audioSource, final IConfigListener listener) {
         final VoiceConfiguration configuration = __getVoiceConfig(ctx, audioSource);
-        HttpClientExecutor.getIns().asyncGET(API_GOOGLE_AUTH_JSON_URL, false, new HttpClientTask.HttpClientCallback() {
+        __getGoogleAuthFile(ctx, new IGoogleAuthFileListener() {
             @Override
-            public void onResponse(Bundle result) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logw(TAG, "onResponse");
-                }
-                String json = getGoogleSpeechAuthJsonFromHttpResult(result);
+            public void onLoaded(String json) {
                 if (!TextUtils.isEmpty(json)) {
                     configuration.setWebSocket(new GoogleApi(json));
-                }
-                dispatchConfiguration(listener, configuration);
-            }
-
-            @Override
-            public void onError(String error) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logw(TAG, String.format("onError, error: %s", error));
                 }
                 dispatchConfiguration(listener, configuration);
             }
@@ -63,23 +65,11 @@ public class DialogFlowConfig {
 
     public static void getTutorialConfig(Context ctx, KikaGoVoiceSource audioSource, final IConfigListener listener) {
         final VoiceConfiguration configuration = __getTutorialConfig(ctx, audioSource);
-        HttpClientExecutor.getIns().asyncGET(API_GOOGLE_AUTH_JSON_URL, false, new HttpClientTask.HttpClientCallback() {
+        __getGoogleAuthFile(ctx, new IGoogleAuthFileListener() {
             @Override
-            public void onResponse(Bundle result) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logw(TAG, "onResponse");
-                }
-                String json = getGoogleSpeechAuthJsonFromHttpResult(result);
+            public void onLoaded(String json) {
                 if (!TextUtils.isEmpty(json)) {
                     configuration.setWebSocket(new GoogleApi(json));
-                }
-                dispatchConfiguration(listener, configuration);
-            }
-
-            @Override
-            public void onError(String error) {
-                if (LogUtil.DEBUG) {
-                    LogUtil.logw(TAG, String.format("onError, error: %s", error));
                 }
                 dispatchConfiguration(listener, configuration);
             }
@@ -136,9 +126,65 @@ public class DialogFlowConfig {
         return conf;
     }
 
-    private static String getGoogleSpeechAuthJsonFromHttpResult(Bundle result) {
+    private static void __getGoogleAuthFile(final Context context, @NonNull final IGoogleAuthFileListener listener) {
+        if (DEBUG_AUTH) {
+            BackgroundThread.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onLoaded(__getGoogleSpeechAuthJsonFromRaw(context));
+                }
+            });
+        } else {
+            HttpClientExecutor.getIns().asyncGET(API_GOOGLE_AUTH_JSON_URL, false, new HttpClientTask.HttpClientCallback() {
+                @Override
+                public void onResponse(Bundle result) {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, "onResponse");
+                    }
+                    String json = __getGoogleSpeechAuthJsonFromHttpResult(result);
+                    listener.onLoaded(json);
+                }
+
+                @Override
+                public void onError(String error) {
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, String.format("onError, error: %s", error));
+                    }
+                    listener.onLoaded(null);
+                }
+            });
+        }
+    }
+
+    private static String __getGoogleSpeechAuthJsonFromRaw(Context context) {
         if (LogUtil.DEBUG) {
-            LogUtil.log(TAG, "getGoogleSpeechAuthJsonFromHttpResult");
+            LogUtil.log(TAG, "__getGoogleSpeechAuthJsonFromRaw");
+        }
+        InputStream is = context.getResources().openRawResource(R.raw.google_speech);
+//        InputStream is = context.getResources().openRawResource(R.raw.google_speech_0);
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return writer.toString();
+    }
+
+    private static String __getGoogleSpeechAuthJsonFromHttpResult(Bundle result) {
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "__getGoogleSpeechAuthJsonFromHttpResult");
         }
         if (result == null) {
             if (LogUtil.DEBUG) {
@@ -167,6 +213,10 @@ public class DialogFlowConfig {
         if (listener != null) {
             listener.onDone(config);
         }
+    }
+
+    public interface IGoogleAuthFileListener {
+        void onLoaded(String json);
     }
 
     public interface IConfigListener {
