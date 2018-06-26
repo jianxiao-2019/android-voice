@@ -59,10 +59,10 @@ public class ItemWakeUpTip extends WindowFloatingItem {
     public void updateBackgroundRes(int gravity) {
         switch (gravity) {
             case Gravity.LEFT:
-                mBinding.gmapMsg.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
+                mBinding.gmapMsg.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
                 break;
             case Gravity.RIGHT:
-                mBinding.gmapMsg.setBackgroundResource(R.drawable.kika_gmap_msg_1line_left);
+                mBinding.gmapMsg.setBackgroundResource(R.drawable.kika_gmap_msg_1line);
                 break;
         }
     }

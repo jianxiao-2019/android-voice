@@ -65,6 +65,10 @@ class BaseFloatingManager {
         return DEVICE_WIDTH;
     }
 
+    int getDeviceHeight() {
+        return DEVICE_HEIGHT;
+    }
+
     int getDeviceWidthByOrientation() {
         try {
             switch (mConfiguration.orientation) {

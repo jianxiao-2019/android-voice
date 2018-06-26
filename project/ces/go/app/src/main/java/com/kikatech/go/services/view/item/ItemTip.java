@@ -48,10 +48,10 @@ public class ItemTip extends WindowFloatingItem {
     public void updateBackgroundRes(int gravity) {
         switch (gravity) {
             case Gravity.LEFT:
-                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_2line);
+                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_2line_left);
                 break;
             case Gravity.RIGHT:
-                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_2line_left);
+                mItemView.setBackgroundResource(R.drawable.kika_gmap_msg_2line);
                 break;
         }
     }
