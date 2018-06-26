@@ -53,6 +53,10 @@ class BaseEvent {
         extras.putFloat(key, value);
     }
 
+    public void putExtra(String key, long value) {
+        extras.putLong(key, value);
+    }
+
     public void putExtra(String key, Serializable value) {
         extras.putSerializable(key, value);
     }
