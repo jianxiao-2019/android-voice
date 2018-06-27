@@ -1,17 +1,21 @@
 package com.kikatech.voice.util.contact;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
+import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.fuzzy.FuzzySearchManager;
 import com.kikatech.voice.util.log.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author SkeeterWang Created on 2017/11/9.
@@ -20,8 +24,12 @@ public class ContactManager {
 
     public static final String TAG = "ContactManager";
 
+
     private static ContactManager sIns;
     private final HashMap<String, PhoneBookContact> mPhoneBook = new HashMap<>();
+    private ContactObserver mObserver;
+    private Context mContext;
+    private AtomicBoolean mIsObserverInit = new AtomicBoolean(false);
 
     private int mPhoneTypeIdx = -1;
     private int mPhoneLabelIdx = -1;
@@ -33,44 +41,99 @@ public class ContactManager {
         return sIns;
     }
 
+    private ContactObserver.IContactListener mListener = new ContactObserver.IContactListener() {
+        @Override
+        public void onContactChanged() {
+            doOnContactChanged();
+        }
+
+        private void doOnContactChanged() {
+            if (Logger.DEBUG) {
+                Logger.i(TAG, "doOnContactChanged");
+            }
+            synchronized (mPhoneBook) {
+                if (mPhoneBook.size() != 0) {
+                    mPhoneBook.clear();
+                }
+            }
+            updatePhoneBook(mContext);
+        }
+    };
+
+
     public void init(final Context ctx) {
         if (Logger.DEBUG) {
             Logger.i(TAG, "init ...");
         }
-        int phoneBookCount;
-        synchronized (mPhoneBook) {
-            phoneBookCount = mPhoneBook.size();
+        mContext = ctx.getApplicationContext();
+        updatePhoneBook(ctx);
+        checkContactObserver(ctx);
+    }
+
+    public void release(final Context ctx) {
+        if (Logger.DEBUG) {
+            Logger.i(TAG, "release ...");
         }
+        mPhoneBook.clear();
+        if (mObserver != null) {
+            mObserver.unregister(ctx);
+            mObserver = null;
+        }
+        mIsObserverInit.set(false);
+        mContext = null;
+    }
 
-        if (phoneBookCount == 0) {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "init phone book info");
+
+    private void checkContactObserver(Context ctx) {
+        boolean toInit = mIsObserverInit.compareAndSet(false, true);
+        if (Logger.DEBUG) {
+            Logger.v(TAG, String.format("checkContactObserver, toInit: %s", toInit));
+        }
+        if (toInit) {
+            if (mObserver == null) {
+                mObserver = new ContactObserver(mListener);
+                mObserver.register(ctx);
             }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (mPhoneBook) {
-                        if (mPhoneBook.size() == 0) {
-                            final long t = System.currentTimeMillis();
-                            HashMap<String, PhoneBookContact> pb = getPhoneBook(ctx);
-                            mPhoneBook.clear();
-                            if (pb != null && pb.size() > 0) {
-                                mPhoneBook.putAll(pb);
-                            }
-
-                            if (Logger.DEBUG) {
-                                Logger.i(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
-                            }
-                        } else if (Logger.DEBUG) {
-                            Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
-                        }
-                    }
-                }
-            }).start();
-        } else if (Logger.DEBUG) {
-            Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
         }
     }
+
+    private void updatePhoneBook(final Context ctx) {
+        synchronized (mPhoneBook) {
+            if (mPhoneBook.size() == 0) {
+                if (Logger.DEBUG) {
+                    Logger.i(TAG, "init phone book info");
+                }
+                AsyncThread.getIns().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        __updatePhoneBook(ctx);
+                    }
+                });
+            } else if (Logger.DEBUG) {
+                Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
+            }
+        }
+    }
+
+    private void __updatePhoneBook(final Context ctx) {
+        synchronized (mPhoneBook) {
+            if (mPhoneBook.size() == 0) {
+                final long t = System.currentTimeMillis();
+                HashMap<String, PhoneBookContact> pb = getPhoneBook(ctx);
+                mPhoneBook.clear();
+                if (pb != null && pb.size() > 0) {
+                    mPhoneBook.putAll(pb);
+                }
+
+                if (Logger.DEBUG) {
+                    Logger.i(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
+                }
+            } else if (Logger.DEBUG) {
+                Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
+            }
+        }
+    }
+
 
     private MatchedContact findFullMatchedName(String[] targetNames, HashMap<String, PhoneBookContact> phoneBook) {
         String[] contactNames = phoneBook.size() > 0 ? phoneBook.keySet().toArray(new String[phoneBook.size()]) : null;
@@ -128,6 +191,7 @@ public class ContactManager {
         return null;
     }
 
+
     public MatchedContact findContact(final Context ctx, final String targetName) {
         return findContact(ctx, new String[]{targetName});
     }
@@ -171,6 +235,7 @@ public class ContactManager {
         }
         return number;
     }
+
 
     private synchronized HashMap<String, PhoneBookContact> getPhoneBook(Context ctx) {
         Cursor phones;
@@ -226,6 +291,7 @@ public class ContactManager {
         return phoneBook.size() > 0 ? phoneBook : null;
     }
 
+
     private String queryPhoneType(Context ctx, String phoneNumber) {
         Cursor phoneCur = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?", new String[]{phoneNumber}, null);
@@ -267,6 +333,7 @@ public class ContactManager {
             mPhoneLabelIdx = phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL);
         }
     }
+
 
     public static class NumberType {
         public String number;
@@ -364,6 +431,61 @@ public class ContactManager {
                 }
                 Logger.d(TAG, "------------------------------");
             }
+        }
+    }
+
+
+    private static class ContactObserver extends ContentObserver {
+        private static final Uri CONTACT_URI = ContactsContract.Contacts.CONTENT_URI;
+
+        private static final long UPDATE_THRESHOLD = 10000;
+
+        private IContactListener mListener;
+        private long mLastUpdateTime = 0;
+
+        private ContactObserver(IContactListener listener) {
+            super(null);
+            mListener = listener;
+        }
+
+        private synchronized void register(Context context) {
+            try {
+                context.getContentResolver().registerContentObserver(CONTACT_URI, false, this);
+            } catch (Exception ignore) {
+            }
+        }
+
+        private synchronized void unregister(Context context) {
+            try {
+                context.getContentResolver().unregisterContentObserver(this);
+            } catch (Exception ignore) {
+            }
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            if (Logger.DEBUG) {
+                Logger.d(TAG, String.format("onChange, selfChange: %s", selfChange));
+            }
+            long currentTimestamp = System.currentTimeMillis();
+            boolean shouldUpdate = (currentTimestamp - mLastUpdateTime) > UPDATE_THRESHOLD;
+            if (!shouldUpdate) {
+                return;
+            }
+            mLastUpdateTime = currentTimestamp;
+            if (mListener != null) {
+                mListener.onContactChanged();
+            }
+        }
+
+        private interface IContactListener {
+            void onContactChanged();
         }
     }
 }

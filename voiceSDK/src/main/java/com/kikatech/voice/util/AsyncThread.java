@@ -1,5 +1,8 @@
 package com.kikatech.voice.util;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -13,9 +16,12 @@ public class AsyncThread {
 
     private ScheduledThreadPoolExecutor mExecutor;
 
+    private Map<Runnable, ScheduledFuture> mTasks = new HashMap<>();
+
     public static synchronized AsyncThread getIns() {
-        if (sIns == null)
+        if (sIns == null) {
             sIns = new AsyncThread();
+        }
         return sIns;
     }
 
@@ -23,16 +29,28 @@ public class AsyncThread {
         mExecutor = new ScheduledThreadPoolExecutor(POOL_SIZE, new ScheduledThreadPoolExecutor.DiscardOldestPolicy());
     }
 
-    public void execute(Runnable runnable) {
-        mExecutor.execute(runnable);
+
+    public synchronized void execute(Runnable runnable) {
+        executeDelay(runnable, 0);
     }
 
-    public void executeDelay(Runnable runnable, long delay) {
-        mExecutor.schedule(runnable, delay, TimeUnit.MILLISECONDS);
+    public synchronized void executeDelay(Runnable runnable, long delay) {
+        ScheduledFuture task = mExecutor.schedule(runnable, delay, TimeUnit.MILLISECONDS);
+        mTasks.put(runnable, task);
     }
 
-    public void remove(Runnable runnable) {
-        mExecutor.remove(runnable);
+    public synchronized void remove(Runnable runnable) {
+        ScheduledFuture task = mTasks.get(runnable);
+        if (task != null) {
+            boolean removed = mExecutor.remove(runnable);
+            if (!removed) {
+                boolean cancelled = task.cancel(true);
+                if (cancelled) {
+                    mExecutor.purge();
+                }
+            }
+            mTasks.remove(runnable);
+        }
     }
 
     public synchronized boolean isBusy() {
