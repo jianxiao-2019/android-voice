@@ -51,6 +51,8 @@ public class KikaGoVoiceSource implements IVoiceSource {
 
     private FileWriter mFileWriter;
 
+    private boolean isAmplifyDB = false;
+
     public interface OnOpenedCallback {
         void onOpened(int state);
     }
@@ -114,6 +116,12 @@ public class KikaGoVoiceSource implements IVoiceSource {
         mDbUtil.setDbCallback(mDbCallback);
 
         mFileWriter = DebugUtil.isDebug() ? new FileWriter("_USB", null) : null;
+
+        if (getNcVersion() == 50750) {
+            isAmplifyDB = true;
+        } else {
+            isAmplifyDB = false;
+        }
     }
 
     public void updateFileWriter() {
@@ -183,14 +191,18 @@ public class KikaGoVoiceSource implements IVoiceSource {
     @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
         int readInt = mKikaBuffer.read(audioData, offsetInBytes, sizeInBytes);
-        short[] shorts = DataUtils.byteToShort(audioData, audioData.length / 2);
-        for (int i = 0; i < shorts.length; i++) {
-            shorts[i] = (short) (shorts[i] * 2);
+        
+        if (isAmplifyDB) {
+            short[] shorts = DataUtils.byteToShort(audioData, audioData.length / 2);
+            for (int i = 0; i < shorts.length; i++) {
+                shorts[i] = (short) (shorts[i] * 2);
+            }
+            byte[] amplifiedData = DataUtils.shortToByte(shorts);
+            for (int i = 0; i < audioData.length; i++) {
+                audioData[i] = amplifiedData[i];
+            }
         }
-        byte[] amplifiedData = DataUtils.shortToByte(shorts);
-        for (int i = 0; i < audioData.length; i++) {
-            audioData[i] = amplifiedData[i];
-        }
+
         return readInt;
     }
 

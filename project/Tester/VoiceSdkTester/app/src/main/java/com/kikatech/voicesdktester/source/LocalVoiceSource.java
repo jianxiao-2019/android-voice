@@ -4,7 +4,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kikatech.usb.buffer.KikaBuffer;
+import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.recorder.IVoiceSource;
+import com.kikatech.voice.core.util.DataUtils;
 import com.kikatech.voice.util.log.Logger;
 
 import java.io.BufferedInputStream;
@@ -30,6 +32,8 @@ public abstract class LocalVoiceSource implements IVoiceSource {
 
     private AtomicBoolean mIsStopped = new AtomicBoolean(false);
 
+    private boolean isAmplifyDB = false;
+
     public interface EofListener {
         void onEndOfFile();
     }
@@ -42,6 +46,15 @@ public abstract class LocalVoiceSource implements IVoiceSource {
     @Override
     public boolean open() {
         mKikaBuffer.create();
+        if (mKikaBuffer instanceof KikaNcBuffer) {
+            if (KikaNcBuffer.getVersion() == 50750) {
+                isAmplifyDB = true;
+            } else {
+                isAmplifyDB = false;
+            }
+        } else {
+            isAmplifyDB = false;
+        }
         return true;
     }
 
@@ -64,6 +77,18 @@ public abstract class LocalVoiceSource implements IVoiceSource {
                     if (result <= 0) {
                         break;
                     }
+
+                    if (isAmplifyDB) {
+                        short[] shorts = DataUtils.byteToShort(audioData, audioData.length / 2);
+                        for (int i = 0; i < shorts.length; i++) {
+                            shorts[i] = (short) (shorts[i] * 2);
+                        }
+                        byte[] amplifiedData = DataUtils.shortToByte(shorts);
+                        for (int i = 0; i < audioData.length; i ++) {
+                            audioData[i] = amplifiedData[i];
+                        }
+                    }
+
                     mKikaBuffer.onData(audioData, result);
                     Logger.v("LocalVoiceSource read from local (d) result = " + result);
                     long sleepTime = FRAME_LENGTH - (System.currentTimeMillis() - begin);
