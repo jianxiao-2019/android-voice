@@ -305,19 +305,9 @@ public class KikaGoActivity extends BaseDrawerActivity {
                 initUiTaskManager();
                 DialogFlowForegroundService.processStart(KikaGoActivity.this, DialogFlowForegroundService.class);
                 DialogFlowForegroundService.processPingDialogFlowStatus();
-
                 if (GlobalPref.getIns().isFirstLaunch()) {
                     CustomConfig.removeAllCustomConfigFiles();
                 }
-
-//                if (LogUtil.DEBUG) {
-//                    String sen = CustomConfig.getSnowboySensitivity();
-//                    int timeout = CustomConfig.getKikaTtsServerTimeout();
-//                    String msg = "[config] Sensitivity: " + sen + " , Timeout: " + timeout + " ms";
-//                    showLongToast(msg);
-//                    LogUtil.log(TAG, msg);
-//                }
-
                 break;
         }
     }
@@ -352,6 +342,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
         }
         unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaGoActivity.this, DialogFlowForegroundService.class);
+        ContactManager.getIns().release(this);
         super.onDestroy();
     }
 
