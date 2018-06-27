@@ -73,7 +73,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
      * @param event event sent to {@link com.kikatech.go.services.DialogFlowForegroundService}
      */
     @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onToServiceEvent(ToDFServiceEvent event) {
         if (event == null) {
             return;
