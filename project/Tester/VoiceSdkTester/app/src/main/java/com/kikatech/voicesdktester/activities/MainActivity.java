@@ -48,6 +48,7 @@ import com.kikatech.voice.wakeup.SnowBoyDetector;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
+import com.kikatech.voicesdktester.utils.VoiceConfig;
 import com.kikatech.voicesdktester.wave.draw.WaveCanvas;
 import com.kikatech.voicesdktester.wave.view.WaveSurfaceView;
 import com.xiao.usbaudio.AudioPlayBack;
@@ -715,15 +716,19 @@ public class MainActivity extends AppCompatActivity implements
                 .setEngine("google")
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
-        mVoiceService = VoiceService.getService(this, conf);
-        mVoiceService.setVoiceDataListener(this);
-        mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.setVoiceDataListener(this);
-        mVoiceService.create();
 
-        if (mKikaGoVoiceSource != null) {
-            mKikaGoVoiceSource.updateFileWriter();
-        }
+        VoiceConfig.getVoiceConfig(this, conf, config -> {
+            mVoiceService = VoiceService.getService(this, config);
+            mVoiceService.setVoiceDataListener(this);
+            mVoiceService.setVoiceRecognitionListener(this);
+            mVoiceService.setVoiceDataListener(this);
+            mVoiceService.create();
+
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.updateFileWriter();
+            }
+        });
+
     }
 
     @Override

@@ -27,6 +27,7 @@ import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.source.LocalNcVoiceSource;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
+import com.kikatech.voicesdktester.utils.VoiceConfig;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -240,9 +241,11 @@ public class AutoTestActivity extends AppCompatActivity implements
                 .setEngine("google")
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
-        mVoiceService = VoiceService.getService(this, conf);
-        mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.create();
+        VoiceConfig.getVoiceConfig(this, conf, config -> {
+            mVoiceService = VoiceService.getService(this, config);
+            mVoiceService.setVoiceRecognitionListener(this);
+            mVoiceService.create();
+        });
     }
 
     @Override

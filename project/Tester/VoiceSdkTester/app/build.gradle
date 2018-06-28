@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 ext {
     support_version = "25.4.0"
+    guava_version = "18.0"
+    retrofit_version = "2.3.0"
 }
 
 android {
@@ -29,6 +31,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    configurations.all {
+        resolutionStrategy {
+            force "com.google.guava:guava:$guava_version"
+            force "com.google.code.findbugs:jsr305:2.0.1"
+        }
+    }
 }
 
 dependencies {
@@ -44,8 +52,14 @@ dependencies {
     implementation "com.android.support:design:$support_version"
     implementation project(':voiceSDK')
     implementation project(':wakeup')
+    implementation project(':googleCloudSpeech')
     implementation project(path: ':usb')
     implementation 'com.android.support:multidex:1.0.0'
+    // Guava
+    implementation "com.google.guava:guava:$guava_version"
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
 //    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 //    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'

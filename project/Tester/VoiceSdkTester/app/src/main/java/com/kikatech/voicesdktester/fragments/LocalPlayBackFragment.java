@@ -32,6 +32,7 @@ import com.kikatech.voicesdktester.source.LocalVoiceSource;
 import com.kikatech.voicesdktester.ui.FileAdapter;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
+import com.kikatech.voicesdktester.utils.VoiceConfig;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -260,9 +261,11 @@ public class LocalPlayBackFragment extends Fragment implements
                 .setEngine("google")
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
-        mVoiceService = VoiceService.getService(getActivity(), conf);
-        mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.create();
+        VoiceConfig.getVoiceConfig(getActivity(), conf, config -> {
+            mVoiceService = VoiceService.getService(getActivity(), config);
+            mVoiceService.setVoiceRecognitionListener(this);
+            mVoiceService.create();
+        });
     }
 
     @Override

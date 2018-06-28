@@ -27,6 +27,7 @@ import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
+import com.kikatech.voicesdktester.utils.VoiceConfig;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -224,9 +225,11 @@ public class RecorderFragment extends PageFragment implements
                 .setEngine("google")
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
-        mVoiceService = VoiceService.getService(getActivity(), conf);
-        mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.create();
+        VoiceConfig.getVoiceConfig(getActivity(), conf, config -> {
+            mVoiceService = VoiceService.getService(getActivity(), config);
+            mVoiceService.setVoiceRecognitionListener(this);
+            mVoiceService.create();
+        });
     }
 
     @Override

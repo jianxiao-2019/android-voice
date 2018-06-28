@@ -12,6 +12,7 @@ import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voice.wakeup.SnowBoyDetector;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
+import com.kikatech.voicesdktester.utils.VoiceConfig;
 
 import java.io.File;
 
@@ -39,7 +40,9 @@ public abstract class WakeUpPresenter implements
 
     public interface PresenterCallback {
         void onUpdateStatus(String status);
+
         void onReadyStateChanged(boolean ready);
+
         void onWakeUpResult(boolean success);
     }
 
@@ -96,10 +99,12 @@ public abstract class WakeUpPresenter implements
                 .setEngine("google")
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
-        mVoiceService = VoiceService.getService(mContext, conf);
-        mVoiceService.setVoiceRecognitionListener(this);
-        mVoiceService.setVoiceWakeUpListener(this);
-        mVoiceService.create();
+        VoiceConfig.getVoiceConfig(mContext, conf, config -> {
+            mVoiceService = VoiceService.getService(mContext, config);
+            mVoiceService.setVoiceRecognitionListener(this);
+            mVoiceService.setVoiceWakeUpListener(this);
+            mVoiceService.create();
+        });
     }
 
     @Override
@@ -160,6 +165,7 @@ public abstract class WakeUpPresenter implements
     }
 
     public abstract void prepare();
+
     public abstract void setFilePath(String filePath);
 
     public void setPresenterCallback(PresenterCallback callback) {
