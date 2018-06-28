@@ -15,11 +15,11 @@ import com.kikatech.go.util.HttpClient.HttpClientUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.google.cloud.speech.GoogleAesUtil;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
-import com.kikatech.voice.core.webservice.impl.GoogleApi;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voice.wakeup.SnowBoyDetector;
+import com.kikatech.voice.webservice.google_cloud_speech.GoogleApi;
 
 import java.io.BufferedReader;
 import java.io.IOException;

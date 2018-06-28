@@ -134,6 +134,7 @@ dependencies {
 //    implementation 'com.kikatech.voice:wakeup:1.0.7.5'
     implementation project(':voiceSDK')
     implementation project(':wakeup')
+    implementation project(':googleCloudSpeech')
 }
 
 crashlytics {
