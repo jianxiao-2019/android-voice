@@ -9,8 +9,9 @@ import com.kikatech.voice.core.debug.ReportUtil;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.VoiceRecorder;
-import com.kikatech.voice.core.webservice.WebSocket;
+import com.kikatech.voice.core.webservice.IWebSocket;
 import com.kikatech.voice.core.webservice.command.SocketCommand;
+import com.kikatech.voice.core.webservice.impl.WebSocket;
 import com.kikatech.voice.core.webservice.message.AlterMessage;
 import com.kikatech.voice.core.webservice.message.BosMessage;
 import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
@@ -53,10 +54,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private static final int MSG_VAD_EOS = 2;
 
     private VoiceConfiguration mConf;
-    private WebSocket mWebService;
+    private IWebSocket mWebService;
 
-    private final WakeUpDetector mWakeUpDetector;
-    private final VoiceRecorder mVoiceRecorder;
+    private WakeUpDetector mWakeUpDetector;
+    private VoiceRecorder mVoiceRecorder;
 
     private VoiceRecognitionListener mVoiceRecognitionListener;
     private VoiceWakeUpListener mVoiceWakeUpListener;
@@ -151,22 +152,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         sEditor = sPref.edit();
 
         mConf = conf;
-
-        IDataPath finalPath = new VoiceService.VoiceDataSender(null);
-        mWakeUpDetector = mConf.getWakeUpDetector();
-        if (mWakeUpDetector != null) {
-            mWakeUpDetector.setOnHotWordDetectListener(this);
-        }
-        IDataPath dataPath = VoicePathConnector.genDataPath(mConf, finalPath);
-        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), dataPath, this);
-
-        if (conf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
-            mConf.getConnectionConfiguration().url = "ws://api-dev.kika.ai/v3/ns";
-
-            mConf.getConnectionConfiguration().bundle.putString("sid", "0");
-            mConf.getConnectionConfiguration().bundle.putString("type", "wakeup");
-            mConf.getConnectionConfiguration().bundle.putString("format", "pcm");
-        }
     }
 
     public static VoiceService getService(Context context, VoiceConfiguration conf) {
@@ -182,8 +167,31 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mMainThreadHandler = new Handler();
         mTimerHandler = new TimerHandler();
 
-        mWebService = WebSocket.openConnection(mWebSocketListener);
+        IWebSocket configWebSocket = mConf.getWebSocket();
+        if (configWebSocket != null) {
+            mWebService = configWebSocket;
+        } else {
+            mWebService = new WebSocket();
+            mConf.setWebSocket(mWebService);
+        }
+        mWebService.setListener(mWebSocketListener);
         mWebService.connect(mConf);
+
+        IDataPath finalPath = new VoiceService.VoiceDataSender(null);
+        mWakeUpDetector = mConf.getWakeUpDetector();
+        if (mWakeUpDetector != null) {
+            mWakeUpDetector.setOnHotWordDetectListener(this);
+        }
+        IDataPath dataPath = VoicePathConnector.genDataPath(mConf, finalPath);
+        mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), dataPath, this);
+
+        if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
+            mConf.getConnectionConfiguration().url = "ws://api-dev.kika.ai/v3/ns";
+
+            mConf.getConnectionConfiguration().bundle.putString("sid", "0");
+            mConf.getConnectionConfiguration().bundle.putString("type", "wakeup");
+            mConf.getConnectionConfiguration().bundle.putString("format", "pcm");
+        }
 
         mVoiceRecorder.open();
         EventBus.getDefault().register(this);
@@ -404,7 +412,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mConf.updateAsrConfiguration(conf);
     }
 
-    private WebSocket.OnWebSocketListener mWebSocketListener = new WebSocket.OnWebSocketListener() {
+    private IWebSocket.OnWebSocketListener mWebSocketListener = new IWebSocket.OnWebSocketListener() {
         @Override
         public void onMessage(final Message message) {
             if (mMainThreadHandler != null) {
@@ -459,36 +467,36 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         @Override
-        public void onWebSocketClosed() {
-            Logger.d("[WebSocketListener] onWebSocketClosed");
-            if (mMainThreadHandler != null) {
-                mMainThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mIsStarting) {
-                            handleError(ERR_CONNECTION_ERROR);
-                        }
-                    }
-                });
-            } else {
-                Logger.d("Don't invoke this method after destroyed.");
+        public void onError(int errorCode) {
+            Logger.d(String.format("[WebSocketListener] onError: %s", errorCode));
+            if (mMainThreadHandler == null) {
+                Logger.w("Don't invoke this method after destroyed.");
+                return;
             }
-        }
-
-        @Override
-        public void onWebSocketError() {
-            Logger.d("[WebSocketListener] onWebSocketError");
-            if (mMainThreadHandler != null) {
-                mMainThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mIsStarting) {
-                            handleError(ERR_CONNECTION_ERROR);
+            switch (errorCode) {
+                case IWebSocket.WebSocketError.WEB_SOCKET_CLOSED:
+                    mMainThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mIsStarting) {
+                                handleError(ERR_CONNECTION_ERROR);
+                            }
                         }
-                    }
-                });
-            } else {
-                Logger.d("Don't invoke this method after destroyed.");
+                    });
+                    break;
+                case IWebSocket.WebSocketError.DATA_ERROR:
+                    mMainThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mIsStarting) {
+                                handleError(ERR_CONNECTION_ERROR);
+                            }
+                        }
+                    });
+                    break;
+                case IWebSocket.WebSocketError.EMPTY_RESULT:
+                    handleError(ERR_NO_SPEECH);
+                    break;
             }
         }
     };
@@ -530,6 +538,22 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         @Override
+        public void start() {
+            super.start();
+            if (mWebService != null) {
+                mWebService.onStart();
+            }
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            if (mWebService != null) {
+                mWebService.onStop();
+            }
+        }
+
+        @Override
         public void onData(byte[] data, int length) {
             Logger.v("[VoiceDataSender] onData");
             if (mWebService != null) {
@@ -543,6 +567,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                     data = Arrays.copyOf(data, length);
                 }
                 mWebService.sendData(data);
+            } else {
+                Logger.v("SkTest", "invalid WebService");
             }
         }
     }

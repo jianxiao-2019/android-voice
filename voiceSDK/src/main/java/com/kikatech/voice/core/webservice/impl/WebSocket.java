@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.webservice;
+package com.kikatech.voice.core.webservice.impl;
 
 import android.text.TextUtils;
 
@@ -7,9 +7,9 @@ import com.kikatech.voice.core.webservice.data.SendingDataByte;
 import com.kikatech.voice.core.webservice.data.SendingDataString;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.helper.MsgHelper;
+import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration.ConnectionConfiguration;
-import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 
 import org.java_websocket.client.WebSocketClient;
@@ -29,15 +29,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.kikatech.voice.core.webservice.WebSocket.SocketState.CONNECTED;
-import static com.kikatech.voice.core.webservice.WebSocket.SocketState.CONNECTING;
-import static com.kikatech.voice.core.webservice.WebSocket.SocketState.DISCONNECTED;
+import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.CONNECTED;
+import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.CONNECTING;
+import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.DISCONNECTED;
 
 /**
  * Created by tianli on 17-10-28.
  */
 
-public class WebSocket {
+public class WebSocket extends BaseWebSocket {
     private static final String VERSION = "3";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
@@ -46,42 +46,24 @@ public class WebSocket {
     private static final int HEARTBEAT_DURATION = 10 * 1000;
 
     private VoiceWebSocketClient mClient;
-    private OnWebSocketListener mListener;
 
-    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private AtomicBoolean mReleased = new AtomicBoolean(false);
     private int mReconnectTimes = 0;
-
-    private final LinkedList<SendingData> mSendBuffer = new LinkedList<>();
 
     private VoiceConfiguration mVoiceConfiguration;
     private Timer mTimer;
 
-    private MsgHelper mMsgHelper = new MsgHelper();;
+    private MsgHelper mMsgHelper = new MsgHelper();
 
     private SocketState mSocketState = DISCONNECTED;
+
     enum SocketState {
         DISCONNECTED,
         CONNECTING,
         CONNECTED,
     }
 
-    public static WebSocket openConnection(OnWebSocketListener l) {
-        return new WebSocket(l);
-    }
-
-    public interface OnWebSocketListener {
-        void onMessage(Message message);
-
-        void onWebSocketClosed();
-
-        void onWebSocketError();
-    }
-
-    private WebSocket(OnWebSocketListener l) {
-        mListener = l;
-    }
-
+    @Override
     public void connect(VoiceConfiguration voiceConfiguration) {
         Logger.d("connect");
         if (mReleased.get()) {
@@ -142,6 +124,7 @@ public class WebSocket {
         Logger.d("------------------------------");
     }
 
+    @Override
     public void release() {
         Logger.d("release");
         if (mReleased.compareAndSet(false, true)) {
@@ -167,29 +150,42 @@ public class WebSocket {
         }
     }
 
+    @Override
+    public void onStart() {
+    }
+
+    @Override
+    public void onStop() {
+    }
+
+    @Override
     public void sendData(byte[] data) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore data");
             if (mListener != null) {
-                mListener.onWebSocketClosed();
+                mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
             }
             return;
         }
+        Logger.d("SkTest", "0");
         final byte[] sendingData = new byte[data.length];
         System.arraycopy(data, 0, sendingData, 0, data.length);
+        Logger.d("SkTest", "1");
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
+                Logger.d("SkTest", "2");
                 checkConnectionAndSend(new SendingDataByte(sendingData));
             }
         });
     }
 
+    @Override
     public void sendCommand(final String command, final String payload) {
         if (mReleased.get()) {
             Logger.e("WebSocket already released, ignore command ");
             if (mListener != null) {
-                mListener.onWebSocketClosed();
+                mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
             }
             return;
         }
@@ -207,6 +203,7 @@ public class WebSocket {
         });
     }
 
+    @Override
     public boolean isConnected() {
         return mSocketState == CONNECTED;
     }
@@ -300,10 +297,13 @@ public class WebSocket {
     private void checkConnectionAndSend(SendingData data) {
         boolean success = false;
         if (mSocketState == CONNECTED) {
+            Logger.d("SkTest", "0");
             success = data.send(mClient);
         }
+        Logger.d("SkTest", "1");
 
         if (!success) {
+            Logger.d("SkTest", "2");
             mSendBuffer.add(data);
             if (mSocketState == DISCONNECTED) {
                 connect(mVoiceConfiguration);
@@ -355,7 +355,7 @@ public class WebSocket {
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
                 if (mListener != null) {
-                    mListener.onWebSocketClosed();
+                    mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
                 }
             }
         }
@@ -371,7 +371,7 @@ public class WebSocket {
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
                 if (mListener != null) {
-                    mListener.onWebSocketError();
+                    mListener.onError(WebSocketError.DATA_ERROR);
                 }
             }
         }

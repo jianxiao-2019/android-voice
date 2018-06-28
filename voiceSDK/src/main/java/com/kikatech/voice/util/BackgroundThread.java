@@ -36,4 +36,11 @@ public class BackgroundThread extends HandlerThread {
             return sHandler.postDelayed(r, delayMillis);
         }
     }
+
+    public static void removeCallbacks(Runnable r) {
+        synchronized (BackgroundThread.class) {
+            ensureThreadLocked();
+            sHandler.removeCallbacks(r);
+        }
+    }
 }

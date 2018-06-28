@@ -6,6 +6,8 @@ import com.kikatech.voice.core.hotword.WakeUpDetector;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
+import com.kikatech.voice.core.webservice.IWebSocket;
+import com.kikatech.voice.core.webservice.impl.WebSocket;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.core.speex.SpeexEncoder;
 import com.kikatech.voice.util.log.Logger;
@@ -25,7 +27,13 @@ public class VoicePathConnector {
 
         boolean isUsbVoiceSource = conf.getVoiceSource() != null;
 
-        IDataPath dataPath = new SpeexEncoder(wrapFileWriter(finalPath, conf, "_speex"));
+        IDataPath dataPath = finalPath;
+
+        IWebSocket configSocket = conf.getWebSocket();
+        if (configSocket instanceof WebSocket) {
+            dataPath = new SpeexEncoder(wrapFileWriter(dataPath, conf, "_speex"));
+        }
+
         if (conf.getIsClientVadEnabled()) {
             dataPath = new VoiceDetector(dataPath);
         }
