@@ -23,12 +23,6 @@ android {
             minifyEnabled false
         }
     }
-
-    configurations.all {
-        resolutionStrategy {
-            force "com.google.guava:guava:18.0"
-        }
-    }
 }
 
 def getVersionName(String versionName) {
@@ -61,36 +55,6 @@ def isRelease() {
 
 apply from: 'gradle-mvn-push.gradle'
 
-ext {
-    // supportLibraryVersion = '25.4.0'
-    grpcVersion = "1.4.0"
-}
-
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.3.0"
-    }
-    plugins {
-        javalite {
-            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
-        }
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
-        }
-    }
-    generateProtoTasks {
-        all().each { task ->
-            task.plugins {
-                javalite {}
-                grpc {
-                    // Options added to --grpc_out
-                    option 'lite'
-                }
-            }
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -106,16 +70,6 @@ dependencies {
     implementation 'ai.api:libai:1.6.11'
     implementation 'ai.api:sdk:2.0.7@aar'
     implementation 'me.xdrop:fuzzywuzzy:1.1.9'
-    // gRPC
-    implementation "io.grpc:grpc-okhttp:$grpcVersion"
-    implementation "io.grpc:grpc-protobuf-lite:$grpcVersion"
-    implementation "io.grpc:grpc-stub:$grpcVersion"
-    implementation 'javax.annotation:javax.annotation-api:1.2'
-    protobuf "com.google.protobuf:protobuf-java:3.3.1"
-    // OAuth2 for Google API
-    implementation('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
-        exclude module: 'httpclient'
-    }
 }
 
 android {

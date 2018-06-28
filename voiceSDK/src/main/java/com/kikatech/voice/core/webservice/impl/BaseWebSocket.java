@@ -11,13 +11,13 @@ import java.util.concurrent.Executors;
  * @author SkeeterWang Created on 2018/6/14.
  */
 
-abstract class BaseWebSocket implements IWebSocket {
+public abstract class BaseWebSocket implements IWebSocket {
 
-    final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    protected final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
-    final LinkedList<SendingData> mSendBuffer = new LinkedList<>();
+    protected final LinkedList<SendingData> mSendBuffer = new LinkedList<>();
 
-    OnWebSocketListener mListener;
+    protected OnWebSocketListener mListener;
 
     @Override
     public void setListener(OnWebSocketListener listener) {

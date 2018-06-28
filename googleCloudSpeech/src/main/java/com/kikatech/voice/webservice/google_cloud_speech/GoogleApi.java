@@ -1,4 +1,4 @@
-package com.kikatech.voice.core.webservice.impl;
+package com.kikatech.voice.webservice.google_cloud_speech;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -15,6 +15,7 @@ import com.google.cloud.speech.v1.StreamingRecognizeRequest;
 import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
 import com.kikatech.voice.core.webservice.command.SocketCommand;
+import com.kikatech.voice.core.webservice.impl.BaseWebSocket;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
