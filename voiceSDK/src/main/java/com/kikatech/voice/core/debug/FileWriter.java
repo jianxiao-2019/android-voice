@@ -1,7 +1,7 @@
 package com.kikatech.voice.core.debug;
 
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.util.log.FileLoggerUtil;
+import com.kikatech.voice.util.FileUtil;
 
 import java.util.Arrays;
 
@@ -23,7 +23,7 @@ public class FileWriter extends IDataPath {
     @Override
     public void start() {
         super.start();
-        mFilePath = DebugUtil.getDebugFilePath();
+        mFilePath = DebugUtil.getAsrAudioFilePath();
         if (mFilePath != null) {
             mFilePath += mSuffix;
         }
@@ -35,7 +35,7 @@ public class FileWriter extends IDataPath {
             if (data.length != length) {
                 data = Arrays.copyOf(data, length);
             }
-            FileLoggerUtil.getIns().writeToFile(data, mFilePath);
+            FileUtil.writeByteToFile(data, mFilePath);
         }
 
         if (mNextPath != null) {

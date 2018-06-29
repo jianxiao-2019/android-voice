@@ -1,6 +1,5 @@
 package com.kikatech.voice.core.debug;
 
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.LongSparseArray;
@@ -11,17 +10,11 @@ import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
-import com.kikatech.voice.service.conf.FolderConfig;
-import com.kikatech.voice.util.BackgroundThread;
-import com.kikatech.voice.util.CalendarUtil;
 import com.kikatech.voice.util.log.Logger;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by ryanlin on 12/02/2018.
@@ -36,8 +29,7 @@ public class DebugUtil {
 
     private static boolean sIsDebug = false;
 
-    private static String sDebugFilepath;
-    private static File sCacheDir;
+    private static String sAsrAudioFilePath;
 
     private static LongSparseArray<String> cidToFilePath = new LongSparseArray<>();
 
@@ -47,12 +39,6 @@ public class DebugUtil {
         if (!sIsDebug) {
             return;
         }
-
-        sCacheDir = getCacheDir(conf);
-        if (sCacheDir == null) {
-            sIsDebug = false;
-            Logger.i("updateCacheDir sCacheDir == null");
-        }
         cidToFilePath.clear();
     }
 
@@ -60,30 +46,15 @@ public class DebugUtil {
         return sIsDebug;
     }
 
-    public static void updateDebugInfo(VoiceConfiguration conf) {
-        sDebugFilepath = null;
-        if (!sIsDebug) {
-            return;
-        }
-
-        if (sCacheDir != null) {
-            sDebugFilepath = sCacheDir.getPath() + "/" + getFilePrefix(conf) + getCurrentTimeFormatted();
-        }
-        Logger.i("updateCacheDir sDebugFilepath = " + sDebugFilepath);
+    public static void setAsrAudioPath(String asrAudioPath) {
+        sAsrAudioFilePath = asrAudioPath;
     }
 
-    public static String getDebugFilePath() {
-        return sDebugFilepath;
+    public static String getAsrAudioFilePath() {
+        return sAsrAudioFilePath;
     }
 
-    public static String getDebugFolderPath() {
-        if (sCacheDir == null) {
-            return null;
-        }
-        return sCacheDir.getPath() + "/";
-    }
-
-    private static String getFilePrefix(VoiceConfiguration conf) {
+    public static String getFilePrefix(VoiceConfiguration conf) {
         IVoiceSource source = conf.getVoiceSource();
         if (source == null) {
             return PRE_PHONE;
@@ -95,40 +66,13 @@ public class DebugUtil {
         return PRE_UNKNOWN;
     }
 
-    private static String getCurrentTimeFormatted() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", new Locale("en"));
-        Date resultDate = new Date(System.currentTimeMillis());
-
-        return sdf.format(resultDate);
-    }
-
-    private static File getCacheDir(VoiceConfiguration conf) {
-        try {
-            File file = new File(Environment.getExternalStorageDirectory() + "/kikaVoiceSDK/" + conf.getDebugFileTag() + "/");
-            createFolderIfNecessary(file);
-            return file;
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static boolean createFolderIfNecessary(File folder) {
-        if (folder != null) {
-            if (!folder.exists() || !folder.isDirectory()) {
-                return folder.mkdirs();
-            }
-            return true;
-        }
-        return false;
-    }
 
     public static void convertCurrentPcmToWav() {
-        if (TextUtils.isEmpty(sDebugFilepath)) {
+        if (TextUtils.isEmpty(sAsrAudioFilePath)) {
             return;
         }
 
-        final String filePath = sDebugFilepath;
+        final String filePath = sAsrAudioFilePath;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -136,7 +80,7 @@ public class DebugUtil {
                 Logger.d("convertCurrentPcmToWav result = " + result);
             }
         }).start();
-        sDebugFilepath = null;
+        sAsrAudioFilePath = null;
     }
 
     private static boolean addWavHeader(String debugFilePath) {
@@ -193,7 +137,7 @@ public class DebugUtil {
             IntermediateMessage iMessage = (IntermediateMessage) message;
             cid = iMessage.cid;
             if (cidToFilePath.indexOfKey(cid) < 0) {
-                cidToFilePath.put(cid, sDebugFilepath);
+                cidToFilePath.put(cid, sAsrAudioFilePath);
             }
             return;
         } else {
@@ -230,11 +174,11 @@ public class DebugUtil {
     }
 
     public static void logTextToFile(@NonNull String title, @NonNull String text) {
-        if (TextUtils.isEmpty(sDebugFilepath)) {
+        if (TextUtils.isEmpty(sAsrAudioFilePath)) {
             return;
         }
 
-        String filePath = sDebugFilepath;
+        String filePath = sAsrAudioFilePath;
         BufferedWriter bufferedWriter = null;
         try {
             bufferedWriter = new BufferedWriter(new java.io.FileWriter(filePath + ".txt", true));
@@ -252,70 +196,6 @@ public class DebugUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public static void checkFiles(VoiceConfiguration conf) {
-        VoiceConfiguration.ExternalConfig externalConfig = conf.getExternalConfig();
-        if (externalConfig == null) {
-            return;
-        }
-        checkAndDeleteFile(getCacheDir(conf), externalConfig.getDebugLogAliveDays());
-        for (FolderConfig config : externalConfig.getFolderConfigs()) {
-            checkAndDeleteFile(config.getFolderDir(), config.getAliveDays());
-        }
-    }
-
-    private static void checkAndDeleteFile(String path, long aliveDays) {
-        checkAndDeleteFile(new File(Environment.getExternalStorageDirectory() + "/" + path), aliveDays);
-    }
-
-    private static void checkAndDeleteFile(final File dir, final long aliveDays) {
-        BackgroundThread.post(new Runnable() {
-            @Override
-            public void run() {
-                if (aliveDays < 0) {
-                    return;
-                }
-                if (dir != null && dir.exists()) {
-                    File[] files = dir.listFiles();
-                    if (files == null) {
-                        return;
-                    }
-                    for (File file : files) {
-                        long daysBetween = CalendarUtil.daysBetweenTodayAnd(file.lastModified());
-                        if (daysBetween >= aliveDays) {
-                            boolean isDeleted = file.delete();
-                            Logger.v(String.format("Sktest, isDeleted: %1$s, file: %2$s", isDeleted, file.getAbsolutePath()));
-                        }
-                    }
-                } else {
-                    Logger.w("Sktest, cacheDir not existed");
-                }
-            }
-        });
-    }
-
-    private static void printFileList(String path) {
-        printFileList(new File(Environment.getExternalStorageDirectory() + "/" + path));
-    }
-
-    private static void printFileList(File dir) {
-        if (dir != null && dir.exists()) {
-            File[] files = dir.listFiles();
-
-            if (files == null) {
-                Logger.w("Sktest, cacheDir is empty");
-                return;
-            }
-            for (File file : files) {
-                Logger.d("Sktest, file: " + file.getAbsolutePath());
-                Logger.d("Sktest, file.lastModified: " + file.lastModified());
-                long daysBetween = CalendarUtil.daysBetweenTodayAnd(file.lastModified());
-                Logger.d("Sktest, file.daysBetween: " + daysBetween);
-            }
-        } else {
-            Logger.w("Sktest, cacheDir not existed");
         }
     }
 }

@@ -11,6 +11,9 @@ public interface IDialogFlowVoiceService {
     void sleep();
 
 
+    void setAsrAudioFilePath(String path, String fileName);
+
+
     void startListening();
 
     void startListening(int bosDuration);
