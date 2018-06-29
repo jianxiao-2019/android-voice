@@ -1,7 +1,6 @@
 package com.kikatech.voice.service.voice;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.kikatech.voice.core.debug.DebugUtil;
@@ -40,9 +39,6 @@ import java.util.Arrays;
 
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         VoiceRecorder.IRecorderListener {
-    // TODO: refactor latter
-    private SharedPreferences sPref;
-    private SharedPreferences.Editor sEditor;
 
     public static final int ERR_REASON_NOT_CREATED = 1;
     public static final int ERR_CONNECTION_ERROR = 2;
@@ -148,9 +144,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     private VoiceService(Context context, VoiceConfiguration conf) {
-        sPref = context.getSharedPreferences("voiceSDK", Context.MODE_PRIVATE);
-        sEditor = sPref.edit();
-
         mConf = conf;
     }
 
