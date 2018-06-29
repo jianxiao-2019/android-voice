@@ -9,9 +9,6 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.tts.TtsService;
 import com.kikatech.voice.core.webservice.IWebSocket;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by tianli on 17-10-28.
  */
@@ -68,8 +65,6 @@ public class VoiceConfiguration {
 
     private boolean mIsDebugMode = false;
     private String mDebugFileTag = "Unknown";
-
-    private ExternalConfig mExternalConfig;
 
     public VoiceConfiguration() {
     }
@@ -190,14 +185,6 @@ public class VoiceConfiguration {
         return mIsDebugMode;
     }
 
-    public void setExternalConfig(ExternalConfig externalConfig) {
-        this.mExternalConfig = externalConfig;
-    }
-
-    public ExternalConfig getExternalConfig() {
-        return mExternalConfig;
-    }
-
 
     public static class ConnectionConfiguration {
         public String url;
@@ -295,51 +282,6 @@ public class VoiceConfiguration {
                     locale = DEFAULT_LOCALE;
                 }
                 return new ConnectionConfiguration(appName, url, locale, sign, userAgent, engine, asrConfiguration, bundle);
-            }
-        }
-    }
-
-    public static class ExternalConfig {
-        private long debugLogAliveDays;
-        private List<FolderConfig> mFileFolders = new ArrayList<>();
-
-        private ExternalConfig(long debugLogAliveDays, List<FolderConfig> folderConfigs) {
-            this.debugLogAliveDays = debugLogAliveDays;
-            if (folderConfigs != null && !folderConfigs.isEmpty()) {
-                mFileFolders.addAll(folderConfigs);
-            }
-        }
-
-        public long getDebugLogAliveDays() {
-            return debugLogAliveDays;
-        }
-
-        public List<FolderConfig> getFolderConfigs() {
-            return mFileFolders;
-        }
-
-        public static class Builder {
-            private long debugLogAliveDays = -1;
-            private List<FolderConfig> mFileFolders = new ArrayList<>();
-
-            public Builder setDebugLogAliveDays(long aliveDays) {
-                debugLogAliveDays = aliveDays;
-                return this;
-            }
-
-            public Builder addFolderConfig(String dir) {
-                mFileFolders.add(new FolderConfig.Builder().setFolderDir(dir).build());
-                return this;
-            }
-
-            @SuppressWarnings("SameParameterValue")
-            public Builder addFolderConfig(String dir, long aliveDays) {
-                mFileFolders.add(new FolderConfig.Builder().setFolderDir(dir).setAliveDays(aliveDays).build());
-                return this;
-            }
-
-            public ExternalConfig build() {
-                return new ExternalConfig(debugLogAliveDays, mFileFolders);
             }
         }
     }
