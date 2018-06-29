@@ -7,7 +7,7 @@ import com.kikatech.go.dialogflow.EmojiMessage;
 import com.kikatech.go.dialogflow.im.IMUtil;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.FileUtil;
+import com.kikatech.go.util.storage.FileUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.voice.util.contact.ContactManager;
 

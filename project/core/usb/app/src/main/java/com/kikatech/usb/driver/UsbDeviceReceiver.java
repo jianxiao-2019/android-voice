@@ -6,7 +6,7 @@ import android.text.TextUtils;
 
 import com.kikatech.usb.eventbus.UsbEvent;
 import com.kikatech.usb.util.DeviceUtil;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,16 +44,16 @@ public class UsbDeviceReceiver {
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onUsbEvent(UsbEvent event) {
         if (event == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid UsbEvent");
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "invalid UsbEvent");
             }
             return;
         }
 
         String action = event.getAction();
         if (TextUtils.isEmpty(action)) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid UsbEvent.action");
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "invalid UsbEvent.action");
             }
             return;
         }

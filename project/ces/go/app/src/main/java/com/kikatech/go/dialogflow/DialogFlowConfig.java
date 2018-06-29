@@ -8,13 +8,13 @@ import android.text.TextUtils;
 import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.apiai.ApiAiAgentCreator;
 import com.kikatech.go.dialogflow.apiai.TutorialAgentCreator;
+import com.kikatech.go.services.presenter.KikaGoUsbVoiceSourceWrapper;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.HttpClient.HttpClientExecutor;
 import com.kikatech.go.util.HttpClient.HttpClientTask;
 import com.kikatech.go.util.HttpClient.HttpClientUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.google.cloud.speech.GoogleAesUtil;
-import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
@@ -50,7 +50,7 @@ public class DialogFlowConfig {
     private static final boolean DEBUG_AUTH = false;
 
 
-    public static void getVoiceConfig(Context ctx, KikaGoVoiceSource audioSource, final IConfigListener listener) {
+    public static void getVoiceConfig(Context ctx, KikaGoUsbVoiceSourceWrapper audioSource, final IConfigListener listener) {
         final VoiceConfiguration configuration = __getVoiceConfig(ctx, audioSource);
         __getGoogleAuthFile(ctx, new IGoogleAuthFileListener() {
             @Override
@@ -63,7 +63,7 @@ public class DialogFlowConfig {
         });
     }
 
-    public static void getTutorialConfig(Context ctx, KikaGoVoiceSource audioSource, final IConfigListener listener) {
+    public static void getTutorialConfig(Context ctx, KikaGoUsbVoiceSourceWrapper audioSource, final IConfigListener listener) {
         final VoiceConfiguration configuration = __getTutorialConfig(ctx, audioSource);
         __getGoogleAuthFile(ctx, new IGoogleAuthFileListener() {
             @Override
@@ -76,7 +76,7 @@ public class DialogFlowConfig {
         });
     }
 
-    private static VoiceConfiguration __getVoiceConfig(Context ctx, KikaGoVoiceSource audioSource) {
+    private static VoiceConfiguration __getVoiceConfig(Context ctx, KikaGoUsbVoiceSourceWrapper audioSource) {
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new ApiAiAgentCreator())
                 .source(audioSource);
@@ -101,7 +101,7 @@ public class DialogFlowConfig {
         return conf;
     }
 
-    private static VoiceConfiguration __getTutorialConfig(final Context ctx, final KikaGoVoiceSource audioSource) {
+    private static VoiceConfiguration __getTutorialConfig(final Context ctx, final KikaGoUsbVoiceSourceWrapper audioSource) {
         VoiceConfiguration conf = new VoiceConfiguration();
         conf.agent(new TutorialAgentCreator())
                 .source(audioSource);

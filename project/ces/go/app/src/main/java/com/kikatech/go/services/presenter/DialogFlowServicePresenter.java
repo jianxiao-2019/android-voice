@@ -41,8 +41,10 @@ import com.kikatech.go.navigation.NavigationManager;
 import com.kikatech.go.services.MusicForegroundService;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.ui.activity.KikaGoActivity;
+import com.kikatech.go.util.storage.AudioFileUtil;
 import com.kikatech.go.util.AudioManagerUtil;
 import com.kikatech.go.util.BackgroundThread;
+import com.kikatech.go.util.storage.FileUtil;
 import com.kikatech.go.util.LogOnViewUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
@@ -684,7 +686,7 @@ public class DialogFlowServicePresenter {
                     if (mAsrMaxDurationTimer.isCounting()) {
                         mAsrMaxDurationTimer.stop();
                     }
-                    final KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
+                    final KikaGoUsbVoiceSourceWrapper usbSource = mVoiceSourceHelper.getUsbVoiceSource();
                     DialogFlowConfig.getVoiceConfig(mContext, usbSource, new DialogFlowConfig.IConfigListener() {
                         @Override
                         public void onDone(VoiceConfiguration config) {
@@ -817,7 +819,7 @@ public class DialogFlowServicePresenter {
         mVoiceSourceHelper.closeDevice(mContext);
     }
 
-    public KikaGoVoiceSource getUsbVoiceSource() {
+    public KikaGoUsbVoiceSourceWrapper getUsbVoiceSource() {
         return mVoiceSourceHelper.getUsbVoiceSource();
     }
 
@@ -854,6 +856,10 @@ public class DialogFlowServicePresenter {
 
     private synchronized void startAsr() {
         if (mDialogFlowService != null) {
+            String folder = FileUtil.getAudioFolder();
+            String fileName = AudioFileUtil.getCurrentTimeFormattedFileName();
+            mVoiceSourceHelper.setAudioFilePath(folder, fileName);
+            mDialogFlowService.setAsrAudioFilePath(folder, fileName);
             mDialogFlowService.startListening();
             mAsrMaxDurationTimer.start();
         }
@@ -861,6 +867,10 @@ public class DialogFlowServicePresenter {
 
     private synchronized void startAsr(int bosDuration) {
         if (mDialogFlowService != null) {
+            String folder = FileUtil.getAudioFolder();
+            String fileName = AudioFileUtil.getCurrentTimeFormattedFileName();
+            mVoiceSourceHelper.setAudioFilePath(folder, fileName);
+            mDialogFlowService.setAsrAudioFilePath(folder, fileName);
             mDialogFlowService.startListening(bosDuration);
             mAsrMaxDurationTimer.start();
         }

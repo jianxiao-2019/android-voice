@@ -1,6 +1,6 @@
 package com.kikatech.usb.buffer;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 
 public class CircularBuffer {
+    private static final String TAG = "CircularBuffer";
 
     private final byte[] mBuffer;
     private int mBufferSize;
@@ -32,7 +33,9 @@ public class CircularBuffer {
             if (mWriteIndex + sizeInBytes < mBufferSize) {
                 System.arraycopy(audioData, 0, mBuffer, mWriteIndex, sizeInBytes);
                 if (mWriteIndex < mReadIndex && mReadIndex < mWriteIndex + sizeInBytes) {
-                    Logger.w("Some data was been overflowed. 1");
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, "Some data was been overflowed. 1");
+                    }
                     mReadIndex = mWriteIndex + sizeInBytes + 1;
                 }
             } else {
@@ -40,10 +43,14 @@ public class CircularBuffer {
                 System.arraycopy(audioData, 0, mBuffer, mWriteIndex, half);
                 System.arraycopy(audioData, half, mBuffer, 0, sizeInBytes - half);
                 if (mWriteIndex < mReadIndex) {
-                    Logger.w("Some data was been overflowed. 2");
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, "Some data was been overflowed. 2");
+                    }
                     mReadIndex = mWriteIndex + 1;
                 } else if (mReadIndex < (sizeInBytes - half)) {
-                    Logger.w("Some data was been overflowed. 3");
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logw(TAG, "Some data was been overflowed. 3");
+                    }
                     mReadIndex = sizeInBytes - half + 1;
                 }
             }

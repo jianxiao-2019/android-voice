@@ -25,6 +25,7 @@ import com.kikatech.go.eventbus.DFServiceEvent;
 import com.kikatech.go.eventbus.MusicEvent;
 import com.kikatech.go.eventbus.ToDFServiceEvent;
 import com.kikatech.go.services.presenter.DialogFlowServicePresenter;
+import com.kikatech.go.services.presenter.KikaGoUsbVoiceSourceWrapper;
 import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.services.view.manager.FloatingUiManager;
 import com.kikatech.go.util.ImageUtil;
@@ -83,7 +84,7 @@ public class DialogFlowForegroundService extends BaseForegroundService {
             return;
         }
         DFServiceEvent serviceEvent;
-        KikaGoVoiceSource kikaGoVoiceSource;
+        KikaGoUsbVoiceSourceWrapper kikaGoVoiceSource;
         String source;
         switch (action) {
             case ToDFServiceEvent.ACTION_CHANGE_SERVER:

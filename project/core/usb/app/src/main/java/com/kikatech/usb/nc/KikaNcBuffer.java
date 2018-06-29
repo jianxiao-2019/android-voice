@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.buffer.CircularBuffer;
 import com.kikatech.usb.util.DataUtil;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 import lib.android.anc.NoiseCancellation;
 
@@ -14,6 +14,7 @@ import lib.android.anc.NoiseCancellation;
  */
 
 public class KikaNcBuffer extends KikaBuffer {
+    private static final String TAG = "KikaNcBuffer";
 
     public static final int CONTROL_ANGLE = 0;
     public static final int CONTROL_NC = 1;
@@ -53,13 +54,17 @@ public class KikaNcBuffer extends KikaBuffer {
 
     @Override
     public void create() {
-        Logger.e("KikaNcBuffer create");
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "create");
+        }
         NoiseCancellation.Init();
     }
 
     @Override
     public void close() {
-        Logger.e("KikaNcBuffer close");
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "close");
+        }
         NoiseCancellation.Destroy();
     }
 

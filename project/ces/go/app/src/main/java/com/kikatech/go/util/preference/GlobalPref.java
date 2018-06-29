@@ -247,6 +247,16 @@ public class GlobalPref {
     }
 
 
+    public void setCheckAudioFileTime(long time) {
+        sEditor.putLong(Key.KEY_CHECK_AUDIO_FILE_TIME, time);
+        apply();
+    }
+
+    public long getCheckAudioFileTime() {
+        return sPref.getLong(Key.KEY_CHECK_AUDIO_FILE_TIME, 0);
+    }
+
+
     public void setHasShowDialogUsbIllustration(boolean hasShow) {
         sEditor.putBoolean(Key.KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION, hasShow);
         apply();

@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.kikatech.go.R;
-import com.kikatech.go.util.FileUtil;
+import com.kikatech.go.util.storage.FileUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.UserReportUtil;
 import com.kikatech.go.util.amazon.S3TransferUtil;

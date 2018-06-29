@@ -1,7 +1,9 @@
-package com.kikatech.go.util;
+package com.kikatech.go.util.storage;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
+
+import com.kikatech.go.util.LogUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,6 +21,7 @@ public class FileUtil {
     private static final String S3_FOLDER_KIKAGO = "kika_go";
     private static final String S3_FOLDER_LOG = S3_FOLDER_KIKAGO + "/report_log/%s/%s"; // mail, filename
 
+    private static final String FOLDER_AUDIO = "/audio";
     private static final String FOLDER_COPY = "/copy";
     private static final String FOLDER_RECORD = "/kika_go";
     private static final String EXTENSION_PNG = ".png";
@@ -88,8 +91,15 @@ public class FileUtil {
         return byteBuffer.toByteArray();
     }
 
+
     public static String getS3LogFileKey(String mail, String fileName) {
         return String.format(S3_FOLDER_LOG, mail, fileName);
+    }
+
+
+    public static String getAudioFilePath(String fileName) {
+        File file = new File(getAudioFolder(), fileName);
+        return file.getAbsolutePath();
     }
 
     public static String getCopyFilePath(String fileName) {
@@ -99,6 +109,17 @@ public class FileUtil {
 
     public static String getImAvatarFilePath(String appName, String name) {
         File file = new File(getImRecordFolder(appName), String.format(FILE_NAME, name));
+        return file.getAbsolutePath();
+    }
+
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static String getAudioFolder() {
+        String filePath = getRootRecordFolder();
+        File file = new File(filePath, FOLDER_AUDIO);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         return file.getAbsolutePath();
     }
 
@@ -130,5 +151,16 @@ public class FileUtil {
             file.mkdirs();
         }
         return file.getAbsolutePath();
+    }
+
+
+    public static File[] listFiles(String path) {
+        File dir = new File(path);
+        return listFiles(dir);
+    }
+
+    public static File[] listFiles(File dir) {
+        boolean isValidDir = dir != null && dir.exists() && dir.isDirectory();
+        return isValidDir ? dir.listFiles() : null;
     }
 }

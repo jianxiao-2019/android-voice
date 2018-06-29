@@ -10,7 +10,7 @@ import com.kikatech.usb.datasource.impl.KikaGoAccessoryDataSource;
 import com.kikatech.usb.datasource.impl.KikaGoDeviceDataSource;
 import com.kikatech.usb.driver.IUsbAudioDriver;
 import com.kikatech.usb.driver.UsbDeviceManager;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 import static com.kikatech.usb.IUsbAudioListener.ERROR_DRIVER_CONNECTION_FAIL;
 import static com.kikatech.usb.IUsbAudioListener.ERROR_NO_DEVICES;
@@ -20,6 +20,7 @@ import static com.kikatech.usb.IUsbAudioListener.ERROR_NO_DEVICES;
  */
 
 public class UsbAudioService {
+    private static final String TAG = "UsbAudioService";
 
     private static volatile UsbAudioService sInstance;
 
@@ -63,7 +64,9 @@ public class UsbAudioService {
 
         @Override
         public void onDeviceAttached(UsbDevice device) {
-            Logger.i("UsbAudioService onDeviceAttached");
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "UsbAudioService onDeviceAttached");
+            }
             if (mUsbAudioDriver != null) {
                 mUsbAudioDriver.closeUsb();
             }
@@ -73,7 +76,9 @@ public class UsbAudioService {
 
         @Override
         public void onDeviceDetached() {
-            Logger.i("UsbAudioService onDeviceDetached");
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "UsbAudioService onDeviceDetached");
+            }
             if (mUsbAudioDriver != null) {
                 mUsbAudioDriver = null;
                 if (mListener != null) {
@@ -84,7 +89,9 @@ public class UsbAudioService {
 
         @Override
         public void onAccessoryAttached(UsbAccessory accessory) {
-            Logger.i("UsbAudioService onDeviceAttached");
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "UsbAudioService onAccessoryAttached");
+            }
             if (mUsbAudioDriver != null) {
                 mUsbAudioDriver.closeUsb();
             }
@@ -94,7 +101,9 @@ public class UsbAudioService {
 
         @Override
         public void onAccessoryDetached() {
-            Logger.i("UsbAudioService onAccessoryDetached");
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "UsbAudioService onAccessoryDetached");
+            }
             if (mUsbAudioDriver != null) {
                 mUsbAudioDriver = null;
                 if (mListener != null) {

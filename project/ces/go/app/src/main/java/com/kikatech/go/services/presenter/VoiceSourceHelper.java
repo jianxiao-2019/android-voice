@@ -6,8 +6,8 @@ import android.support.annotation.IntDef;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.buffer.KikaBuffer;
-import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.usb.UsbAudioService;
+import com.kikatech.usb.datasource.KikaGoVoiceSource;
 
 /**
  * @author SkeeterWang Created on 2018/3/13.
@@ -39,7 +39,7 @@ public class VoiceSourceHelper {
     private long start_t;
 
     private IVoiceSourceListener mVoiceSourceListener;
-    private KikaGoVoiceSource mUsbVoiceSource;
+    private KikaGoUsbVoiceSourceWrapper mUsbVoiceSource;
     private IUsbAudioListener mUsbListener = new IUsbAudioListener() {
         @Override
         public void onDeviceAttached(KikaGoVoiceSource audioSource) {
@@ -47,7 +47,7 @@ public class VoiceSourceHelper {
                 LogUtil.logv(TAG, String.format("onDeviceAttached, spend: %s", (System.currentTimeMillis() - start_t)));
             }
             if (mUsbVoiceSource == null && audioSource != null) {
-                mUsbVoiceSource = audioSource;
+                mUsbVoiceSource = new KikaGoUsbVoiceSourceWrapper(audioSource);
                 mUsbVoiceSource.setOnOpenedCallback(new KikaGoVoiceSource.OnOpenedCallback() {
                     @Override
                     public void onOpened(int state) {
@@ -126,7 +126,13 @@ public class VoiceSourceHelper {
         }
     }
 
-    public synchronized KikaGoVoiceSource getUsbVoiceSource() {
+    public synchronized void setAudioFilePath(String path, String fileName) {
+        if (mUsbVoiceSource != null) {
+            mUsbVoiceSource.setAudioFilePath(path, fileName);
+        }
+    }
+
+    public synchronized KikaGoUsbVoiceSourceWrapper getUsbVoiceSource() {
         return mUsbVoiceSource;
     }
 

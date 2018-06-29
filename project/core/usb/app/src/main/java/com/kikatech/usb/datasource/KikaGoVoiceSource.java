@@ -5,12 +5,11 @@ import android.support.annotation.NonNull;
 import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.usb.util.DataUtil;
+import com.kikatech.usb.util.DataUtils;
 import com.kikatech.usb.util.DbUtil;
-import com.kikatech.voice.core.debug.DebugUtil;
-import com.kikatech.voice.core.debug.FileWriter;
-import com.kikatech.voice.core.recorder.IVoiceSource;
-import com.kikatech.voice.core.util.DataUtils;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
+import com.kikatech.usb.util.debug.DebugUtil;
+import com.kikatech.usb.util.debug.FileWriter;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,7 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Update by ryanlin on 25/12/2017.
  */
 
-public class KikaGoVoiceSource implements IVoiceSource {
+public class KikaGoVoiceSource {
+    private static final String TAG = "KikaGoVoiceSource";
 
     public static int OPEN_RESULT_FAIL = -1;
     public static int OPEN_RESULT_MONO = 1;
@@ -36,32 +36,20 @@ public class KikaGoVoiceSource implements IVoiceSource {
             0x1224,
     };
 
+
     private IUsbDataSource mUsbDataSource;
-
     private KikaBuffer mKikaBuffer;
-
-    private AtomicBoolean mIsOpened = new AtomicBoolean(false);
 
     private OnOpenedCallback mOnOpenedCallback;
     private SourceDataCallback mSourceDataCallback;
 
-    private boolean mIsInversePhase = false;
-
     private DbUtil mDbUtil;
-
     private FileWriter mFileWriter;
 
-    private boolean isAmplifyDB = false;
+    private AtomicBoolean mIsOpened = new AtomicBoolean(false);
+    private boolean mIsInversePhase = false;
+    private boolean isAmplifyDB;
 
-    public interface OnOpenedCallback {
-        void onOpened(int state);
-    }
-
-    public interface SourceDataCallback {
-        void onSource(byte[] leftData, byte[] rightData);
-
-        void onCurrentDB(int curDB);
-    }
 
     private IUsbDataSource.OnDataListener mOnDataListener = new IUsbDataSource.OnDataListener() {
         @Override
@@ -97,14 +85,13 @@ public class KikaGoVoiceSource implements IVoiceSource {
 
         @Override
         public void onLongtimeDB(int longtimeDB) {
-
         }
 
         @Override
         public void onMaxDB(int maxDB) {
-
         }
     };
+
 
     public KikaGoVoiceSource(IUsbDataSource source) {
         mUsbDataSource = source;
@@ -115,7 +102,7 @@ public class KikaGoVoiceSource implements IVoiceSource {
         mDbUtil = new DbUtil();
         mDbUtil.setDbCallback(mDbCallback);
 
-        mFileWriter = DebugUtil.isDebug() ? new FileWriter("_USB", null) : null;
+        mFileWriter = new FileWriter("_USB");
 
         if (getNcVersion() == 50750) {
             isAmplifyDB = true;
@@ -124,24 +111,35 @@ public class KikaGoVoiceSource implements IVoiceSource {
         }
     }
 
-    public void updateFileWriter() {
-        if (mFileWriter == null) {
-            mFileWriter = DebugUtil.isDebug() ? new FileWriter("_USB", null) : null;
-        }
+
+    public void setSourceDataCallback(SourceDataCallback callback) {
+        mSourceDataCallback = callback;
     }
 
-    @Override
-    public boolean open() {
+    public void setOnOpenedCallback(OnOpenedCallback callback) {
+        mOnOpenedCallback = callback;
+    }
 
+
+    public void setAudioFilePath(String path, String fileName) {
+
+        DebugUtil.setAudioFilePath(String.format("%s/%s%s", path, "Kikago_", fileName));
+    }
+
+
+    public boolean open() {
         boolean success = mUsbDataSource.open();
-        Logger.d("KikaGoVoiceSource open success = " + success);
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("KikaGoVoiceSource open success: %s", success));
+        }
         if (success) {
             mIsOpened.set(true);
             mKikaBuffer.create();
-
             mIsInversePhase = isIsInversePhase(checkFwVersion());
         } else {
-            Logger.e("KikaGoVoiceSource open fail.");
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "KikaGoVoiceSource open fail.");
+            }
         }
 
         if (mOnOpenedCallback != null) {
@@ -155,7 +153,6 @@ public class KikaGoVoiceSource implements IVoiceSource {
         return mIsOpened.get();
     }
 
-    @Override
     public void start() {
         mDbUtil.clearData();
         mUsbDataSource.start();
@@ -165,33 +162,9 @@ public class KikaGoVoiceSource implements IVoiceSource {
         }
     }
 
-    @Override
-    public void stop() {
-        mUsbDataSource.stop();
-
-        mDbUtil.clearData();
-        if (mSourceDataCallback != null) {
-            mSourceDataCallback.onCurrentDB(0);
-        }
-    }
-
-    @Override
-    public void close() {
-        if (mIsOpened.compareAndSet(true, false)) {
-            mUsbDataSource.close();
-            mKikaBuffer.close();
-        }
-
-        mDbUtil.clearData();
-        if (mSourceDataCallback != null) {
-            mSourceDataCallback.onCurrentDB(0);
-        }
-    }
-
-    @Override
     public int read(@NonNull byte[] audioData, int offsetInBytes, int sizeInBytes) {
         int readInt = mKikaBuffer.read(audioData, offsetInBytes, sizeInBytes);
-        
+
         if (isAmplifyDB) {
             short[] shorts = DataUtils.byteToShort(audioData, audioData.length / 2);
             for (int i = 0; i < shorts.length; i++) {
@@ -206,9 +179,36 @@ public class KikaGoVoiceSource implements IVoiceSource {
         return readInt;
     }
 
-    @Override
-    public int getBufferSize() {
-        return KikaNcBuffer.BUFFER_SIZE;
+    public void stop() {
+        mUsbDataSource.stop();
+
+        mDbUtil.clearData();
+        if (mSourceDataCallback != null) {
+            mSourceDataCallback.onCurrentDB(0);
+        }
+    }
+
+    public void close() {
+        if (mIsOpened.compareAndSet(true, false)) {
+            mUsbDataSource.close();
+            mKikaBuffer.close();
+        }
+
+        mDbUtil.clearData();
+        if (mSourceDataCallback != null) {
+            mSourceDataCallback.onCurrentDB(0);
+        }
+    }
+
+
+    public void setKikaBuffer(int tag) {
+        if (!mIsOpened()) {
+            mKikaBuffer = KikaBuffer.getKikaBuffer(tag);
+        } else {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Can't change the buffer when it has been opened.");
+            }
+        }
     }
 
     public void updateBufferType(@KikaBuffer.BufferType int type) {
@@ -216,6 +216,93 @@ public class KikaGoVoiceSource implements IVoiceSource {
         mKikaBuffer = KikaBuffer.getKikaBuffer(type);
         mKikaBuffer.create();
     }
+
+    public int getBufferSize() {
+        return KikaNcBuffer.BUFFER_SIZE;
+    }
+
+
+    public int checkVolumeState() {
+        if (!mIsOpened()) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Fail operation because the Usb audio not initialized : checkVolumeState");
+            }
+            return ERROR_VOLUME_NOT_INITIALIZED;
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "Fail operation because the Usb audio not initialized : checkVolumeState");
+        }
+        int volumeState = mUsbDataSource.checkVolumeState();
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("[%s] checkVolumeState mUsbAudio checkVolumeState: %s", Thread.currentThread().getName(), volumeState));
+        }
+        return volumeState;
+    }
+
+    public int volumeUp() {
+        if (!mIsOpened()) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Fail operation because the Usb audio not initialized : volumeUp");
+            }
+            return ERROR_VOLUME_NOT_INITIALIZED;
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("[%s] volumeUp mUsbAudio checkVolumeState: %s", Thread.currentThread().getName(), mUsbDataSource.checkVolumeState()));
+        }
+        return mUsbDataSource.volumeUp();
+    }
+
+    public int volumeDown() {
+        if (!mIsOpened()) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Fail operation because the Usb audio not initialized : volumeDown");
+            }
+            return ERROR_VOLUME_NOT_INITIALIZED;
+        }
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("[%s] volumeDown mUsbAudio checkVolumeState: %s", Thread.currentThread().getName(), mUsbDataSource.checkVolumeState()));
+        }
+        return mUsbDataSource.volumeDown();
+    }
+
+    public int checkFwVersion() {
+        if (!mIsOpened()) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Fail operation because the Usb audio not initialized : checkFwVersion");
+            }
+            return ERROR_VERSION;
+        }
+        byte[] result = mUsbDataSource.checkFwVersion();
+
+        return result[1] & 0xFF | (result[0] & 0xFF) << 8;
+    }
+
+    public int checkDriverVersion() {
+        if (!mIsOpened()) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Fail operation because the Usb audio not initialized : checkDriverVersion");
+            }
+            return ERROR_VERSION;
+        }
+        byte[] result = mUsbDataSource.checkDriverVersion();
+
+        return result[1] & 0xFF | (result[0] & 0xFF) << 8;
+    }
+
+
+    private boolean isIsInversePhase(int ver) {
+        for (int version : VERSIONS_TO_INVERSE) {
+            if (ver == version) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean mIsOpened() {
+        return mIsOpened.get();
+    }
+
 
     public void setNoiseCancellationParameters(int mode, int value) {
         KikaNcBuffer.setNoiseSuppressionParameters(mode, value);
@@ -225,85 +312,18 @@ public class KikaGoVoiceSource implements IVoiceSource {
         return KikaNcBuffer.getNoiseSuppressionParameters(mode);
     }
 
-    public boolean mIsOpened() {
-        return mIsOpened.get();
-    }
-
-    public int checkVolumeState() {
-        if (!mIsOpened()) {
-            Logger.w("Fail operation because the Usb audio not initialized : checkVolumeState");
-            return ERROR_VOLUME_NOT_INITIALIZED;
-        }
-        Logger.d("[" + Thread.currentThread().getName() + "] checkVolumeState mUsbAudio checkVolumeState = " + mUsbDataSource.checkVolumeState());
-        return mUsbDataSource.checkVolumeState();
-    }
-
-    public int volumeUp() {
-        if (!mIsOpened()) {
-            Logger.w("Fail operation because the Usb audio not initialized : volumeUp");
-            return ERROR_VOLUME_NOT_INITIALIZED;
-        }
-        Logger.d("[" + Thread.currentThread().getName() + "] volumeUp mUsbAudio checkVolumeState = " + mUsbDataSource.checkVolumeState());
-        return mUsbDataSource.volumeUp();
-    }
-
-    public int volumeDown() {
-        if (!mIsOpened()) {
-            Logger.w("Fail operation because the Usb audio not initialized : volumeDown");
-            return ERROR_VOLUME_NOT_INITIALIZED;
-        }
-        Logger.d("[" + Thread.currentThread().getName() + "] volumeDown mUsbAudio checkVolumeState = " + mUsbDataSource.checkVolumeState());
-        return mUsbDataSource.volumeDown();
-    }
-
-    public int checkFwVersion() {
-        if (!mIsOpened()) {
-            Logger.w("Fail operation because the Usb audio not initialized : checkFwVersion");
-            return ERROR_VERSION;
-        }
-        byte[] result = mUsbDataSource.checkFwVersion();
-
-        return result[1] & 0xFF |
-                (result[0] & 0xFF) << 8;
-    }
-
-    public int checkDriverVersion() {
-        if (!mIsOpened()) {
-            Logger.w("Fail operation because the Usb audio not initialized : checkDriverVersion");
-            return ERROR_VERSION;
-        }
-        byte[] result = mUsbDataSource.checkDriverVersion();
-
-        return result[1] & 0xFF |
-                (result[0] & 0xFF) << 8;
-    }
-
-    public void setKikaBuffer(int tag) {
-        if (!mIsOpened()) {
-            mKikaBuffer = KikaBuffer.getKikaBuffer(tag);
-        } else {
-            Logger.e("Can't change the buffer when it has been opened.");
-        }
-    }
-
-    public void setSourceDataCallback(SourceDataCallback callback) {
-        mSourceDataCallback = callback;
-    }
-
-    public void setOnOpenedCallback(OnOpenedCallback callback) {
-        mOnOpenedCallback = callback;
-    }
-
     public int getNcVersion() {
         return KikaNcBuffer.getVersion();
     }
 
-    private boolean isIsInversePhase(int ver) {
-        for (int version : VERSIONS_TO_INVERSE) {
-            if (ver == version) {
-                return true;
-            }
-        }
-        return false;
+
+    public interface OnOpenedCallback {
+        void onOpened(int state);
+    }
+
+    public interface SourceDataCallback {
+        void onSource(byte[] leftData, byte[] rightData);
+
+        void onCurrentDB(int curDB);
     }
 }

@@ -1,9 +1,10 @@
 package com.xiao.usbaudio;
 
 import com.kikatech.usb.datasource.impl.KikaGoDeviceDataSource;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 public class AudioPlayBack {
+    private static final String TAG = "AudioPlayBack";
 
     public static final int RAW_DATA_AVAILABLE_LENGTH = 600;
 
@@ -17,8 +18,9 @@ public class AudioPlayBack {
     }
 
     public static void write(byte[] decodedAudio, int len) {
-        Logger.v("AudioPlayBack write len = " + len
-                + " sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "write len = " + len + ", sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
+        }
         if (mListener != null) {
             mListener.onWrite(len);
         }
@@ -32,12 +34,16 @@ public class AudioPlayBack {
     }
 
     public static void setup(KikaGoDeviceDataSource kikaAudioDriver) {
-        Logger.d("AudioPlayBack setup sKikaGoDeviceDataSource = " + kikaAudioDriver);
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "setup sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
+        }
         sKikaGoDeviceDataSource = kikaAudioDriver;
     }
 
     public static void stop() {
-        Logger.d("AudioPlayBack stop sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
+        if (LogUtil.DEBUG) {
+            LogUtil.logv(TAG, "stop sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
+        }
         sKikaGoDeviceDataSource = null;
     }
 

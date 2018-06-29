@@ -15,9 +15,8 @@ import com.kikatech.go.message.Message;
 import com.kikatech.go.notification.ParcelableRemoteInput;
 import com.kikatech.go.util.AppConstants;
 import com.kikatech.go.util.AppInfo;
-import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.DeviceUtil;
-import com.kikatech.go.util.FileUtil;
+import com.kikatech.go.util.storage.FileUtil;
 import com.kikatech.go.util.LogUtil;
 
 import java.util.ArrayList;

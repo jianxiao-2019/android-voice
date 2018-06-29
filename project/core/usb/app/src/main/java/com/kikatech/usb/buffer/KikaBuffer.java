@@ -4,7 +4,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
 import com.kikatech.usb.nc.KikaNcBuffer;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 /**
  * Created by ryanlin on 14/03/2018.
@@ -27,11 +27,15 @@ public abstract class KikaBuffer {
     public static KikaBuffer getKikaBuffer(@BufferType int type) {
         switch (type) {
             case BufferType.STEREO_TO_MONO:
-                Logger.d(TAG, "BufferType.STEREO_TO_MONO");
+                if (LogUtil.DEBUG) {
+                    LogUtil.logd(TAG, "BufferType.STEREO_TO_MONO");
+                }
                 return new KikaS2MBuff();
             default:
             case BufferType.NOISE_CANCELLATION:
-                Logger.d(TAG, "BufferType.NOISE_CANCELLATION");
+                if (LogUtil.DEBUG) {
+                    LogUtil.logd(TAG, "BufferType.NOISE_CANCELLATION");
+                }
                 return new KikaNcBuffer();
         }
     }

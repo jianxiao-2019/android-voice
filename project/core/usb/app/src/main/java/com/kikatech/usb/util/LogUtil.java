@@ -1,5 +1,6 @@
 package com.kikatech.usb.util;
 
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -13,11 +14,13 @@ import java.util.Locale;
  * Created by brad_chang on 2016/1/10.
  */
 public class LogUtil {
-    final static public boolean DEBUG = BuildConfig.DEBUG;
+
+    public final static boolean DEBUG = BuildConfig.DEBUG;
+
     private static int sProcessId = DEBUG ? 0 : android.os.Process.myPid();
     private static final int PARENT_NODE = 3, SELF_NODE = 2;
-    private static final String PARENT_LOG_FORMAT = "[%s:%s:ln%d] ";
-    private static final String LOG_FORMAT = "[%s:%s:ln%d] %s (pid: %d)";
+    private static final String PARENT_LOG_FORMAT = "[%s:%s] ";
+    private static final String LOG_FORMAT = "[%s:%s] %s <pid:%d>";
 
     private enum LogLabel {
         VERBOSE,
@@ -36,7 +39,7 @@ public class LogUtil {
             String parentStack = "";
             String className = null;
             String methodName = null;
-            int lineNumber = 0;
+            //int lineNumber = 0;
             StackTraceElement stack;
             String[] classes;
             if (parentStacksCount > 0) {
@@ -47,9 +50,9 @@ public class LogUtil {
                         classes = className.split("\\.");
                         if (classes.length > 0) className = classes[classes.length - 1];
                         methodName = stack.getMethodName();
-                        lineNumber = stack.getLineNumber();
+                        //lineNumber = stack.getLineNumber();
 
-                        parentStack += String.format(Locale.ENGLISH, PARENT_LOG_FORMAT, className, methodName, lineNumber);
+                        parentStack += String.format(Locale.ENGLISH, PARENT_LOG_FORMAT, className, methodName);
                     }
                 }
             }
@@ -59,12 +62,12 @@ public class LogUtil {
                 classes = className.split("\\.");
                 if (classes.length > 0) className = classes[classes.length - 1];
                 methodName = stack.getMethodName();
-                lineNumber = stack.getLineNumber();
+                //lineNumber = stack.getLineNumber();
             }
 
-            message = String.format(Locale.ENGLISH, LOG_FORMAT, className, methodName, lineNumber, log, sProcessId);
+            message = String.format(Locale.ENGLISH, LOG_FORMAT, className, methodName, log, sProcessId);
             if (!TextUtils.isEmpty(parentStack)) message += ("\n parent stacks: " + parentStack);
-            return message;
+            return message + generateClassNavigationSuffix(getCallerStackTraceElement());
         } catch (Exception ignore) {
         }
         return message;
@@ -75,7 +78,7 @@ public class LogUtil {
     }
 
     private static void log(LogLabel logLabel, String logTag, String oriLog, Throwable throwable) {
-        String log = "[usb]" + oriLog;
+        String log = "[kikago]" + oriLog;
         switch (logLabel) {
             case VERBOSE:
                 Log.v(logTag, log);
@@ -100,7 +103,6 @@ public class LogUtil {
                 break;
         }
     }
-
 
     public static void log(@NonNull String logTag, @NonNull String log) {
         if (DEBUG) log(LogLabel.INFO, logTag, getStackMsg(log, 0));
@@ -148,19 +150,22 @@ public class LogUtil {
     }
 
 
-    public static void reportToFabric(Exception exception) {
-//		try
-//		{
-//			Crashlytics.logException( exception );
-//		}
-//		catch( Exception ignore ) {}
-    }
-
-
     /**
      * If value is not null or empty, return String formatted as "key: value"
      **/
     public static String getCheckedLogString(@NonNull String key, @NonNull @Nullable String value) {
         return key + ": " + (TextUtils.isEmpty(value) ? "" : value);
+    }
+
+    private static String generateClassNavigationSuffix(StackTraceElement caller) {
+        String suffix = " (%s.java:%d)";
+        String callerClazzName = caller.getClassName();
+        callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
+        suffix = String.format(suffix, callerClazzName, caller.getLineNumber());
+        return suffix;
+    }
+
+    private static StackTraceElement getCallerStackTraceElement() {
+        return Thread.currentThread().getStackTrace()[5];
     }
 }

@@ -36,6 +36,7 @@ import com.kikatech.go.util.TipsHelper;
 import com.kikatech.go.util.VersionControlUtil;
 import com.kikatech.go.util.dialog.DialogUtil;
 import com.kikatech.go.util.preference.GlobalPref;
+import com.kikatech.go.util.storage.AudioFileUtil;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
@@ -343,6 +344,7 @@ public class KikaGoActivity extends BaseDrawerActivity {
         unregisterReceivers();
         DialogFlowForegroundService.processStop(KikaGoActivity.this, DialogFlowForegroundService.class);
         ContactManager.getIns().release(this);
+        AudioFileUtil.checkFiles();
         super.onDestroy();
     }
 

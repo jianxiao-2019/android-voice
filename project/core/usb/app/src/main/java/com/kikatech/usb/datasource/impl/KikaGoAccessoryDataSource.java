@@ -7,7 +7,7 @@ import android.os.ParcelFileDescriptor;
 
 import com.kikatech.usb.datasource.IUsbDataSource;
 import com.kikatech.usb.driver.IUsbAudioDriver;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -58,14 +58,18 @@ public class KikaGoAccessoryDataSource implements IUsbAudioDriver, IUsbDataSourc
 
     @Override
     public boolean openUsb() {
-        Logger.d("openUsb");
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "openUsb");
+        }
         try {
             UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
             if (manager == null) {
                 return false;
             }
             mParcelFileDescriptor = manager.openAccessory(mUsbAccessory);
-            Logger.d("openUsb success = " + (mParcelFileDescriptor != null));
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, String.format("openUsb success: %s", String.valueOf(mParcelFileDescriptor != null)));
+            }
             return mParcelFileDescriptor != null;
         } catch (Exception e) {
             return false;
@@ -74,7 +78,9 @@ public class KikaGoAccessoryDataSource implements IUsbAudioDriver, IUsbDataSourc
 
     @Override
     public void closeUsb() {
-        Logger.d("closeUsb");
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "closeUsb");
+        }
         try {
             if (mParcelFileDescriptor != null) {
                 mParcelFileDescriptor.close();
@@ -227,16 +233,16 @@ public class KikaGoAccessoryDataSource implements IUsbAudioDriver, IUsbDataSourc
      */
     private synchronized void write(byte[] data, int length) {
         if (mOutputStream == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid output stream");
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "invalid output stream");
             }
             return;
         }
         try {
             mOutputStream.write(data, 0, length);
         } catch (Exception e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
+            if (LogUtil.DEBUG) {
+                LogUtil.printStackTrace(TAG, e.getMessage(), e);
             }
         }
     }

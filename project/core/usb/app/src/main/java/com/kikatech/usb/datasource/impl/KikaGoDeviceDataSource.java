@@ -8,7 +8,7 @@ import android.hardware.usb.UsbManager;
 import com.kikatech.usb.datasource.IUsbDataSource;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.usb.driver.IUsbAudioDriver;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 import com.xiao.usbaudio.AudioPlayBack;
 import com.xiao.usbaudio.UsbAudio;
 
@@ -17,6 +17,7 @@ import com.xiao.usbaudio.UsbAudio;
  */
 
 public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
+    private static final String TAG = "KikaGoDeviceDataSource";
 
     private UsbAudio mUsbAudio = new UsbAudio();
 
@@ -33,14 +34,18 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
 
     @Override
     public boolean openUsb() {
-        Logger.d("openUsb");
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "openUsb");
+        }
         try {
             UsbManager manager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
             if (manager == null) {
                 return false;
             }
             mConnection = manager.openDevice(mDevice);
-            Logger.d("openUsb success = " + (mConnection != null));
+            if (LogUtil.DEBUG) {
+                LogUtil.logd(TAG, String.format("openUsb success: %s", String.valueOf(mConnection != null)));
+            }
             return mConnection != null;
         } catch (Exception e) {
             return false;
@@ -49,7 +54,9 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
 
     @Override
     public void closeUsb() {
-        Logger.d("closeUsb");
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "closeUsb");
+        }
         if (mConnection != null) {
             mConnection.close();
         }
@@ -58,26 +65,36 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
     @Override
     public boolean open() {
         if (mConnection == null) {
-            Logger.e("Should open usb first.");
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Should open usb first.");
+            }
         }
-        Logger.d("KikaAudioDriver open openConnection  device name = " + mDevice.getDeviceName()
-                + " mConnectionFileDes = " + mConnection.getFileDescriptor()
-                + " productId = " + mDevice.getProductId()
-                + " vendorId = " + mDevice.getVendorId());
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, "KikaAudioDriver open openConnection  device name = " + mDevice.getDeviceName()
+                    + " mConnectionFileDes = " + mConnection.getFileDescriptor()
+                    + " productId = " + mDevice.getProductId()
+                    + " vendorId = " + mDevice.getVendorId());
+        }
         boolean success = mUsbAudio.setup(
                 mDevice.getDeviceName(),
                 mConnection.getFileDescriptor(),
                 mDevice.getProductId(),
                 mDevice.getVendorId());
-        Logger.d("KikaAudioDriver open success = " + success);
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("KikaAudioDriver open success: %s", success));
+        }
         if (success) {
             new Thread(new Runnable() {
-
                 @Override
                 public void run() {
-                    Logger.v("KikaAudioDriver start loop");
+
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logv(TAG, "KikaAudioDriver start loop");
+                    }
                     mUsbAudio.loop();
-                    Logger.v("KikaAudioDriver stop loop");
+                    if (LogUtil.DEBUG) {
+                        LogUtil.logv(TAG, "KikaAudioDriver stop loop");
+                    }
                 }
             }).start();
             setToDefaultVolume();
@@ -115,33 +132,38 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
 
     @Override
     public int checkVolumeState() {
-        Logger.d("[" + Thread.currentThread().getName() + "] checkVolumeState mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
-        return mUsbAudio.checkVolumeState();
+        int volumeState = mUsbAudio.checkVolumeState();
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("[%s] checkVolumeState mUsbAudio checkVolumeState: %s", Thread.currentThread().getName(), volumeState));
+        }
+        return volumeState;
     }
 
     @Override
     public int volumeUp() {
-        Logger.d("[" + Thread.currentThread().getName() + "] volumeUp mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("[%s] volumeUp mUsbAudio checkVolumeState: %s", Thread.currentThread().getName(), mUsbAudio.checkVolumeState()));
+        }
         return mUsbAudio.volumeUp();
     }
 
     @Override
     public int volumeDown() {
-        Logger.d("[" + Thread.currentThread().getName() + "] volumeDown mUsbAudio checkVolumeState = " + mUsbAudio.checkVolumeState());
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("[%s] volumeDown mUsbAudio checkVolumeState: %s", Thread.currentThread().getName(), mUsbAudio.checkVolumeState()));
+        }
         return mUsbAudio.volumeDown();
     }
 
     @Override
     public byte[] checkFwVersion() {
         byte[] result = mUsbAudio.checkFwVersion();
-
         return result;
     }
 
     @Override
     public byte[] checkDriverVersion() {
         byte[] result = mUsbAudio.checkDriverVersion();
-
         return result;
     }
 

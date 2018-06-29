@@ -38,6 +38,9 @@ class Key {
     static final String KEY_SETTING_VOLUME = "key_setting_volume";
 
 
+    static final String KEY_CHECK_AUDIO_FILE_TIME = "key_check_audio_file_time";
+
+
     static final String KEY_HAS_SHOW_DIALOG_USB_ILLUSTRATION = "key_has_show_dialog_usb_illustration";
     static final String KEY_FLOATING_WAKE_UP_TIP_SHOWS_COUNT = "key_floating_wake_up_tip_shows_count";
 

@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.kikatech.usb.driver.receiver.UsbSysReceiver;
 import com.kikatech.usb.util.DeviceUtil;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.usb.util.LogUtil;
 
 import java.util.HashMap;
 
@@ -20,12 +20,12 @@ import java.util.HashMap;
  */
 
 public class UsbDeviceManager {
-
     private static final String TAG = "UsbDeviceManager";
+
     private Context mContext;
 
     private UsbDeviceReceiver mDeviceReceiver;
-    private IUsbAudioDeviceListener mListener = null;
+    private IUsbAudioDeviceListener mListener;
 
     public interface IUsbAudioDeviceListener {
 
@@ -66,13 +66,16 @@ public class UsbDeviceManager {
     }
 
     private boolean scanUsbDevices(UsbManager manager) {
-        Logger.i("scanUsbDevices");
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "scanUsbDevices");
+        }
         HashMap<String, UsbDevice> allDeviceList = manager.getDeviceList();
         if (allDeviceList == null || allDeviceList.size() == 0) {
             return false;
         }
-
-        Logger.i("scanUsbDevices allDeviceList.size = " + allDeviceList.values().size());
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("scanUsbDevices allDeviceList.size: %s", allDeviceList.values().size()));
+        }
         for (UsbDevice device : allDeviceList.values()) {
             if (DeviceUtil.isKikaGoDevice(device)) {
                 mDeviceListener.onUsbAttached(device);
@@ -84,13 +87,16 @@ public class UsbDeviceManager {
     }
 
     private boolean scanUsbAccessories(@NonNull UsbManager manager) {
-        Logger.i("scanUsbAccessories");
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, "scanUsbAccessories");
+        }
         UsbAccessory[] accessories = manager.getAccessoryList();
         if (accessories == null || accessories.length == 0) {
             return false;
         }
-
-        Logger.i("scanUsbAccessories accessories.size = " + accessories.length);
+        if (LogUtil.DEBUG) {
+            LogUtil.log(TAG, String.format("scanUsbAccessories accessories.size: %s", accessories.length));
+        }
         for (UsbAccessory accessory : accessories) {
             if (DeviceUtil.isKikaGoAccessory(accessory)) {
                 mAccessoryListener.onUsbAttached(accessory);
@@ -128,7 +134,9 @@ public class UsbDeviceManager {
             = new UsbDeviceReceiver.UsbAccessoryListener() {
         @Override
         public void onUsbAttached(UsbAccessory accessory) {
-            Logger.i("onUsbAttached accessory = " + accessory);
+            if (LogUtil.DEBUG) {
+                LogUtil.log(TAG, "onUsbAttached accessory = " + accessory);
+            }
             mListener.onAccessoryAttached(accessory);
 //    TODO: check if request accessory permission is needed in different android version
 //            if (hasPermission(accessory)) {

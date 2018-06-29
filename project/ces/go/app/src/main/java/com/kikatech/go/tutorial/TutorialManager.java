@@ -8,6 +8,7 @@ import com.kikatech.go.R;
 import com.kikatech.go.dialogflow.BaseSceneManager;
 import com.kikatech.go.dialogflow.DialogFlowConfig;
 import com.kikatech.go.dialogflow.model.OptionList;
+import com.kikatech.go.services.presenter.KikaGoUsbVoiceSourceWrapper;
 import com.kikatech.go.services.presenter.VoiceSourceHelper;
 import com.kikatech.go.tutorial.dialogflow.SceneTutorial;
 import com.kikatech.go.tutorial.dialogflow.TutorialSceneActions;
@@ -16,10 +17,11 @@ import com.kikatech.go.util.AudioManagerUtil;
 import com.kikatech.go.util.BackgroundThread;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.MediaPlayerUtil;
+import com.kikatech.go.util.storage.AudioFileUtil;
+import com.kikatech.go.util.storage.FileUtil;
 import com.kikatech.go.util.timer.CountingTimer;
 import com.kikatech.go.view.GoLayout;
 import com.kikatech.go.view.UiTaskManager;
-import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.core.dialogflow.scene.SceneStage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
@@ -189,6 +191,10 @@ public class TutorialManager {
 
                         @Override
                         public void onStop() {
+                            String folder = FileUtil.getAudioFolder();
+                            String fileName = AudioFileUtil.getCurrentTimeFormattedFileName();
+                            mVoiceSourceHelper.setAudioFilePath(folder, fileName);
+                            mDialogFlowService.setAsrAudioFilePath(folder, fileName);
                             mDialogFlowService.startListening();
                         }
                     });
@@ -280,7 +286,7 @@ public class TutorialManager {
         BackgroundThread.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
+                KikaGoUsbVoiceSourceWrapper usbSource = mVoiceSourceHelper.getUsbVoiceSource();
                 DialogFlowConfig.getTutorialConfig(mContext, usbSource, new DialogFlowConfig.IConfigListener() {
                     @Override
                     public void onDone(VoiceConfiguration config) {
@@ -313,7 +319,7 @@ public class TutorialManager {
                 @Override
                 public void run() {
                     unregisterScenes();
-                    KikaGoVoiceSource usbSource = mVoiceSourceHelper.getUsbVoiceSource();
+                    KikaGoUsbVoiceSourceWrapper usbSource = mVoiceSourceHelper.getUsbVoiceSource();
                     DialogFlowConfig.getTutorialConfig(mContext, usbSource, new DialogFlowConfig.IConfigListener() {
                         @Override
                         public void onDone(VoiceConfiguration config) {
