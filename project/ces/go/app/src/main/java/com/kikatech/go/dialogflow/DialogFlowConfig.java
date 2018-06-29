@@ -16,7 +16,6 @@ import com.kikatech.go.util.HttpClient.HttpClientUtil;
 import com.kikatech.go.util.LogUtil;
 import com.kikatech.go.util.google.cloud.speech.GoogleAesUtil;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
-import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voice.wakeup.SnowBoyDetector;
 import com.kikatech.voice.webservice.google_cloud_speech.GoogleApi;
@@ -37,8 +36,6 @@ public class DialogFlowConfig {
     private static final String TAG = "DialogFlowConfig";
 
     private static final String APP_NAME = "KikaGo";
-
-    private static final long FILE_ALIVE_DAYS = LogUtil.DEBUG ? -1 : 7;
 
     private static final int BOS_DURATION = 6800;
     private static final int EOS_DURATION = 3000;
@@ -89,11 +86,6 @@ public class DialogFlowConfig {
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
                 .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))
                 .build());
-        conf.setExternalConfig(new VoiceConfiguration.ExternalConfig.Builder()
-                .setDebugLogAliveDays(FILE_ALIVE_DAYS)
-                .addFolderConfig(LogUtil.LOG_FOLDER, FILE_ALIVE_DAYS)
-                .addFolderConfig(Logger.LOG_FOLDER, FILE_ALIVE_DAYS)
-                .build());
         conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
         conf.setBosDuration(BOS_DURATION);
         conf.setEosDuration(EOS_DURATION);
@@ -113,11 +105,6 @@ public class DialogFlowConfig {
                 .setSign(RequestManager.getSign(ctx))
                 .setUserAgent(RequestManager.generateUserAgent(ctx))
                 .setAsrConfiguration(AsrConfigUtil.getConfig(AsrConfigUtil.ASRMode.ASR_MODE_DEFAULT))
-                .build());
-        conf.setExternalConfig(new VoiceConfiguration.ExternalConfig.Builder()
-                .setDebugLogAliveDays(FILE_ALIVE_DAYS)
-                .addFolderConfig(LogUtil.LOG_FOLDER, FILE_ALIVE_DAYS)
-                .addFolderConfig(Logger.LOG_FOLDER, FILE_ALIVE_DAYS)
                 .build());
         conf.setSpeechMode(VoiceConfiguration.SpeechMode.ONE_SHOT);
         conf.setBosDuration(BOS_DURATION_TUTORIAL);
