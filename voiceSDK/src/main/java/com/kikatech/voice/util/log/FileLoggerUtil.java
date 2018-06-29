@@ -1,23 +1,19 @@
 package com.kikatech.voice.util.log;
 
 import android.os.Environment;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.kikatech.voice.BuildConfig;
 import com.kikatech.voice.util.BackgroundThread;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +44,7 @@ public class FileLoggerUtil {
         mBufferedWriterPool.add(logger);
 
         int idx = mBufferedWriterPool.indexOf(logger);
-        if(!pureLog) {
+        if (!pureLog) {
             writeBasicInfo(idx);
         }
 
@@ -93,26 +89,25 @@ public class FileLoggerUtil {
     }
 
     public void writeLogToFile(final int id, final String log, final boolean pureLog) {
-        BackgroundThread.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            BufferedWriter logger = mBufferedWriterPool.get(id);
-                            if (logger != null) {
-                                if(pureLog) {
-                                    logger.append(log);
-                                } else {
-                                    String currentTime = DateFormat.format("MM/dd HH:mm:ss", System.currentTimeMillis()).toString();
-                                    logger.append("[").append(currentTime).append("] ").append(log).append("\n");
-                                }
-                                logger.flush();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+        BackgroundThread.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    BufferedWriter logger = mBufferedWriterPool.get(id);
+                    if (logger != null) {
+                        if (pureLog) {
+                            logger.append(log);
+                        } else {
+                            String currentTime = DateFormat.format("MM/dd HH:mm:ss", System.currentTimeMillis()).toString();
+                            logger.append("[").append(currentTime).append("] ").append(log).append("\n");
                         }
+                        logger.flush();
                     }
-                });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void writeLogToFile(final int id, final String log) {
@@ -156,49 +151,6 @@ public class FileLoggerUtil {
             file.mkdirs();
         }
         return file.getAbsolutePath();
-    }
-
-    public synchronized void asyncWriteToFile(final byte[] data, final String filePtah) {
-        BackgroundThread.post(new Runnable() {
-            @Override
-            public void run() {
-                writeToFileImp(data, filePtah);
-            }
-        });
-    }
-
-    public synchronized void writeToFile(final byte[] data, final String filePtah) {
-        writeToFileImp(data, filePtah);
-    }
-
-    private void writeToFileImp(byte[] data, String filePtah) {
-        //        Logger.d("FileWriter writeToFile mFilePath = " + mFilePath + " data.length = " + data.length);
-        if (TextUtils.isEmpty(filePtah)) {
-            return;
-        }
-
-        // Create file
-        File file = new File(filePtah);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-        }
-
-        boolean append = true;
-        OutputStream os = null;
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(file, append));
-            int len = data.length;
-            os.write(data, 0, len);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            closeIO(os);
-        }
     }
 
     private void closeIO(Closeable... closeables) {

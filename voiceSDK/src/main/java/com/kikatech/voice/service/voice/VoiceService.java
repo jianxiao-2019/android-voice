@@ -199,6 +199,11 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         DebugUtil.updateCacheDir(mConf);
     }
 
+    public void setAsrAudioFilePath(String path, String fileName) {
+        String preFix = DebugUtil.getFilePrefix(mConf);
+        DebugUtil.setAsrAudioPath(String.format("%s/%s%s", path, preFix, fileName));
+    }
+
     public void start() {
         start(mConf.getBosDuration());
     }
@@ -214,7 +219,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mIsStarting = true;
 
         ReportUtil.getInstance().startTimeStamp("start record");
-        DebugUtil.updateDebugInfo(mConf);
 
         mCurrentSpeechMode = mConf.getSpeechMode();
         if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
@@ -352,25 +356,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         if (mWakeUpDetector != null) {
             mWakeUpDetector.close();
-        }
-
-        checkFiles();
-    }
-
-    private synchronized void checkFiles() {
-        final String KEY_CHECK_FILE_TIME = "KEY_CHECK_FILE_TIME";
-        long lastCheckedTime = sPref.getLong(KEY_CHECK_FILE_TIME, 0);
-        long millisecond = (System.currentTimeMillis() - lastCheckedTime);
-        boolean shouldCheckFile = lastCheckedTime == 0 || millisecond >= 24 * 60 * 60 * 1000;
-        if (Logger.DEBUG) {
-            Logger.d(String.format("Last check time is %s ms ago.", millisecond));
-            Logger.d(String.format("Should Check And Delete Files? %s", shouldCheckFile));
-        }
-        if (shouldCheckFile) {
-            DebugUtil.checkFiles(mConf);
-            sEditor.putLong(KEY_CHECK_FILE_TIME, System.currentTimeMillis());
-            sEditor.apply();
-            sEditor.commit();
         }
     }
 

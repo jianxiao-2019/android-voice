@@ -180,6 +180,14 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
 
     @Override
+    public synchronized void setAsrAudioFilePath(String path, String fileName) {
+        if (mVoiceService != null) {
+            mVoiceService.setAsrAudioFilePath(path, fileName);
+        }
+    }
+
+
+    @Override
     public synchronized void startListening() {
         if (Logger.DEBUG) {
             Logger.i(TAG, "DialogFlowVoiceService startListening");

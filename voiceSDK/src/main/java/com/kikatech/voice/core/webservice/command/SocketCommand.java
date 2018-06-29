@@ -13,4 +13,5 @@ public class SocketCommand {
     public static final String RESET = "RESET";          // stop, drop current results and start new conversation
     public static final String COMPLETE = "COMPLETE";    // stop and wait final results
     public static final String ALIGNMENT = "ALIGNMENT";
+    public static final String FILTERING = "FILTERING";
 }
