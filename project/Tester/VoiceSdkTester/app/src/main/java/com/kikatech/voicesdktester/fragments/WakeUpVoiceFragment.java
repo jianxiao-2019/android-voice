@@ -24,6 +24,7 @@ import com.kikatech.voicesdktester.presenter.wakeup.UsbMonoInputWakeUpPresenter;
 import com.kikatech.voicesdktester.presenter.wakeup.UsbNcInputWakeUpPresenter;
 import com.kikatech.voicesdktester.presenter.wakeup.WakeUpPresenter;
 import com.kikatech.voicesdktester.ui.FileAdapter;
+import com.kikatech.voicesdktester.utils.FileUtil;
 import com.xiao.usbaudio.AudioPlayBack;
 
 import java.io.File;
@@ -162,7 +163,7 @@ public class WakeUpVoiceFragment extends Fragment implements
     }
 
     public void scanFiles() {
-        String path = DebugUtil.getDebugFolderPath();
+        String path = FileUtil.getAudioFolder();
         Logger.d("WakeUpTestActivity scanFiles path = " + path);
         if (TextUtils.isEmpty(path)) {
             return;
@@ -257,7 +258,7 @@ public class WakeUpVoiceFragment extends Fragment implements
     @Override
     public void onItemChecked(String itemStr) {
         if (mWakeUpPresenter != null) {
-            String path = DebugUtil.getDebugFolderPath();
+            String path = FileUtil.getAudioFolder();
             if (TextUtils.isEmpty(path)) {
                 return;
             }

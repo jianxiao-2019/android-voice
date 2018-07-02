@@ -25,6 +25,7 @@ import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.listeners.ItemShareClickListener;
+import com.kikatech.voicesdktester.utils.FileUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -78,7 +79,7 @@ public class PlayerFragment extends PageFragment {
 
     public void refreshFiles() {
         mFileNames.clear();
-        mFileNames.addAll(scanRecognizeResultFiles(DebugUtil.getDebugFolderPath()));
+        mFileNames.addAll(scanRecognizeResultFiles(FileUtil.getAudioFolder()));
 
         mOpenedIndex = -1;
         if (mAdapter != null) {

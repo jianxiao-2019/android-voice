@@ -474,13 +474,6 @@
             android:layout_weight="1"
             android:text="Wake up tester" />
 
-        <Button
-            android:id="@+id/button_auto_testr"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Auto testing tool" />
-
         <TextView
             android:id="@+id/text_version"
             android:layout_width="match_parent"

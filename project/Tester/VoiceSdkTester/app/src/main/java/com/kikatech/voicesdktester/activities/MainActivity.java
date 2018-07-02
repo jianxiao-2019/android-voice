@@ -46,7 +46,9 @@ import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voice.wakeup.SnowBoyDetector;
 import com.kikatech.voicesdktester.R;
+import com.kikatech.voicesdktester.source.KikaGoUsbVoiceSourceWrapper;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
+import com.kikatech.voicesdktester.utils.FileUtil;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import com.kikatech.voicesdktester.utils.VoiceConfig;
 import com.kikatech.voicesdktester.wave.draw.WaveCanvas;
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private AsrConfiguration mAsrConfiguration;
 
-    private KikaGoVoiceSource mKikaGoVoiceSource;
+    private KikaGoUsbVoiceSourceWrapper mKikaGoVoiceSource;
 
     private UsbAudioService mUsbAudioService;
 
@@ -219,6 +221,9 @@ public class MainActivity extends AppCompatActivity implements
         mStartButton = (Button) findViewById(R.id.button_start);
         mStartButton.setOnClickListener(v -> {
             if (mVoiceService != null) {
+                String folder = FileUtil.getAudioFolder();
+                String fileName = FileUtil.getCurrentTimeFormattedFileName();
+                mVoiceService.setAsrAudioFilePath(folder, fileName);
                 mVoiceService.start();
 
                 Logger.d("MainActivity onStartListening");
@@ -402,11 +407,6 @@ public class MainActivity extends AppCompatActivity implements
 
         findViewById(R.id.button_enter_play).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, PlayActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.button_auto_testr).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AutoTestActivity.class);
             startActivity(intent);
         });
 
@@ -724,9 +724,9 @@ public class MainActivity extends AppCompatActivity implements
             mVoiceService.setVoiceDataListener(this);
             mVoiceService.create();
 
-            if (mKikaGoVoiceSource != null) {
-                mKikaGoVoiceSource.updateFileWriter();
-            }
+//            if (mKikaGoVoiceSource != null) {
+//                mKikaGoVoiceSource.updateFileWriter();
+//            }
         });
 
     }
@@ -889,7 +889,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached.");
-            mKikaGoVoiceSource = audioSource;
+            mKikaGoVoiceSource = new KikaGoUsbVoiceSourceWrapper(audioSource);
             attachService();
 
             Logger.d("onDeviceAttached. mKikaGoVoiceSource = " + mKikaGoVoiceSource);

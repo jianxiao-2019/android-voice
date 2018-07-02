@@ -2,7 +2,7 @@ package com.kikatech.voicesdktester.presenter.wakeup;
 
 import android.content.Context;
 
-import com.kikatech.voice.core.debug.DebugUtil;
+import com.kikatech.voicesdktester.utils.FileUtil;
 
 /**
  * Created by ryanlin on 02/04/2018.
@@ -25,7 +25,7 @@ public class AndroidWakeUpPresenter extends WakeUpPresenter {
 
     @Override
     public void onWakeUp() {
-        String path = DebugUtil.getDebugFilePath();
+        String path = FileUtil.getAudioFolder();
         super.onWakeUp();
 
         renameSuccessFile(path, "_SRC");

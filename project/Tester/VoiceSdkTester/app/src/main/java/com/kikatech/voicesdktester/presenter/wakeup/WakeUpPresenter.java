@@ -11,6 +11,7 @@ import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voice.wakeup.SnowBoyDetector;
+import com.kikatech.voicesdktester.utils.FileUtil;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import com.kikatech.voicesdktester.utils.VoiceConfig;
 
@@ -48,6 +49,9 @@ public abstract class WakeUpPresenter implements
 
     public void start() {
         if (mVoiceService != null) {
+            String folder = FileUtil.getAudioFolder();
+            String fileName = FileUtil.getCurrentTimeFormattedFileName();
+            mVoiceService.setAsrAudioFilePath(folder, fileName);
             mVoiceService.start();
 
             if (mCallback != null) {

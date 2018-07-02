@@ -8,6 +8,8 @@ import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voicesdktester.source.KikaGoUsbVoiceSourceWrapper;
+import com.kikatech.voicesdktester.utils.FileUtil;
 
 /**
  * Created by ryanlin on 02/04/2018.
@@ -15,7 +17,7 @@ import com.kikatech.voice.util.log.Logger;
 
 public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
 
-    private KikaGoVoiceSource mKikaGoVoiceSource;
+    private KikaGoUsbVoiceSourceWrapper mKikaGoVoiceSource;
     private UsbAudioService mUsbAudioService;
 
     public UsbInputWakeUpPresenter(Context context) {
@@ -40,7 +42,7 @@ public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
         @Override
         public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached. mIsUsingNc = " + isUsingNc());
-            mKikaGoVoiceSource = audioSource;
+            mKikaGoVoiceSource = new KikaGoUsbVoiceSourceWrapper(audioSource);
             mKikaGoVoiceSource.setKikaBuffer(isUsingNc() ? KikaBuffer.BufferType.NOISE_CANCELLATION : KikaBuffer.BufferType.STEREO_TO_MONO);
 
             mVoiceSource = mKikaGoVoiceSource;
@@ -74,7 +76,7 @@ public abstract class UsbInputWakeUpPresenter extends WakeUpPresenter {
 
     @Override
     public void onWakeUp() {
-        String path = DebugUtil.getDebugFilePath();
+        String path = FileUtil.getAudioFolder();
         super.onWakeUp();
 
         renameSuccessFile(path, "_USB");

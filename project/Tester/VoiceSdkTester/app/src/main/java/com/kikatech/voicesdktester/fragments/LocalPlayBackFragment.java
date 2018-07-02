@@ -31,6 +31,7 @@ import com.kikatech.voicesdktester.source.LocalNcVoiceSource;
 import com.kikatech.voicesdktester.source.LocalVoiceSource;
 import com.kikatech.voicesdktester.ui.FileAdapter;
 import com.kikatech.voicesdktester.ui.ResultAdapter;
+import com.kikatech.voicesdktester.utils.FileUtil;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import com.kikatech.voicesdktester.utils.VoiceConfig;
 
@@ -155,14 +156,16 @@ public class LocalPlayBackFragment extends Fragment implements
             mItemList.remove(mItemStr);
             mResults.add(new ResultModel(mItemStr));
 
-            String path = DebugUtil.getDebugFolderPath();
-            if (TextUtils.isEmpty(path)) {
+            String folder = FileUtil.getAudioFolder();
+            if (TextUtils.isEmpty(folder)) {
                 showStatusInfo("folder path error.");
                 onEndOfCurrentPlayback();
                 return;
             }
-            getLocalVoiceSource(mFragmentType).setTargetFile(path + mItemStr);
+            getLocalVoiceSource(mFragmentType).setTargetFile(folder + mItemStr);
 
+            String fileName = FileUtil.getCurrentTimeFormattedFileName();
+            mVoiceService.setAsrAudioFilePath(folder, fileName);
             mVoiceService.start();
 
             mResultAdapter.clearResults();
@@ -177,7 +180,7 @@ public class LocalPlayBackFragment extends Fragment implements
     }
 
     public void scanFiles() {
-        String path = DebugUtil.getDebugFolderPath();
+        String path = FileUtil.getAudioFolder();
         if (TextUtils.isEmpty(path)) {
             return;
         }
@@ -356,7 +359,7 @@ public class LocalPlayBackFragment extends Fragment implements
         updateItemOjsAndInfo();
 
         if (getLocalVoiceSource(mFragmentType) != null) {
-            String path = DebugUtil.getDebugFolderPath();
+            String path = FileUtil.getAudioFolder();
             if (TextUtils.isEmpty(path)) {
                 showStatusInfo("folder path error.");
                 return;

@@ -26,6 +26,8 @@ import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
+import com.kikatech.voicesdktester.source.KikaGoUsbVoiceSourceWrapper;
+import com.kikatech.voicesdktester.utils.FileUtil;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import com.kikatech.voicesdktester.utils.VoiceConfig;
 
@@ -58,7 +60,7 @@ public class RecorderFragment extends PageFragment implements
 
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
-    private KikaGoVoiceSource mKikaGoVoiceSource;
+    private KikaGoUsbVoiceSourceWrapper mKikaGoVoiceSource;
     private UsbAudioService mUsbAudioService;
 
     private static final int MSG_TIMER = 0;
@@ -237,6 +239,9 @@ public class RecorderFragment extends PageFragment implements
         switch (v.getId()) {
             case R.id.start_record:
                 if (mVoiceService != null) {
+                    String folder = FileUtil.getAudioFolder();
+                    String fileName = FileUtil.getCurrentTimeFormattedFileName();
+                    mVoiceService.setAsrAudioFilePath(folder, fileName);
                     mVoiceService.start();
 
                     if (mStartRecordView != null) {
@@ -344,7 +349,7 @@ public class RecorderFragment extends PageFragment implements
         @Override
         public void onDeviceAttached(KikaGoVoiceSource audioSource) {
             Logger.d("onDeviceAttached.");
-            mKikaGoVoiceSource = audioSource;
+            mKikaGoVoiceSource = new KikaGoUsbVoiceSourceWrapper(audioSource);
             attachService();
 
             if (mAndroidSignal != null) {
@@ -428,7 +433,7 @@ public class RecorderFragment extends PageFragment implements
             if (activity == null || activity.isDestroyed()) {
                 return;
             }
-            RecognizeItem item = scanLatestFile(DebugUtil.getDebugFolderPath());
+            RecognizeItem item = scanLatestFile(DebugUtil.getAsrAudioFilePath());
             if (item == null) {
                 return;
             }
