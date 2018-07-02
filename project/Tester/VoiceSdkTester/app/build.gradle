@@ -16,9 +16,6 @@ android {
         versionCode 87
         versionName "2017_0530_1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        jackOptions {
-            enabled true
-        }
         multiDexEnabled true
     }
     buildTypes {
