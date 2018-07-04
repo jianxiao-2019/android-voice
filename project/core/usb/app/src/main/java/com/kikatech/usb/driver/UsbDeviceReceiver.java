@@ -41,7 +41,7 @@ public class UsbDeviceReceiver {
      * @param event event from {@link com.kikatech.usb.driver.receiver.UsbSysIntentProcessor}
      */
     @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    @Subscribe(threadMode = ThreadMode.POSTING)
     public void onUsbEvent(UsbEvent event) {
         if (event == null) {
             if (LogUtil.DEBUG) {
