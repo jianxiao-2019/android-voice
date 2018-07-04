@@ -9,6 +9,9 @@ import org.json.JSONObject;
 
 public class AlterMessage extends Message {
 
+    public static int TYPE_PRONOUNCE = 1;
+    public static int TYPE_DUPLICATED_HOOKS = 2;
+
     public String[] text;   // "text, or other candidates"
     public String context;  // "Send me a taxi in 5 minutes"
     public String altered;  // "text"
