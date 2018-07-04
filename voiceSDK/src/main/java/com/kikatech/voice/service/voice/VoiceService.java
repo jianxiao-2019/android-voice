@@ -2,6 +2,7 @@ package com.kikatech.voice.service.voice;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.debug.ReportUtil;
@@ -157,8 +158,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
             mWebService.release();
         }
 
-        mMainThreadHandler = new Handler();
-        mTimerHandler = new TimerHandler();
+        Looper mainLooper = Looper.getMainLooper();
+        mMainThreadHandler = new Handler(mainLooper);
+        mTimerHandler = new TimerHandler(mainLooper);
 
         IWebSocket configWebSocket = mConf.getWebSocket();
         if (configWebSocket != null) {
@@ -180,7 +182,6 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         if (mConf.getSpeechMode() == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
             mConf.getConnectionConfiguration().url = "ws://api-dev.kika.ai/v3/ns";
-
             mConf.getConnectionConfiguration().bundle.putString("sid", "0");
             mConf.getConnectionConfiguration().bundle.putString("type", "wakeup");
             mConf.getConnectionConfiguration().bundle.putString("format", "pcm");
@@ -552,6 +553,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     private class TimerHandler extends Handler {
+        private TimerHandler(Looper looper) {
+            super(looper);
+        }
+
         @Override
         public void handleMessage(android.os.Message msg) {
             if (msg.what == MSG_VAD_BOS) {
