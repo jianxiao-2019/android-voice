@@ -68,7 +68,7 @@ abstract class BaseExecutor {
         }
         mExecutor.shutdown();
         for (Runnable runnable : mTasks.keySet()) {
-            remove(runnable);
+            __cancel(runnable);
         }
         mTasks.clear();
         mExecutor = getExecutor();
