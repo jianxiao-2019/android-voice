@@ -415,8 +415,14 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                                 mLastIntermediateMessage = null;
                                 cleanVadBosTimer();
                                 cleanVadEosTimer();
-                                if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.ONE_SHOT) {
-                                    stop(StopType.CANCEL);
+                                switch (mCurrentSpeechMode) {
+                                    case ONE_SHOT:
+                                        stop(StopType.CANCEL);
+                                        break;
+                                    case CONVERSATION:
+                                        mWebService.onStop();
+                                        mWebService.onStart();
+                                        break;
                                 }
                             } else {
                                 if (isBosTimerRunning()) {

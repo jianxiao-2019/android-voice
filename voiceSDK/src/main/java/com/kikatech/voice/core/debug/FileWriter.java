@@ -11,6 +11,7 @@ import java.util.Arrays;
  */
 
 public class FileWriter extends IDataPath {
+    private static final String TAG = "FileWriter";
 
     private final String mSuffix;
     private String mFilePath;
