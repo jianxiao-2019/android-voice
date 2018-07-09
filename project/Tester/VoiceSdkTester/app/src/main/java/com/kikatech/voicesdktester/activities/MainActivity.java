@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
             VoiceConfiguration.HostUrl.KIKAGO_PRODUCTION,
     };
 
-    private static final String[] VOLUME_TABLE = new String[] {
+    private static final String[] VOLUME_TABLE = new String[]{
             "error",
             "-16.5",// level 1
             "-6.5", // level 2
@@ -224,6 +224,9 @@ public class MainActivity extends AppCompatActivity implements
                 String folder = FileUtil.getAudioFolder();
                 String fileName = FileUtil.getCurrentTimeFormattedFileName();
                 mVoiceService.setAsrAudioFilePath(folder, fileName);
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.setAudioFilePath(folder, fileName);
+                }
                 mVoiceService.start();
 
                 Logger.d("MainActivity onStartListening");
@@ -255,10 +258,10 @@ public class MainActivity extends AppCompatActivity implements
             if (mVadTextView != null) {
                 mVadTextView.setText("0.0");
             }
-            if (mNoteText!= null) {
+            if (mNoteText != null) {
                 String note = mNoteText.getText().toString();
                 String originalHint = getResources().getString(R.string.note_hint);
-                mNoteText.setHint((note!=null && note.length()>0)? originalHint + note : originalHint);
+                mNoteText.setHint((note != null && note.length() > 0) ? originalHint + note : originalHint);
                 mNoteText.setText("", TextView.BufferType.EDITABLE);
             }
             if (mVoiceService != null) {
@@ -374,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements
                 String note = mNoteText.getText().toString();
                 if (note != null && note.length() > 0) {
                     try {
-                        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                         inputMethodManager.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
                     } catch (Exception e) {
                     }
@@ -382,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements
                     String hint = mNoteText.getHint().toString();
                     String originalHint = getResources().getString(R.string.note_hint);
                     if (hint != null && originalHint != null) {
-                        mNoteText.setText(hint.replace(originalHint,""), TextView.BufferType.EDITABLE);
+                        mNoteText.setText(hint.replace(originalHint, ""), TextView.BufferType.EDITABLE);
                     }
                 }
             }
@@ -579,14 +582,14 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void writeTimeToFile(){
+    private void writeTimeToFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String currentDateAndTime = sdf.format(new Date());
         DebugUtil.logTextToFile("time", currentDateAndTime);
     }
 
     private void writeNoteToFile() {
-        if (mNoteText!= null) {
+        if (mNoteText != null) {
             String note = mNoteText.getText().toString();
             if (note != null && note.length() > 0) {
                 DebugUtil.logTextToFile("note", note);
@@ -952,7 +955,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void waveCreateView() {
         mWavesfv = (WaveSurfaceView) findViewById(R.id.wavesfv);
-        if(mWavesfv != null) {
+        if (mWavesfv != null) {
             mWavesfv.setLine_off(42);
             //解决surfaceView黑色闪动效果
             mWavesfv.setZOrderOnTop(true);

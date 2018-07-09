@@ -35,7 +35,7 @@ public class FileUtil {
     public static void writeByteToFile(byte[] data, @NonNull File file) {
         BufferedOutputStream bos = null;
         try {
-            FileOutputStream fos = new FileOutputStream(file);
+            FileOutputStream fos = new FileOutputStream(file, true);
             bos = new BufferedOutputStream(fos);
             bos.write(data, 0, data.length);
         } catch (Exception e) {

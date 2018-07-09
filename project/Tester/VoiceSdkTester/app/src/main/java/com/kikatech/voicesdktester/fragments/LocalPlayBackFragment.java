@@ -53,6 +53,8 @@ public class LocalPlayBackFragment extends Fragment implements
         LocalVoiceSource.EofListener,
         FileAdapter.OnItemCheckedListener {
 
+    private static final String TAG = "LocalPlayBackFragment";
+
     public enum FragmentType {
         LOCAL_USB,
         LOCAL_NC,
@@ -151,32 +153,38 @@ public class LocalPlayBackFragment extends Fragment implements
     }
 
     private void onRunNextPlayback() {
-        if (mVoiceService != null && mItemList.size() > 0) {
-            mItemStr = mItemList.get(0);
-            mItemList.remove(mItemStr);
-            mResults.add(new ResultModel(mItemStr));
-
-            String folder = FileUtil.getAudioFolder();
-            if (TextUtils.isEmpty(folder)) {
-                showStatusInfo("folder path error.");
-                onEndOfCurrentPlayback();
-                return;
-            }
-            getLocalVoiceSource(mFragmentType).setTargetFile(folder + mItemStr);
-
-            String fileName = FileUtil.getCurrentTimeFormattedFileName();
-            mVoiceService.setAsrAudioFilePath(folder, fileName);
-            mVoiceService.start();
-
-            mResultAdapter.clearResults();
-            mResultAdapter.notifyDataSetChanged();
-
-            writeOriginalFileNameToFile();
-            writeTimeToFile();
-
-            showStatusInfo("starting.");
-            mStartButton.setEnabled(false);
+        if (mVoiceService == null) {
+            return;
         }
+        if (mItemList.size() <= 0) {
+            return;
+        }
+
+        mItemStr = mItemList.get(0);
+        mItemList.remove(mItemStr);
+        mResults.add(new ResultModel(mItemStr));
+
+        String folder = FileUtil.getAudioFolder();
+        if (TextUtils.isEmpty(folder)) {
+            showStatusInfo("folder path error.");
+            onEndOfCurrentPlayback();
+            return;
+        }
+        String filePath = String.format("%s/%s", folder, mItemStr);
+        getLocalVoiceSource(mFragmentType).setTargetFile(filePath);
+
+        String fileName = FileUtil.getCurrentTimeFormattedFileName();
+        mVoiceService.setAsrAudioFilePath(folder, fileName);
+        mVoiceService.start();
+
+        mResultAdapter.clearResults();
+        mResultAdapter.notifyDataSetChanged();
+
+        writeOriginalFileNameToFile();
+        writeTimeToFile();
+
+        showStatusInfo("starting.");
+        mStartButton.setEnabled(false);
     }
 
     public void scanFiles() {
@@ -286,9 +294,9 @@ public class LocalPlayBackFragment extends Fragment implements
         mResultAdapter.notifyDataSetChanged();
 
         if (mResults.size() > 0) {
-            TextMessage textMessage = (TextMessage)message;
+            TextMessage textMessage = (TextMessage) message;
             String str = textMessage.text[0].toString();
-            ResultModel resultModel = mResults.get(mResults.size()-1);
+            ResultModel resultModel = mResults.get(mResults.size() - 1);
             resultModel.addMessage(str.toLowerCase());
         }
     }
@@ -409,13 +417,13 @@ public class LocalPlayBackFragment extends Fragment implements
         }
     }
 
-    private void writeTimeToFile(){
+    private void writeTimeToFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String currentDateAndTime = sdf.format(new Date());
         DebugUtil.logTextToFile("time", currentDateAndTime);
     }
 
-    private void writeOriginalFileNameToFile(){
+    private void writeOriginalFileNameToFile() {
         if (mItemStr != null && mItemStr.length() > 0) {
             DebugUtil.logTextToFile("Original File", mItemStr);
         }

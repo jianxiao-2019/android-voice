@@ -242,6 +242,9 @@ public class RecorderFragment extends PageFragment implements
                     String folder = FileUtil.getAudioFolder();
                     String fileName = FileUtil.getCurrentTimeFormattedFileName();
                     mVoiceService.setAsrAudioFilePath(folder, fileName);
+                    if (mKikaGoVoiceSource != null) {
+                        mKikaGoVoiceSource.setAudioFilePath(folder, fileName);
+                    }
                     mVoiceService.start();
 
                     if (mStartRecordView != null) {

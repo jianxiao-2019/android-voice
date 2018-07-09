@@ -13,9 +13,9 @@ import java.util.Locale;
 
 public class FileUtil {
     private static final String TAG = "FileUtil";
-
-    private static final String FOLDER_AUDIO = "/audio";
-    private static final String FOLDER_RECORD = "/voiceTester";
+    
+    private static final String FOLDER_RECORD = "/kikaVoiceSDK";
+    private static final String FOLDER_AUDIO = "/voiceTester";
 
     public static String getCurrentTimeFormattedFileName() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", new Locale("en"));
