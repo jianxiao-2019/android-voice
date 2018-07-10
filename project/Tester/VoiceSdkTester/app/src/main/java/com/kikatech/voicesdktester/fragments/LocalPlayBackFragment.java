@@ -358,7 +358,12 @@ public class LocalPlayBackFragment extends Fragment implements
                 showStatusInfo("stopped.");
             }
 
-            onRunNextPlayback();
+            mUiHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onRunNextPlayback();
+                }
+            }, 2000);
         }
     }
 

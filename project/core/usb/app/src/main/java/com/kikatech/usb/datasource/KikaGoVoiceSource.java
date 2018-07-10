@@ -97,7 +97,7 @@ public class KikaGoVoiceSource {
         mUsbDataSource = source;
         mUsbDataSource.setOnDataListener(mOnDataListener);
 
-        mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.BufferType.STEREO_TO_MONO);
+        mKikaBuffer = KikaBuffer.getKikaBuffer(KikaBuffer.BufferType.NOISE_CANCELLATION);
 
         mDbUtil = new DbUtil();
         mDbUtil.setDbCallback(mDbCallback);
