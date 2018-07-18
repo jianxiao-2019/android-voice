@@ -87,7 +87,7 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-
+                    android.os.Process.setThreadPriority(-20);
                     if (LogUtil.DEBUG) {
                         LogUtil.logv(TAG, "KikaAudioDriver start loop");
                     }
