@@ -103,7 +103,7 @@
                     android:id="@+id/seek_angle"
                     android:layout_width="210dp"
                     android:layout_height="match_parent"
-                    android:max="30000" />
+                    android:max="15" />
 
                 <TextView
                     android:id="@+id/text_angle"
@@ -136,7 +136,7 @@
                     android:id="@+id/seek_nc"
                     android:layout_width="210dp"
                     android:layout_height="match_parent"
-                    android:max="30000" />
+                    android:max="15" />
 
                 <TextView
                     android:id="@+id/text_nc"

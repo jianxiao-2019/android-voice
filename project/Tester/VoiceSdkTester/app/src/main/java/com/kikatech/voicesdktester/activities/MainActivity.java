@@ -178,10 +178,10 @@ public class MainActivity extends AppCompatActivity implements
     private void checkNsParameters() {
         if (mKikaGoVoiceSource != null) {
             if (mSeekAngle != null) {
-                mSeekAngle.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(0));
+                mSeekAngle.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(0)/2000);
             }
             if (mSeekNc != null) {
-                mSeekNc.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(1));
+                mSeekNc.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(1)/2000);
             }
             if (mSeekMode != null) {
                 mSeekMode.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(2));
@@ -433,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (mTextAngle != null) {
-                    mTextAngle.setText(String.valueOf(progress));
+                    mTextAngle.setText(String.valueOf(progress * 2000));
                 }
             }
 
@@ -451,10 +451,11 @@ public class MainActivity extends AppCompatActivity implements
         mButtonAngle = (Button) findViewById(R.id.button_angle);
         mButtonAngle.setOnClickListener(v -> {
             if (mKikaGoVoiceSource != null) {
+                int value = mSeekAngle.getProgress() * 2000;
                 mKikaGoVoiceSource.setNoiseCancellationParameters(
-                        KikaNcBuffer.CONTROL_ANGLE, mSeekAngle.getProgress());
+                        KikaNcBuffer.CONTROL_ANGLE, value);
                 if (mTextView != null) {
-                    mTextView.setText("Set the Angle to " + mSeekAngle.getProgress());
+                    mTextView.setText("Set the Angle to " + value);
                 }
             }
         });
@@ -465,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (mTextNc != null) {
-                    mTextNc.setText(String.valueOf(progress));
+                    mTextNc.setText(String.valueOf(progress * 2000));
                 }
             }
 
@@ -484,10 +485,10 @@ public class MainActivity extends AppCompatActivity implements
         mButtonNc.setOnClickListener(v -> {
             if (mKikaGoVoiceSource != null) {
                 mKikaGoVoiceSource.setNoiseCancellationParameters(
-                        KikaNcBuffer.CONTROL_NC, mSeekNc.getProgress());
+                        KikaNcBuffer.CONTROL_NC, mSeekNc.getProgress() * 2000);
             }
             if (mTextView != null) {
-                mTextView.setText("Set the NC to " + mSeekNc.getProgress());
+                mTextView.setText("Set the NC to " + mSeekNc.getProgress() * 2000);
             }
         });
         mButtonNc.setEnabled(false);
@@ -519,7 +520,7 @@ public class MainActivity extends AppCompatActivity implements
                         KikaNcBuffer.CONTROL_MODE, mSeekMode.getProgress());
             }
             if (mTextView != null) {
-                mTextView.setText("Set the Mode to " + mSeekMode.getProgress());
+                mTextView.setText("Set the Mode to " + mSeekMode.getProgress() * 2000);
             }
         });
         mButtonMode.setEnabled(false);
@@ -603,6 +604,7 @@ public class MainActivity extends AppCompatActivity implements
             DebugUtil.logTextToFile("fw", String.valueOf(Integer.toHexString(mKikaGoVoiceSource.checkFwVersion())));
             DebugUtil.logTextToFile("driver", String.valueOf(mKikaGoVoiceSource.checkDriverVersion()));
             DebugUtil.logTextToFile("nc", String.valueOf(mKikaGoVoiceSource.getNcVersion()));
+            DebugUtil.logTextToFile("angle", String.valueOf(KikaNcBuffer.getNoiseSuppressionParameters(0)));
         }
     }
 
