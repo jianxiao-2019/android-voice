@@ -18,4 +18,16 @@ public class LocalNcVoiceSource extends LocalVoiceSource {
     protected KikaBuffer getKikaBuffer() {
         return new KikaNcBuffer();
     }
+
+    public int getNcVersion() {
+        return KikaNcBuffer.getVersion();
+    }
+
+    public void setNoiseCancellationParameters(int mode, int value) {
+        KikaNcBuffer.setNoiseSuppressionParameters(mode, value);
+    }
+
+    public int getNoiseSuppressionParameters(int mode) {
+        return KikaNcBuffer.getNoiseSuppressionParameters(mode);
+    }
 }

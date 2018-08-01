@@ -6,6 +6,113 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/nc_parameters_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="Angle :" />
+
+            <SeekBar
+                android:layout_weight="1"
+                android:id="@+id/seek_angle"
+                android:layout_width="210dp"
+                android:layout_height="match_parent"
+                android:max="15" />
+
+            <TextView
+                android:id="@+id/text_angle"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="0" />
+
+            <Button
+                android:id="@+id/button_angle"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="SET" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:max="30000"
+                android:text="NC :" />
+
+            <SeekBar
+                android:layout_weight="1"
+                android:id="@+id/seek_nc"
+                android:layout_width="210dp"
+                android:layout_height="match_parent"
+                android:max="15" />
+
+            <TextView
+                android:id="@+id/text_nc"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="0" />
+
+            <Button
+                android:id="@+id/button_nc"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="SET" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:max="30000"
+                android:text="Mode :" />
+
+            <SeekBar
+                android:layout_weight="1"
+                android:id="@+id/seek_mode"
+                android:layout_width="210dp"
+                android:layout_height="match_parent"
+                android:max="10" />
+
+            <TextView
+                android:id="@+id/text_mode"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="0" />
+
+            <Button
+                android:id="@+id/button_mode"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="SET" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">

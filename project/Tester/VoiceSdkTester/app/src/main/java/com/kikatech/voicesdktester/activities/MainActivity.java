@@ -172,10 +172,10 @@ public class MainActivity extends AppCompatActivity implements
     private KikaGoVoiceSource.OnOpenedCallback mOnOpenedCallback = state -> runOnUiThread(() -> {
         checkVersions();
         checkVolume();
-        checkNsParameters();
+        checkNcParameters();
     });
 
-    private void checkNsParameters() {
+    private void checkNcParameters() {
         if (mKikaGoVoiceSource != null) {
             if (mSeekAngle != null) {
                 mSeekAngle.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(0)/2000);

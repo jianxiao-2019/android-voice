@@ -13,8 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
@@ -64,6 +67,12 @@ public class LocalPlayBackFragment extends Fragment implements
 
     private static final String DEBUG_FILE_PATH = "voiceTester";
 
+    private View mNcParamLayout;
+    private SeekBar mSeekAngle;
+    private TextView mTextAngle;
+    private Button mButtonAngle;
+    private SeekBar mSeekNc;
+
     private TextView mTextView;
 
     private Button mStartButton;
@@ -110,6 +119,46 @@ public class LocalPlayBackFragment extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
 
         getLocalVoiceSource(mFragmentType);
+
+        mNcParamLayout = (LinearLayout) view.findViewById(R.id.nc_parameters_layout);
+        if (mFragmentType == FragmentType.LOCAL_USB) {
+            mNcParamLayout.setVisibility(View.VISIBLE);
+
+            mSeekAngle = (SeekBar) view.findViewById(R.id.seek_angle);
+            mSeekAngle.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (mTextAngle != null) {
+                        mTextAngle.setText(String.valueOf(progress * 2000));
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+
+            mTextAngle = (TextView) view.findViewById(R.id.text_angle);
+
+            mButtonAngle = (Button) view.findViewById(R.id.button_angle);
+            mButtonAngle.setOnClickListener(v -> {
+                if (mLocalNcVoiceSource != null) {
+                    int value = mSeekAngle.getProgress() * 2000;
+                    mLocalNcVoiceSource.setNoiseCancellationParameters(
+                            KikaNcBuffer.CONTROL_ANGLE, value);
+                }
+            });
+
+            checkNcParameters();
+        } else {
+            mNcParamLayout.setVisibility(View.GONE);
+        }
 
         mTextView = (TextView) view.findViewById(R.id.status_text);
         mFileRecyclerView = (RecyclerView) view.findViewById(R.id.files_recycler);
@@ -182,6 +231,7 @@ public class LocalPlayBackFragment extends Fragment implements
 
         writeOriginalFileNameToFile();
         writeTimeToFile();
+        writeVersionsToFile();
 
         showStatusInfo("starting.");
         mStartButton.setEnabled(false);
@@ -428,6 +478,13 @@ public class LocalPlayBackFragment extends Fragment implements
         DebugUtil.logTextToFile("time", currentDateAndTime);
     }
 
+    private void writeVersionsToFile() {
+        if (mLocalNcVoiceSource != null) {
+            DebugUtil.logTextToFile("nc", String.valueOf(mLocalNcVoiceSource.getNcVersion()));
+            DebugUtil.logTextToFile("angle", String.valueOf(mLocalNcVoiceSource.getNoiseSuppressionParameters(0)));
+        }
+    }
+
     private void writeOriginalFileNameToFile() {
         if (mItemStr != null && mItemStr.length() > 0) {
             DebugUtil.logTextToFile("Original File", mItemStr);
@@ -487,5 +544,15 @@ public class LocalPlayBackFragment extends Fragment implements
         }
 
         bw.close();
+    }
+
+    private void checkNcParameters() {
+        if (mLocalNcVoiceSource != null) {
+            if (mSeekAngle != null) {
+                int value = mLocalNcVoiceSource.getNoiseSuppressionParameters(0);
+                value = 12000;
+                mSeekAngle.setProgress(value/2000);
+            }
+        }
     }
 }
