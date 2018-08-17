@@ -25,22 +25,17 @@
             <SeekBar
                 android:layout_weight="1"
                 android:id="@+id/seek_angle"
-                android:layout_width="210dp"
+                android:layout_width="270dp"
                 android:layout_height="match_parent"
-                android:max="15" />
+                android:max="50" />
 
             <TextView
                 android:id="@+id/text_angle"
-                android:layout_width="50dp"
+                android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="0" />
 
-            <Button
-                android:id="@+id/button_angle"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="SET" />
         </LinearLayout>
 
         <LinearLayout
@@ -59,7 +54,7 @@
             <SeekBar
                 android:layout_weight="1"
                 android:id="@+id/seek_nc"
-                android:layout_width="210dp"
+                android:layout_width="270dp"
                 android:layout_height="match_parent"
                 android:max="15" />
 
@@ -69,12 +64,6 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="0" />
-
-            <Button
-                android:id="@+id/button_nc"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="SET" />
         </LinearLayout>
 
         <LinearLayout
@@ -93,7 +82,7 @@
             <SeekBar
                 android:layout_weight="1"
                 android:id="@+id/seek_mode"
-                android:layout_width="210dp"
+                android:layout_width="270dp"
                 android:layout_height="match_parent"
                 android:max="10" />
 
@@ -103,12 +92,6 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="0" />
-
-            <Button
-                android:id="@+id/button_mode"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="SET" />
         </LinearLayout>
     </LinearLayout>
 

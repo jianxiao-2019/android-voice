@@ -70,8 +70,6 @@ public class LocalPlayBackFragment extends Fragment implements
     private View mNcParamLayout;
     private SeekBar mSeekAngle;
     private TextView mTextAngle;
-    private Button mButtonAngle;
-    private SeekBar mSeekNc;
 
     private TextView mTextView;
 
@@ -146,15 +144,6 @@ public class LocalPlayBackFragment extends Fragment implements
 
             mTextAngle = (TextView) view.findViewById(R.id.text_angle);
 
-            mButtonAngle = (Button) view.findViewById(R.id.button_angle);
-            mButtonAngle.setOnClickListener(v -> {
-                if (mLocalNcVoiceSource != null) {
-                    int value = mSeekAngle.getProgress() * 2000;
-                    mLocalNcVoiceSource.setNoiseCancellationParameters(
-                            KikaNcBuffer.CONTROL_ANGLE, value);
-                }
-            });
-
             checkNcParameters();
         } else {
             mNcParamLayout.setVisibility(View.GONE);
@@ -219,6 +208,13 @@ public class LocalPlayBackFragment extends Fragment implements
             onEndOfCurrentPlayback();
             return;
         }
+
+        if (mLocalNcVoiceSource != null) {
+            int value = mSeekAngle.getProgress() * 2000;
+            mLocalNcVoiceSource.setNoiseCancellationParameters(
+                    KikaNcBuffer.CONTROL_ANGLE, value);
+        }
+
         String filePath = String.format("%s/%s", folder, mItemStr);
         getLocalVoiceSource(mFragmentType).setTargetFile(filePath);
 
