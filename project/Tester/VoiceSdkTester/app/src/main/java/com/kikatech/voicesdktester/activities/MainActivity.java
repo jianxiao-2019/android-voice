@@ -178,7 +178,9 @@ public class MainActivity extends AppCompatActivity implements
     private void checkNcParameters() {
         if (mKikaGoVoiceSource != null) {
             if (mSeekAngle != null) {
-                mSeekAngle.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(0)/2000);
+//                int value = mKikaGoVoiceSource.getNoiseSuppressionParameters(0)/2000;
+                int value = 9;
+                mSeekAngle.setProgress(value);
             }
             if (mSeekNc != null) {
                 mSeekNc.setProgress(mKikaGoVoiceSource.getNoiseSuppressionParameters(1)/2000);

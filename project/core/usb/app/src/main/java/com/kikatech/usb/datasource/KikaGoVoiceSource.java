@@ -109,6 +109,7 @@ public class KikaGoVoiceSource {
         } else {
             isAmplifyDB = false;
         }
+//        isAmplifyDB = true;
     }
 
 

@@ -55,6 +55,7 @@ public abstract class LocalVoiceSource implements IVoiceSource {
         } else {
             isAmplifyDB = false;
         }
+//        isAmplifyDB = true;
         return true;
     }
 

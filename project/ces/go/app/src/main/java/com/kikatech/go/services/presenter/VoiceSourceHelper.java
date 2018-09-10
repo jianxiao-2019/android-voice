@@ -139,6 +139,7 @@ public class VoiceSourceHelper {
     public synchronized void enableNoiseCancellation() {
         if (mUsbVoiceSource != null) {
             mUsbVoiceSource.updateBufferType(KikaBuffer.BufferType.NOISE_CANCELLATION);
+            mUsbVoiceSource.setNoiseCancellationParameters(0, 18000);
         }
     }
 

@@ -79,4 +79,12 @@ public class KikaGoUsbVoiceSourceWrapper implements IVoiceSource {
     public int checkDriverVersion() {
         return mVoiceSource.checkDriverVersion();
     }
+
+    public void setNoiseCancellationParameters(int mode, int value) {
+        mVoiceSource.setNoiseCancellationParameters(mode, value);
+    }
+
+    public int getNoiseCancellationParameters(int mode) {
+        return mVoiceSource.getNoiseSuppressionParameters(mode);
+    }
 }

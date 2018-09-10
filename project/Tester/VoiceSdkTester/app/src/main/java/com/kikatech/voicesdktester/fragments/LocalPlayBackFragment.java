@@ -546,7 +546,7 @@ public class LocalPlayBackFragment extends Fragment implements
         if (mLocalNcVoiceSource != null) {
             if (mSeekAngle != null) {
                 int value = mLocalNcVoiceSource.getNoiseSuppressionParameters(0);
-                value = 12000;
+                value = 18000;
                 mSeekAngle.setProgress(value/2000);
             }
         }
