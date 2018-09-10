@@ -5,6 +5,9 @@ import android.content.ComponentName;
 import android.content.pm.PackageManager;
 
 import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voicesdktester.utils.PreferenceUtil;
+
+import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_APP;
 
 /**
  * Created by ryanlin on 01/02/2018.
