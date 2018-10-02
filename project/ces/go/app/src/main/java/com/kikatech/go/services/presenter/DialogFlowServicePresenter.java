@@ -1,6 +1,7 @@
 package com.kikatech.go.services.presenter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -127,7 +128,12 @@ public class DialogFlowServicePresenter {
                 LogUtil.log(TAG, "onWakeUp, scene:" + scene);
             }
             mDFServiceStatus.setAwake(true);
-            mVoiceSourceHelper.enableNoiseCancellation();
+
+
+            SharedPreferences preferences = mContext.getSharedPreferences("MyPreference", Context.MODE_PRIVATE);
+            int angle = preferences.getInt("Angle", 9);
+            mVoiceSourceHelper.enableNoiseCancellation(angle);
+
             MusicForegroundService.pauseMusic();
             String action = DFServiceEvent.ACTION_ON_WAKE_UP;
             DFServiceEvent event = new DFServiceEvent(action);
