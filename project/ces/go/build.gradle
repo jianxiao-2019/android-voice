@@ -25,7 +25,6 @@ allprojects {
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
         maven { url "https://jitpack.io" }
-        maven { url 'http://192.168.100.71:8081/nexus/content/groups/release' }
     }
 }
 

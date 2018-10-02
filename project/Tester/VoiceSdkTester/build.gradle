@@ -22,8 +22,6 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url "http://maven.kikakeyboard.com:37409" }
-//        maven { url 'http://192.168.100.71:8081/nexus/content/groups/release' }
         maven {
             url 'https://maven.google.com/'
             name 'Google'
