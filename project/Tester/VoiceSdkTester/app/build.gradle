@@ -50,6 +50,7 @@ dependencies {
     implementation project(':voiceSDK')
     implementation project(':wakeup')
     implementation project(':googleCloudSpeech')
+    implementation project(':tencentCloudSpeech')
     implementation project(path: ':usb')
     implementation 'com.android.support:multidex:1.0.0'
     // Guava
