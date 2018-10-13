@@ -100,7 +100,7 @@ public abstract class WakeUpPresenter implements
                 .setLocale("en_US")
                 .setSign(RequestManager.getSign(mContext))
                 .setUserAgent(RequestManager.generateUserAgent(mContext))
-                .setEngine("google")
+                .setEngine("tencent")
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
         VoiceConfig.getVoiceConfig(mContext, conf, config -> {

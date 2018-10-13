@@ -8,6 +8,7 @@ import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.BackgroundThread;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.webservice.google_cloud_speech.GoogleApi;
+import com.kikatech.voice.webservice.tencent_cloud_speech.TencentApi;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.model.RetrofitManager;
 import com.kikatech.voicesdktester.utils.google.cloud.speech.GoogleAesUtil;
@@ -39,7 +40,8 @@ public class VoiceConfig {
             __getGoogleAuthFile(ctx, json -> {
                 if (!TextUtils.isEmpty(json)) {
                     mGoogleAuthJson = json;
-                    configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
+                    //configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
+                    configuration.setWebSocket(new TencentApi(ctx));
                 }
                 dispatchConfiguration(listener, configuration);
             });
@@ -47,7 +49,8 @@ public class VoiceConfig {
             if (Logger.DEBUG) {
                 Logger.v(TAG, "use cached google auth file json");
             }
-            configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
+            //configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
+            configuration.setWebSocket(new TencentApi(ctx));
             dispatchConfiguration(listener, configuration);
         }
     }

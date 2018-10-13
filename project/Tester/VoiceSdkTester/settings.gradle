@@ -2,9 +2,11 @@ include ':app'
 include ':voiceSDK'
 include ':wakeup'
 include ':googleCloudSpeech'
+include ':tencentCloudSpeech'
 include ':usb'
 
 project(":voiceSDK").projectDir = new File("../../../../android-voice/voiceSDK")
 project(":wakeup").projectDir = new File("../../../../android-voice/wakeup")
 project(":googleCloudSpeech").projectDir = new File("../../../../android-voice/googleCloudSpeech")
+project(":tencentCloudSpeech").projectDir = new File("../../../../android-voice/tencentCloudSpeech")
 project(":usb").projectDir = new File("../../core/usb/app")
