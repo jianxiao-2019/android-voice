@@ -4,12 +4,15 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +65,10 @@ public class KikaDebugLogActivity extends BaseActivity {
             R.id.button_copy,
             R.id.button_send
     };
+
+    private View mNcParamLayout;
+    private SeekBar mSeekAngle;
+    private TextView mTextAngle;
 
 
     /**
@@ -160,6 +167,59 @@ public class KikaDebugLogActivity extends BaseActivity {
         });
 
         loadLog();
+
+        mNcParamLayout = (LinearLayout) findViewById(R.id.nc_parameters_layout);
+//        if (mFragmentType == FragmentType.LOCAL_USB) {
+            mNcParamLayout.setVisibility(View.VISIBLE);
+
+            mSeekAngle = (SeekBar) findViewById(R.id.seek_angle);
+            mSeekAngle.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (mTextAngle != null) {
+                        mTextAngle.setText(String.valueOf(progress * 2000));
+
+                        int value = mSeekAngle.getProgress() * 2000;
+
+                        saveNcParameters(progress);
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+
+            mTextAngle = (TextView) findViewById(R.id.text_angle);
+
+            checkNcParameters();
+//        }
+//        else {
+//            mNcParamLayout.setVisibility(View.GONE);
+//        }
+    }
+
+    private void checkNcParameters() {
+//        if (mLocalNcVoiceSource != null) {
+            if (mSeekAngle != null) {
+                SharedPreferences preferences = this.getSharedPreferences("MyPreference", Context.MODE_PRIVATE);
+                int angle = preferences.getInt("Angle", 9);
+                mSeekAngle.setProgress(angle);
+            }
+//        }
+    }
+
+    private void saveNcParameters(int angle) {
+        SharedPreferences preferences = this.getSharedPreferences("MyPreference", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("Angle", angle);
+        editor.commit();
     }
 
     private void loadAsrLocaleSetting() {
