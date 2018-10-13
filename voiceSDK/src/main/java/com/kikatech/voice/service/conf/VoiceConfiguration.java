@@ -29,6 +29,7 @@ public class VoiceConfiguration {
     public interface Engine {
         String KIKA_KIKA = "kika";
         String KIKA_GOOGLE = "google";
+        String KIKA_TENCENT = "tencent";
     }
 
     public enum SpeechMode {
@@ -37,7 +38,7 @@ public class VoiceConfiguration {
         AUDIO_UPLOAD,
     }
 
-    private static final String DEFAULT_ENGINE = Engine.KIKA_GOOGLE;
+    private static final String DEFAULT_ENGINE = Engine.KIKA_TENCENT;
     private static final String DEFAULT_LOCALE = "en_US";
 
     private static final int DEFAULT_BOS_DURATION = -1;
