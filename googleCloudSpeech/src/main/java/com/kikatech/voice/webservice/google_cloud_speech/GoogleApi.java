@@ -73,6 +73,7 @@ public class GoogleApi extends BaseWebSocket {
     private StreamObserver<StreamingRecognizeRequest> mRequestObserver;
     private final StreamObserver<StreamingRecognizeResponse> mResponseObserver = new StreamObserver<StreamingRecognizeResponse>() {
         private long mCid = 0;
+        private long mEndCid = 0;
 
         @Override
         public void onNext(StreamingRecognizeResponse response) {
@@ -104,8 +105,13 @@ public class GoogleApi extends BaseWebSocket {
                 msg = new IntermediateMessage(1, holder.text, "google", mCid);
             } else { // Final Result
                 // TODO: process n-best result from #getResultHolder
-                msg = new TextMessage(1, new String[]{holder.text}, "google", mCid);
+                if (mEndCid == 0) {
+                    mEndCid = System.currentTimeMillis();
+                }
+                msg = new TextMessage(1, new String[]{holder.text}, "google", mCid, mEndCid);
+
                 mCid = 0;
+                mEndCid = 0;
             }
             mListener.onMessage(msg);
         }

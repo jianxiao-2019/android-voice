@@ -200,6 +200,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     public void start() {
         start(mConf.getBosDuration());
+
+        DebugUtil.setStarCid(System.currentTimeMillis());
     }
 
     public void start(int bosDuration) {
@@ -262,6 +264,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         DebugUtil.convertCurrentPcmToWav();
         ReportUtil.getInstance().stopTimeStamp("stop record");
+
+        DebugUtil.setStarCid(0);
     }
 
     private void cleanVadBosTimer() {

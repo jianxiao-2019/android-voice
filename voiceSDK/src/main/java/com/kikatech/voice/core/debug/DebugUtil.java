@@ -15,6 +15,9 @@ import com.kikatech.voice.util.log.Logger;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by ryanlin on 12/02/2018.
@@ -119,6 +122,14 @@ public class DebugUtil {
         return isConverted;
     }
 
+    private static long offsetInitialCid = 0;
+    private static int cidIndex = 0;
+
+    public static void setStarCid(long cid) {
+        offsetInitialCid = cid;
+        cidIndex = 0;
+    }
+
     public static void logResultToFile(Message message) {
         // TODO : write the log at the other thread.
         if (!sIsDebug) {
@@ -126,10 +137,12 @@ public class DebugUtil {
         }
 
         long cid;
+        long endCid = 0;
         String text;
         if (message instanceof TextMessage) {
             text = ((TextMessage) message).text[0];
             cid = ((TextMessage) message).cid;
+            endCid = ((TextMessage) message).endCid;
         } else if (message instanceof AlterMessage) {
             text = ((AlterMessage) message).text[0];
             cid = ((AlterMessage) message).cid;
@@ -160,17 +173,39 @@ public class DebugUtil {
         if (bufferedWriter != null) {
             Logger.d("logResultToFile cid = " + cid + " text = " + text);
             try {
-                bufferedWriter.write("cid:" + cid);
+                cidIndex += 1;
+                if (cid != 0 && endCid != 0) {
+                    bufferedWriter.write(String.valueOf(cidIndex));
+                    bufferedWriter.newLine();
+                    bufferedWriter.write(convertCidToSrt(cid));
+                    bufferedWriter.write(" --> ");
+                    bufferedWriter.write(convertCidToSrt(endCid));
+                } else {
+                    bufferedWriter.write(convertCidToDate(cid));
+                }
                 bufferedWriter.newLine();
-                bufferedWriter.write("result:" + text);
+                bufferedWriter.write(text);
                 bufferedWriter.newLine();
-                bufferedWriter.write("-----------------------");
+                bufferedWriter.newLine();
                 bufferedWriter.newLine();
                 bufferedWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static String convertCidToDate(long cid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+        Date resultdate = new Date(cid);
+        return sdf.format(resultdate);
+    }
+
+    private static String convertCidToSrt(long cid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date resultdate = new Date(cid - offsetInitialCid);
+        return sdf.format(resultdate);
     }
 
     public static void logTextToFile(@NonNull String title, @NonNull String text) {

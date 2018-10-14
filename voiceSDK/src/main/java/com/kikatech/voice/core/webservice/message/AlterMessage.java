@@ -16,6 +16,7 @@ public class AlterMessage extends Message {
     public String context;  // "Send me a taxi in 5 minutes"
     public String altered;  // "text"
     public long cid;
+    public long endCid;
     public int alterStart;  // 10
     public int alterEnd;    // 14
     public int type;
@@ -32,6 +33,7 @@ public class AlterMessage extends Message {
         type = dataObj.optInt("type");
 
         cid = dataObj.optLong("cid");
+        endCid = dataObj.optLong("endCid");
         parseTextResults(dataObj.optJSONArray("transcripts"));
     }
 

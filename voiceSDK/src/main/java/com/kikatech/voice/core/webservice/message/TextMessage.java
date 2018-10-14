@@ -13,6 +13,7 @@ public class TextMessage extends Message {
     public String[] text;       // asr result
     public String engine;       // asr engine
     public long cid;          // conversation id
+    public long endCid;
 
     public TextMessage() {
     }
@@ -22,6 +23,14 @@ public class TextMessage extends Message {
         this.text = text;
         this.engine = engine;
         this.cid = cid;
+    }
+
+    public TextMessage(int state, String[] text, String engine, long startCid, long endCid) {
+        this.state = state;
+        this.text = text;
+        this.engine = engine;
+        this.cid = startCid;
+        this.endCid = endCid;
     }
 
     public TextMessage(IntermediateMessage intermediateMessage) {
