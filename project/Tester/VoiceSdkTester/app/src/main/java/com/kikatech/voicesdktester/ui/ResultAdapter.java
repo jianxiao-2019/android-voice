@@ -13,7 +13,9 @@ import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voicesdktester.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,17 +47,23 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultItem
         if (message instanceof TextMessage) {
             holder.resultText.setText(((TextMessage) message).text[0]);
             holder.cidText.setText(
-                    String.format(mContext.getString(R.string.cid_text), ((TextMessage) message).cid));
+                    String.format(mContext.getString(R.string.time_text), convertCidToDate(((TextMessage) message).cid)));
         } else if (message instanceof IntermediateMessage) {
             holder.resultText.setText(((IntermediateMessage) message).text);
             holder.cidText.setText(
-                    String.format(mContext.getString(R.string.cid_text), ((IntermediateMessage) message).cid));
+                    String.format(mContext.getString(R.string.time_text), convertCidToDate(((IntermediateMessage) message).cid)));
         } else if (message instanceof AlterMessage) {
             holder.resultText.setText(((AlterMessage) message).text[0]);
             holder.cidText.setText(
-                    String.format(mContext.getString(R.string.cid_text), ((AlterMessage) message).cid));
+                    String.format(mContext.getString(R.string.time_text), convertCidToDate(((AlterMessage) message).cid)));
         }
 
+    }
+
+    private String convertCidToDate(long cid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+        Date resultdate = new Date(cid);
+        return sdf.format(resultdate);
     }
 
     @Override

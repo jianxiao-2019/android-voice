@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">KikaGO Tester</string>
+    <string name="app_name">KikaGO Voice Memo</string>
 
     <string name="cid_text">cid : %d</string>
+    <string name="time_text">%s</string>
 
     <string name="tab_title_record">Record</string>
     <string name="tab_title_player">Result</string>

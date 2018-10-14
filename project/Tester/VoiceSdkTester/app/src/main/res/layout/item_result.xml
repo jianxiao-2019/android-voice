@@ -8,16 +8,19 @@
     android:paddingTop="8dp">
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/text_cid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
         android:textColor="#FFFFFFFF" />
 
     <TextView
         android:id="@+id/text_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFFFF" />
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#838FA5" />
 
     <View
         android:layout_width="match_parent"

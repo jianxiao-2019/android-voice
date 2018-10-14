@@ -1,9 +1,12 @@
 package com.kikatech.voicesdktester.fragments;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +21,7 @@ import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsSource;
+import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
@@ -27,6 +31,7 @@ import com.kikatech.voice.util.request.RequestManager;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.source.KikaGoUsbVoiceSourceWrapper;
+import com.kikatech.voicesdktester.ui.ResultAdapter;
 import com.kikatech.voicesdktester.utils.FileUtil;
 import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import com.kikatech.voicesdktester.utils.VoiceConfig;
@@ -74,6 +79,10 @@ public class RecorderFragment extends PageFragment implements
     private AudioPlayerTask mTask;
 
 //    private boolean mStartSpeech = false;
+
+    private TextView mTextView;
+    private RecyclerView mResultRecyclerView;
+    private ResultAdapter mResultAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -165,6 +174,13 @@ public class RecorderFragment extends PageFragment implements
             }
         });
 
+        mTextView = (TextView) view.findViewById(R.id.text_recent);
+
+        mResultAdapter = new ResultAdapter(getContext());
+        mResultRecyclerView = (RecyclerView) view.findViewById(R.id.result_recycler);
+        mResultRecyclerView.setAdapter(mResultAdapter);
+        mResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         attachService();
         refreshRecentView();
     }
@@ -238,37 +254,55 @@ public class RecorderFragment extends PageFragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.start_record:
-                if (mVoiceService != null) {
-                    String folder = FileUtil.getAudioFolder();
-                    String fileName = FileUtil.getCurrentTimeFormattedFileName();
-                    mVoiceService.setAsrAudioFilePath(folder, fileName);
-                    if (mKikaGoVoiceSource != null) {
-                        mKikaGoVoiceSource.setAudioFilePath(folder, fileName);
-                    }
-                    mVoiceService.start();
-
-                    if (mStartRecordView != null) {
-                        mStartRecordView.setVisibility(View.GONE);
-                    }
-                    if (mStopRecordView != null) {
-                        mStopRecordView.setVisibility(View.VISIBLE);
-                    }
-
-                    mRecordingTimerText.setText("00:00");
-                    mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
-                }
+                onPressStartButton();
                 break;
             case R.id.stop_record:
-                if (mVoiceService != null) {
-                    mVoiceService.stop(VoiceService.StopType.NORMAL);
-                }
-                updateViewForStopRecording();
+                onPressStopButton();
                 break;
             case R.id.device_button_left:
                 break;
             case R.id.device_button_right:
                 break;
         }
+    }
+
+    private void onPressStartButton() {
+        if (mVoiceService != null) {
+            String folder = FileUtil.getAudioFolder();
+            String fileName = FileUtil.getCurrentTimeFormattedFileName();
+            mVoiceService.setAsrAudioFilePath(folder, fileName);
+            if (mKikaGoVoiceSource != null) {
+                mKikaGoVoiceSource.setAudioFilePath(folder, fileName);
+            }
+            mVoiceService.start();
+
+            mResultAdapter.clearResults();
+            mResultAdapter.notifyDataSetChanged();
+
+            if (mStartRecordView != null) {
+                mStartRecordView.setVisibility(View.GONE);
+            }
+            if (mStopRecordView != null) {
+                mStopRecordView.setVisibility(View.VISIBLE);
+            }
+
+            mRecordingTimerText.setText("00:00");
+            mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
+
+            if (mTextView != null) {
+                mTextView.setText("Recent");
+            }
+            if (mRecordingTimerText != null) {
+                mRecordingTimerText.setTextColor(Color.WHITE);
+            }
+        }
+    }
+
+    private void onPressStopButton() {
+        if (mVoiceService != null) {
+            mVoiceService.stop(VoiceService.StopType.NORMAL);
+        }
+        updateViewForStopRecording();
     }
 
     private void updateViewForStopRecording() {
@@ -312,6 +346,17 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onRecognitionResult(Message message) {
+        if (message instanceof IntermediateMessage) {
+            if (mTextView != null) {
+                mTextView.setText(((IntermediateMessage) message).text);
+            }
+            return;
+        }
+        if (mTextView != null) {
+            mTextView.setText("");
+        }
+        mResultAdapter.addResult(message);
+        mResultAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -420,6 +465,14 @@ public class RecorderFragment extends PageFragment implements
                     String result = String.format("%02d:%02d", mTimeInSec / 60, mTimeInSec % 60);
                     mRecordingTimerText.setText(result);
                     mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
+                }
+                if (mTimeInSec >= 60) {
+                    if (mRecordingTimerText != null) {
+                        mRecordingTimerText.setTextColor(Color.RED);
+                    }
+                    if (mTimeInSec >= 65 && mRecordingTimerText != null) {
+                        onPressStopButton();
+                    }
                 }
             } else if (msg.what == MSG_CHECK_DEBUG) {
                 mDebugCount = 0;

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.content.FileProvider;
 import android.view.View;
+import android.widget.Toast;
 
 import com.kikatech.voice.core.debug.WavHeaderHelper;
 import com.kikatech.voice.util.log.Logger;
@@ -36,7 +37,7 @@ public class ItemShareClickListener implements View.OnClickListener {
     public void onClick(View v) {
         if (mIsSourceUsb) {
             new android.support.v7.app.AlertDialog.Builder(mContext)
-                    .setSingleChoiceItems(new String[]{"Raw", "Noise Cancellation"}, 0, new DialogInterface.OnClickListener() {
+                    .setSingleChoiceItems(new String[]{"Raw", "Noise Cancellation", "Text"}, 0, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mWhich = which;
@@ -45,7 +46,14 @@ public class ItemShareClickListener implements View.OnClickListener {
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            shareAudio(mFileSimplePath + (mWhich == 0 ? "_USB" : "_NC"));
+                            if (mWhich == 0) {
+                                shareAudio(mFileSimplePath + "_USB");
+                            } else if (mWhich == 1) {
+                                shareAudio(mFileSimplePath + "_NC");
+                            } else if (mWhich == 2) {
+                                shareText(mFileSimplePath);
+                            }
+
                             dialog.dismiss();
                         }
                     })
@@ -57,7 +65,32 @@ public class ItemShareClickListener implements View.OnClickListener {
                     })
                     .show();
         } else {
-            shareAudio(mFileSimplePath + "_SRC");
+            new android.support.v7.app.AlertDialog.Builder(mContext)
+                    .setSingleChoiceItems(new String[]{"Raw", "Text"}, 0, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mWhich = which;
+                        }
+                    })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (mWhich == 0) {
+                                shareAudio(mFileSimplePath + "_SRC");
+                            } else if (mWhich == 1) {
+                                shareText(mFileSimplePath);
+                            }
+
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
         }
     }
 
@@ -71,9 +104,20 @@ public class ItemShareClickListener implements View.OnClickListener {
         }
     }
 
+    private void shareText(String shareFilePath) {
+        File file = new File(shareFilePath + ".txt");
+        Logger.d("shareText file = " + file.getPath());
+        if (!file.exists()) {
+            Toast.makeText(mContext, "No Text!",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            shareFile(file.getPath());
+        }
+    }
+
     private void shareFile(String filePath) {
         Intent share = new Intent(Intent.ACTION_SEND);
-        share.setType("audio/wav");
+        share.setType("*/*");
         Uri uri = FileProvider.getUriForFile(
                 mContext,
                 mContext.getPackageName() + ".provider",

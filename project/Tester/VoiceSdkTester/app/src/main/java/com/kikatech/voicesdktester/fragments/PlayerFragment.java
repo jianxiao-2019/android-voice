@@ -233,9 +233,15 @@ public class PlayerFragment extends PageFragment {
             FileReader fr = new FileReader(path);
             BufferedReader br = new BufferedReader(fr);
             String line;
+            int lineIndex = 0;
             while ((line = br.readLine()) != null) {
-                if (line.startsWith("result:")) {
-                    sb.append(line.substring(7)).append(" ");
+                if (line.length() > 0) {
+                    Logger.d("getRecognizeResult lineIndex = " + String.valueOf(lineIndex));
+                    Logger.d("getRecognizeResult = " + "\"" + line + "\"");
+                    if (lineIndex%3 == 2) {
+                        sb.append(line).append(" ");
+                    }
+                    lineIndex += 1;
                 }
             }
         } catch (FileNotFoundException e) {
