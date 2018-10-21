@@ -7,6 +7,7 @@ import android.util.Log;
 import com.kikatech.voice.core.webservice.impl.BaseWebSocket;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.tencent.ai.sdk.control.SpeechManager;
 import com.tencent.ai.sdk.tr.ITrListener;
@@ -121,11 +122,12 @@ public class TencentApi extends BaseWebSocket {
 
         String message = null;
         int id = mTrSession.start(TrSession.ISS_TR_MODE_CLOUD_REC,false);
-//        if (id != ISSErrors.ISS_SUCCESS) {
-//            message = "Tr SessionStart error,id = " + id;
-//            Log.e(TAG, message);
-//            Log.d(TAG,message);
-//        } else {
+        if (id != ISSErrors.ISS_SUCCESS) {
+            message = "Tr SessionStart error,id = " + id;
+            Log.e(TAG, message);
+            Log.d(TAG,message);
+        }
+//        else {
 //            // 开始录音
 //            mPcmRecorder = new PcmRecorder(mContext);
 //            mPcmRecorder.start();
@@ -174,7 +176,12 @@ public class TencentApi extends BaseWebSocket {
             } else if (uMsg == TrSession.ISS_TR_MSG_SpeechEnd) {
                 msg = "检测到说话结束";
             } else if (uMsg == TrSession.ISS_TR_MSG_VoiceResult) {
-                msg = "" + lParam;
+                msg = "end" + lParam;
+
+                Message msg2;
+                mCid = System.currentTimeMillis();
+                msg2 = new TextMessage(1, new String[]{lParam}, "tencent", mCid);
+                mListener.onMessage(msg2);
                 stopRecord();
             }
 
@@ -184,9 +191,7 @@ public class TencentApi extends BaseWebSocket {
 
             if(uMsg == 20013) {
                 Message msg2;
-                if (mCid == 0) {
-                    mCid = System.currentTimeMillis();
-                }
+                mCid = System.currentTimeMillis();
 
                 Log.i(TAG, "2 onTrVoiceMsgProc - uMsg : " + uMsg + ", wParam : " + wParam + ", lParam : " + lParam);
                 msg2 = new IntermediateMessage(1, lParam, "tencent", mCid);
