@@ -33,6 +33,7 @@ public class TencentApi extends BaseWebSocket {
     private PcmRecorder mPcmRecorder;
     private Context mContext;
     private long mCid = 0;
+    private long mEndCid = 0;
 
     public TencentApi (Context context) {
         mContext = context;
@@ -135,13 +136,18 @@ public class TencentApi extends BaseWebSocket {
                 //"检测到说话结束";
             } else if (uMsg == TrSession.ISS_TR_MSG_VoiceResult) {
                 Message msg;
-                mCid = System.currentTimeMillis();
-                msg = new TextMessage(1, new String[]{lParam}, "tencent", mCid);
+                if (mEndCid == 0) {
+                    mEndCid = System.currentTimeMillis();
+                }
+                msg = new TextMessage(1, new String[]{lParam}, "tencent", mCid, mEndCid);
                 mListener.onMessage(msg);
-
+                mCid = 0;
+                mEndCid = 0;
             } else if(uMsg == TrSession.ISS_TR_MSG_ProcessResult) {
                 Message msg;
-                mCid = System.currentTimeMillis();
+                if (mCid == 0) {
+                    mCid = System.currentTimeMillis();
+                }
                 msg = new IntermediateMessage(1, lParam, "tencent", mCid);
                 mListener.onMessage(msg);
             }
@@ -151,6 +157,7 @@ public class TencentApi extends BaseWebSocket {
         @Override
         public void onTrSemanticMsgProc(long uMsg, long wParam, int cmd, String lParam, Object extraMsg) {
             mCid = 0;
+            mEndCid = 0;
             startRecognize();
         }
 
