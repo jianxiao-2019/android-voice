@@ -23,6 +23,7 @@ import com.kikatech.voice.core.debug.DebugUtil;
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
+import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.voice.VoiceService;
@@ -344,6 +345,8 @@ public class RecorderFragment extends PageFragment implements
 
     }
 
+    private long mLastCid = 0;
+
     @Override
     public void onRecognitionResult(Message message) {
         if (message instanceof IntermediateMessage) {
@@ -352,6 +355,11 @@ public class RecorderFragment extends PageFragment implements
             }
             return;
         }
+        if (((TextMessage)message).cid == 0 || mLastCid == ((TextMessage)message).cid) {
+            return;
+        }
+        mLastCid = ((TextMessage)message).cid;
+
         if (mTextView != null) {
             mTextView.setText("");
         }
