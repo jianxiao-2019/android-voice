@@ -6,73 +6,77 @@
     android:gravity="center_horizontal">
 
     <FrameLayout
-        android:id="@+id/start_record"
+        android:id="@+id/record_area"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:background="@drawable/ic_voice_mockup_standby">
+        android:layout_marginTop="0dp">
 
-        <ImageView
+        <FrameLayout
+            android:id="@+id/start_record"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="90dp"
-            android:src="@drawable/ic_voice_record" />
+            android:background="@drawable/ic_voice_mockup_standby">
 
-        <TextView
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="90dp"
+                android:src="@drawable/ic_voice_record" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="160dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Tap to Record"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/stop_record"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="160dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="Tap to Record"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp" />
-    </FrameLayout>
+            android:background="@drawable/ic_voice_mockup_listening"
+            android:visibility="gone">
 
-    <FrameLayout
-        android:id="@+id/stop_record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:background="@drawable/ic_voice_mockup_listening"
-        android:visibility="gone">
+            <TextView
+                android:id="@+id/recording_timer_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="94dp"
+                android:fontFamily="sans-serif-light"
+                android:text="01:35"
+                android:textColor="#FFFFFF"
+                android:textSize="51sp" />
 
-        <TextView
-            android:id="@+id/recording_timer_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="94dp"
-            android:fontFamily="sans-serif-light"
-            android:text="01:35"
-            android:textColor="#FFFFFF"
-            android:textSize="51sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="155dp"
-            android:drawableLeft="@drawable/signal_point_yellow"
-            android:drawablePadding="10dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="Recording"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="155dp"
+                android:drawableLeft="@drawable/signal_point_yellow"
+                android:drawablePadding="10dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Recording"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </FrameLayout>
     </FrameLayout>
 
     <TextView
+        android:id="@+id/device_record_via_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/device_button_layout"
+        android:layout_below="@+id/record_area"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="6dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="-10dp"
+        android:layout_marginBottom="2dp"
         android:fontFamily="sans-serif-medium"
         android:text="Record via"
         android:textColor="#838FA5"
@@ -82,7 +86,7 @@
         android:id="@+id/device_button_layout"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_above="@+id/text_recent"
+        android:layout_below="@+id/device_record_via_layout"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp"
         android:orientation="horizontal">
@@ -150,13 +154,14 @@
 
     <FrameLayout
         android:id="@+id/result_area"
+        android:layout_below="@+id/text_recent"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/result_recycler"
@@ -218,9 +223,9 @@
         android:id="@+id/text_recent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/result_area"
+        android:layout_below="@+id/device_button_layout"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="20dp"
         android:fontFamily="sans-serif-medium"
         android:text="Recent"
