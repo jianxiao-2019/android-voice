@@ -73,6 +73,7 @@ public class RecorderFragment extends PageFragment implements
     private static final int MSG_CHECK_DEBUG = 1;
     private static final int MSG_VAD_TIMER = 2;
     private long mTimeInSec = 0;
+    private long mNoAsrTimeInSec = 0;
 
     private int mDebugCount = 0;
 
@@ -184,6 +185,16 @@ public class RecorderFragment extends PageFragment implements
 
         attachService();
         refreshRecentView();
+    }
+
+    private void onRestart() {
+        if (mVoiceService != null) {
+            mVoiceService.stop(VoiceService.StopType.RESTART);
+        }
+
+        if (mVoiceService != null) {
+            mVoiceService.restart();
+        }
     }
 
     @Override
@@ -316,6 +327,7 @@ public class RecorderFragment extends PageFragment implements
 
         mTimerHandler.removeMessages(MSG_TIMER);
         mTimeInSec = 0;
+        mNoAsrTimeInSec = 0;
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -349,6 +361,7 @@ public class RecorderFragment extends PageFragment implements
 
     @Override
     public void onRecognitionResult(Message message) {
+        mNoAsrTimeInSec = 0;
         if (message instanceof IntermediateMessage) {
             if (mTextView != null) {
                 mTextView.setText(((IntermediateMessage) message).text);
@@ -365,6 +378,8 @@ public class RecorderFragment extends PageFragment implements
         }
         mResultAdapter.addResult(message);
         mResultAdapter.notifyDataSetChanged();
+
+        onRestart();
     }
 
     @Override
@@ -469,18 +484,23 @@ public class RecorderFragment extends PageFragment implements
             super.handleMessage(msg);
             if (msg.what == MSG_TIMER) {
                 mTimeInSec++;
+                mNoAsrTimeInSec++;
                 if (mRecordingTimerText != null) {
                     String result = String.format("%02d:%02d", mTimeInSec / 60, mTimeInSec % 60);
                     mRecordingTimerText.setText(result);
                     mTimerHandler.sendEmptyMessageDelayed(MSG_TIMER, 1000);
                 }
-                if (mTimeInSec >= 60) {
-                    if (mRecordingTimerText != null) {
-                        mRecordingTimerText.setTextColor(Color.RED);
-                    }
-                    if (mTimeInSec >= 65 && mRecordingTimerText != null) {
-                        onPressStopButton();
-                    }
+//                if (mTimeInSec >= 60) {
+//                    if (mRecordingTimerText != null) {
+//                        mRecordingTimerText.setTextColor(Color.RED);
+//                    }
+//                    if (mTimeInSec >= 65 && mRecordingTimerText != null) {
+//                        onPressStopButton();
+//                    }
+//                }
+                if (mNoAsrTimeInSec >= 30) {
+                    onRestart();
+                    mNoAsrTimeInSec = 0;
                 }
             } else if (msg.what == MSG_CHECK_DEBUG) {
                 mDebugCount = 0;
