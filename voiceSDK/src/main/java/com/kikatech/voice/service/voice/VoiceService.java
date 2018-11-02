@@ -103,6 +103,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         ERROR,
         COMPLETE,
         CANCEL,
+        RESTART,
     }
 
     @Override
@@ -204,6 +205,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         DebugUtil.setStarCid(System.currentTimeMillis());
     }
 
+    public void restart() {
+        start(mConf.getBosDuration());
+    }
+
     public void start(int bosDuration) {
         Logger.d(Logger.TAG, "start", 1);
         if (mMainThreadHandler == null) {
@@ -258,6 +263,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         } else if (stopType == StopType.ERROR) {
             cleanVadBosTimer();
             cleanVadEosTimer();
+        } else if (stopType == StopType.RESTART) {
+            mIsStarting = true;
+            mVoiceRecorder.stop();
+            return;
         }
 
         mVoiceRecorder.stop();
