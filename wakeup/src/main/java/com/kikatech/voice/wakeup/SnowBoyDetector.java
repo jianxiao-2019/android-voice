@@ -59,7 +59,7 @@ public class SnowBoyDetector extends WakeUpDetector {
         }
 
         mSnowboyDetect = new SnowboyDetect(commonRes, activeModel);
-        mSnowboyDetect.SetSensitivity(sensitivity);
+        mSnowboyDetect.SetSensitivity("1");
         //-detector.SetAudioGain(1);
         mSnowboyDetect.ApplyFrontend(true);
 
