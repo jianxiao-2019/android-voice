@@ -4,11 +4,15 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -16,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kikago.speech.baidu.BaiduApi;
 import com.kikatech.usb.IUsbAudioListener;
 import com.kikatech.usb.UsbAudioService;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
@@ -29,6 +34,7 @@ import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.util.log.Logger;
 import com.kikatech.voice.util.request.RequestManager;
+import com.kikatech.voice.webservice.tencent_cloud_speech.TencentApi;
 import com.kikatech.voicesdktester.AudioPlayerTask;
 import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.source.KikaGoUsbVoiceSourceWrapper;
@@ -86,10 +92,61 @@ public class RecorderFragment extends PageFragment implements
     private RecyclerView mResultRecyclerView;
     private ResultAdapter mResultAdapter;
 
+    @ServerType
+    private int mServerType = ServerType.BAIDU;
+
+    @IntDef
+    @interface ServerType {
+        int GOOGLE = 1;
+        int TENCENT = 2;
+        int BAIDU = 3;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_recorder, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.server_google:
+                mServerType = ServerType.GOOGLE;
+                updateServer();
+                Toast.makeText(getContext(), "Using Google", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.server_tencent:
+                mServerType = ServerType.TENCENT;
+                Toast.makeText(getContext(), "Using Tencent", Toast.LENGTH_SHORT).show();
+                updateServer();
+                break;
+            case R.id.server_baidu:
+                mServerType = ServerType.BAIDU;
+                Toast.makeText(getContext(), "Using Baidu", Toast.LENGTH_SHORT).show();
+                updateServer();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void updateServer() {
+        attachService();
     }
 
     @Override
@@ -158,7 +215,7 @@ public class RecorderFragment extends PageFragment implements
                         Toast.makeText(getContext(), "You'er already in the developer mode", Toast.LENGTH_SHORT).show();
                         mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
                         mDebugCount = 0;
-                    } else  {
+                    } else {
                         mTimerHandler.removeMessages(MSG_CHECK_DEBUG);
                         mTimerHandler.sendEmptyMessageDelayed(MSG_CHECK_DEBUG, 1000);
                     }
@@ -255,11 +312,23 @@ public class RecorderFragment extends PageFragment implements
                 .setEngine("google")
                 .setAsrConfiguration(mAsrConfiguration)
                 .build());
-        VoiceConfig.getVoiceConfig(getActivity(), conf, config -> {
-            mVoiceService = VoiceService.getService(getActivity(), config);
+        if (mServerType == ServerType.GOOGLE) {
+            VoiceConfig.getVoiceConfig(getActivity(), conf, config -> {
+                mVoiceService = VoiceService.getService(getActivity(), config);
+                mVoiceService.setVoiceRecognitionListener(this);
+                mVoiceService.create();
+            });
+        } else if (mServerType == ServerType.TENCENT) {
+            conf.setWebSocket(new TencentApi(getContext()));
+            mVoiceService = VoiceService.getService(getActivity(), conf);
             mVoiceService.setVoiceRecognitionListener(this);
             mVoiceService.create();
-        });
+        } else {
+            conf.setWebSocket(new BaiduApi(getContext()));
+            mVoiceService = VoiceService.getService(getActivity(), conf);
+            mVoiceService.setVoiceRecognitionListener(this);
+            mVoiceService.create();
+        }
     }
 
     @Override
@@ -368,10 +437,10 @@ public class RecorderFragment extends PageFragment implements
             }
             return;
         }
-        if (((TextMessage)message).cid == 0 || mLastCid == ((TextMessage)message).cid) {
+        if (((TextMessage) message).cid == 0 || mLastCid == ((TextMessage) message).cid) {
             return;
         }
-        mLastCid = ((TextMessage)message).cid;
+        mLastCid = ((TextMessage) message).cid;
 
         if (mTextView != null) {
             mTextView.setText("");

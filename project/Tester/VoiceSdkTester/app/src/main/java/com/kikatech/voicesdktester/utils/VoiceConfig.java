@@ -41,9 +41,7 @@ public class VoiceConfig {
             __getGoogleAuthFile(ctx, json -> {
                 if (!TextUtils.isEmpty(json)) {
                     mGoogleAuthJson = json;
-                    //configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
-//                    configuration.setWebSocket(new TencentApi(ctx));
-                    configuration.setWebSocket(new BaiduApi(ctx));
+                    configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
                 }
                 dispatchConfiguration(listener, configuration);
             });
@@ -51,9 +49,7 @@ public class VoiceConfig {
             if (Logger.DEBUG) {
                 Logger.v(TAG, "use cached google auth file json");
             }
-            //configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
-//            configuration.setWebSocket(new TencentApi(ctx));
-            configuration.setWebSocket(new BaiduApi(ctx));
+            configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
             dispatchConfiguration(listener, configuration);
         }
     }
