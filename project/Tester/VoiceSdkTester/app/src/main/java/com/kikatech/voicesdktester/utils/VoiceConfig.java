@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kikago.speech.baidu.BaiduApi;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.BackgroundThread;
 import com.kikatech.voice.util.log.Logger;
@@ -41,7 +42,8 @@ public class VoiceConfig {
                 if (!TextUtils.isEmpty(json)) {
                     mGoogleAuthJson = json;
                     //configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
-                    configuration.setWebSocket(new TencentApi(ctx));
+//                    configuration.setWebSocket(new TencentApi(ctx));
+                    configuration.setWebSocket(new BaiduApi(ctx));
                 }
                 dispatchConfiguration(listener, configuration);
             });
@@ -50,7 +52,8 @@ public class VoiceConfig {
                 Logger.v(TAG, "use cached google auth file json");
             }
             //configuration.setWebSocket(new GoogleApi(mGoogleAuthJson));
-            configuration.setWebSocket(new TencentApi(ctx));
+//            configuration.setWebSocket(new TencentApi(ctx));
+            configuration.setWebSocket(new BaiduApi(ctx));
             dispatchConfiguration(listener, configuration);
         }
     }

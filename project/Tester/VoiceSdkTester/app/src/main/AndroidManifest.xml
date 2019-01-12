@@ -68,6 +68,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <meta-data android:name="com.baidu.speech.APP_ID"
+            android:value="15287811" />
+        <meta-data
+            android:name="com.baidu.speech.API_KEY"
+            android:value="g5PMqyowFjiVNumRQQq3VPjr" />
+        <meta-data
+            android:name="com.baidu.speech.SECRET_KEY"
+            android:value="XXBQ3uOsGYEhCN84I9oLHcA5P3Eaj87g" />
     </application>
 
 </manifest>
