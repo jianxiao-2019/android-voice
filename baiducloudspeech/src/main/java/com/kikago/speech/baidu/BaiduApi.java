@@ -39,19 +39,7 @@ public class BaiduApi extends BaseWebSocket {
         asr = EventManagerFactory.create(mContext, "asr");
         asr.registerListener(mEventListener);
         Log.d("Ryan", "BaiduApi connect end");
-    }
 
-    @Override
-    public void release() {
-        Log.d("Ryan", "BaiduApi release begin");
-        asr.send(SpeechConstant.ASR_CANCEL, "{}", null, 0, 0);
-        asr.unregisterListener(mEventListener);
-        asr = null;
-        Log.d("Ryan", "BaiduApi release end");
-    }
-
-    @Override
-    public void onStart() {
         mBaiduInputStream.start();
         Log.d("Ryan", "BaiduApi onStart begin 1 ");
         if (asr == null) {
@@ -64,6 +52,27 @@ public class BaiduApi extends BaseWebSocket {
             mShouldCallStart.set(true);
         }
         Log.d("Ryan", "BaiduApi onStart end");
+    }
+
+    @Override
+    public void release() {
+        if (asr == null) {
+            Log.e("Ryan", "onStop but asr == null");
+        }
+        Log.d("Ryan", "BaiduApi onStop 2 begin");
+        asr.send(SpeechConstant.ASR_STOP, "{}", null, 0, 0);
+        Log.d("Ryan", "BaiduApi onStop 2 end");
+
+        Log.d("Ryan", "BaiduApi release begin");
+        asr.send(SpeechConstant.ASR_CANCEL, "{}", null, 0, 0);
+        asr.unregisterListener(mEventListener);
+        asr = null;
+        Log.d("Ryan", "BaiduApi release end");
+    }
+
+    @Override
+    public void onStart() {
+
     }
 
     private void startInternal() {
@@ -81,13 +90,7 @@ public class BaiduApi extends BaseWebSocket {
 
     @Override
     public void onStop() {
-        if (asr == null) {
-            Log.e("Ryan", "onStop but asr == null");
-        }
-        Log.d("Ryan", "BaiduApi onStop begin");
-        asr.send(SpeechConstant.ASR_STOP, "{}", null, 0, 0);
-        asr.send(SpeechConstant.ASR_CANCEL, "{}", null, 0, 0);
-        Log.d("Ryan", "BaiduApi onStop end");
+
     }
 
     @Override
