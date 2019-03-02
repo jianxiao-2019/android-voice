@@ -12,8 +12,13 @@ import com.kikatech.usb.util.LogUtil;
 
 public abstract class KikaBuffer {
     private static final String TAG = "KikaBuffer";
+    public static int NC_VERSION_KIKAGO = 1;
+    public static int NC_VERSION_DASEN = 2;
 
-    public static final int BUFFER_SIZE = 512;
+    public static int NC_VERSION = NC_VERSION_DASEN;
+
+    public static final int BUFFER_SIZE_KIKAGO = 1024;
+    public static final int BUFFER_SIZE_DASEN = 512;
 
     private static final int TYPE_NOISE_CANCELLATION = 1;
     private static final int TYPE_STEREO_TO_MONO = 2;

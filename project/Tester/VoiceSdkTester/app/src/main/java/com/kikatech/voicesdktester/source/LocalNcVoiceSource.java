@@ -11,7 +11,7 @@ public class LocalNcVoiceSource extends LocalVoiceSource {
 
     @Override
     public int getBufferSize() {
-        return KikaNcBuffer.BUFFER_SIZE;
+        return KikaNcBuffer.getNcBufferSize();
     }
 
     @Override

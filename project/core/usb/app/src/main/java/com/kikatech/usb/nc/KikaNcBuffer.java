@@ -1,6 +1,7 @@
 package com.kikatech.usb.nc;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.buffer.CircularBuffer;
@@ -21,11 +22,20 @@ public class KikaNcBuffer extends KikaBuffer {
     public static final int CONTROL_MODE = 2;
 
     private final CircularBuffer mCircularBuffer;
-    private final byte[] mAudioBytes = new byte[BUFFER_SIZE];
+    private final byte[] mAudioBytes_kikago = new byte[BUFFER_SIZE_KIKAGO];
+    private final byte[] mAudioBytes_dasen = new byte[BUFFER_SIZE_DASEN];
     private int mOffset = 0;
 
     public KikaNcBuffer() {
         mCircularBuffer = new CircularBuffer(20000);
+    }
+
+    public static int getNcBufferSize() {
+        if(NC_VERSION == NC_VERSION_KIKAGO)
+            return BUFFER_SIZE_KIKAGO;
+        else if(NC_VERSION == NC_VERSION_DASEN)
+            return BUFFER_SIZE_DASEN;
+        return BUFFER_SIZE_DASEN;
     }
 
     @Override
@@ -33,22 +43,43 @@ public class KikaNcBuffer extends KikaBuffer {
         int tempLen = len;
         int tempIdx = 0;
         int length;
-        while (tempLen + mOffset >= BUFFER_SIZE) {
-            length = BUFFER_SIZE - mOffset;
-            System.arraycopy(data, tempIdx, mAudioBytes, mOffset, length);
-            tempLen -= length;
-            tempIdx += length;
-            mCircularBuffer.write(doNoiseCancellation(), mAudioBytes.length / 2);
-            mOffset = 0;
+
+        if(NC_VERSION == NC_VERSION_KIKAGO) {
+            while (tempLen + mOffset >= BUFFER_SIZE_KIKAGO) {
+                length = BUFFER_SIZE_KIKAGO - mOffset;
+                System.arraycopy(data, tempIdx, mAudioBytes_kikago, mOffset, length);
+                tempLen -= length;
+                tempIdx += length;
+                mCircularBuffer.write(doNoiseCancellation(), mAudioBytes_kikago.length / 2);
+                mOffset = 0;
+            }
+        } else {
+            while (tempLen + mOffset >= BUFFER_SIZE_DASEN) {
+                length = BUFFER_SIZE_DASEN - mOffset;
+                System.arraycopy(data, tempIdx, mAudioBytes_dasen, mOffset, length);
+                tempLen -= length;
+                tempIdx += length;
+                mCircularBuffer.write(doNoiseCancellation(), mAudioBytes_dasen.length / 2);
+                mOffset = 0;
+            }
         }
-        System.arraycopy(data, tempIdx, mAudioBytes, mOffset, tempLen);
+
+        if(NC_VERSION == NC_VERSION_KIKAGO)
+            System.arraycopy(data, tempIdx, mAudioBytes_kikago, mOffset, tempLen);
+        else
+            System.arraycopy(data, tempIdx, mAudioBytes_dasen, mOffset, tempLen);
         mOffset += tempLen;
     }
 
     private byte[] doNoiseCancellation() {
-        short[] outBuffs = new short[mAudioBytes.length / 2];
-        NoiseCancellation.NoiseMask(DataUtil.byteToShort(mAudioBytes), outBuffs);
-
+        short[] outBuffs;
+        if(NC_VERSION == NC_VERSION_KIKAGO) {
+            outBuffs = new short[mAudioBytes_kikago.length / 4];
+            NoiseCancellation.NoiseMask(DataUtil.byteToShort(mAudioBytes_kikago), outBuffs);
+        } else {
+            outBuffs = new short[mAudioBytes_dasen.length / 2];
+            NoiseCancellation.NoiseMask(DataUtil.byteToShort(mAudioBytes_dasen), outBuffs);
+        }
         return DataUtil.shortToByte(outBuffs);
     }
 

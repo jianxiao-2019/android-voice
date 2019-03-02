@@ -219,7 +219,7 @@ public class KikaGoVoiceSource {
     }
 
     public int getBufferSize() {
-        return KikaNcBuffer.BUFFER_SIZE;
+        return KikaNcBuffer.getNcBufferSize();
     }
 
 
