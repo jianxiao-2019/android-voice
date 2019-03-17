@@ -8,8 +8,8 @@ import retrofit2.http.GET;
  * @author SkeeterWang Created on 2018/6/28.
  */
 public interface IKikaApi {
-    String DOMAIN = "http://api-dev.kika.ai/v3/";
+    String DOMAIN = "http://dev.kikago.ai/v1/";
 
-    @GET("auth/getGoogleKey")
+    @GET("auth/GoogleKey")
     Call<ResponseBody> getGoogleAuthFileJson();
 }

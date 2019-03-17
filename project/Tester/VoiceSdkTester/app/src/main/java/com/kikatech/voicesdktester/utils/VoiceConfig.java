@@ -69,7 +69,7 @@ public class VoiceConfig {
         if (Logger.DEBUG) {
             Logger.i(TAG, "__getGoogleSpeechAuthJsonFromRaw");
         }
-        InputStream is = context.getResources().openRawResource(R.raw.google_speech);
+        InputStream is = context.getResources().openRawResource(R.raw.kika_go);
 //        InputStream is = context.getResources().openRawResource(R.raw.google_speech_0);
         Writer writer = new StringWriter();
         char[] buffer = new char[1024];
