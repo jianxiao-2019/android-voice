@@ -1,6 +1,7 @@
 package com.kikatech.voicesdktester.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -145,8 +146,23 @@ public class RecorderFragment extends PageFragment implements
         return super.onOptionsItemSelected(item);
     }
 
+    private ProgressDialog progressDialog;
     private void updateServer() {
-        attachService();
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource = null;
+            attachService();
+            progressDialog = ProgressDialog.show(getActivity(), "processing", null);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mUsbAudioService != null) {
+                        mUsbAudioService.scanDevices();
+                    }
+                }
+            }, 1000);
+        } else {
+            attachService();
+        }
     }
 
     @Override
@@ -290,6 +306,11 @@ public class RecorderFragment extends PageFragment implements
             mVoiceService.destroy();
             mVoiceService = null;
         }
+
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+
         AsrConfiguration.Builder builder = new AsrConfiguration.Builder();
         mAsrConfiguration = builder
                 .setAlterEnabled(false)
