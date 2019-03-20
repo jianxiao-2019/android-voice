@@ -51,6 +51,7 @@ dependencies {
     implementation project(':wakeup')
     implementation project(':googleCloudSpeech')
     implementation project(':tencentCloudSpeech')
+    implementation project(':baiducloudspeech')
     implementation project(path: ':usb')
     implementation 'com.android.support:multidex:1.0.0'
     // Guava
@@ -58,7 +59,7 @@ dependencies {
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    compile project(path: ':baiduCloudSpeech')
+    compile project(path: ':baiducloudspeech')
 //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
 //    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 //    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
