@@ -9,8 +9,9 @@ import com.kikatech.usb.datasource.IUsbDataSource;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
 import com.kikatech.usb.driver.IUsbAudioDriver;
 import com.kikatech.usb.util.LogUtil;
-import com.xiao.usbaudio.AudioPlayBack;
-import com.xiao.usbaudio.UsbAudio;
+
+import ai.kikago.usb.AudioPlayBack;
+import ai.kikago.usb.UsbAudio;
 
 /**
  * Created by ryanlin on 2018/5/6.

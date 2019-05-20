@@ -2,6 +2,7 @@ package com.kikatech.usb.buffer;
 
 import com.kikatech.usb.util.LogUtil;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -16,12 +17,15 @@ public class CircularBuffer {
 
     private int mReadIndex = 0;
     private int mWriteIndex = 0;
+    AtomicInteger ai;
 
     private ReentrantLock mLock = new ReentrantLock();
 
     public CircularBuffer(int size) {
         mBufferSize = size;
         mBuffer = new byte[mBufferSize];
+        ai = new AtomicInteger(1);
+
     }
 
     public void write(byte[] audioData, int sizeInBytes) {
@@ -57,11 +61,20 @@ public class CircularBuffer {
             mWriteIndex = (mWriteIndex + sizeInBytes) % mBufferSize;
         } finally {
             mLock.unlock();
+            ai.getAndIncrement();
         }
     }
 
     public int read(byte[] audioData, int offsetInBytes, int sizeInBytes) {
         try {
+            if (ai.get() > 0)
+                ai.getAndDecrement();
+            else {
+                try {
+                    Thread.sleep(3);
+                } catch (Exception e) {
+                }
+            }
             mLock.lock();
             int curWIndex = mWriteIndex;
             if (mWriteIndex < mReadIndex) {
