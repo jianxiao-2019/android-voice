@@ -58,6 +58,7 @@ public class BaiduApi extends BaseWebSocket {
     public void release() {
         if (asr == null) {
             Log.e("Ryan", "onStop but asr == null");
+            return;
         }
         Log.d("Ryan", "BaiduApi onStop 2 begin");
         asr.send(SpeechConstant.ASR_STOP, "{}", null, 0, 0);
