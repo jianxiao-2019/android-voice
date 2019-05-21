@@ -1,0 +1,25 @@
+version AVM_Ex_V1.2.1.apk
+[降噪算法版本]
+1. version：大森 5.0.7.3.7
+
+[USB驱动]
+1. 0x0010
+
+[bug fix]
+1. 睡眠唤醒后，百度asr会空指针。
+
+[APP]
+1. hide tencent from menu
+
+
+version AVM_Ex_V1.2.apk
+[降噪算法版本]
+1. version：大森 5.0.7.3.7
+
+[USB驱动]
+1. 0x0010
+2. 减少了loop timeout延时，以加快关闭驱动用时。
+3. loop 中不再因探测不到而 break。只根据上层应用需求推出loop。
+4. 使用不定长接收buf函数。
+
+
