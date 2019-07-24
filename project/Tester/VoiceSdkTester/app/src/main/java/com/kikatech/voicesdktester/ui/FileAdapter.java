@@ -58,14 +58,14 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     }
 
     private void sortFiles() {
-        if (mFiles != null) {
-            Collections.sort(mFiles, new Comparator<File>() {
-                @Override
-                public int compare(File o1, File o2) {
-                    return (int) (o2.lastModified() - o1.lastModified());
-                }
-            });
-        }
+//        if (mFiles != null) {
+//            Collections.sort(mFiles, new Comparator<File>() {
+//                @Override
+//                public int compare(File o1, File o2) {
+//                    return (int) (o2.lastModified() - o1.lastModified());
+//                }
+//            });
+//        }
     }
 
     @Override
