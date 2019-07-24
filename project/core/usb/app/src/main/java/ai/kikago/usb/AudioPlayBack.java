@@ -1,7 +1,9 @@
-package com.xiao.usbaudio;
+package ai.kikago.usb;
 
 import com.kikatech.usb.datasource.impl.KikaGoDeviceDataSource;
 import com.kikatech.usb.util.LogUtil;
+
+;
 
 public class AudioPlayBack {
     private static final String TAG = "AudioPlayBack";
@@ -19,7 +21,7 @@ public class AudioPlayBack {
 
     public static void write(byte[] decodedAudio, int len) {
         if (LogUtil.DEBUG) {
-            LogUtil.logv(TAG, "write len = " + len + ", sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
+            LogUtil.logv(TAG, "ai play back write len = " + len + ", sKikaGoDeviceDataSource = " + sKikaGoDeviceDataSource);
         }
         if (mListener != null) {
             mListener.onWrite(len);

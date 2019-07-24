@@ -25,7 +25,7 @@ import com.kikatech.voicesdktester.presenter.wakeup.UsbNcInputWakeUpPresenter;
 import com.kikatech.voicesdktester.presenter.wakeup.WakeUpPresenter;
 import com.kikatech.voicesdktester.ui.FileAdapter;
 import com.kikatech.voicesdktester.utils.FileUtil;
-import com.xiao.usbaudio.AudioPlayBack;
+import ai.kikago.usb.AudioPlayBack;
 
 import java.io.File;
 import java.util.ArrayList;

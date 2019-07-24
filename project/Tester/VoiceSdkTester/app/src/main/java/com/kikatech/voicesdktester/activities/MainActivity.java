@@ -53,7 +53,7 @@ import com.kikatech.voicesdktester.utils.PreferenceUtil;
 import com.kikatech.voicesdktester.utils.VoiceConfig;
 import com.kikatech.voicesdktester.wave.draw.WaveCanvas;
 import com.kikatech.voicesdktester.wave.view.WaveSurfaceView;
-import com.xiao.usbaudio.AudioPlayBack;
+import ai.kikago.usb.AudioPlayBack;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

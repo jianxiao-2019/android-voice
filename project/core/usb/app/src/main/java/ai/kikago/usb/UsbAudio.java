@@ -1,4 +1,4 @@
-package com.xiao.usbaudio;
+package ai.kikago.usb;
 
 // TODO: KikaGoDeviceDataSource
 public class UsbAudio {
