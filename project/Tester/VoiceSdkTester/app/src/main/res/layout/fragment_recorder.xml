@@ -245,8 +245,17 @@
 
     <View
         android:id="@+id/enter_debug_view"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_above="@+id/result_area"
         android:layout_alignParentRight="true" />
+
+    <TextView
+        android:id="@+id/firmware_info"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:textSize="10dp"
+        android:text=""
+        android:layout_alignParentLeft="true" />
+
 </RelativeLayout>

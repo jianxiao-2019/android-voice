@@ -313,7 +313,7 @@ public class KikaGoVoiceSource {
         return KikaNcBuffer.getNoiseSuppressionParameters(mode);
     }
 
-    public int getNcVersion() {
+    public static int getNcVersion() {
         return KikaNcBuffer.getVersion();
     }
 

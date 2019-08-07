@@ -2,6 +2,8 @@ package com.kikatech.voicesdktester.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,6 +49,8 @@ import com.kikatech.voicesdktester.utils.VoiceConfig;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
+import ai.kikago.usb.UsbAudio;
+
 import static com.kikatech.voicesdktester.utils.PreferenceUtil.KEY_ENABLE_DEBUG_APP;
 
 /**
@@ -70,6 +74,7 @@ public class RecorderFragment extends PageFragment implements
     private ImageView mAndroidSignal;
     private TextView mErrorHintText;
     private FrameLayout mRecentArea;
+    private TextView mFirmwareinfoText;
 
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
@@ -175,6 +180,23 @@ public class RecorderFragment extends PageFragment implements
         mStopRecordView.setOnClickListener(this);
 
         mErrorHintText = (TextView) view.findViewById(R.id.error_hint);
+
+        mFirmwareinfoText = (TextView) view.findViewById(R.id.firmware_info);
+        int versioncode = 0;
+        String versionname = "0";
+        PackageManager pm = this.getContext().getPackageManager();
+        try {
+            PackageInfo packageInfo = pm.getPackageInfo(this.getContext().getPackageName(), 0);
+            versioncode = packageInfo.versionCode;
+            versionname = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        byte[] result = UsbAudio.checkDriverVersion();
+        int fw =  result[1] & 0xFF | (result[0] & 0xFF) << 8;
+        mFirmwareinfoText
+                .setText(KikaGoVoiceSource.getNcVersion()+"."+fw+"."+versioncode+"\n"+versionname);
 
         mUsingAndroid = view.findViewById(R.id.device_button_right);
         mUsingAndroid.setOnClickListener(new View.OnClickListener() {

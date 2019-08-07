@@ -89,7 +89,7 @@ public class UsbAudio {
      *
      * @return two bytes driver version
      */
-    public native byte[] checkDriverVersion();
+    public native static byte[] checkDriverVersion();
 
     /**
      * Return volume level. Max: 9, Min: 1

@@ -16,6 +16,8 @@ import com.kikatech.voicesdktester.R;
 import com.kikatech.voicesdktester.fragments.PlayerFragment;
 import com.kikatech.voicesdktester.fragments.RecorderFragment;
 
+import ai.kikago.usb.UsbAudio;
+
 /**
  * Created by ryanlin on 23/01/2018.
  */

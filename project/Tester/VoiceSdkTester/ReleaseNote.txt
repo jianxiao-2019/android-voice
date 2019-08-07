@@ -1,3 +1,19 @@
+version AVM_Ex_V1.2.2.apk
+[降噪算法版本]
+1. version：大森 5.0.7.3.7
+
+[USB驱动]
+1. 使用ai.kikago.usb 取代com.xiao.usb
+
+[APP]
+1. 显示驱动，fw和app版本号
+2.
+
+[bug fix]
+1. 由collection.sorts引起的ERR_RECORD_DATA_FAIL。
+
+
+
 version AVM_Ex_V1.2.1.apk
 [降噪算法版本]
 1. version：大森 5.0.7.3.7
