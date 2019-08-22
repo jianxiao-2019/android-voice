@@ -21,7 +21,22 @@ public class NoiseCancellation {
 
     public static native float GetRefGain();
 
+    public static native void enableWebrtc();
+
+    public static native void enableBeamforming();
+
+    public static native void Omlsa();
+
+    public static native void enableNoiseGate();
+
+    public static native void enableEq();
+
+    public static native void enableAgc();
+
+    public static native void Gain();
+
     static {
         System.loadLibrary("kikago_nc");
     }
+
 }

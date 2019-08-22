@@ -209,7 +209,147 @@
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:text="USE" />
-        </LinearLayout>>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="NC_MODE"/>
+            <Spinner
+                android:id="@+id/NC_Parameter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Engine"/>
+            <Spinner
+                android:id="@+id/Engine_Parameter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Language"/>
+            <Spinner
+                android:id="@+id/Lg_Parameter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:id="@+id/Discern"
+                android:text="识别"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal" >
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/Swop"
+                android:text="Swop"/>
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/Beamforming"
+                android:text="Beamforming"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/Bf_Parameter"
+                android:textColorHint="#00ff00"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal" >
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/Webrtc"
+                android:text="WebRtc"/>
+            <Spinner
+                android:id="@+id/Wr_Parameter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/Omlsa"
+                android:text="Omlsa"/>
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/NoiseGate"
+                android:text="NoiseGate"/>
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/Eq"
+                android:text="Eq"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal" >
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/Agc"
+                android:text="Agc"/>
+            <Spinner
+                android:id="@+id/Agc_Parameter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/Agc_Parameter1"
+                android:layout_weight="1"
+                android:textColorHint="#00ff00"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/Agc_Parameter2"
+                android:layout_weight="1"
+                android:textColorHint="#00ff00"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="GAIN"/>
+            <Spinner
+                android:id="@+id/Gain_Parameter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -236,11 +376,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Log" />
-
         </LinearLayout>
 
         <com.kikatech.voicesdktester.wave.view.WaveSurfaceView
             android:id="@+id/wavesfv"
+            android:layout_width="fill_parent"
+            android:layout_height="80dp" />
+        <com.kikatech.voicesdktester.wave.view.WaveSurfaceView
+            android:id="@+id/wavesfv1"
+            android:layout_width="fill_parent"
+            android:layout_height="80dp" />
+        <com.kikatech.voicesdktester.wave.view.WaveSurfaceView
+            android:id="@+id/wavesfv2"
             android:layout_width="fill_parent"
             android:layout_height="80dp" />
 
@@ -319,12 +466,12 @@
                 android:text="0" />
 
             <TextView
-            android:id="@+id/vad_title"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:singleLine="true"
-            android:text="VAD" />
+                android:id="@+id/vad_title"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:singleLine="true"
+                android:text="VAD" />
 
             <TextView
                 android:id="@+id/vad_text"

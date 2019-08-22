@@ -28,5 +28,7 @@ public interface IUsbDataSource {
 
     byte[] checkDriverVersion();
 
+    void enableWebrtc();
+
     void setOnDataListener(OnDataListener listener);
 }

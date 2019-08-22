@@ -8,7 +8,7 @@ import com.kikatech.usb.buffer.CircularBuffer;
 import com.kikatech.usb.util.DataUtil;
 import com.kikatech.usb.util.LogUtil;
 
-import lib.android.anc.NoiseCancellation;
+import ai.kikago.usb.NoiseCancellation;
 
 /**
  * Created by ryanlin on 15/01/2018.
@@ -27,7 +27,7 @@ public class KikaNcBuffer extends KikaBuffer {
     private int mOffset = 0;
 
     public KikaNcBuffer() {
-        mCircularBuffer = new CircularBuffer(20000);
+        mCircularBuffer = new CircularBuffer(200000);
     }
 
     public static int getNcBufferSize() {
@@ -74,11 +74,13 @@ public class KikaNcBuffer extends KikaBuffer {
     private byte[] doNoiseCancellation() {
         short[] outBuffs;
         if(NC_VERSION == NC_VERSION_KIKAGO) {
-            outBuffs = new short[mAudioBytes_kikago.length / 4];
-            NoiseCancellation.NoiseMask(DataUtil.byteToShort(mAudioBytes_kikago), outBuffs);
+            outBuffs = new short[mAudioBytes_kikago.length / 2];
+            Log.e(TAG,"yqff1------hello!" + outBuffs);
+            NoiseCancellation.NoiseMask0(DataUtil.byteToShort(mAudioBytes_kikago), outBuffs);
         } else {
             outBuffs = new short[mAudioBytes_dasen.length / 2];
-            NoiseCancellation.NoiseMask(DataUtil.byteToShort(mAudioBytes_dasen), outBuffs);
+            Log.e(TAG,"yqff2------hello!" + outBuffs);
+            NoiseCancellation.NoiseMask0(DataUtil.byteToShort(mAudioBytes_dasen), outBuffs);
         }
         return DataUtil.shortToByte(outBuffs);
     }
@@ -120,5 +122,25 @@ public class KikaNcBuffer extends KikaBuffer {
     public static int getVersion() {
         return NoiseCancellation.GetVersion();
     }
-
+    public static void enableWebrtc() {
+        NoiseCancellation.enableWebrtc();
+    }
+    public static void Beamforming() {
+        NoiseCancellation.Beamforming();
+    }
+    public static void Omlsa() {
+        NoiseCancellation.Omlsa();
+    }
+    public static void NoiseGate() {
+        NoiseCancellation.NoiseGate();
+    }
+    public static void enableEq() {
+        NoiseCancellation.enableEq();
+    }
+    public static void enableAgc() {
+        NoiseCancellation.enableAgc();
+    }
+    public static void Gain() {
+        NoiseCancellation.Gain();
+    }
 }

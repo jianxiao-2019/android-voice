@@ -15,9 +15,9 @@ public abstract class KikaBuffer {
     public static int NC_VERSION_KIKAGO = 1;
     public static int NC_VERSION_DASEN = 2;
 
-    public static int NC_VERSION = NC_VERSION_DASEN;
+    public static int NC_VERSION = NC_VERSION_KIKAGO;
 
-    public static final int BUFFER_SIZE_KIKAGO = 1024;
+    public static final int BUFFER_SIZE_KIKAGO = 3840;
     public static final int BUFFER_SIZE_DASEN = 512;
 
     private static final int TYPE_NOISE_CANCELLATION = 1;

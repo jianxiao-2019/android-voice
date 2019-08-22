@@ -11,7 +11,7 @@ android {
         versionName "1.1.03_20171013"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
-            abiFilters "armeabi", "armeabi-v7a"//, "x86"
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a"//, "x86"
         }
     }
     buildTypes {
@@ -44,7 +44,7 @@ android {
         abi {
             enable true
             reset()
-            include 'armeabi-v7a'
+            include 'armeabi-v7a', 'arm64-v8a'
             universalApk false
         }
     }

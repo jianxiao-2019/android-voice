@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.kikatech.usb.buffer.KikaBuffer;
 import com.kikatech.usb.datasource.KikaGoVoiceSource;
+import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.voice.core.recorder.IVoiceSource;
 
 /**
@@ -102,5 +103,27 @@ public class KikaGoUsbVoiceSourceWrapper implements IVoiceSource {
 
     public int getNoiseSuppressionParameters(int mode) {
         return mVoiceSource.getNoiseSuppressionParameters(mode);
+    }
+
+    public void enableWebrtc() {
+        mVoiceSource.enableWebrtc();
+    }
+    public void Beamforming() {
+        mVoiceSource.Beamforming();
+    }
+    public void Omlsa() {
+        mVoiceSource.Omlsa();
+    }
+    public void NoiseGate() {
+        mVoiceSource.NoiseGate();
+    }
+    public void enableEq() {
+        mVoiceSource.enableEq();
+    }
+    public void enableAgc() {
+        mVoiceSource.enableAgc();
+    }
+    public void Gain() {
+        mVoiceSource.Gain();
     }
 }

@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -214,6 +215,35 @@ public class MainActivity extends AppCompatActivity implements
             updatePermissionButtonState();
         });
 
+        CheckBox webrtc = (CheckBox) findViewById(R.id.Webrtc);
+        webrtc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mKikaGoVoiceSource.enableWebrtc();
+            }
+        });
+        CheckBox beamforming = (CheckBox) findViewById(R.id.Beamforming);
+        beamforming.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mKikaGoVoiceSource.Beamforming();
+            }
+        });
+        CheckBox omlsa = (CheckBox) findViewById(R.id.Omlsa);
+        omlsa.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mKikaGoVoiceSource.Omlsa();
+            }
+        });
+        CheckBox enableeq = (CheckBox) findViewById(R.id.Eq);
+        enableeq.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mKikaGoVoiceSource.enableEq();
+            }
+        });
+
         mSpinner = (Spinner) findViewById(R.id.spinner);
         final String[] select = {"3", "6", "9", "12", "15", "18", "21", "24", "27", "30", "33", "36", "39", "42"};
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, select);
@@ -222,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mStartButton = (Button) findViewById(R.id.button_start);
         mStartButton.setOnClickListener(v -> {
+
             if (mVoiceService != null) {
                 String folder = FileUtil.getAudioFolder();
                 String fileName = FileUtil.getCurrentTimeFormattedFileName();

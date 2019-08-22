@@ -90,6 +90,8 @@ public class WakeUpVoiceFragment extends Fragment implements
         mTextView = (TextView) view.findViewById(R.id.status_text);
         mResultText = (TextView) view.findViewById(R.id.result_text);
 
+
+
         mStartButton = (Button) view.findViewById(R.id.button_start);
         mStartButton.setOnClickListener(v -> {
             if (mWakeUpPresenter != null) {

@@ -14,6 +14,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import ai.kikago.usb.NoiseCancellation;
+
 import static com.kikatech.usb.datasource.KikaGoVoiceSource.ERROR_VOLUME_FW_NOT_SUPPORT;
 
 /**
@@ -316,5 +318,27 @@ public class KikaGoAccessoryDataSource implements IUsbAudioDriver, IUsbDataSourc
             }
             return CMD_AUDIO;
         }
+    }
+    @Override
+    public void enableWebrtc() {
+        NoiseCancellation.enableWebrtc();
+    }
+    public void Beamforming() {
+        NoiseCancellation.Beamforming();
+    }
+    public void Omlsa() {
+        NoiseCancellation.Omlsa();
+    }
+    public void NoiseGate() {
+        NoiseCancellation.NoiseGate();
+    }
+    public void enableEq() {
+        NoiseCancellation.enableEq();
+    }
+    public void enableAgc() {
+        NoiseCancellation.enableAgc();
+    }
+    public void Gain() {
+        NoiseCancellation.Gain();
     }
 }

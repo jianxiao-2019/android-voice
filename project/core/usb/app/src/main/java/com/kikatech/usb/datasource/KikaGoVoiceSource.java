@@ -13,6 +13,8 @@ import com.kikatech.usb.util.debug.FileWriter;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ai.kikago.usb.NoiseCancellation;
+
 /**
  * Created by tianli on 17-11-6.
  * Update by ryanlin on 25/12/2017.
@@ -326,5 +328,28 @@ public class KikaGoVoiceSource {
         void onSource(byte[] leftData, byte[] rightData);
 
         void onCurrentDB(int curDB);
+    }
+
+
+    public void enableWebrtc() {
+        KikaNcBuffer.enableWebrtc();
+    }
+    public void Beamforming() {
+        KikaNcBuffer.Beamforming();
+    }
+    public void Omlsa() {
+        KikaNcBuffer.Omlsa();
+    }
+    public void NoiseGate() {
+        KikaNcBuffer.NoiseGate();
+    }
+    public void enableEq() {
+        KikaNcBuffer.enableEq();
+    }
+    public void enableAgc() {
+        KikaNcBuffer.enableAgc();
+    }
+    public void Gain() {
+        KikaNcBuffer.Gain();
     }
 }

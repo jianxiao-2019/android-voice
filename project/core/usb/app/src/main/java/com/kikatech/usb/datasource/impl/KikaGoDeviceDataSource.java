@@ -11,6 +11,7 @@ import com.kikatech.usb.driver.IUsbAudioDriver;
 import com.kikatech.usb.util.LogUtil;
 
 import ai.kikago.usb.AudioPlayBack;
+import ai.kikago.usb.NoiseCancellation;
 import ai.kikago.usb.UsbAudio;
 
 /**
@@ -166,6 +167,29 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
     public byte[] checkDriverVersion() {
         byte[] result = mUsbAudio.checkDriverVersion();
         return result;
+    }
+
+    @Override
+    public void enableWebrtc() {
+        NoiseCancellation.enableWebrtc();
+    }
+    public void Beamforming() {
+        NoiseCancellation.Beamforming();
+    }
+    public void Omlsa() {
+        NoiseCancellation.Omlsa();
+    }
+    public void NoiseGate() {
+        NoiseCancellation.NoiseGate();
+    }
+    public void enableEq() {
+        NoiseCancellation.enableEq();
+    }
+    public void enableAgc() {
+        NoiseCancellation.enableAgc();
+    }
+    public void Gain() {
+        NoiseCancellation.Gain();
     }
 
     @Override
