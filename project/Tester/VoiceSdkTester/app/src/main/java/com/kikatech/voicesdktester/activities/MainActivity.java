@@ -17,9 +17,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -133,8 +136,12 @@ public class MainActivity extends AppCompatActivity implements
 
     private UsbAudioService mUsbAudioService;
 
-    private Spinner mSpinner;
+    private Spinner mSpinner, engine_Parameter, lg_Parameter, wr_Parameter,
+            agc_Parameter, gain_Parameter;
 
+    private EditText mBeamforming;
+    private EditText mAgc1;
+    private EditText mAgc2;
     private SeekBar mSeekAngle;
     private TextView mTextAngle;
     private Button mButtonAngle;
@@ -219,30 +226,163 @@ public class MainActivity extends AppCompatActivity implements
         webrtc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mKikaGoVoiceSource.enableWebrtc();
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.enableWebrtc();
+                }
             }
         });
+
         CheckBox beamforming = (CheckBox) findViewById(R.id.Beamforming);
         beamforming.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mKikaGoVoiceSource.Beamforming();
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.enableBeamforming();
+                }
             }
         });
-        CheckBox omlsa = (CheckBox) findViewById(R.id.Omlsa);
-        omlsa.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mKikaGoVoiceSource.Omlsa();
-            }
-        });
+
         CheckBox enableeq = (CheckBox) findViewById(R.id.Eq);
         enableeq.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mKikaGoVoiceSource.enableEq();
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.enableEq();
+                }
             }
         });
+
+        CheckBox agc = (CheckBox) findViewById(R.id.Agc);
+        agc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.enableAgc();
+                }
+            }
+        });
+
+        CheckBox noisegate = (CheckBox) findViewById(R.id.NoiseGate);
+        noisegate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.enableNoiseGate();
+                }
+            }
+        });
+
+        engine_Parameter = (Spinner) findViewById(R.id.Engine_Parameter);
+        final String[] engine_select = {"NoAsr", "Speech", "Google", "Olami"};
+        ArrayAdapter<String> engine_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, engine_select);
+        engine_Parameter.setAdapter(engine_arrayAdapter);
+        engine_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mKikaGoVoiceSource == null) {
+                    Toast.makeText(MainActivity.this, "USB is null. Please insert Kikago! ", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        lg_Parameter = (Spinner) findViewById(R.id.Lg_Parameter);
+        final String[] lg_select = {"en-US", "zh", "zh-TW"};
+        ArrayAdapter<String> lg_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, lg_select);
+        lg_Parameter.setAdapter(lg_arrayAdapter);
+        lg_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mKikaGoVoiceSource == null) {
+                    Toast.makeText(MainActivity.this, "USB is null. Please insert Kikago! ", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        wr_Parameter = (Spinner) findViewById(R.id.Wr_Parameter);
+        final String[] wr_select = {"0", "1", "2", "3"};
+        ArrayAdapter<String> wr_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, wr_select);
+        wr_Parameter.setAdapter(wr_arrayAdapter);
+        wr_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.setWebRtcMode(i);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        agc_Parameter = (Spinner) findViewById(R.id.Agc_Parameter);
+        final String[] agc_select = {"0", "1", "2", "3"};
+        ArrayAdapter<String> agc_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, agc_select);
+        agc_Parameter.setAdapter(agc_arrayAdapter);
+        agc_Parameter.setSelection(2,true);
+        agc_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.setAgcMode(i);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        gain_Parameter = (Spinner) findViewById(R.id.Gain_Parameter);
+        final String[] gain_select = {"0", "1", "2", "3", "4", "5", "6"};
+        ArrayAdapter<String> gain_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, gain_select);
+        gain_Parameter.setAdapter(gain_arrayAdapter);
+        gain_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mKikaGoVoiceSource != null) {
+                    mKikaGoVoiceSource.SetRefGain(i);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        String str = "";
+        mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
+        str = mBeamforming.getText().toString();
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource.setAgcGaindB(Integer.parseInt(str));
+        }
+
+        String str1 = "";
+        mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
+        str1 = mBeamforming.getText().toString();
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource.setAgcTargetLevelDbfs(Integer.parseInt(str1));
+        }
+
+        String str2 = "";
+        mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
+        str2 = mBeamforming.getText().toString();
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource.setInspace(Integer.parseInt(str2));
+        }
 
         mSpinner = (Spinner) findViewById(R.id.spinner);
         final String[] select = {"3", "6", "9", "12", "15", "18", "21", "24", "27", "30", "33", "36", "39", "42"};

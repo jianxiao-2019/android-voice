@@ -75,11 +75,9 @@ public class KikaNcBuffer extends KikaBuffer {
         short[] outBuffs;
         if(NC_VERSION == NC_VERSION_KIKAGO) {
             outBuffs = new short[mAudioBytes_kikago.length / 2];
-            Log.e(TAG,"yqff1------hello!" + outBuffs);
             NoiseCancellation.NoiseMask0(DataUtil.byteToShort(mAudioBytes_kikago), outBuffs);
         } else {
             outBuffs = new short[mAudioBytes_dasen.length / 2];
-            Log.e(TAG,"yqff2------hello!" + outBuffs);
             NoiseCancellation.NoiseMask0(DataUtil.byteToShort(mAudioBytes_dasen), outBuffs);
         }
         return DataUtil.shortToByte(outBuffs);
@@ -122,17 +120,17 @@ public class KikaNcBuffer extends KikaBuffer {
     public static int getVersion() {
         return NoiseCancellation.GetVersion();
     }
+    public static void SetRefGain(float g) {
+        NoiseCancellation.SetRefGain(g);
+    }
     public static void enableWebrtc() {
         NoiseCancellation.enableWebrtc();
     }
-    public static void Beamforming() {
-        NoiseCancellation.Beamforming();
+    public static void enableBeamforming() {
+        NoiseCancellation.enableBeamforming();
     }
-    public static void Omlsa() {
-        NoiseCancellation.Omlsa();
-    }
-    public static void NoiseGate() {
-        NoiseCancellation.NoiseGate();
+    public static void enableNoiseGate() {
+        NoiseCancellation.enableNoiseGate();
     }
     public static void enableEq() {
         NoiseCancellation.enableEq();
@@ -140,7 +138,19 @@ public class KikaNcBuffer extends KikaBuffer {
     public static void enableAgc() {
         NoiseCancellation.enableAgc();
     }
-    public static void Gain() {
-        NoiseCancellation.Gain();
+    public static void setAgcMode(int value) {
+        NoiseCancellation.setAgcMode(value);
+    }
+    public static void setAgcGaindB(int value) {
+        NoiseCancellation.setAgcGaindB(value);
+    }
+    public static void setAgcTargetLevelDbfs(int value) {
+        NoiseCancellation.setAgcTargetLevelDbfs(value);
+    }
+    public static void setWebRtcMode(int value) {
+        NoiseCancellation.setWebRtcMode(value);
+    }
+    public static void setInspace(float value) {
+        NoiseCancellation.setInspace(value);
     }
 }

@@ -334,14 +334,11 @@ public class KikaGoVoiceSource {
     public void enableWebrtc() {
         KikaNcBuffer.enableWebrtc();
     }
-    public void Beamforming() {
-        KikaNcBuffer.Beamforming();
+    public void enableBeamforming() {
+        KikaNcBuffer.enableBeamforming();
     }
-    public void Omlsa() {
-        KikaNcBuffer.Omlsa();
-    }
-    public void NoiseGate() {
-        KikaNcBuffer.NoiseGate();
+    public void enableNoiseGate() {
+        KikaNcBuffer.enableNoiseGate();
     }
     public void enableEq() {
         KikaNcBuffer.enableEq();
@@ -349,7 +346,22 @@ public class KikaGoVoiceSource {
     public void enableAgc() {
         KikaNcBuffer.enableAgc();
     }
-    public void Gain() {
-        KikaNcBuffer.Gain();
+    public void SetRefGain(float g) {
+        KikaNcBuffer.SetRefGain(g);
+    }
+    public void setAgcMode(int value) {
+        KikaNcBuffer.setAgcMode(value);
+    }
+    public void setAgcGaindB(int value) {
+        KikaNcBuffer.setAgcGaindB(value);
+    }
+    public void setAgcTargetLevelDbfs(int value) {
+        KikaNcBuffer.setAgcTargetLevelDbfs(value);
+    }
+    public void setWebRtcMode(int value) {
+        KikaNcBuffer.setWebRtcMode(value);
+    }
+    public void setInspace(float value) {
+        KikaNcBuffer.setInspace(value);
     }
 }

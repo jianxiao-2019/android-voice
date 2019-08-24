@@ -25,15 +25,21 @@ public class NoiseCancellation {
 
     public static native void enableBeamforming();
 
-    public static native void Omlsa();
-
     public static native void enableNoiseGate();
 
     public static native void enableEq();
 
     public static native void enableAgc();
 
-    public static native void Gain();
+    public static native void setAgcMode(int var0);
+
+    public static native void setAgcGaindB(int var0);
+
+    public static native void setAgcTargetLevelDbfs(int var0);
+
+    public static native void setWebRtcMode(int var0);
+
+    public static native void setInspace(float var0);
 
     static {
         System.loadLibrary("kikago_nc");

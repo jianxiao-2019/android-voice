@@ -319,26 +319,5 @@ public class KikaGoAccessoryDataSource implements IUsbAudioDriver, IUsbDataSourc
             return CMD_AUDIO;
         }
     }
-    @Override
-    public void enableWebrtc() {
-        NoiseCancellation.enableWebrtc();
-    }
-    public void Beamforming() {
-        NoiseCancellation.Beamforming();
-    }
-    public void Omlsa() {
-        NoiseCancellation.Omlsa();
-    }
-    public void NoiseGate() {
-        NoiseCancellation.NoiseGate();
-    }
-    public void enableEq() {
-        NoiseCancellation.enableEq();
-    }
-    public void enableAgc() {
-        NoiseCancellation.enableAgc();
-    }
-    public void Gain() {
-        NoiseCancellation.Gain();
-    }
+
 }

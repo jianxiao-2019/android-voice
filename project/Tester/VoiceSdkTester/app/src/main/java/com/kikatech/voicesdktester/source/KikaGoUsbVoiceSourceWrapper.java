@@ -108,14 +108,14 @@ public class KikaGoUsbVoiceSourceWrapper implements IVoiceSource {
     public void enableWebrtc() {
         mVoiceSource.enableWebrtc();
     }
-    public void Beamforming() {
-        mVoiceSource.Beamforming();
+    public void enableBeamforming() {
+        mVoiceSource.enableBeamforming();
     }
-    public void Omlsa() {
-        mVoiceSource.Omlsa();
+    public void SetRefGain(float g) {
+        mVoiceSource.SetRefGain(g);
     }
-    public void NoiseGate() {
-        mVoiceSource.NoiseGate();
+    public void enableNoiseGate() {
+        mVoiceSource.enableNoiseGate();
     }
     public void enableEq() {
         mVoiceSource.enableEq();
@@ -123,7 +123,19 @@ public class KikaGoUsbVoiceSourceWrapper implements IVoiceSource {
     public void enableAgc() {
         mVoiceSource.enableAgc();
     }
-    public void Gain() {
-        mVoiceSource.Gain();
+    public void setAgcMode(int value) {
+        mVoiceSource.setAgcMode(value);
+    }
+    public void setAgcGaindB(int value) {
+        mVoiceSource.setAgcGaindB(value);
+    }
+    public void setAgcTargetLevelDbfs(int value) {
+        mVoiceSource.setAgcTargetLevelDbfs(value);
+    }
+    public void setWebRtcMode(int value) {
+        mVoiceSource.setWebRtcMode(value);
+    }
+    public void setInspace(float value) {
+        mVoiceSource.setInspace(value);
     }
 }
