@@ -30,12 +30,14 @@ public class KikaGoAccessoryDataSource implements IUsbAudioDriver, IUsbDataSourc
 
     private static final int RETRY_INTERVAL = 20;
     private static final int RETRY_MAX_TIMES = 50;
+    private String sn = null;
 
     private static final byte CMD_AUDIO = (byte) 0xFF;
     private static final byte CMD_VOLUME_UP = 0x24;
     private static final byte CMD_VOLUME_DOWN = 0x25;
     private static final byte CMD_CHECK_VOLUME_STATE = 0x26;
     private static final byte CMD_CHECK_VERSION = 0x28;
+    private static final byte CMD_GET_SN = 0x73;
 
     private Context mContext;
     private UsbAccessory mUsbAccessory;
@@ -206,6 +208,21 @@ public class KikaGoAccessoryDataSource implements IUsbAudioDriver, IUsbDataSourc
     @Override
     public byte[] checkDriverVersion() {
         return new byte[]{0x00, 0x7F};
+    }
+
+    @Override
+    public synchronized String getSn() {
+        int retry = 0;
+        isValidCmdVersion = false;
+        sn = null;
+        while (!isValidCmdVersion && retry++ < RETRY_MAX_TIMES) {
+            sendCommand(genCommand(CMD_GET_SN));
+            try {
+                Thread.sleep(RETRY_INTERVAL);
+            } catch (Exception ignore) {
+            }
+        }
+        return sn;
     }
 
     @Override

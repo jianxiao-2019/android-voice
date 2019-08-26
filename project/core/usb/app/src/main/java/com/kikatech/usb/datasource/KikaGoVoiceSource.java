@@ -292,6 +292,16 @@ public class KikaGoVoiceSource {
         return result[1] & 0xFF | (result[0] & 0xFF) << 8;
     }
 
+    public String getSn() {
+        if (!mIsOpened()) {
+            if (LogUtil.DEBUG) {
+                LogUtil.logw(TAG, "Fail operation because the Usb audio not initialized : checkDriverVersion");
+            }
+            return null;
+        }
+        return mUsbDataSource.getSn();
+    }
+
 
     private boolean isIsInversePhase(int ver) {
         for (int version : VERSIONS_TO_INVERSE) {

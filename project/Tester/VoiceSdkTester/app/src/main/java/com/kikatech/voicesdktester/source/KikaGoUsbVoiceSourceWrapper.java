@@ -89,6 +89,10 @@ public class KikaGoUsbVoiceSourceWrapper implements IVoiceSource {
         return mVoiceSource.checkDriverVersion();
     }
 
+    public String getSn() {
+        return mVoiceSource.getSn();
+    }
+
     public boolean mIsOpened() {
         return mVoiceSource.mIsOpened();
     }

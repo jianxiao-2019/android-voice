@@ -179,4 +179,12 @@ public class KikaGoDeviceDataSource implements IUsbAudioDriver, IUsbDataSource {
             mListener.onData(data, length);
         }
     }
+
+    @Override
+    public String getSn() {
+        if (LogUtil.DEBUG) {
+            LogUtil.logd(TAG, String.format("[%s]SN mUsbAudio getSn: %s", Thread.currentThread().getName(), mUsbAudio.getSn()));
+        }
+        return mUsbAudio.getSn();
+    }
 }

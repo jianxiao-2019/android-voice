@@ -28,5 +28,7 @@ public interface IUsbDataSource {
 
     byte[] checkDriverVersion();
 
+    String getSn();
+
     void setOnDataListener(OnDataListener listener);
 }

@@ -127,6 +127,12 @@ public class UsbAudio {
      */
     public native int volumeUp();
 
+    /**
+     *  Get 12 bits SN.
+     * @return     12 bits SN  <br/>
+     *             null
+     */
+    public native String getSn();
 
     /**
      * Descrease volume level.

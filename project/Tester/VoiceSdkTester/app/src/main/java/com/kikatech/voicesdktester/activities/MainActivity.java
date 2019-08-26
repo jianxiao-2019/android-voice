@@ -740,6 +740,7 @@ public class MainActivity extends AppCompatActivity implements
             version.append("[fw : 0x").append(Integer.toHexString(mKikaGoVoiceSource.checkFwVersion())).append("] ");
             version.append("[driver : 0x").append(String.format("%03X", mKikaGoVoiceSource.checkDriverVersion())).append("] ");
             version.append("[nc : ").append(mKikaGoVoiceSource.getNcVersion()).append("] ");
+            version.append("[nc : ").append(mKikaGoVoiceSource.getSn()).append("] ");
         }
         ((TextView) findViewById(R.id.text_version)).setText("version : \n" + version);
     }
