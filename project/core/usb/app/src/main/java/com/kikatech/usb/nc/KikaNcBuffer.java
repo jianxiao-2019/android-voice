@@ -75,10 +75,10 @@ public class KikaNcBuffer extends KikaBuffer {
         short[] outBuffs;
         if(NC_VERSION == NC_VERSION_KIKAGO) {
             outBuffs = new short[mAudioBytes_kikago.length / 2];
-            NoiseCancellation.NoiseMask0(DataUtil.byteToShort(mAudioBytes_kikago), outBuffs);
+            ai.kikago.usb.NoiseCancellation.NoiseMask0(DataUtil.byteToShort(mAudioBytes_kikago), outBuffs);
         } else {
             outBuffs = new short[mAudioBytes_dasen.length / 2];
-            NoiseCancellation.NoiseMask0(DataUtil.byteToShort(mAudioBytes_dasen), outBuffs);
+            lib.android.anc.NoiseCancellation.NoiseMask(DataUtil.byteToShort(mAudioBytes_dasen), outBuffs);
         }
         return DataUtil.shortToByte(outBuffs);
     }
@@ -88,7 +88,8 @@ public class KikaNcBuffer extends KikaBuffer {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "create");
         }
-        NoiseCancellation.Init();
+        ai.kikago.usb.NoiseCancellation.Init();
+        lib.android.anc.NoiseCancellation.Init();
     }
 
     @Override
@@ -96,7 +97,8 @@ public class KikaNcBuffer extends KikaBuffer {
         if (LogUtil.DEBUG) {
             LogUtil.log(TAG, "close");
         }
-        NoiseCancellation.Destroy();
+        ai.kikago.usb.NoiseCancellation.Destroy();
+        lib.android.anc.NoiseCancellation.Destroy();
     }
 
     @Override
@@ -110,18 +112,34 @@ public class KikaNcBuffer extends KikaBuffer {
     }
 
     public static void setNoiseSuppressionParameters(int mode, int value) {
-        NoiseCancellation.SetControl(mode, value);
+        if(NC_VERSION == NC_VERSION_KIKAGO) {
+            ai.kikago.usb.NoiseCancellation.SetControl(mode, value);
+        }else {
+            lib.android.anc.NoiseCancellation.SetControl(mode, value);
+        }
     }
 
     public static int getNoiseSuppressionParameters(int mode) {
-        return NoiseCancellation.GetControl(mode);
+        if(NC_VERSION == NC_VERSION_KIKAGO) {
+            return ai.kikago.usb.NoiseCancellation.GetControl(mode);
+        } else {
+            return lib.android.anc.NoiseCancellation.GetControl(mode);
+        }
     }
 
     public static int getVersion() {
-        return NoiseCancellation.GetVersion();
+        if(NC_VERSION == NC_VERSION_KIKAGO) {
+            return ai.kikago.usb.NoiseCancellation.GetVersion();
+        } else {
+            return lib.android.anc.NoiseCancellation.GetVersion();
+        }
     }
     public static void SetRefGain(float g) {
-        NoiseCancellation.SetRefGain(g);
+        if(NC_VERSION == NC_VERSION_KIKAGO) {
+            ai.kikago.usb.NoiseCancellation.SetRefGain(g);
+        } else {
+            lib.android.anc.NoiseCancellation.SetRefGain(g);
+        }
     }
     public static void enableWebrtc() {
         NoiseCancellation.enableWebrtc();
