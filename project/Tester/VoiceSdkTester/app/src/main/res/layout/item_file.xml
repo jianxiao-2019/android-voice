@@ -41,4 +41,70 @@
 
     </HorizontalScrollView>
 
+    <LinearLayout
+        android:id="@+id/expanded_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/control_raw"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="71dp"
+            android:background="#6FACB4C4" />
+
+        <TextView
+            android:id="@+id/asr_result_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="71dp"
+            android:layout_marginTop="18dp"
+            android:ellipsize="end"
+            android:maxLines="3" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#44ACB4C4" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="91dp">
+
+            <TextView
+                android:id="@+id/item_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Delete"
+                android:textColor="#FFEC5181" />
+
+            <TextView
+                android:id="@+id/item_rename"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Rename"
+                android:textColor="#FF50E3C2" />
+
+            <TextView
+                android:id="@+id/item_share"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Share"
+                android:textColor="#FF50E3C2" />
+        </LinearLayout>
+    </LinearLayout>
+
 </LinearLayout>
