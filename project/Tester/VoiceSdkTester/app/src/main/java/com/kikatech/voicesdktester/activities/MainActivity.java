@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements
     private EditText mBeamforming;
     private EditText mAgc1;
     private EditText mAgc2;
+    private EditText mNoiseGate;
     private SeekBar mSeekAngle;
     private TextView mTextAngle;
     private Button mButtonAngle;
@@ -222,6 +223,26 @@ public class MainActivity extends AppCompatActivity implements
             updatePermissionButtonState();
         });
 
+        mAgc1 = (EditText) findViewById(R.id.Agc_Parameter1);
+        String str = mAgc1.getText().toString();
+
+        mAgc2 = (EditText) findViewById(R.id.Agc_Parameter2);
+        String str1 = mAgc2.getText().toString();
+
+        mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
+        String str2 = mBeamforming.getText().toString();
+
+        mNoiseGate = (EditText) findViewById(R.id.NG_Parameter);
+        String str3 = mNoiseGate.getText().toString();
+
+        /**
+         * Webrtc 参数
+         */
+        wr_Parameter = (Spinner) findViewById(R.id.Wr_Parameter);
+        final String[] wr_select = {"0", "1", "2", "3"};
+        ArrayAdapter<String> wr_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, wr_select);
+        wr_Parameter.setAdapter(wr_arrayAdapter);
+
         CheckBox webrtc = (CheckBox) findViewById(R.id.Webrtc);
         webrtc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -229,13 +250,30 @@ public class MainActivity extends AppCompatActivity implements
                 if (mKikaGoVoiceSource != null) {
                     if (b) {
                         mKikaGoVoiceSource.enableWebrtc();
+                        wr_Parameter.setEnabled(true);
+                        wr_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                if (mKikaGoVoiceSource != null) {
+                                    mKikaGoVoiceSource.setWebRtcMode(i);
+                                }
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                            }
+                        });
                     }else {
                         mKikaGoVoiceSource.disableWebrtc();
+                        wr_Parameter.setEnabled(false);
                     }
                 }
             }
         });
-
+        /**
+         * Beamforming 参数
+         */
         CheckBox beamforming = (CheckBox) findViewById(R.id.Beamforming);
         beamforming.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -243,13 +281,18 @@ public class MainActivity extends AppCompatActivity implements
                 if (mKikaGoVoiceSource != null) {
                     if (b) {
                         mKikaGoVoiceSource.enableBeamforming();
+                        mBeamforming.setEnabled(true);
+                        mKikaGoVoiceSource.setInspace(Float.parseFloat(str2));
                     }else {
                         mKikaGoVoiceSource.disableBeamforming();
+                        mBeamforming.setEnabled(false);
                     }
                 }
             }
         });
-
+        /**
+         * EQ 参数
+         */
         CheckBox enableeq = (CheckBox) findViewById(R.id.Eq);
         enableeq.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -263,7 +306,19 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+        /**
+         * Agc 参数 && 固定增益
+         */
+        gain_Parameter = (Spinner) findViewById(R.id.Gain_Parameter);
+        final String[] gain_select = {"0", "1", "2", "3", "4", "5", "6"};
+        ArrayAdapter<String> gain_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, gain_select);
+        gain_Parameter.setAdapter(gain_arrayAdapter);
 
+        agc_Parameter = (Spinner) findViewById(R.id.Agc_Parameter);
+        final String[] agc_select = {"0", "1", "2", "3"};
+        ArrayAdapter<String> agc_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, agc_select);
+        agc_Parameter.setAdapter(agc_arrayAdapter);
+        agc_Parameter.setSelection(2,true);
         CheckBox agc = (CheckBox) findViewById(R.id.Agc);
         agc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -271,13 +326,51 @@ public class MainActivity extends AppCompatActivity implements
                 if (mKikaGoVoiceSource != null) {
                     if (b) {
                         mKikaGoVoiceSource.enableAgc();
+                        agc_Parameter.setEnabled(true);
+                        mAgc1.setEnabled(true);
+                        mAgc2.setEnabled(true);
+                        gain_Parameter.setEnabled(false);
+                        mKikaGoVoiceSource.setAgcGaindB(Integer.parseInt(str));
+                        mKikaGoVoiceSource.setAgcTargetLevelDbfs(Integer.parseInt(str1));
+                        agc_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                if (mKikaGoVoiceSource != null) {
+                                    mKikaGoVoiceSource.setAgcMode(i);
+                                }
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                            }
+                        });
                     }else {
                         mKikaGoVoiceSource.disableAgc();
+                        agc_Parameter.setEnabled(false);
+                        mAgc1.setEnabled(false);
+                        mAgc2.setEnabled(false);
+                        gain_Parameter.setEnabled(true);
+                        gain_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                if (mKikaGoVoiceSource != null) {
+                                    mKikaGoVoiceSource.SetRefGain(i);
+                                }
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                            }
+                        });
                     }
                 }
             }
         });
-
+        /**
+         * NoiseGate 参数
+         */
         CheckBox noisegate = (CheckBox) findViewById(R.id.NoiseGate);
         noisegate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -285,13 +378,18 @@ public class MainActivity extends AppCompatActivity implements
                 if (mKikaGoVoiceSource != null) {
                     if (b) {
                         mKikaGoVoiceSource.enableNoiseGate();
+                        mNoiseGate.setEnabled(true);
+                        mKikaGoVoiceSource.setNoiseGateThreshold(Integer.parseInt(str3));
                     }else {
                         mKikaGoVoiceSource.disableNoiseGate();
+                        mNoiseGate.setEnabled(false);
                     }
                 }
             }
         });
-
+        /**
+         * 引擎
+         */
         engine_Parameter = (Spinner) findViewById(R.id.Engine_Parameter);
         final String[] engine_select = {"NoAsr", "Speech", "Google", "Olami"};
         ArrayAdapter<String> engine_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, engine_select);
@@ -309,7 +407,9 @@ public class MainActivity extends AppCompatActivity implements
 
             }
         });
-
+        /**
+         * 语言
+         */
         lg_Parameter = (Spinner) findViewById(R.id.Lg_Parameter);
         final String[] lg_select = {"en-US", "zh", "zh-TW"};
         ArrayAdapter<String> lg_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, lg_select);
@@ -327,85 +427,6 @@ public class MainActivity extends AppCompatActivity implements
 
             }
         });
-
-        wr_Parameter = (Spinner) findViewById(R.id.Wr_Parameter);
-        final String[] wr_select = {"0", "1", "2", "3"};
-        ArrayAdapter<String> wr_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, wr_select);
-        wr_Parameter.setAdapter(wr_arrayAdapter);
-        wr_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.setWebRtcMode(i);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        agc_Parameter = (Spinner) findViewById(R.id.Agc_Parameter);
-        final String[] agc_select = {"0", "1", "2", "3"};
-        ArrayAdapter<String> agc_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, agc_select);
-        agc_Parameter.setAdapter(agc_arrayAdapter);
-        agc_Parameter.setSelection(2,true);
-        agc_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.setAgcMode(i);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        gain_Parameter = (Spinner) findViewById(R.id.Gain_Parameter);
-        final String[] gain_select = {"0", "1", "2", "3", "4", "5", "6"};
-        ArrayAdapter<String> gain_arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, gain_select);
-        gain_Parameter.setAdapter(gain_arrayAdapter);
-        gain_Parameter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.SetRefGain(i);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
-        String str = mBeamforming.getText().toString();
-        if (mKikaGoVoiceSource != null) {
-            mKikaGoVoiceSource.setAgcGaindB(Integer.parseInt(str));
-        }
-
-        mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
-        String str1 = mBeamforming.getText().toString();
-        if (mKikaGoVoiceSource != null) {
-            mKikaGoVoiceSource.setAgcTargetLevelDbfs(Integer.parseInt(str1));
-        }
-
-        mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
-        String str2 = mBeamforming.getText().toString();
-        if (mKikaGoVoiceSource != null) {
-            mKikaGoVoiceSource.setInspace(Integer.parseInt(str2));
-        }
-
-        mBeamforming = (EditText) findViewById(R.id.NG_Parameter);
-        String str3 = mBeamforming.getText().toString();
-        if (mKikaGoVoiceSource != null) {
-            mKikaGoVoiceSource.setNoiseGateThreshold(Integer.parseInt(str3));
-        }
 
         mSpinner = (Spinner) findViewById(R.id.spinner);
         final String[] select = {"3", "6", "9", "12", "15", "18", "21", "24", "27", "30", "33", "36", "39", "42"};
@@ -441,6 +462,20 @@ public class MainActivity extends AppCompatActivity implements
                 mStartButton.setEnabled(false);
                 mStopButton.setEnabled(true);
                 mReportButton.setEnabled(false);
+                mBeamforming.setEnabled(false);
+                mAgc1.setEnabled(false);
+                mAgc2.setEnabled(false);
+                mNoiseGate.setEnabled(false);
+                engine_Parameter.setEnabled(false);
+                lg_Parameter.setEnabled(false);
+                wr_Parameter.setEnabled(false);
+                agc_Parameter.setEnabled(false);
+                gain_Parameter.setEnabled(false);
+                webrtc.setEnabled(false);
+                beamforming.setEnabled(false);
+                noisegate.setEnabled(false);
+                enableeq.setEnabled(false);
+                agc.setEnabled(false);
             } else {
                 if (mTextView != null) {
                     mTextView.setText("Select an audio source first.");
@@ -472,6 +507,11 @@ public class MainActivity extends AppCompatActivity implements
                 mStartButton.setEnabled(true);
                 mStopButton.setEnabled(false);
                 mReportButton.setEnabled(true);
+                webrtc.setEnabled(true);
+                beamforming.setEnabled(true);
+                noisegate.setEnabled(true);
+                enableeq.setEnabled(true);
+                agc.setEnabled(true);
             }
         });
         mStopButton.setEnabled(false);

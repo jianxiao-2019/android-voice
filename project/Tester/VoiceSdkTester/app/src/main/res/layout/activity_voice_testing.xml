@@ -307,7 +307,7 @@
                 android:id="@+id/NoiseGate"
                 android:text="NoiseGate"/>
             <EditText
-                android:text=""
+                android:text="1638"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/NG_Parameter"
