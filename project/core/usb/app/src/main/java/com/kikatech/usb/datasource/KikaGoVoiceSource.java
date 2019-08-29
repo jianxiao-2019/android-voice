@@ -356,6 +356,21 @@ public class KikaGoVoiceSource {
     public void enableAgc() {
         KikaNcBuffer.enableAgc();
     }
+    public void disableWebrtc() {
+        KikaNcBuffer.disableWebrtc();
+    }
+    public void disableBeamforming() {
+        KikaNcBuffer.disableBeamforming();
+    }
+    public void disableNoiseGate() {
+        KikaNcBuffer.disableNoiseGate();
+    }
+    public void disableEq() {
+        KikaNcBuffer.disableEq();
+    }
+    public void disableAgc() {
+        KikaNcBuffer.disableAgc();
+    }
     public void SetRefGain(float g) {
         KikaNcBuffer.SetRefGain(g);
     }
@@ -373,5 +388,8 @@ public class KikaGoVoiceSource {
     }
     public void setInspace(float value) {
         KikaNcBuffer.setInspace(value);
+    }
+    public void setNoiseGateThreshold(int value) {
+        KikaNcBuffer.setNoiseGateThreshold(value);
     }
 }

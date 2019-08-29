@@ -156,6 +156,21 @@ public class KikaNcBuffer extends KikaBuffer {
     public static void enableAgc() {
         NoiseCancellation.enableAgc();
     }
+    public static void disableWebrtc() {
+        NoiseCancellation.disableWebrtc();
+    }
+    public static void disableBeamforming() {
+        NoiseCancellation.disableBeamforming();
+    }
+    public static void disableNoiseGate() {
+        NoiseCancellation.disableNoiseGate();
+    }
+    public static void disableEq() {
+        NoiseCancellation.disableEq();
+    }
+    public static void disableAgc() {
+        NoiseCancellation.disableAgc();
+    }
     public static void setAgcMode(int value) {
         NoiseCancellation.setAgcMode(value);
     }
@@ -170,5 +185,8 @@ public class KikaNcBuffer extends KikaBuffer {
     }
     public static void setInspace(float value) {
         NoiseCancellation.setInspace(value);
+    }
+    public static void setNoiseGateThreshold(int value) {
+        NoiseCancellation.setNoiseGateThreshold(value);
     }
 }

@@ -227,7 +227,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.enableWebrtc();
+                    if (b) {
+                        mKikaGoVoiceSource.enableWebrtc();
+                    }else {
+                        mKikaGoVoiceSource.disableWebrtc();
+                    }
                 }
             }
         });
@@ -237,7 +241,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.enableBeamforming();
+                    if (b) {
+                        mKikaGoVoiceSource.enableBeamforming();
+                    }else {
+                        mKikaGoVoiceSource.disableBeamforming();
+                    }
                 }
             }
         });
@@ -247,7 +255,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.enableEq();
+                    if (b) {
+                        mKikaGoVoiceSource.enableEq();
+                    }else {
+                        mKikaGoVoiceSource.disableEq();
+                    }
                 }
             }
         });
@@ -257,7 +269,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.enableAgc();
+                    if (b) {
+                        mKikaGoVoiceSource.enableAgc();
+                    }else {
+                        mKikaGoVoiceSource.disableAgc();
+                    }
                 }
             }
         });
@@ -267,7 +283,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (mKikaGoVoiceSource != null) {
-                    mKikaGoVoiceSource.enableNoiseGate();
+                    if (b) {
+                        mKikaGoVoiceSource.enableNoiseGate();
+                    }else {
+                        mKikaGoVoiceSource.disableNoiseGate();
+                    }
                 }
             }
         });
@@ -363,25 +383,28 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        String str = "";
         mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
-        str = mBeamforming.getText().toString();
+        String str = mBeamforming.getText().toString();
         if (mKikaGoVoiceSource != null) {
             mKikaGoVoiceSource.setAgcGaindB(Integer.parseInt(str));
         }
 
-        String str1 = "";
         mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
-        str1 = mBeamforming.getText().toString();
+        String str1 = mBeamforming.getText().toString();
         if (mKikaGoVoiceSource != null) {
             mKikaGoVoiceSource.setAgcTargetLevelDbfs(Integer.parseInt(str1));
         }
 
-        String str2 = "";
         mBeamforming = (EditText) findViewById(R.id.Bf_Parameter);
-        str2 = mBeamforming.getText().toString();
+        String str2 = mBeamforming.getText().toString();
         if (mKikaGoVoiceSource != null) {
             mKikaGoVoiceSource.setInspace(Integer.parseInt(str2));
+        }
+
+        mBeamforming = (EditText) findViewById(R.id.NG_Parameter);
+        String str3 = mBeamforming.getText().toString();
+        if (mKikaGoVoiceSource != null) {
+            mKikaGoVoiceSource.setNoiseGateThreshold(Integer.parseInt(str3));
         }
 
         mSpinner = (Spinner) findViewById(R.id.spinner);

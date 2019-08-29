@@ -41,6 +41,18 @@ public class NoiseCancellation {
 
     public static native void setInspace(float var0);
 
+    public static native void disableWebrtc();
+
+    public static native void disableBeamforming();
+
+    public static native void disableNoiseGate();
+
+    public static native void disableEq();
+
+    public static native void disableAgc();
+
+    public static native void setNoiseGateThreshold(int var0);
+
     static {
         System.loadLibrary("kikago_nc");
     }
