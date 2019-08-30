@@ -258,4 +258,15 @@
         android:text=""
         android:layout_alignParentLeft="true" />
 
+    <TextView
+        android:id="@+id/net_info"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="284dp"
+        android:gravity="right"
+        android:text="net mode"
+        android:textSize="18dp" />
+
 </RelativeLayout>

@@ -75,6 +75,7 @@ public class RecorderFragment extends PageFragment implements
     private TextView mErrorHintText;
     private FrameLayout mRecentArea;
     private TextView mFirmwareinfoText;
+    private TextView mNet_info;
 
     private VoiceService mVoiceService;
     private AsrConfiguration mAsrConfiguration;
@@ -134,16 +135,19 @@ public class RecorderFragment extends PageFragment implements
                 mServerType = ServerType.GOOGLE;
                 updateServer();
                 Toast.makeText(getContext(), "Using Google", Toast.LENGTH_SHORT).show();
+                mNet_info.setText("Google");
                 break;
             case R.id.server_tencent:
                 mServerType = ServerType.TENCENT;
                 Toast.makeText(getContext(), "Using Tencent", Toast.LENGTH_SHORT).show();
                 updateServer();
+                mNet_info.setText("Tencent");
                 break;
             case R.id.server_baidu:
                 mServerType = ServerType.BAIDU;
                 Toast.makeText(getContext(), "Using Baidu", Toast.LENGTH_SHORT).show();
                 updateServer();
+                mNet_info.setText("Baidu");
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -182,6 +186,7 @@ public class RecorderFragment extends PageFragment implements
         mErrorHintText = (TextView) view.findViewById(R.id.error_hint);
 
         mFirmwareinfoText = (TextView) view.findViewById(R.id.firmware_info);
+        mNet_info = (TextView) view.findViewById(R.id.net_info);
         int versioncode = 0;
         String versionname = "0";
         PackageManager pm = this.getContext().getPackageManager();
