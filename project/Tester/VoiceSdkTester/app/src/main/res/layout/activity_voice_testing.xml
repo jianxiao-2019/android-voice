@@ -393,6 +393,7 @@
                 android:text="Stop" />
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/button_report_log"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -498,6 +499,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -519,6 +521,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -539,6 +542,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -630,6 +634,7 @@
             android:text="Audio List" />
 
         <Button
+            android:visibility="gone"
             android:id="@+id/button_wake_up_tester"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

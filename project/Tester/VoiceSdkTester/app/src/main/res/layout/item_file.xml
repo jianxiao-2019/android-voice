@@ -42,8 +42,8 @@
     </HorizontalScrollView>
 
     <LinearLayout
-        android:visibility="gone"
-        android:id="@+id/expanded_layout"
+
+        android:id="@+id/expanded_layout_ts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/control_raw"
@@ -57,7 +57,7 @@
             android:background="#6FACB4C4" />
 
         <TextView
-            android:id="@+id/asr_result_text"
+            android:id="@+id/asr_result_text_ts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="18dp"
@@ -80,7 +80,7 @@
             android:paddingStart="91dp">
 
             <TextView
-                android:id="@+id/item_delete"
+                android:id="@+id/item_delete_ts"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -89,7 +89,7 @@
                 android:textColor="#FFEC5181" />
 
             <TextView
-                android:id="@+id/item_rename"
+                android:id="@+id/item_rename_ts"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -98,7 +98,7 @@
                 android:textColor="#FF50E3C2" />
 
             <TextView
-                android:id="@+id/item_share"
+                android:id="@+id/item_share_ts"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

@@ -512,6 +512,15 @@ public class MainActivity extends AppCompatActivity implements
                 noisegate.setEnabled(true);
                 enableeq.setEnabled(true);
                 agc.setEnabled(true);
+//                mBeamforming.setEnabled(true);
+//                mAgc1.setEnabled(true);
+//                mAgc2.setEnabled(true);
+//                mNoiseGate.setEnabled(true);
+//                engine_Parameter.setEnabled(true);
+//                lg_Parameter.setEnabled(true);
+//                wr_Parameter.setEnabled(true);
+//                agc_Parameter.setEnabled(true);
+//                gain_Parameter.setEnabled(true);
             }
         });
         mStopButton.setEnabled(false);
