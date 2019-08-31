@@ -266,7 +266,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="284dp"
         android:gravity="right"
-        android:text="net mode"
+        android:text="Baidu"
         android:textSize="18dp" />
 
 </RelativeLayout>
