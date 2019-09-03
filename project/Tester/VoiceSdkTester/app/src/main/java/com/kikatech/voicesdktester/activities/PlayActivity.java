@@ -54,6 +54,7 @@ public class PlayActivity extends AppCompatActivity {
             }
             fileNames.add(file);
         }
+        Collections.reverse(fileNames);
         return fileNames;
     }
 }
