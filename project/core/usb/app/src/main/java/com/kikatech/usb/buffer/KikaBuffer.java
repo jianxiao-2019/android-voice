@@ -3,6 +3,7 @@ package com.kikatech.usb.buffer;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
+import com.kikatech.usb.BuildConfig;
 import com.kikatech.usb.nc.KikaNcBuffer;
 import com.kikatech.usb.util.LogUtil;
 
@@ -15,7 +16,7 @@ public abstract class KikaBuffer {
     public static int NC_VERSION_KIKAGO = 1;
     public static int NC_VERSION_DASEN = 2;
 
-    public static int NC_VERSION = NC_VERSION_KIKAGO;
+    public static int NC_VERSION = BuildConfig.NC_TYPE;//NC_VERSION_KIKAGO;
 
     public static final int BUFFER_SIZE_KIKAGO = 3840;
     public static final int BUFFER_SIZE_DASEN = 512;
