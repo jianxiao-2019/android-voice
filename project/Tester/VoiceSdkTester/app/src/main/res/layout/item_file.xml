@@ -82,6 +82,7 @@
             android:paddingStart="91dp">
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/item_delete_ts"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -91,6 +92,7 @@
                 android:textColor="#FFEC5181" />
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/item_rename_ts"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -104,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:text="Share"
                 android:textColor="#FF50E3C2" />
         </LinearLayout>
