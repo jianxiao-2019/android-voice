@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -249,6 +250,7 @@ public class LocalPlayBackFragment extends Fragment implements
                 continue;
             }
             fileNames.add(file);
+            Collections.reverse(fileNames);
         }
 
         if (mFileAdapter == null) {
