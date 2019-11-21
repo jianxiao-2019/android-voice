@@ -10,7 +10,7 @@ import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,6 +25,8 @@ import java.util.TimeZone;
 
 public class DebugUtil {
 
+    private static final String TAG = "DebugUtil";
+
     private static final String PRE_PHONE = "Phone_";
     private static final String PRE_KIKA_GO = "Kikago_";
     private static final String PRE_LOCAL = "Local_";
@@ -38,7 +40,7 @@ public class DebugUtil {
 
     public static void updateCacheDir(VoiceConfiguration conf) {
         sIsDebug = conf.getIsDebugMode();
-        Logger.updateDebugState(sIsDebug);
+
         if (!sIsDebug) {
             return;
         }
@@ -80,19 +82,19 @@ public class DebugUtil {
             @Override
             public void run() {
                 boolean result = addWavHeader(filePath);
-                Logger.d("convertCurrentPcmToWav result = " + result);
+                LogUtils.d(TAG,"convertCurrentPcmToWav result = " + result);
             }
         }).start();
         sAsrAudioFilePath = null;
     }
 
     private static boolean addWavHeader(String debugFilePath) {
-        Logger.i("-----addWavHeader mDebugFileName = " + debugFilePath);
+        LogUtils.i(TAG,"-----addWavHeader mDebugFileName = " + debugFilePath);
         if (TextUtils.isEmpty(debugFilePath)) {
             return false;
         }
         String fileName = debugFilePath.substring(debugFilePath.lastIndexOf("/") + 1);
-        Logger.i("-----addWavHeader fileName = " + fileName);
+        LogUtils.i(TAG,"-----addWavHeader fileName = " + fileName);
         if (TextUtils.isEmpty(fileName)) {
             return false;
         }
@@ -102,7 +104,7 @@ public class DebugUtil {
             return false;
         }
 
-        Logger.d("addWavHeader folder = " + folder.getPath());
+        LogUtils.d(TAG,"addWavHeader folder = " + folder.getPath());
         File[] files = folder.listFiles();
         if (files == null) {
             return false;
@@ -114,7 +116,7 @@ public class DebugUtil {
                 continue;
             }
             if (file.getName().contains(fileName) && !file.getName().contains("speex")) {
-                Logger.d("addWavHeader found file = " + file.getPath());
+                LogUtils.d(TAG,"addWavHeader found file = " + file.getPath());
                 WavHeaderHelper.addWavHeader(file, !file.getName().contains("USB"));
                 isConverted = true;
             }
@@ -159,7 +161,7 @@ public class DebugUtil {
 
         String filePath = cidToFilePath.get(cid);
         cidToFilePath.remove(cid);
-        Logger.d("logResultToFile filePath = " + filePath);
+        LogUtils.d(TAG,"logResultToFile filePath = " + filePath);
         if (TextUtils.isEmpty(filePath)) {
             return;
         }
@@ -171,7 +173,7 @@ public class DebugUtil {
             e.printStackTrace();
         }
         if (bufferedWriter != null) {
-            Logger.d("logResultToFile cid = " + cid + " text = " + text);
+            LogUtils.d(TAG,"logResultToFile cid = " + cid + " text = " + text);
             try {
                 cidIndex += 1;
                 if (cid != 0 && endCid != 0) {
@@ -221,7 +223,7 @@ public class DebugUtil {
             e.printStackTrace();
         }
         if (bufferedWriter != null) {
-            Logger.d("logTextToFile = " + title + ": " + text);
+            LogUtils.d(TAG,"logTextToFile = " + title + ": " + text);
             try {
                 bufferedWriter.write(title + ": " + text);
                 bufferedWriter.newLine();

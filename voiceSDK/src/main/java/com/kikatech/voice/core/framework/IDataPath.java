@@ -1,6 +1,6 @@
 package com.kikatech.voice.core.framework;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 /**
  * Created by tianli on 17-10-28.
@@ -8,6 +8,8 @@ import com.kikatech.voice.util.log.Logger;
  */
 
 public abstract class IDataPath {
+
+    private static final String TAG = "IDataPath";
 
     protected final IDataPath mNextPath;
 
@@ -28,7 +30,7 @@ public abstract class IDataPath {
     }
 
     public void dump() {
-        Logger.d("IDataPath dump this = " + this);
+        LogUtils.d(TAG,"IDataPath dump this = " + this);
         if (mNextPath != null) {
             mNextPath.dump();
         }

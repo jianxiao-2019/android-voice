@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 /**
  * Created by tianli on 17-10-29.
  * Update by ryanlin on 25/12/2017.
+ *
+ * 手机mic的声音来源
  */
 
 public class VoiceSource implements IVoiceSource {
@@ -62,6 +64,8 @@ public class VoiceSource implements IVoiceSource {
     public void close() {
     }
 
+
+
     @Override
     public int getBufferSize() {
         return mBufferSizeInBytes;
@@ -74,6 +78,7 @@ public class VoiceSource implements IVoiceSource {
         }
         return mAudioRecord.read(audioData, offsetInBytes, sizeInBytes);
     }
+
 
     private AudioRecord createAudioRecord() {
         if (mBufferSizeInBytes <= 0) {

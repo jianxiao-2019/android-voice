@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../f8/project/Tester/VoiceSdkTester/VoiceSdkTester.iml" filepath="$PROJECT_DIR$/../f8/project/Tester/VoiceSdkTester/VoiceSdkTester.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-voice.iml" filepath="$PROJECT_DIR$/android-voice.iml" />
-      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../f8/project/Tester/VoiceSdkTester/app/app.iml" filepath="$PROJECT_DIR$/../f8/project/Tester/VoiceSdkTester/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/baiducloudspeech/baiducloudspeech.iml" filepath="$PROJECT_DIR$/baiducloudspeech/baiducloudspeech.iml" />
+      <module fileurl="file://$PROJECT_DIR$/googleCloudSpeech/googleCloudSpeech.iml" filepath="$PROJECT_DIR$/googleCloudSpeech/googleCloudSpeech.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tencentCloudSpeech/tencentCloudSpeech.iml" filepath="$PROJECT_DIR$/tencentCloudSpeech/tencentCloudSpeech.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../f8/project/core/usb/app/usb.iml" filepath="$PROJECT_DIR$/../f8/project/core/usb/app/usb.iml" />
       <module fileurl="file://$PROJECT_DIR$/voiceSDK/voiceSDK.iml" filepath="$PROJECT_DIR$/voiceSDK/voiceSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/wakeup/wakeup.iml" filepath="$PROJECT_DIR$/wakeup/wakeup.iml" />
     </modules>

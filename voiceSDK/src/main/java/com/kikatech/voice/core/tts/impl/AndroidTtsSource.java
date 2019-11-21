@@ -16,7 +16,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import com.kikatech.voice.core.tts.TtsSource;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,9 +61,9 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
 
         @Override
         public void onDone(String utteranceId) {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, String.format("AndroidTtsSource onDone mPlayList.size() = %s", mPlayList.size()));
-            }
+
+            LogUtils.i(TAG, String.format("AndroidTtsSource onDone mPlayList.size() = %s", mPlayList.size()));
+
             if (mPlayList.size() > 0) {
                 playSingleList();
             } else if (mStateChangedListener != null && !mIsTtsInterrupted) {
@@ -107,17 +107,17 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
 
     @Override
     public void onInit(int status) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "onInit");
-        }
+
+            LogUtils.i(TAG, "onInit");
+
 
         switch (status) {
             case TextToSpeech.SUCCESS:
                 Locale locale = Locale.US;
                 boolean isLanguageAvailable = checkTTSLanguageAbility(mTts, locale);
-                if (Logger.DEBUG) {
-                    Logger.v(TAG, "isLanguageAvailable: " + isLanguageAvailable);
-                }
+
+                    LogUtils.v(TAG, "isLanguageAvailable: " + isLanguageAvailable);
+
                 if (!isLanguageAvailable) {
                     mTts = null;
                     if (mOnTtsInitListener != null) {
@@ -158,15 +158,15 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
             boolean isTTSInstalled = googleTTSInfo != null;
             boolean isTTSAvailable = isTTSInstalled && googleTTSInfo.enabled;
 
-            if (Logger.DEBUG) {
-                Logger.v(TAG, String.format("[checkTTSAbility] isTTSInstalled: %s, isTTSAvailable: %s", isTTSInstalled, isTTSAvailable));
-            }
+
+                LogUtils.v(TAG, String.format("[checkTTSAbility] isTTSInstalled: %s, isTTSAvailable: %s", isTTSInstalled, isTTSAvailable));
+
 
             return isTTSAvailable;
         } catch (Exception e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+                LogUtils.e(TAG, e.getMessage());
+
         }
         return false;
     }
@@ -196,9 +196,9 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
         for (Voice voice : mTts.getVoices()) {
             String voiceName = voice.getName();
             if (voiceName.startsWith("en-us")) {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, String.format("voice name: %s", voiceName));
-                }
+
+                    LogUtils.i(TAG, String.format("voice name: %s", voiceName));
+
                 if (voiceName.endsWith(FIRST_VOICE)) {
                     mAvailableVoices[0] = voice;
                 } else if (voiceName.endsWith(SECOND_VOICE)) {
@@ -206,11 +206,9 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
                 }
             }
         }
-        if (Logger.DEBUG) {
-            if (Logger.DEBUG) {
-                Logger.v(TAG, String.format("default voice: %s", DEFAULT_VOICE != null ? DEFAULT_VOICE.getName() : "<null>"));
-            }
-        }
+
+                LogUtils.v(TAG, String.format("default voice: %s", DEFAULT_VOICE != null ? DEFAULT_VOICE.getName() : "<null>"));
+
         if (mAvailableVoices[0] == null) {
             mAvailableVoices[0] = DEFAULT_VOICE;
         }
@@ -219,11 +217,11 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
                 mAvailableVoices[i] = mAvailableVoices[0];
             }
         }
-        if (Logger.DEBUG) {
+
             for (int i = 0; i < mAvailableVoices.length; i++) {
-                Logger.d(TAG, String.format("mAvailableVoices[%s] = %s", String.valueOf(i), mAvailableVoices[i] != null ? mAvailableVoices[i].getName() : "<null>"));
+                LogUtils.d(TAG, String.format("mAvailableVoices[%s] = %s", String.valueOf(i), mAvailableVoices[i] != null ? mAvailableVoices[i].getName() : "<null>"));
             }
-        }
+
     }
 
     @Override
@@ -316,14 +314,14 @@ public class AndroidTtsSource implements TtsSource, TextToSpeech.OnInitListener 
             int voiceAvailable = tts.setVoice(voice);
             switch (voiceAvailable) {
                 case TextToSpeech.ERROR:
-                    if (Logger.DEBUG) {
-                        Logger.w(TAG, "setVoice: ERROR");
-                    }
+
+                        LogUtils.w(TAG, "setVoice: ERROR");
+
                     break;
                 case TextToSpeech.SUCCESS:
-                    if (Logger.DEBUG) {
-                        Logger.d(TAG, "setVoice: SUCCESS");
-                    }
+
+                        LogUtils.d(TAG, "setVoice: SUCCESS");
+
                     break;
             }
         }

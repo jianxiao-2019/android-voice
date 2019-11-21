@@ -3,7 +3,7 @@ package com.kikatech.voice.util;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,8 +43,7 @@ public class CustomConfig {
             File f = getConfigFile(filename);
             if (f.exists()) {
                 boolean ret = f.delete();
-                if (Logger.DEBUG)
-                    Logger.i(TAG, "Delete config file " + f.getAbsolutePath() + " : " + ret);
+                LogUtils.i(TAG, "Delete config file " + f.getAbsolutePath() + " : " + ret);
             }
         }
     }
@@ -59,8 +58,8 @@ public class CustomConfig {
             }
             TIMEOUT = timeout / 2;
         }
-        if (Logger.DEBUG)
-            Logger.i(TAG, "Kika Tts Server Timeout:" + TIMEOUT + ", default:" + (DEFAULT_TTS_SERVER_TIMEOUT / 2));
+
+        LogUtils.i(TAG, "Kika Tts Server Timeout:" + TIMEOUT + ", default:" + (DEFAULT_TTS_SERVER_TIMEOUT / 2));
         return TIMEOUT;
     }
 
@@ -79,60 +78,61 @@ public class CustomConfig {
                 SNOWBOY_SENSITIVITY = DEFAULT_SNOWBOY_SENSITIVITY;
             }
         }
-        if (Logger.DEBUG)
-            Logger.i(TAG, "Snowboy Sensitivity:" + SNOWBOY_SENSITIVITY + ", default:" + DEFAULT_SNOWBOY_SENSITIVITY);
+
+        LogUtils.i(TAG, "Snowboy Sensitivity:" + SNOWBOY_SENSITIVITY + ", default:" + DEFAULT_SNOWBOY_SENSITIVITY);
         return SNOWBOY_SENSITIVITY;
     }
 
     private static String __getSensitivity() throws JSONException, IOException {
         String sen = DEFAULT_SNOWBOY_SENSITIVITY;
 //        if (Logger.DEBUG) {
-            File config = getConfigFile(CONFIG_FILE_SNOWBOY);
-            if (Logger.DEBUG)
-                Logger.i(TAG, "config file :" + config);
-            if (!config.exists()) {
-                JSONObject json = new JSONObject();
-                json.put(TAG_SNOWBOY_SENSITIVITY, DEFAULT_SNOWBOY_SENSITIVITY);
-                PrintWriter out = null;
-                try {
-                    out = new PrintWriter(config);
-                    out.println(json.toString());
-                } finally {
-                    if (out != null) out.close();
-                }
-                if (Logger.DEBUG)
-                    Logger.i(TAG, "write " + CONFIG_FILE_SNOWBOY + " ok");
+        File config = getConfigFile(CONFIG_FILE_SNOWBOY);
 
-                return DEFAULT_SNOWBOY_SENSITIVITY;
-            } else {
-                try (BufferedReader br = new BufferedReader(new FileReader(config.getAbsolutePath()))) {
-                    StringBuilder sb = new StringBuilder();
-                    String line = br.readLine();
-
-                    while (line != null) {
-                        sb.append(line);
-                        sb.append(System.lineSeparator());
-                        line = br.readLine();
-                    }
-                    String json = sb.toString();
-                    JSONObject jsonConfig = new JSONObject(json);
-                    sen = jsonConfig.getString(TAG_SNOWBOY_SENSITIVITY);
-                    if (Logger.DEBUG)
-                        Logger.i(TAG, CONFIG_FILE_SNOWBOY + " :" + jsonConfig);
-                }
+        LogUtils.i(TAG, "config file :" + config);
+        if (!config.exists()) {
+            JSONObject json = new JSONObject();
+            json.put(TAG_SNOWBOY_SENSITIVITY, DEFAULT_SNOWBOY_SENSITIVITY);
+            PrintWriter out = null;
+            try {
+                out = new PrintWriter(config);
+                out.println(json.toString());
+            } finally {
+                if (out != null) out.close();
             }
+
+            LogUtils.i(TAG, "write " + CONFIG_FILE_SNOWBOY + " ok");
+
+            return DEFAULT_SNOWBOY_SENSITIVITY;
+        } else {
+            try (BufferedReader br = new BufferedReader(new FileReader(config.getAbsolutePath()))) {
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+
+                while (line != null) {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                    line = br.readLine();
+                }
+                String json = sb.toString();
+                JSONObject jsonConfig = new JSONObject(json);
+                sen = jsonConfig.getString(TAG_SNOWBOY_SENSITIVITY);
+
+                LogUtils.i(TAG, CONFIG_FILE_SNOWBOY + " :" + jsonConfig);
+            }
+        }
 //        }
-        if (Logger.DEBUG)
-            Logger.i(TAG, "Snowboy sensitivity : " + sen);
+
+        LogUtils.i(TAG, "Snowboy sensitivity : " + sen);
         return sen;
     }
 
     private static int __getTtsServerTimeout() throws JSONException, IOException {
         int timeout = DEFAULT_TTS_SERVER_TIMEOUT;
-        if (Logger.DEBUG) {
+        if (true) {
+
             File config = getConfigFile(CONFIG_FILE_TTS_SERVER);
-            if (Logger.DEBUG)
-                Logger.i(TAG, "config file :" + config);
+
+            LogUtils.i(TAG, "config file :" + config);
             if (!config.exists()) {
                 JSONObject json = new JSONObject();
                 json.put(TAG_TIMEOUT, DEFAULT_TTS_SERVER_TIMEOUT);
@@ -143,8 +143,8 @@ public class CustomConfig {
                 } finally {
                     if (out != null) out.close();
                 }
-                if (Logger.DEBUG)
-                    Logger.i(TAG, "write " + CONFIG_FILE_TTS_SERVER + " ok");
+
+                LogUtils.i(TAG, "write " + CONFIG_FILE_TTS_SERVER + " ok");
 
                 return DEFAULT_TTS_SERVER_TIMEOUT;
             } else {
@@ -160,13 +160,13 @@ public class CustomConfig {
                     String json = sb.toString();
                     JSONObject jsonConfig = new JSONObject(json);
                     timeout = jsonConfig.getInt(TAG_TIMEOUT);
-                    if (Logger.DEBUG)
-                        Logger.i(TAG, CONFIG_FILE_TTS_SERVER + " :" + jsonConfig);
+
+                    LogUtils.i(TAG, CONFIG_FILE_TTS_SERVER + " :" + jsonConfig);
                 }
             }
         }
-        if (Logger.DEBUG)
-            Logger.i(TAG, "Kika Tts Server connection timeout : " + timeout);
+
+        LogUtils.i(TAG, "Kika Tts Server connection timeout : " + timeout);
         return timeout;
     }
 }

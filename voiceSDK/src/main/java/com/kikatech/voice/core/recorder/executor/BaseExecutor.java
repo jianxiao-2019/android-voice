@@ -1,6 +1,6 @@
 package com.kikatech.voice.core.recorder.executor;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,12 +30,13 @@ abstract class BaseExecutor {
 
     public synchronized void execute(Runnable runnable) {
         if (isLogAvailable()) {
-            Logger.d(TAG, String.format("execute: %s", runnable));
+            LogUtils.d(TAG, String.format("execute: %s", runnable));
         }
+
         if (mExecutor == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid executor");
-            }
+
+            LogUtils.w(TAG, "invalid executor");
+
             return;
         }
         Future task = mExecutor.submit(runnable);
@@ -43,13 +44,13 @@ abstract class BaseExecutor {
     }
 
     public synchronized void remove(Runnable runnable) {
-        if (Logger.DEBUG) {
-            Logger.d(TAG, String.format("remove: %s", runnable));
-        }
+
+        LogUtils.d(TAG, String.format("remove: %s", runnable));
+
         if (mExecutor == null || runnable == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid executor");
-            }
+
+            LogUtils.w(TAG, "invalid executor");
+
             return;
         }
         __cancel(runnable);
@@ -57,13 +58,13 @@ abstract class BaseExecutor {
     }
 
     public synchronized void cleanAll() {
-        if (Logger.DEBUG) {
-            Logger.d(TAG, "cleanAll");
-        }
+
+        LogUtils.d(TAG, "cleanAll");
+
         if (mExecutor == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid executor");
-            }
+
+            LogUtils.w(TAG, "invalid executor");
+
             return;
         }
         mExecutor.shutdown();
@@ -76,21 +77,21 @@ abstract class BaseExecutor {
 
 
     private synchronized void __cancel(Runnable runnable) {
-        if (Logger.DEBUG) {
-            Logger.d(TAG, String.format("cancel: %s", runnable));
-        }
+
+        LogUtils.d(TAG, String.format("cancel: %s", runnable));
+
         if (mExecutor == null || runnable == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid executor");
-            }
+
+            LogUtils.w(TAG, "invalid executor");
+
             return;
         }
         if (runnable instanceof IRunnable) {
             IRunnable iRunnable = ((IRunnable) runnable);
             boolean isTaskRunning = iRunnable.isRunning();
-            if (Logger.DEBUG) {
-                Logger.d(TAG, String.format("isRunning: %s", isTaskRunning));
-            }
+
+            LogUtils.d(TAG, String.format("isRunning: %s", isTaskRunning));
+
             if (isTaskRunning) {
                 iRunnable.cancel();
             } else {
@@ -105,13 +106,13 @@ abstract class BaseExecutor {
         Future task = mTasks.get(runnable);
         if (task != null) {
             boolean cancelled = task.cancel(true);
-            if (Logger.DEBUG) {
-                Logger.d(TAG, String.format("try to cancel the task, cancelled: %s", cancelled));
-            }
+
+            LogUtils.d(TAG, String.format("try to cancel the task, cancelled: %s", cancelled));
+
         } else {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "error, task not found.");
-            }
+
+            LogUtils.w(TAG, "error, task not found.");
+
         }
     }
 

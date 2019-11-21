@@ -6,7 +6,6 @@ import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.util.DataUtils;
 import com.kikatech.voice.service.event.EventMsg;
 import com.kikatech.voice.core.debug.ReportUtil;
-import com.kikatech.voice.util.log.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 

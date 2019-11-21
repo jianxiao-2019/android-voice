@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BaiduApi extends BaseWebSocket {
 
+    private static final String TAG = "BaiduApi";
+
     private Context mContext;
     /**
      * SDK 内部核心 EventManager 类
@@ -34,42 +36,49 @@ public class BaiduApi extends BaseWebSocket {
 
     @Override
     public void connect(VoiceConfiguration voiceConfiguration) {
-        Log.d("Ryan", "BaiduApi connect begin");
+        Log.d(TAG, "BaiduApi connect begin");
         mBaiduInputStream = BaiduInputStreamFactory.getBaiduInputStream();
         asr = EventManagerFactory.create(mContext, "asr");
         asr.registerListener(mEventListener);
-        Log.d("Ryan", "BaiduApi connect end");
+
+
 
         mBaiduInputStream.start();
-        Log.d("Ryan", "BaiduApi onStart begin 1 ");
+
         if (asr == null) {
-            Log.e("Ryan", "onStart but asr == null");
+            Log.e(TAG, "onStart but asr == null");
         }
-        Log.d("Ryan", "BaiduApi onStart mBaiduInputStream.hasData() = " + mBaiduInputStream.hasData());
+
+
         if (mBaiduInputStream.hasData()) {
+            Log.e(TAG, "--------------BaiduInputStream.hasData()有数据");
             startInternal();
+
+            mShouldCallStart.set(false);
         } else {
+            Log.e(TAG, "--------------BaiduInputStream.hasData()没有数据");
             mShouldCallStart.set(true);
+            Log.e(TAG, "--------------"+mShouldCallStart.get());
         }
-        Log.d("Ryan", "BaiduApi onStart end");
+
+
     }
 
     @Override
     public void release() {
         if (asr == null) {
-            Log.e("Ryan", "onStop but asr == null");
+            Log.e(TAG, "onStop but asr == null");
             return;
         }
-        Log.d("Ryan", "BaiduApi onStop 2 begin");
-        asr.send(SpeechConstant.ASR_STOP, "{}", null, 0, 0);
-        Log.d("Ryan", "BaiduApi onStop 2 end");
 
-        Log.d("Ryan", "BaiduApi release begin");
+        Log.d(TAG, "BaiduApi onStop-> release()");
+        asr.send(SpeechConstant.ASR_STOP, "{}", null, 0, 0);
         asr.send(SpeechConstant.ASR_CANCEL, "{}", null, 0, 0);
         asr.unregisterListener(mEventListener);
         asr = null;
-        Log.d("Ryan", "BaiduApi release end");
+
     }
+
 
     @Override
     public void onStart() {
@@ -77,16 +86,22 @@ public class BaiduApi extends BaseWebSocket {
     }
 
     private void startInternal() {
-        Log.d("Ryan", "BaiduApi startInternal begin");
+        Log.d(TAG, "BaiduApi startInternal---------------------------> ");
+
+        if (asr == null) {
+            Log.e(TAG, "asr == null");
+            return;
+        }
+
         String json = "{\"accept-audio-data\":true,\"" +
                 "vad.endpoint-timeout\":0," +
-                "\"outfile\":\"/storage/emulated/0/Android/data/com.baidu.speech.recognizerdemo/files/baiduASR/outfile.pcm\"," +
                 "\"pid\":15362," +
                 "\"infile\":\"#com.kikago.speech.baidu.BaiduInputStreamFactory.getBaiduInputStream()\"," +
                 "\"accept-audio-volume\":false}";
 
+        Log.d(TAG, json);
         asr.send(SpeechConstant.ASR_START, json, null, 0, 0);
-        Log.d("Ryan", "BaiduApi startInternal end");
+
     }
 
     @Override
@@ -96,11 +111,16 @@ public class BaiduApi extends BaseWebSocket {
 
     @Override
     public void sendCommand(String command, String payload) {
+
     }
 
     @Override
     public void sendData(byte[] data) {
+        //Log.d(TAG, "sendData data = " + data.length);
+
+
         mBaiduInputStream.writeByte(data, data.length);
+
         if (mShouldCallStart.compareAndSet(true, false)) {
             startInternal();
         }
@@ -115,10 +135,11 @@ public class BaiduApi extends BaseWebSocket {
 
         @Override
         public void onEvent(String name, String params, byte[] data, int offset, int length) {
-            Log.v("Ryan", "onEvent name = " + name + " json = " + params);
+
+            //Log.v("Ryan", "onEvent name = " + name + " json = " + params);
             if (name.equals(SpeechConstant.CALLBACK_EVENT_ASR_PARTIAL)) {
                 RecogResult recogResult = RecogResult.parseJson(params);
-                Log.i("Ryan", "error = " + recogResult.getError() + " result = " + recogResult.getResultsRecognition()[0]);
+                Log.i(TAG, "error = " + recogResult.getError() + " result = " + recogResult.getResultsRecognition()[0]);
 
                 Message msg;
                 if (!recogResult.isFinalResult()) { // Partial Result

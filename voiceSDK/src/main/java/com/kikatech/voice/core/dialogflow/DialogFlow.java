@@ -4,9 +4,9 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.kikatech.voice.core.dialogflow.intent.Intent;
-import com.kikatech.voice.service.dialogflow.IDialogFlowService;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.service.dialogflow.IDialogFlowService;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -58,10 +58,10 @@ public class DialogFlow {
                         }
                     } else {
                         if (callback != null) {
-                            if (Logger.DEBUG) {
-                                dbgMsg[0] = intent.getScene() + "-" + intent.getAction();
-                                dbgMsg[1] = intent.getBundleDetail();
-                            }
+
+                            dbgMsg[0] = intent.getScene() + "-" + intent.getAction();
+                            dbgMsg[1] = intent.getBundleDetail();
+
                             callback.onComplete(dbgMsg);
                         }
                         onIntent(intent);
@@ -72,7 +72,7 @@ public class DialogFlow {
     }
 
     public void resetContexts() {
-        if (Logger.DEBUG) Logger.i("DialogFlow", "resetContexts");
+        LogUtils.i("DialogFlow", "resetContexts");
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {

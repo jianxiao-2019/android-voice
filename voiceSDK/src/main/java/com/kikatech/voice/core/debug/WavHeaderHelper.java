@@ -1,7 +1,5 @@
 package com.kikatech.voice.core.debug;
 
-import com.kikatech.voice.util.log.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

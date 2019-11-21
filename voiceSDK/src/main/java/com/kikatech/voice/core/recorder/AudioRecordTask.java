@@ -5,7 +5,7 @@ import android.support.annotation.IntDef;
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.recorder.executor.DataPathExecutor;
 import com.kikatech.voice.core.recorder.executor.IRunnable;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 /**
  * @author SkeeterWang Created on 2018/6/4.
@@ -68,17 +68,18 @@ public class AudioRecordTask implements IRunnable {
 
     @Override
     public void run() {
+
         if (mVoiceSource == null || mDataPath == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid VoiceSource or DataPath ... stop.");
-            }
+
+            LogUtils.w(TAG, "invalid VoiceSource or DataPath ... stop.");
+
             return;
         }
 
         if (mStatus != RecordingState.PREPARED) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid running status ... stop.");
-            }
+
+            LogUtils.w(TAG, "invalid running status ... stop.");
+
             return;
         }
 
@@ -87,10 +88,13 @@ public class AudioRecordTask implements IRunnable {
         onStart();
 
         final int BUFFER_SIZE = mVoiceSource.getBufferSize();
-        while (isRunning()) {
+        while (isRunning() && !Thread.currentThread().isInterrupted()) {
+
+
             final byte[] audioData = new byte[BUFFER_SIZE];
             final int readSize = mVoiceSource.read(audioData, 0, BUFFER_SIZE);
 
+            LogUtils.e(TAG, "readSize=" + readSize);
             if (mListener != null) {
                 mListener.onData(audioData, readSize);
             }
@@ -104,13 +108,13 @@ public class AudioRecordTask implements IRunnable {
                 });
                 mFailCount = 0;
             } else {
-                if (Logger.DEBUG) {
-                    Logger.e(TAG, String.format("[AudioRecordThread] readSize = %s, %s", readSize, mVoiceSource));
-                }
+
+                LogUtils.e(TAG, String.format("[AudioRecordThread] readSize = %s, %s", readSize, mVoiceSource));
+
                 if (++mFailCount >= FAIL_COUNT_THRESHOLD) {
-                    if (Logger.DEBUG) {
-                        Logger.e(TAG, "[AudioRecordThread] FAIL_COUNT_THRESHOLD");
-                    }
+
+                    LogUtils.e(TAG, "[AudioRecordThread] FAIL_COUNT_THRESHOLD");
+
                     if (mListener != null) {
                         mListener.onError(RecordingError.RECORD_FAILED);
                     }
@@ -119,9 +123,9 @@ public class AudioRecordTask implements IRunnable {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    if (Logger.DEBUG) {
-                        Logger.printStackTrace(TAG, e.getMessage(), e);
-                    }
+
+                    LogUtils.e(TAG, e.getMessage());
+
                 }
             }
         }
@@ -129,7 +133,13 @@ public class AudioRecordTask implements IRunnable {
         onStop();
     }
 
+
     private synchronized void onStart() {
+
+
+        LogUtils.w(TAG, "----->AudioRecordTask ... onStart.");
+
+
         mStatus = RecordingState.RUNNING;
         if (mVoiceSource != null) {
             mVoiceSource.start();
@@ -145,6 +155,11 @@ public class AudioRecordTask implements IRunnable {
     }
 
     private synchronized void onStop() {
+
+
+        LogUtils.w(TAG, "----->AudioRecordTask ... onStop.");
+
+
         mStatus = RecordingState.STOPPED;
         if (mVoiceSource != null) {
             mVoiceSource.stop();

@@ -3,7 +3,7 @@ package com.kikatech.voice.util;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -41,9 +41,9 @@ public class FileUtil {
             bos = new BufferedOutputStream(fos);
             bos.write(data, 0, data.length);
         } catch (Exception e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+            LogUtils.e(TAG, e.getMessage());
+
         } finally {
             flushOS(bos);
             closeIO(bos);
@@ -69,11 +69,11 @@ public class FileUtil {
 
 
     public static void printFile(String TAG, @NonNull File file) {
-        if (Logger.DEBUG) {
-            Logger.d(TAG, String.format("file absolute path: %s", file.getAbsolutePath()));
-            long lastModified = file.lastModified();
-            Logger.d(TAG, String.format("file last modified: %s", lastModified));
-        }
+
+        LogUtils.d(TAG, String.format("file absolute path: %s", file.getAbsolutePath()));
+        long lastModified = file.lastModified();
+        LogUtils.d(TAG, String.format("file last modified: %s", lastModified));
+
     }
 
 
@@ -85,9 +85,7 @@ public class FileUtil {
         try {
             return file.createNewFile();
         } catch (Exception e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+           LogUtils.e(TAG, e.getMessage());
         }
         return false;
     }
@@ -104,9 +102,9 @@ public class FileUtil {
                 }
             }
         } catch (Exception e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+          LogUtils.e(TAG, e.getMessage());
+
         }
     }
 
@@ -121,9 +119,7 @@ public class FileUtil {
                 }
             }
         } catch (Exception e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+            LogUtils.e(TAG, e.getMessage());
         }
     }
 }

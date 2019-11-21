@@ -8,6 +8,9 @@ import org.json.JSONObject;
  * Created by fujiayi on 2017/6/24.
  */
 public class RecogResult {
+
+    private static final String TAG = "RecogResult";
+    
     private static final int ERROR_NONE = 0;
 
     private String origalJson;

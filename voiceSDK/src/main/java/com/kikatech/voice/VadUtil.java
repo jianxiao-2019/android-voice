@@ -1,15 +1,12 @@
 package com.kikatech.voice;
 
 import com.kikatech.voice.core.vad.VadConfiguration;
-import com.kikatech.voice.util.log.Logger;
 
 public class VadUtil {
     static {
         System.loadLibrary("voice-vadutil");
+        VadUtil.switchJNILog(false);
 
-        if (Logger.DEBUG) {
-            VadUtil.switchJNILog(false);
-        }
     }
 
     public static native void switchJNILog(boolean logSwitch);

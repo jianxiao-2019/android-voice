@@ -8,7 +8,9 @@ import java.io.InputStream;
 
 public class ForBaiduInputStream extends InputStream {
 
-    private static final int BUFFER_SIZE = 20000;
+    private static final String TAG = "ForBaiduInputStream";
+
+    private static final int BUFFER_SIZE = 200000;
 
     private CircularBuffer mCircularBuffer;
 
@@ -30,7 +32,7 @@ public class ForBaiduInputStream extends InputStream {
     public int read(@NonNull byte[] b, int off, int len) throws IOException {
         int size = mCircularBuffer.read(b, off, len);
         if (System.currentTimeMillis() - mLastTime > 2000L) {
-            Log.d("Ryan", "read size = " + size);
+            Log.d(TAG, "read size = " + size);
             mLastTime = System.currentTimeMillis();
         }
         return size;

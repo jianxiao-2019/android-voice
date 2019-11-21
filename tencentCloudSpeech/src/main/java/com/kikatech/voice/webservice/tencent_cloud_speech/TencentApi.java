@@ -1,22 +1,19 @@
 package com.kikatech.voice.webservice.tencent_cloud_speech;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.kikatech.voice.core.webservice.impl.BaseWebSocket;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.util.log.LogUtils;
 import com.tencent.ai.sdk.control.SpeechManager;
 import com.tencent.ai.sdk.tr.ITrListener;
 import com.tencent.ai.sdk.tr.TrSession;
-import com.tencent.ai.sdk.tts.ITtsInitListener;
 import com.tencent.ai.sdk.utils.ISSErrors;
 
 import org.json.JSONObject;
-import com.kikatech.voice.util.log.Logger;
-
 
 
 public class TencentApi extends BaseWebSocket {
@@ -114,7 +111,7 @@ public class TencentApi extends BaseWebSocket {
         int id = mTrSession.start(TrSession.ISS_TR_MODE_CLOUD_REC,false);
         if (id != ISSErrors.ISS_SUCCESS) {
             message = "Tr SessionStart error,id = " + id;
-            Logger.d(TAG,message);
+            LogUtils.d(TAG,message);
         }
     }
 
@@ -122,9 +119,9 @@ public class TencentApi extends BaseWebSocket {
         @Override
         public void onTrInited(boolean state, int errId) {
             if (state) {
-                Logger.d(TAG,"TrSession init成功");
+                LogUtils.d(TAG,"TrSession init成功");
             } else {
-                Logger.d(TAG,"TrSession init失败, errId : " + errId);
+                LogUtils.d(TAG,"TrSession init失败, errId : " + errId);
             }
         }
 

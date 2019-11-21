@@ -19,7 +19,7 @@ import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.util.AsyncThread;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 
 /**
@@ -47,30 +47,30 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
                               @NonNull IAgentQueryStatus queryStatus,
                               @NonNull ITtsStatusCallback ttsStatusCallback) {
         super(ctx, callback);
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService constructor");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService constructor");
+
         mQueryStatusCallback = queryStatus;
         mTtsStatusCallback = ttsStatusCallback;
         mSceneManager = new SceneManager(mSceneCallback, mSceneQueryWordsStatusCallback);
         mConfig = conf;
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService constructor ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService constructor ... Done");
+
     }
 
     @Override
     public void init() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService init");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService init");
+
         initDialogFlow(mConfig);
         initVoiceService(mConfig);
         initTts(mConfig);
         mServiceCallback.onInitComplete();
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService init ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService init ... Done");
+
     }
 
     @Override
@@ -91,15 +91,15 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     private void initDialogFlow(@NonNull VoiceConfiguration conf) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService initDialogFlow");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService initDialogFlow");
+
         mDialogFlow = new DialogFlow(mContext, conf);
         mDialogFlow.setObserver(mSceneManager);
         mDialogFlow.resetContexts();
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService initDialogFlow ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService initDialogFlow ... Done");
+
     }
 
     private void initTts(@NonNull VoiceConfiguration conf) {
@@ -115,10 +115,8 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
             return;
         }
         try {
-            if (Logger.DEBUG) {
-                for (Pair<String, Integer> pair : pairs) {
-                    Logger.v(TAG, "tts, words: " + pair.first);
-                }
+            for (Pair<String, Integer> pair : pairs) {
+                LogUtils.v(TAG, "tts, words: " + pair.first);
             }
             if (mTtsSource.isTtsSpeaking()) {
                 stopTts();
@@ -137,9 +135,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
             return;
         }
         try {
-            if (Logger.DEBUG) {
-                Logger.v(TAG, "tts, words: " + words);
-            }
+
+            LogUtils.v(TAG, "tts, words: " + words);
+
             if (mTtsSource.isTtsSpeaking()) {
                 stopTts();
                 tts(words, listener);
@@ -161,9 +159,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
             return;
         }
         try {
-            if (Logger.DEBUG) {
-                Logger.v(TAG, "stopTts");
-            }
+
+            LogUtils.v(TAG, "stopTts");
+
             if (removeCallback) {
                 mTtsListener.bindListener(null);
             }
@@ -182,9 +180,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     @Override
     public void resetContexts() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService resetContexts");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService resetContexts");
+
         mQueryAnyWords = false;
         cancelAsrAlignment();
         if (mDialogFlow != null) {
@@ -193,16 +191,16 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         if (mSceneManager != null) {
             mSceneManager.exitCurrentScene();
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService resetContexts ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService resetContexts ... Done");
+
     }
 
     @Override
     public void talk(String words, boolean proactive) {
         stopTts(true);
         if (mDialogFlow != null && !TextUtils.isEmpty(words)) {
-            if (Logger.DEBUG) Logger.i(TAG, "talk : " + words);
+            LogUtils.i(TAG, "talk : " + words);
             mDialogFlow.talk(words, null, mQueryAnyWords ? QUERY_TYPE_LOCAL : QUERY_TYPE_SERVER, proactive, mQueryStatusCallback);
         }
     }
@@ -264,31 +262,31 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     @Override
     public synchronized void quitService() {
         super.releaseVoiceService();
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService quitService");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService quitService");
+
         if (mTtsSource != null) {
             mTtsSource.close();
             mTtsSource = null;
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService quitService ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService quitService ... Done");
+
     }
 
     @Override
     public synchronized void updateRecorderSource(VoiceConfiguration config) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService updateRecorderSource");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService updateRecorderSource");
+
         initVoiceService(config);
         // Voice is re-initialized, go back to the
         resetContexts();
         // Notify that the service is now sleeping
         mServiceCallback.onSleep();
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService updateRecorderSource ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService updateRecorderSource ... Done");
+
     }
 
     public ISceneFeedback getTtsFeedback() {
@@ -351,34 +349,34 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
     @Override
     protected void onVoiceSleep() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService onVoiceSleep");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService onVoiceSleep");
+
         mServiceCallback.onSleep();
         if (mSceneManager != null) {
             mSceneManager.exitCurrentScene();
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService onVoiceSleep Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService onVoiceSleep Done");
+
     }
 
     @Override
     protected void onVoiceWakeUp(String scene) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService onVoiceWakeUp");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService onVoiceWakeUp");
+
         mServiceCallback.onWakeUp(scene);
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowService onVoiceWakeUp Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowService onVoiceWakeUp Done");
+
     }
 
     @Override
     protected void onAsrResult(String query, String emojiJson, boolean queryDialogFlow, String[] nBestQuery) {
-        if (Logger.DEBUG) {
-            Logger.d(TAG, String.format("query: %s, emojiJson: %s, queryDialogFlow: %s", query, emojiJson, queryDialogFlow));
-        }
+
+        LogUtils.d(TAG, String.format("query: %s, emojiJson: %s, queryDialogFlow: %s", query, emojiJson, queryDialogFlow));
+
         if (!TextUtils.isEmpty(query)) {
             mServiceCallback.onASRResult(query, emojiJson, queryDialogFlow);
             if (queryDialogFlow && mDialogFlow != null) {
@@ -400,9 +398,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
         @Override
         public void onTtsStart() {
-            if (Logger.DEBUG) {
-                Logger.v(TAG, "onTtsStart");
-            }
+
+            LogUtils.v(TAG, "onTtsStart");
+
             if (listener != null) {
                 listener.onStageActionStart();
             }
@@ -411,9 +409,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
         @Override
         public void onTtsComplete() {
-            if (Logger.DEBUG) {
-                Logger.v(TAG, "onTtsComplete");
-            }
+
+            LogUtils.v(TAG, "onTtsComplete");
+
             final ISceneStageFeedback feedback = listener;
             if (feedback != null) {
                 AsyncThread.getIns().execute(new Runnable() {
@@ -428,9 +426,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
         @Override
         public void onTtsInterrupted() {
-            if (Logger.DEBUG) {
-                Logger.v(TAG, "onTtsInterrupted");
-            }
+
+            LogUtils.v(TAG, "onTtsInterrupted");
+
             final ISceneStageFeedback feedback = listener;
             if (feedback != null) {
                 AsyncThread.getIns().execute(new Runnable() {
@@ -445,9 +443,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
 
         @Override
         public void onTtsError() {
-            if (Logger.DEBUG) {
-                Logger.v(TAG, "onTtsError");
-            }
+
+            LogUtils.v(TAG, "onTtsError");
+
             final ISceneStageFeedback feedback = listener;
             if (feedback != null) {
                 AsyncThread.getIns().execute(new Runnable() {
@@ -461,6 +459,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
     }
 
     private final SceneManager.SceneLifecycleObserver mSceneCallback = new SceneManager.SceneLifecycleObserver() {
+
         @Override
         public void onSceneEnter(String scene) {
             mServiceCallback.onSceneEntered(scene);
@@ -469,9 +468,9 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         @Override
         public void onSceneExit(String scene, boolean proactive) {
             // if not proactive, Don't reset context since it would clear the context of the following scenario
-            if (Logger.DEBUG) {
-                Logger.v(TAG, "scene:" + scene + ", proactive:" + proactive);
-            }
+
+            LogUtils.v(TAG, "scene:" + scene + ", proactive:" + proactive);
+
             mQueryAnyWords = false;
             cancelAsrAlignment();
             stopTts(false);
@@ -492,7 +491,7 @@ public class DialogFlowService extends DialogFlowVoiceService implements IDialog
         @Override
         public void onQueryAnyWordsStatusChange(boolean queryAnyWords) {
             mQueryAnyWords = queryAnyWords;
-            if (Logger.DEBUG) Logger.i(TAG, "QueryAnyContent:" + mQueryAnyWords);
+            LogUtils.i(TAG, "QueryAnyContent:" + mQueryAnyWords);
         }
     };
 }

@@ -9,7 +9,7 @@ import android.util.Pair;
 
 import com.kikatech.voice.core.tts.TtsSource;
 import com.kikatech.voice.util.AsyncThread;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,9 +65,9 @@ public class KikaTtsSource implements TtsSource {
         mBackupAndroidTts.init(context, new OnTtsInitListener() {
             @Override
             public void onTtsInit(int state) {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "backupAndroidTts init complete");
-                }
+
+                LogUtils.i(TAG, "backupAndroidTts init complete");
+
             }
         });
         if (listener != null) {
@@ -92,17 +92,17 @@ public class KikaTtsSource implements TtsSource {
 
     @Override
     public void speak(String text) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "start to speak : " + text);
-        }
+
+        LogUtils.i(TAG, "start to speak : " + text);
+
 
         String jsonQueryString = "";
         try {
             jsonQueryString = getQueryJsonString(new JSONArray().put(genJsonData(text, 0)));
         } catch (JSONException e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+            LogUtils.e(TAG, e.getMessage());
+
         }
         TtsInfo ttsInfo = new TtsInfo(jsonQueryString, text);
         speakImp(ttsInfo);
@@ -110,9 +110,9 @@ public class KikaTtsSource implements TtsSource {
 
     @Override
     public void speak(Pair<String, Integer>[] sentences) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, " sentences count : " + sentences.length + ", 0:" + sentences[0]);
-        }
+
+        LogUtils.i(TAG, " sentences count : " + sentences.length + ", 0:" + sentences[0]);
+
 
         String jsonQueryString = "";
         try {
@@ -122,9 +122,9 @@ public class KikaTtsSource implements TtsSource {
             }
             jsonQueryString = getQueryJsonString(jsonArray);
         } catch (JSONException e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+            LogUtils.e(TAG, e.getMessage());
+
         }
         TtsInfo ttsInfo = new TtsInfo(jsonQueryString, sentences);
         speakImp(ttsInfo);
@@ -137,36 +137,36 @@ public class KikaTtsSource implements TtsSource {
             jsonObject.put("timezone", TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT, Locale.ENGLISH));
             jsonObject.put("contents", contentsValue);
         } catch (JSONException e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+            LogUtils.e(TAG, e.getMessage());
+
         }
         return jsonObject.toString();
     }
 
     private void speakImp(TtsInfo ttsInfo) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "[speakImp] jsonString:" + ttsInfo.jsonString);
-        }
+
+        LogUtils.i(TAG, "[speakImp] jsonString:" + ttsInfo.jsonString);
+
 
         String cacheJson = null;
         try {
             cacheJson = KikaTtsCacheHelper.getCacheListJsonString(ttsInfo.jsonString);
         } catch (JSONException e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+            LogUtils.e(TAG, e.getMessage());
+
         }
 
         if (!TextUtils.isEmpty(cacheJson)) {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "[speakImp] Cache(s) hit, use :" + cacheJson);
-            }
+
+            LogUtils.i(TAG, "[speakImp] Cache(s) hit, use :" + cacheJson);
+
             playTtsByMediaPlayer(cacheJson);
         } else {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "[speakImp] NO cache, speak via android google tts");
-            }
+
+            LogUtils.i(TAG, "[speakImp] NO cache, speak via android google tts");
+
             playTtsByAndroidTts(ttsInfo);
         }
 
@@ -205,9 +205,9 @@ public class KikaTtsSource implements TtsSource {
     }
 
     private void playTtsByMediaPlayer(String jsonString) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "jsonString:" + jsonString);
-        }
+
+        LogUtils.i(TAG, "jsonString:" + jsonString);
+
         List<KikaTtsCacheHelper.MediaSource> playList = KikaTtsCacheHelper.parseMediaSource(jsonString);
         if (playList != null && playList.size() > 0) {
             playTtsByMediaPlayer(playList, 0);
@@ -232,15 +232,17 @@ public class KikaTtsSource implements TtsSource {
                 mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
                 descriptor.close();
             } else {
-                if (Logger.DEBUG) Logger.i(TAG, "[player] source:" + ms.getPathSource());
+                LogUtils.i(TAG, "[player] source:" + ms.getPathSource());
                 mMediaPlayer.setDataSource(ms.getPathSource());
             }
 
             mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    if (Logger.DEBUG)
-                        Logger.i(TAG, "[player] onError, what:" + what + ", extra:" + extra);
+
+                    LogUtils.i(TAG, "[player] onError, what:" + what + ", extra:" + extra);
+
+
                     if (mListener != null) {
                         mListener.onTtsError();
                     }
@@ -250,15 +252,15 @@ public class KikaTtsSource implements TtsSource {
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    if (Logger.DEBUG) {
-                        Logger.i(TAG, "[player] onPrepared, spend:" + (System.currentTimeMillis() - start_t) + " ms");
-                    }
+
+                    LogUtils.i(TAG, "[player] onPrepared, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+
                     mp.start();
                     if (mListener != null && idx == 0) {
                         mListener.onTtsStart();
-                        if (Logger.DEBUG) {
-                            Logger.i(TAG, "[player] onTtsStart");
-                        }
+
+                        LogUtils.i(TAG, "[player] onTtsStart");
+
                     }
                 }
             });
@@ -268,15 +270,16 @@ public class KikaTtsSource implements TtsSource {
                     if (mListener != null && !mIsTtsInterrupted && idx == playList.size() - 1) {
                         mListener.onTtsComplete();
                         mIsTtsInterrupted = false;
-                        if (Logger.DEBUG) {
-                            Logger.i(TAG, "[player] onTtsComplete");
-                        }
+
+                        LogUtils.i(TAG, "[player] onTtsComplete");
+
                     } else {
                         playTtsByMediaPlayer(playList, idx + 1);
                     }
-                    if (Logger.DEBUG) {
-                        Logger.i(TAG, "[player] setOnCompletionListener, spend:" + (System.currentTimeMillis() - start_t) + " ms");
-                    }
+
+
+                    LogUtils.i(TAG, "[player] setOnCompletionListener, spend:" + (System.currentTimeMillis() - start_t) + " ms");
+
                 }
             });
             mMediaPlayer.prepareAsync();
@@ -284,9 +287,9 @@ public class KikaTtsSource implements TtsSource {
                 mMediaPlayer.setVolume(mVolume, mVolume);
             }
         } catch (Exception e) {
-            if (Logger.DEBUG) {
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+            LogUtils.e(TAG, e.getMessage());
+
             if (mListener != null) {
                 mListener.onTtsError();
             }
@@ -297,9 +300,9 @@ public class KikaTtsSource implements TtsSource {
         mBackupAndroidTts.setTtsStateChangedListener(new TtsStateChangedListener() {
             @Override
             public void onTtsStart() {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "[BackUpAndroidTts] onTtsStart");
-                }
+
+                LogUtils.i(TAG, "[BackUpAndroidTts] onTtsStart");
+
                 if (mListener != null) {
                     mListener.onTtsStart();
                 }
@@ -307,9 +310,9 @@ public class KikaTtsSource implements TtsSource {
 
             @Override
             public void onTtsComplete() {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "[BackUpAndroidTts] onTtsComplete");
-                }
+
+                LogUtils.i(TAG, "[BackUpAndroidTts] onTtsComplete");
+
                 if (mListener != null) {
                     mListener.onTtsComplete();
                 }
@@ -317,9 +320,9 @@ public class KikaTtsSource implements TtsSource {
 
             @Override
             public void onTtsInterrupted() {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "[BackUpAndroidTts] onTtsInterrupted");
-                }
+
+                LogUtils.i(TAG, "[BackUpAndroidTts] onTtsInterrupted");
+
                 if (mListener != null) {
                     mListener.onTtsInterrupted();
                 }
@@ -327,12 +330,12 @@ public class KikaTtsSource implements TtsSource {
 
             @Override
             public void onTtsError() {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "[BackUpAndroidTts] onTtsError");
-                }
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "[speakImp] Android google tts error occurs, query server :" + ttsInfo.jsonString);
-                }
+
+                LogUtils.i(TAG, "[BackUpAndroidTts] onTtsError");
+
+
+                LogUtils.i(TAG, "[speakImp] Android google tts error occurs, query server :" + ttsInfo.jsonString);
+
                 playTTsByDownload(ttsInfo);
             }
         });
@@ -349,15 +352,15 @@ public class KikaTtsSource implements TtsSource {
         Runnable task = new Runnable() {
             @Override
             public void run() {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "start >>>>>>>>>>>> ");
-                }
+
+                LogUtils.i(TAG, "start >>>>>>>>>>>> ");
+
 
                 String ttsUrl = KikaTtsServerHelper.fetchTssUrl(mContext, ttsInfo.jsonString);
 
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "fetchTssUrl " + (TextUtils.isEmpty(ttsUrl) ? "Fail" : "OK"));
-                }
+
+                LogUtils.i(TAG, "fetchTssUrl " + (TextUtils.isEmpty(ttsUrl) ? "Fail" : "OK"));
+
 
                 if (TextUtils.isEmpty(ttsUrl)) {
                     if (mListener != null) {
@@ -370,34 +373,34 @@ public class KikaTtsSource implements TtsSource {
                 boolean ret = KikaTtsCacheHelper.downloadWithTask(task);
                 //boolean ret = false;
 
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "downloadWithTask, result:" + ret);
-                    Logger.i(TAG, "ttsUrl:" + ttsUrl);
-                    Logger.i(TAG, "ttsInfo.jsonString:" + ttsInfo.jsonString);
-                }
+
+                LogUtils.i(TAG, "downloadWithTask, result:" + ret);
+                LogUtils.i(TAG, "ttsUrl:" + ttsUrl);
+                LogUtils.i(TAG, "ttsInfo.jsonString:" + ttsInfo.jsonString);
+
 
                 if ((!ret || TextUtils.isEmpty(ttsUrl)) && mListener != null) {
-                    if (Logger.DEBUG) {
-                        Logger.i(TAG, "Error occurs !!");
-                    }
+
+                    LogUtils.i(TAG, "Error occurs !!");
+
                     mListener.onTtsError();
                     return;
                 }
 
                 playTtsByMediaPlayer(KikaTtsCacheHelper.composeUrlVoiceSource(ttsUrl));
 
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "end <<<<<<<<<<<<");
-                }
+
+                LogUtils.i(TAG, "end <<<<<<<<<<<<");
+
             }
         };
 
         if (!AsyncThread.getIns().isBusy()) {
             AsyncThread.getIns().execute(task);
         } else {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "playTTsByDownload on NEW THREAD");
-            }
+
+            LogUtils.i(TAG, "playTTsByDownload on NEW THREAD");
+
             new Thread(task).start();
         }
     }

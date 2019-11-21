@@ -7,7 +7,6 @@ import com.kikatech.voice.core.recorder.IVoiceSource;
 import com.kikatech.voice.core.recorder.VoiceSource;
 import com.kikatech.voice.core.vad.VoiceDetector;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
-import com.kikatech.voice.util.log.Logger;
 
 /**
  * Created by ryanlin on 20/12/2017.
@@ -43,14 +42,14 @@ public class VoicePathConnector {
         }
 
         dataPath = wrapFileWriter(dataPath, conf, isUsbVoiceSource ? "_NC" : "_SRC");
-        if (Logger.DEBUG) {
-            dataPath.dump();
-        }
+
+
+        dataPath.dump();
+
         return dataPath;
     }
 
-    private static IDataPath wrapFileWriter(IDataPath nextPath,
-                                            VoiceConfiguration conf, String additional) {
+    private static IDataPath wrapFileWriter(IDataPath nextPath, VoiceConfiguration conf, String additional) {
         if (conf.getIsDebugMode()) {
             return new FileWriter(additional, nextPath);
         }

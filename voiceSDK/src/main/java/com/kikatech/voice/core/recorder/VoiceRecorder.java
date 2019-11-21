@@ -2,7 +2,7 @@ package com.kikatech.voice.core.recorder;
 
 import com.kikatech.voice.core.framework.IDataPath;
 import com.kikatech.voice.core.recorder.executor.AudioRecordExecutor;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 /**
  * @author SkeeterWang Created on 2018/6/4.
@@ -67,18 +67,18 @@ public class VoiceRecorder {
     };
 
     public void open() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "open");
-        }
+
+            LogUtils.i(TAG, "open");
+
         mAudioRecordExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
                 if (mVoiceSource != null) {
-                    Logger.v(VoiceRecorder.this + " [open] mVoiceSource = " + mVoiceSource);
+                    LogUtils.v(TAG,VoiceRecorder.this + " [open] mVoiceSource = " + mVoiceSource);
                     boolean success = mVoiceSource.open();
                     if (!success) {
-                        Logger.e("Voice source open fail!");
+                        LogUtils.e(TAG,"Voice source open fail!");
                         if (mListener != null) {
                             mListener.onRecorderError(ERR_OPEN_FAIL);
                         }
@@ -89,9 +89,9 @@ public class VoiceRecorder {
     }
 
     public void start() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, String.format("start, mTask: %s", mTask));
-        }
+
+        LogUtils.i(TAG, String.format("--->start, mTask: %s", mTask));
+
         if (mTask != null) {
             mAudioRecordExecutor.remove(mTask);
         }
@@ -100,9 +100,9 @@ public class VoiceRecorder {
     }
 
     public void stop() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, String.format("stop, mTask: %s", mTask));
-        }
+
+        LogUtils.i(TAG, String.format("stop, mTask: %s", mTask));
+
         if (mTask != null) {
             mAudioRecordExecutor.remove(mTask);
             mTask = null;
@@ -110,9 +110,9 @@ public class VoiceRecorder {
     }
 
     public void close() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "close");
-        }
+
+        LogUtils.i(TAG, "close");
+
         stop();
         mAudioRecordExecutor.cleanAll();
         mAudioRecordExecutor.execute(new Runnable() {

@@ -10,7 +10,7 @@ import com.kikatech.voice.core.webservice.message.helper.MsgHelper;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration.ConnectionConfiguration;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -21,12 +21,9 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.CONNECTED;
@@ -38,6 +35,9 @@ import static com.kikatech.voice.core.webservice.impl.WebSocket.SocketState.DISC
  */
 
 public class WebSocket extends BaseWebSocket {
+
+    private static final String TAG = "WebSocket";
+
     private static final String VERSION = "3";
 
     private static final int WEB_SOCKET_CONNECT_TIMEOUT = 5000;
@@ -65,9 +65,9 @@ public class WebSocket extends BaseWebSocket {
 
     @Override
     public void connect(VoiceConfiguration voiceConfiguration) {
-        Logger.d("connect");
+        LogUtils.d(TAG,"connect");
         if (mReleased.get()) {
-            Logger.e("WebSocket already released, can not connect again");
+            LogUtils.e(TAG,"WebSocket already released, can not connect again");
             return;
         }
         mVoiceConfiguration = voiceConfiguration;
@@ -78,7 +78,7 @@ public class WebSocket extends BaseWebSocket {
             @Override
             public void run() {
                 if (mClient != null && (mClient.isConnecting() || mClient.isOpen())) {
-                    Logger.w("WebSocket is connecting or it's already connected.");
+                    LogUtils.w(TAG,"WebSocket is connecting or it's already connected.");
                     return;
                 }
                 Map<String, String> httpHeaders = new HashMap<>();
@@ -103,7 +103,7 @@ public class WebSocket extends BaseWebSocket {
                 }
                 Draft draft = new Draft_6455();
                 try {
-                    Logger.d("WebSocket connect url = " + conf.url);
+                    LogUtils.d(TAG,"WebSocket connect url = " + conf.url);
                     logTheHttpHeaders(httpHeaders);
                     mClient = new VoiceWebSocketClient(new URI(conf.url), draft,
                             httpHeaders, WEB_SOCKET_CONNECT_TIMEOUT);
@@ -117,16 +117,16 @@ public class WebSocket extends BaseWebSocket {
     }
 
     private void logTheHttpHeaders(Map<String, String> httpHeaders) {
-        Logger.d("-------- http headers --------");
+        LogUtils.d(TAG,"-------- http headers --------");
         for (String key : httpHeaders.keySet()) {
-            Logger.d(key + " : " + httpHeaders.get(key));
+            LogUtils.d(TAG,key + " : " + httpHeaders.get(key));
         }
-        Logger.d("------------------------------");
+        LogUtils.d(TAG,"------------------------------");
     }
 
     @Override
     public void release() {
-        Logger.d("release");
+        LogUtils.d(TAG,"release");
         if (mReleased.compareAndSet(false, true)) {
             mExecutor.execute(new Runnable() {
                 @Override
@@ -161,7 +161,7 @@ public class WebSocket extends BaseWebSocket {
     @Override
     public void sendData(byte[] data) {
         if (mReleased.get()) {
-            Logger.e("WebSocket already released, ignore data");
+            LogUtils.e(TAG,"WebSocket already released, ignore data");
             if (mListener != null) {
                 mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
             }
@@ -180,7 +180,7 @@ public class WebSocket extends BaseWebSocket {
     @Override
     public void sendCommand(final String command, final String payload) {
         if (mReleased.get()) {
-            Logger.e("WebSocket already released, ignore command ");
+            LogUtils.e(TAG,"WebSocket already released, ignore command ");
             if (mListener != null) {
                 mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
             }
@@ -190,9 +190,9 @@ public class WebSocket extends BaseWebSocket {
             @Override
             public void run() {
                 String jsonCommand = genCommand(command, payload);
-                Logger.d("Send command : " + jsonCommand);
+                LogUtils.d(TAG,"Send command : " + jsonCommand);
                 if (TextUtils.isEmpty(jsonCommand)) {
-                    Logger.e("Send command error : generate command failed.");
+                    LogUtils.e(TAG,"Send command error : generate command failed.");
                     return;
                 }
                 checkConnectionAndSend(new SendingDataString(jsonCommand));
@@ -230,7 +230,7 @@ public class WebSocket extends BaseWebSocket {
             return message;
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.w("WebSocket parseMessage error: " + e.getMessage());
+            LogUtils.w(TAG,"WebSocket parseMessage error: " + e.getMessage());
         }
         return null;
     }
@@ -314,10 +314,10 @@ public class WebSocket extends BaseWebSocket {
         @Override
         public void onOpen(ServerHandshake handshakeData) {
             if (mReleased.get()) {
-                Logger.v("onOpen, but has been released");
+                LogUtils.v(TAG,"onOpen, but has been released");
                 return;
             }
-            Logger.d("onOpen");
+            LogUtils.d(TAG,"onOpen");
             changeState(CONNECTED);
             startHeartBeatTimer();
             sendRemindData();
@@ -328,10 +328,10 @@ public class WebSocket extends BaseWebSocket {
         @Override
         public void onMessage(String message) {
             if (mReleased.get()) {
-                Logger.v("onMessage, but has been released");
+                LogUtils.v(TAG,"onMessage, but has been released");
                 return;
             }
-            Logger.d("onMessage message = " + message);
+            LogUtils.d(TAG,"onMessage message = " + message);
             final Message msg = handleMessage(message);
             if (msg != null && mListener != null) {
                 mListener.onMessage(msg);
@@ -341,10 +341,10 @@ public class WebSocket extends BaseWebSocket {
         @Override
         public void onClose(int code, String reason, boolean remote) {
             if (mReleased.get()) {
-                Logger.v("onClose, but has been released");
+                LogUtils.v(TAG,"onClose, but has been released");
                 return;
             }
-            Logger.d("onClose code = [" + code + "]");
+            LogUtils.d(TAG,"onClose code = [" + code + "]");
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
                 if (mListener != null) {
@@ -356,10 +356,10 @@ public class WebSocket extends BaseWebSocket {
         @Override
         public void onError(Exception ex) {
             if (mReleased.get()) {
-                Logger.v("onError, but has been released");
+                LogUtils.v(TAG,"onError, but has been released");
                 return;
             }
-            Logger.w("onError");
+            LogUtils.w(TAG,"onError");
             ex.printStackTrace();
             changeState(DISCONNECTED);
             if (!reconnect() && !mReleased.get()) {
@@ -370,7 +370,7 @@ public class WebSocket extends BaseWebSocket {
         }
 
         private boolean reconnect() {
-            Logger.d("reconnect mReconnectTimes = " + mReconnectTimes);
+            LogUtils.d(TAG,"reconnect mReconnectTimes = " + mReconnectTimes);
             if (mReconnectTimes < MAX_RECONNECT_TIME && !mReleased.get()) {
                 mReconnectTimes++;
                 WebSocket.this.connect(mVoiceConfiguration);

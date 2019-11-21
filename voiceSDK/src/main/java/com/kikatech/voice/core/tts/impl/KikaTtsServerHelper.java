@@ -3,7 +3,7 @@ package com.kikatech.voice.core.tts.impl;
 import android.content.Context;
 
 import com.kikatech.voice.util.CustomConfig;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 import com.kikatech.voice.util.request.RequestManager;
 
 import java.io.BufferedReader;
@@ -37,8 +37,8 @@ class KikaTtsServerHelper {
             URLConnection conn = new URL(WEB_SOCKET_URL_DEV + "?sign=" + RequestManager.getSign(context)).openConnection();
 
             int timeOut = CustomConfig.getKikaTtsServerTimeout();
-            if (Logger.DEBUG)
-                Logger.i(TAG, "timeOut : " + timeOut + " ms");
+
+                LogUtils.i(TAG, "timeOut : " + timeOut + " ms");
             conn.setConnectTimeout(timeOut);
             conn.setReadTimeout(timeOut);
             conn.setDoInput(true);
@@ -60,8 +60,8 @@ class KikaTtsServerHelper {
             }
 
         } catch (Exception e) {
-            if (Logger.DEBUG)
-                Logger.w(TAG, e.getMessage());
+
+            LogUtils.w(TAG, e.getMessage());
         } finally {
             if (in != null) {
                 try {
@@ -72,8 +72,8 @@ class KikaTtsServerHelper {
             }
         }
 
-        if (Logger.DEBUG)
-            Logger.i(TAG, "Get Url end, spend:" + (System.currentTimeMillis() - start_t) + " ms, " + " ttsUrl = " + ttsUrl);
+
+            LogUtils.i(TAG, "Get Url end, spend:" + (System.currentTimeMillis() - start_t) + " ms, " + " ttsUrl = " + ttsUrl);
 
         return ttsUrl.toString();
     }
@@ -85,10 +85,10 @@ class KikaTtsServerHelper {
 
         int timeOut = CustomConfig.getKikaTtsServerTimeout();
 
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "textMd5 : " + ti.cacheInfo.speechTextMd5 + ", textQuery:" + ti.cacheInfo.speechText + ", strUrl:" + ti.downloadUrl);
-            Logger.i(TAG, "timeOut : " + timeOut + " ms");
-        }
+
+            LogUtils.i(TAG, "textMd5 : " + ti.cacheInfo.speechTextMd5 + ", textQuery:" + ti.cacheInfo.speechText + ", strUrl:" + ti.downloadUrl);
+            LogUtils.i(TAG, "timeOut : " + timeOut + " ms");
+
         try {
             URL url = new URL(ti.downloadUrl);
             connection = (HttpURLConnection) url.openConnection();
@@ -99,8 +99,8 @@ class KikaTtsServerHelper {
             // expect HTTP 200 OK, so we don't mistakenly save error report
             // instead of the file
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                if (Logger.DEBUG)
-                    Logger.i(TAG, "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage());
+
+                    LogUtils.i(TAG, "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage());
                 return false;
             }
 
@@ -118,8 +118,8 @@ class KikaTtsServerHelper {
             int count;
             while ((count = input.read(data)) != -1) {
                 total += count;
-                if (Logger.DEBUG && fileLength > 0) {// only if total length is known
-                    Logger.i(TAG, "progress:" + (int) (total * 100 / fileLength));
+                if (fileLength > 0) {// only if total length is known
+                    LogUtils.i(TAG, "progress:" + (int) (total * 100 / fileLength));
                 }
                 output.write(data, 0, count);
             }
@@ -127,8 +127,8 @@ class KikaTtsServerHelper {
             return true;
 
         } catch (Exception e) {
-            if (Logger.DEBUG)
-                Logger.i(TAG, "Err:" + e);
+
+                LogUtils.i(TAG, "Err:" + e);
             return false;
         } finally {
             try {

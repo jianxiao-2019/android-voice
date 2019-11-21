@@ -2,7 +2,7 @@ package com.kikatech.voice.core.hotword;
 
 import com.kikatech.voice.core.debug.FileWriter;
 import com.kikatech.voice.core.framework.IDataPath;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 /**
  * Created by ryanlin on 06/12/2017.
@@ -10,6 +10,8 @@ import com.kikatech.voice.util.log.Logger;
  */
 
 public abstract class WakeUpDetector {
+
+    private static final String TAG = "WakeUpDetector";
 
     protected OnHotWordDetectListener mListener;
     private IDataPath mDataPath;
@@ -56,7 +58,7 @@ public abstract class WakeUpDetector {
                     mNextPath.onData(data, length);
                 }
             } else {
-                Logger.v("onData data.length = " + length);
+                LogUtils.v(TAG,"onData data.length = " + length);
                 checkWakeUpCommand(data);
                 if (mFileWriter != null) {
                     mFileWriter.onData(data, length);

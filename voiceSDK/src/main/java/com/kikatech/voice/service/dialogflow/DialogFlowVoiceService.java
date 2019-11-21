@@ -8,11 +8,11 @@ import com.kikatech.voice.core.webservice.message.EmojiRecommendMessage;
 import com.kikatech.voice.core.webservice.message.IntermediateMessage;
 import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
-import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
+import com.kikatech.voice.service.voice.VoiceService;
 import com.kikatech.voice.util.EmojiUtil;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 /**
  * Created by brad_chang on 2017/12/29.
@@ -32,17 +32,17 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
     private final VoiceService.VoiceWakeUpListener mVoiceWakeUpListener = new VoiceService.VoiceWakeUpListener() {
         @Override
         public void onWakeUp() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "onWakeUp");
-            }
+
+            LogUtils.i(TAG, "onWakeUp");
+
             onVoiceWakeUp(mWakeupFrom);
         }
 
         @Override
         public void onSleep() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "onSleep");
-            }
+
+            LogUtils.i(TAG, "onSleep");
+
             onVoiceSleep();
         }
     };
@@ -54,8 +54,8 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
         }
 
         private void performOnRecognitionResult(Message message) {
-            if (Logger.DEBUG && !(message instanceof IntermediateMessage)) {
-                Logger.d(TAG, "onMessage message = " + message);
+            if (!(message instanceof IntermediateMessage)) {
+                LogUtils.d(TAG, "onMessage message = " + message);
             }
 
             boolean queryDialogFlow = false;
@@ -68,24 +68,24 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
                 asrResult = intermediateMessage.text;
             } else if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
-                }
+
+                LogUtils.i(TAG, "Speech spoken" + "[done]" + " : " + textMessage.text);
+
                 asrResult = textMessage.text[0];
                 asrNbestResult = textMessage.text;
                 queryDialogFlow = true;
             } else if (message instanceof AlterMessage) {
                 AlterMessage editTextMessage = (AlterMessage) message;
                 String alter = editTextMessage.altered;
-                if (Logger.DEBUG) {
-                    Logger.d(TAG, "EditTextMessage altered = " + alter);
-                }
+
+                LogUtils.d(TAG, "EditTextMessage altered = " + alter);
+
                 asrResult = alter;
                 queryDialogFlow = true;
             } else if (message instanceof EmojiRecommendMessage) {
                 EmojiRecommendMessage emoji = ((EmojiRecommendMessage) message);
                 emojiJson = EmojiUtil.composeJsonString(emoji.emoji, emoji.descriptionText);
-                if (Logger.DEBUG) Logger.d(TAG, "EmojiRecommendMessage = " + emojiJson);
+                LogUtils.d(TAG, "EmojiRecommendMessage = " + emojiJson);
             }
 
             onAsrResult(asrResult, emojiJson, queryDialogFlow, asrNbestResult);
@@ -93,9 +93,9 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
         @Override
         public void onError(int reason) {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "[VoiceState] onError : " + reason);
-            }
+
+            LogUtils.i(TAG, "[VoiceState] onError : " + reason);
+
             mServiceCallback.onError(reason);
         }
     };
@@ -111,18 +111,18 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
 
     DialogFlowVoiceService(@NonNull Context ctx, @NonNull IDialogFlowService.IServiceCallback callback) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService constructor");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService constructor");
+
         mContext = ctx;
         mServiceCallback = callback;
     }
 
 
     void initVoiceService(@NonNull VoiceConfiguration conf) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService initVoiceService");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService initVoiceService");
+
         if (mVoiceService != null) {
             mVoiceService.destroy();
             mVoiceService = null;
@@ -141,26 +141,24 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
         mServiceCallback.onAsrConfigChange(mAsrConfiguration);
         mServiceCallback.onRecorderSourceUpdate();
 
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService initVoiceService ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService initVoiceService ... Done");
+
     }
 
     void updateAsrConfig(AsrConfiguration asrConfig) {
         if (mVoiceService != null && mAsrConfiguration.update(asrConfig)) {
             mVoiceService.updateAsrSettings(mAsrConfiguration);
-            if (Logger.DEBUG) {
-                mServiceCallback.onAsrConfigChange(mAsrConfiguration);
-            }
+            mServiceCallback.onAsrConfigChange(mAsrConfiguration);
         }
     }
 
 
     @Override
     public synchronized void wakeUp(String wakeupFrom) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "wakeupFrom " + wakeupFrom);
-        }
+
+        LogUtils.i(TAG, "wakeupFrom " + wakeupFrom);
+
         mWakeupFrom = wakeupFrom;
         if (mVoiceService != null) {
             mVoiceService.wakeUp();
@@ -169,9 +167,9 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
     @Override
     public synchronized void sleep() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "sleep");
-        }
+
+        LogUtils.i(TAG, "sleep");
+
         mWakeupFrom = "";
         if (mVoiceService != null) {
             mVoiceService.sleep();
@@ -189,68 +187,69 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
     @Override
     public synchronized void startListening() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService startListening");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService startListening");
+
         if (mVoiceService != null) {
             mVoiceService.start();
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService startListening ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService startListening ... Done");
+
     }
 
     @Override
     public void startListening(int bosDuration) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, String.format("DialogFlowVoiceService startListening, bosDuration: %s ", bosDuration));
-        }
+
+        LogUtils.i(TAG, String.format("DialogFlowVoiceService startListening, bosDuration: %s ", bosDuration));
+
         if (mVoiceService != null) {
             mVoiceService.start(bosDuration);
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, String.format("DialogFlowVoiceService startListening, bosDuration: %s ... Done", bosDuration));
-        }
+
+        LogUtils.i(TAG, String.format("DialogFlowVoiceService startListening, bosDuration: %s ... Done", bosDuration));
+
     }
 
     @Override
     public synchronized void stopListening() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService stopListening");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService stopListening");
+
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.NORMAL);
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService stopListening ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService stopListening ... Done");
+
     }
 
     @Override
     public synchronized void completeListening() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService completeListening");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService completeListening");
+
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.COMPLETE);
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService completeListening ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService completeListening ... Done");
+
     }
 
     @Override
     public synchronized void cancelListening() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService cancelListening");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService cancelListening");
+
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.CANCEL);
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService cancelListening ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService cancelListening ... Done");
     }
+
+
 
 
     @Override
@@ -287,15 +286,15 @@ abstract class DialogFlowVoiceService implements IDialogFlowVoiceService {
 
     @Override
     public synchronized void releaseVoiceService() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService releaseVoiceService");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService releaseVoiceService");
+
         if (mVoiceService != null) {
             mVoiceService.stop(VoiceService.StopType.CANCEL);
             mVoiceService.destroy();
         }
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "DialogFlowVoiceService releaseVoiceService ... Done");
-        }
+
+        LogUtils.i(TAG, "DialogFlowVoiceService releaseVoiceService ... Done");
+
     }
 }

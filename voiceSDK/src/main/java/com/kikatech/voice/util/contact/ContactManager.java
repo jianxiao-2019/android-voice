@@ -10,7 +10,7 @@ import android.text.TextUtils;
 
 import com.kikatech.voice.util.AsyncThread;
 import com.kikatech.voice.util.fuzzy.FuzzySearchManager;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,9 +48,9 @@ public class ContactManager {
         }
 
         private void doOnContactChanged() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "doOnContactChanged");
-            }
+
+            LogUtils.i(TAG, "doOnContactChanged");
+
             synchronized (mPhoneBook) {
                 if (mPhoneBook.size() != 0) {
                     mPhoneBook.clear();
@@ -62,18 +62,15 @@ public class ContactManager {
 
 
     public void init(final Context ctx) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "init ...");
-        }
+        LogUtils.i(TAG, "init ...");
         mContext = ctx.getApplicationContext();
         updatePhoneBook(ctx);
         checkContactObserver(ctx);
     }
 
     public void release(final Context ctx) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "release ...");
-        }
+        LogUtils.i(TAG, "release ...");
+
         mPhoneBook.clear();
         if (mObserver != null) {
             mObserver.unregister(ctx);
@@ -86,9 +83,9 @@ public class ContactManager {
 
     private void checkContactObserver(Context ctx) {
         boolean toInit = mIsObserverInit.compareAndSet(false, true);
-        if (Logger.DEBUG) {
-            Logger.v(TAG, String.format("checkContactObserver, toInit: %s", toInit));
-        }
+
+        LogUtils.v(TAG, String.format("checkContactObserver, toInit: %s", toInit));
+
         if (toInit) {
             if (mObserver == null) {
                 mObserver = new ContactObserver(mListener);
@@ -100,17 +97,15 @@ public class ContactManager {
     private void updatePhoneBook(final Context ctx) {
         synchronized (mPhoneBook) {
             if (mPhoneBook.size() == 0) {
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "init phone book info");
-                }
+                LogUtils.i(TAG, "init phone book info");
                 AsyncThread.getIns().execute(new Runnable() {
                     @Override
                     public void run() {
                         __updatePhoneBook(ctx);
                     }
                 });
-            } else if (Logger.DEBUG) {
-                Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
+            } else {
+                LogUtils.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
             }
         }
     }
@@ -125,11 +120,11 @@ public class ContactManager {
                     mPhoneBook.putAll(pb);
                 }
 
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
-                }
-            } else if (Logger.DEBUG) {
-                Logger.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
+
+                LogUtils.i(TAG, "onParseComplete, spend " + (System.currentTimeMillis() - t));
+
+            } else {
+                LogUtils.i(TAG, "No need to init phone book info, phoneBookCount:" + mPhoneBook.size());
             }
         }
     }
@@ -163,16 +158,14 @@ public class ContactManager {
             if (fuzzySearchResult != null) {
                 foundName = fuzzySearchResult.getText();
                 confidence = fuzzySearchResult.getConfidence();
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, String.format("foundName: %1$s, confidence: %2$s", foundName, confidence));
-                }
+
+                LogUtils.i(TAG, String.format("foundName: %1$s, confidence: %2$s", foundName, confidence));
+
                 if (!TextUtils.isEmpty(foundName)) {
                     if (confidence > FuzzySearchManager.getIns().getLowConfidenceCriteria()) {
                         return new MatchedContact(MatchedContact.MatchedType.FUZZY_MATCHED, phoneBook.get(foundName));
                     } else {
-                        if (Logger.DEBUG) {
-                            Logger.d(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
-                        }
+                        LogUtils.d(TAG, "low confidence, LOW_CONFIDENCE_CRITERIA:" + FuzzySearchManager.getIns().getLowConfidenceCriteria());
                     }
                 }
             }
@@ -197,13 +190,13 @@ public class ContactManager {
     }
 
     public MatchedContact findContact(final Context ctx, final String[] targetNames) {
-        if (Logger.DEBUG) {
-            if (targetNames != null) {
-                for (int i = 0; i < targetNames.length; i++) {
-                    Logger.d(TAG, String.format("target: %1$s. %2$s", i + 1, targetNames[i]));
-                }
+
+        if (targetNames != null) {
+            for (int i = 0; i < targetNames.length; i++) {
+                LogUtils.d(TAG, String.format("target: %1$s. %2$s", i + 1, targetNames[i]));
             }
         }
+
         if (targetNames == null || targetNames.length == 0) {
             return null;
         }
@@ -242,9 +235,7 @@ public class ContactManager {
         try {
             phones = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         } catch (SecurityException se) {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "SecurityException:" + se);
-            }
+            LogUtils.i(TAG, "SecurityException:" + se);
             return null;
         }
 
@@ -253,9 +244,9 @@ public class ContactManager {
         }
 
         //phones.moveToFirst();
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "phones count: " + phones.getCount());
-        }
+
+        LogUtils.i(TAG, "phones count: " + phones.getCount());
+
 
         HashMap<String, PhoneBookContact> phoneBook = new HashMap<>();
 
@@ -281,9 +272,9 @@ public class ContactManager {
                     phoneBook.put(name, new PhoneBookContact(id, name, photoUri, phoneNumber, numberType));
                 }
 
-                if (Logger.DEBUG) {
-                    Logger.i(TAG, "number: " + name + ", number: " + phoneNumber + ", numberType:" + numberType);
-                }
+
+                LogUtils.i(TAG, "number: " + name + ", number: " + phoneNumber + ", numberType:" + numberType);
+
             }
         }
         phones.close();
@@ -424,13 +415,11 @@ public class ContactManager {
         }
 
         private void print() {
-            if (Logger.DEBUG) {
-                Logger.d(TAG, "number: " + displayName);
-                for (NumberType nt : phoneNumbers) {
-                    Logger.d(TAG, "number: " + nt.number + ", type:" + nt.type);
-                }
-                Logger.d(TAG, "------------------------------");
+            LogUtils.d(TAG, "number: " + displayName);
+            for (NumberType nt : phoneNumbers) {
+                LogUtils.d(TAG, "number: " + nt.number + ", type:" + nt.type);
             }
+            LogUtils.d(TAG, "------------------------------");
         }
     }
 
@@ -470,9 +459,9 @@ public class ContactManager {
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            if (Logger.DEBUG) {
-                Logger.d(TAG, String.format("onChange, selfChange: %s", selfChange));
-            }
+
+            LogUtils.d(TAG, String.format("onChange, selfChange: %s", selfChange));
+
             long currentTimestamp = System.currentTimeMillis();
             boolean shouldUpdate = (currentTimestamp - mLastUpdateTime) > UPDATE_THRESHOLD;
             if (!shouldUpdate) {

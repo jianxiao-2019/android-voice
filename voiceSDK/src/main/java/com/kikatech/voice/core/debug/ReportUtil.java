@@ -1,6 +1,6 @@
 package com.kikatech.voice.core.debug;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.util.ArrayList;
 
@@ -9,6 +9,9 @@ import java.util.ArrayList;
  */
 
 public class ReportUtil {
+
+    private static final String TAG = "ReportUtil";
+
     private static final ReportUtil sInstance = new ReportUtil();
 
     private ArrayList<String> mTsList = new ArrayList<String>();
@@ -54,11 +57,11 @@ public class ReportUtil {
             String titleStr = title != null ? title : "";
             mTsList.add(costTimeStr);
             mTsList.add(titleStr);
-            Logger.d("[report] " + titleStr + "" + costTimeStr);
+            LogUtils.d(TAG,"[report] " + titleStr + "" + costTimeStr);
         } else {
             String titleStr = title != null ? title : "Start";
             mTsList.add(titleStr);
-            Logger.d("[report] " + titleStr);
+            LogUtils.d(TAG,"[report] " + titleStr);
         }
 
         mStartTS = ts;

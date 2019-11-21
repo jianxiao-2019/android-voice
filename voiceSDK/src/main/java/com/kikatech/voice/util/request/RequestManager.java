@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.util.Locale;
 
@@ -14,9 +14,11 @@ import java.util.Locale;
  */
 public class RequestManager {
 
+    private static final String TAG = "RequestManager";
+
     public static String getSign(Context context) {
         final String duid = DeviceUtils.getUID(context);
-        Logger.d("RequestManager getSign duid = " + duid);
+        LogUtils.d(TAG,"RequestManager getSign duid = " + duid);
         String original = String.format((Locale) null, "app_key%1$sapp_version%2$sduid%3$s"
                 , "78472ddd7528bcacc15725a16aeec190", "20", duid);
         String md5String = MD5.getMD5(original);
@@ -36,7 +38,7 @@ public class RequestManager {
             language = "en";
         }
         final String duid = DeviceUtils.getUID(context);
-        Logger.d("RequestManager generateUserAgent duid = " + duid);
+        LogUtils.d(TAG,"RequestManager generateUserAgent duid = " + duid);
         DisplayMetrics metric = Resources.getSystem().getDisplayMetrics();
         // （hdpi: 240 , ldpi: 120 , mdpi: 160 , xhdpi: 320）
 

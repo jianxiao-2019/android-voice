@@ -2,6 +2,7 @@ package com.kikatech.voice.webservice.google_cloud_speech;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.AccessToken;
@@ -21,7 +22,7 @@ import com.kikatech.voice.core.webservice.message.Message;
 import com.kikatech.voice.core.webservice.message.TextMessage;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.util.BackgroundThread;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -71,32 +73,42 @@ public class GoogleApi extends BaseWebSocket {
     private String mAuthJson;
     private SpeechGrpc.SpeechStub mApi;
     private StreamObserver<StreamingRecognizeRequest> mRequestObserver;
+
+
     private final StreamObserver<StreamingRecognizeResponse> mResponseObserver = new StreamObserver<StreamingRecognizeResponse>() {
+
         private long mCid = 0;
         private long mEndCid = 0;
 
         @Override
         public void onNext(StreamingRecognizeResponse response) {
+
+
+            LogUtils.w(TAG, "isCanceled=" + isCanceled + "onNext()");
+
+
             if (isCanceled) {
-                Logger.w(TAG, "recognition canceled");
+                LogUtils.w(TAG, "mResponseObserver recognition canceled");
                 mCid = 0;
                 return;
             }
             if (mListener == null) {
-                Logger.w(TAG, "no listener available.");
+                LogUtils.w(TAG, "mResponseObserver no listener available.");
                 return;
             }
+
             ResultHolder holder = getResultHolder(response);
             if (holder == null) {
-                if (Logger.DEBUG) {
-                    Logger.w(TAG, "invalid result holder --- empty result");
-                }
+
+                LogUtils.w(TAG, "mResponseObserver invalid result holder --- empty result");
+
 //                mListener.onError(WebSocketError.EMPTY_RESULT);
                 return;
             }
-            if (Logger.DEBUG) {
-                Logger.v(TAG, String.format("onNext, text: %s, isFinal: %s", holder.text, holder.isFinal));
-            }
+
+
+            LogUtils.e(TAG, String.format("mResponseObserver onNext, text: %s, isFinal: %s", holder.text, holder.isFinal));
+
             Message msg;
             if (!holder.isFinal) { // Partial Result
                 if (mCid == 0) {
@@ -121,7 +133,7 @@ public class GoogleApi extends BaseWebSocket {
          *
          * @return holder
          */
-        private ResultHolder getResultHolder(StreamingRecognizeResponse response) {
+        /*private ResultHolder getResultHolder(StreamingRecognizeResponse response) {
             List<StreamingRecognitionResult> resultList = response != null ? response.getResultsList() : null;
             if (resultList != null && !resultList.isEmpty()) {
                 for (StreamingRecognitionResult result : resultList) {
@@ -139,21 +151,42 @@ public class GoogleApi extends BaseWebSocket {
                 }
             }
             return null;
+        }*/
+        private ResultHolder getResultHolder(StreamingRecognizeResponse response) {
+
+            String text = null;
+            boolean isFinal = false;
+            if (response.getResultsCount() > 0) {
+                final StreamingRecognitionResult result = response.getResults(0);
+                isFinal = result.getIsFinal();
+                if (result.getAlternativesCount() > 0) {
+                    final SpeechRecognitionAlternative alternative = result.getAlternatives(0);
+                    text = alternative.getTranscript();
+                }
+            }
+
+            if (text != null) {
+                return new ResultHolder(text, isFinal);
+            } else {
+                return null;
+            }
+
         }
+
 
         @Override
         public void onError(Throwable throwable) {
-            if (Logger.DEBUG) {
-                Logger.e(TAG, "Error calling the API.");
-                Logger.printStackTrace(TAG, throwable.getMessage(), throwable);
-            }
+
+            LogUtils.e(TAG, "mResponseObserver Error calling the API.");
+            LogUtils.e(TAG, throwable.getMessage());
+
         }
 
         @Override
         public void onCompleted() {
-            if (Logger.DEBUG) {
-                Logger.i(TAG, "API completed.");
-            }
+
+            LogUtils.i(TAG, "mResponseObserver API completed.");
+
         }
 
         class ResultHolder {
@@ -175,11 +208,19 @@ public class GoogleApi extends BaseWebSocket {
 
     @Override
     public void connect(VoiceConfiguration voiceConfiguration) {
+
+        LogUtils.i(TAG, "connect(VoiceConfiguration voiceConfiguration)");
+
+
         fetchToken();
     }
 
     @Override
     public void release() {
+
+        LogUtils.i(TAG, "release");
+
+
         BackgroundThread.removeCallbacks(fetchTokenRunnable);
         // Release the gRPC channel.
         if (mApi != null) {
@@ -188,8 +229,8 @@ public class GoogleApi extends BaseWebSocket {
                 try {
                     channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
-                    Logger.e(TAG, "Error shutting down the gRPC channel.");
-                    Logger.printStackTrace(TAG, e.getMessage(), e);
+                    LogUtils.e(TAG, "Error shutting down the gRPC channel.");
+                    LogUtils.e(TAG, e.getMessage());
                 }
             }
             mApi = null;
@@ -198,69 +239,64 @@ public class GoogleApi extends BaseWebSocket {
 
     @Override
     public void onStart() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "onStart");
-        }
-        if (mApi == null) {
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "invalid api.");
-            }
-            return;
-        }
-        isCanceled = false;
-        // Configure the API
-        mRequestObserver = mApi.streamingRecognize(mResponseObserver);
-        mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
-                .setStreamingConfig(StreamingRecognitionConfig.newBuilder()
-                        .setConfig(RecognitionConfig.newBuilder()
-                                .setLanguageCode("en-US")
-                                //.setLanguageCode("cmn-Hans-CN")
-                                .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                                .setSampleRateHertz(16000)
-                                .build())
-                        .setInterimResults(true)
-                        .setSingleUtterance(true)
-                        .build())
-                .build());
+
+        LogUtils.i(TAG, "onStart");
+
+
+        startVoiceRecorder();
+
     }
+
 
     @Override
     public void onStop() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "onStop");
-        }
-        stop();
+
+        stopVoiceRecorder();
     }
+
 
     @Override
     public void sendCommand(String command, String payload) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, String.format("sendCommand, command: %s, payload: %s", command, payload));
-        }
+
+        LogUtils.i(TAG, String.format("sendCommand, command: %s, payload: %s", command, payload));
+
         switch (command) {
             case SocketCommand.STOP: // cancel
                 isCanceled = true;
-                stop();
+                finishRecognizing();
                 break;
             case SocketCommand.COMPLETE:
-                stop();
+                finishRecognizing();
                 break;
         }
     }
 
+
+    /**
+     * @param data recognize(byte[] data, int size)
+     */
     @Override
     public void sendData(byte[] data) {
-        if (mRequestObserver == null) {
+
+       /* if (Logger.DEBUG) {
+            Logger.i(TAG, "sendData(byte[] data):"+data.length);
+        }*/
+        checkDataHearing(data);
+
+
+        /*if (mRequestObserver == null) {
             if (Logger.DEBUG) {
                 Logger.w(TAG, "invalid Request Observer");
             }
             return;
         }
+
         // Call the streaming recognition API
         mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
                 .setAudioContent(ByteString.copyFrom(data, 0, data.length))
-                .build());
+                .build());*/
     }
+
 
     @Override
     public boolean isConnected() {
@@ -269,11 +305,12 @@ public class GoogleApi extends BaseWebSocket {
 
 
     private void fetchToken() {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "fetchToken");
-        }
+
+        LogUtils.i(TAG, "fetchToken");
+
         BackgroundThread.post(fetchTokenRunnable);
     }
+
 
     private Runnable fetchTokenRunnable = new Runnable() {
         @Override
@@ -284,24 +321,24 @@ public class GoogleApi extends BaseWebSocket {
         private void doFetchToken() {
             AccessToken token = getAccessToken();
             if (token == null) {
-                if (Logger.DEBUG) {
-                    Logger.w(TAG, "invalid access token");
-                }
+
+                LogUtils.w(TAG, "invalid access token");
+
                 if (mListener != null) {
                     mListener.onError(WebSocketError.WEB_SOCKET_CLOSED);
                 }
                 return;
             }
-            if (Logger.DEBUG) {
-                Logger.d(TAG, String.format("token: %s", token));
-            }
+
+            LogUtils.d(TAG, String.format("token: %s", token));
+
             initApi(token);
             // Schedule access token refresh before it expires
             long tokenExpiredTime = token.getExpirationTime().getTime() - System.currentTimeMillis() - ACCESS_TOKEN_FETCH_MARGIN;
             long fetchAgainDelayTime = Math.min(tokenExpiredTime, ACCESS_TOKEN_EXPIRATION_TOLERANCE);
-            if (Logger.DEBUG) {
-                Logger.d(TAG, String.format("fetch token again after %s ms", fetchAgainDelayTime));
-            }
+
+            LogUtils.d(TAG, String.format("fetch token again after %s ms", fetchAgainDelayTime));
+
             BackgroundThread.postDelayed(this, fetchAgainDelayTime);
         }
     };
@@ -311,23 +348,23 @@ public class GoogleApi extends BaseWebSocket {
             final InputStream stream = new ByteArrayInputStream(mAuthJson.getBytes());
             final GoogleCredentials credentials = GoogleCredentials.fromStream(stream).createScoped(SCOPE);
             final AccessToken token = credentials != null ? credentials.refreshAccessToken() : null;
-            if (Logger.DEBUG) {
-                Logger.d(TAG, String.format("getAccessToken, token: %s", token));
-            }
+
+            LogUtils.d(TAG, String.format("getAccessToken, token: %s", token));
+
             return token;
         } catch (IOException e) {
-            if (Logger.DEBUG) {
-                Logger.e(TAG, "Failed to obtain access token.");
-                Logger.printStackTrace(TAG, e.getMessage(), e);
-            }
+
+            LogUtils.e(TAG, "Failed to obtain access token.");
+            LogUtils.e(TAG, e.getMessage());
+
         }
         return null;
     }
 
     private void initApi(AccessToken token) {
-        if (Logger.DEBUG) {
-            Logger.i(TAG, "initApi");
-        }
+
+        LogUtils.i(TAG, "initApi");
+
         GoogleCredentials credentials = new GoogleCredentials(token).createScoped(SCOPE);
         GoogleCredentialsInterceptor interceptor = new GoogleCredentialsInterceptor(credentials);
         ManagedChannel channel = new OkHttpChannelProvider()
@@ -338,13 +375,6 @@ public class GoogleApi extends BaseWebSocket {
         mApi = SpeechGrpc.newStub(channel);
     }
 
-    private void stop() {
-        if (mRequestObserver == null) {
-            return;
-        }
-        mRequestObserver.onCompleted();
-        mRequestObserver = null;
-    }
 
     /**
      * Authenticates the gRPC channel using the specified {@link GoogleCredentials}.
@@ -451,4 +481,195 @@ public class GoogleApi extends BaseWebSocket {
             return headers;
         }
     }
+
+
+    //--------------------------------------------------------------------------------
+
+    private final Object mLock = new Object();
+
+    /**
+     * The timestamp of the last time that voice is heard.
+     */
+    private long mLastVoiceHeardMillis = Long.MAX_VALUE;
+
+    /**
+     * The timestamp when the current voice is started.
+     */
+    private long mVoiceStartedMillis;
+
+
+    private void startVoiceRecorder() {
+        synchronized (mLock) {
+            dismiss();
+        }
+    }
+
+    /**
+     * Dismisses the currently ongoing utterance.
+     */
+    public void dismiss() {
+        if (mLastVoiceHeardMillis != Long.MAX_VALUE) {
+            mLastVoiceHeardMillis = Long.MAX_VALUE;
+            onVoiceEnd();
+        }
+    }
+
+
+    private void stopVoiceRecorder() {
+        synchronized (mLock) {
+            dismiss();
+        }
+    }
+
+
+    public void startRecognizing() {
+        if (mApi == null) {
+
+            LogUtils.w(TAG, "onStart --invalid api.");
+
+            return;
+        }
+        isCanceled = false;
+
+
+        // Configure the API
+        mRequestObserver = mApi.streamingRecognize(mResponseObserver);
+        mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
+                .setStreamingConfig(StreamingRecognitionConfig.newBuilder()
+                        .setConfig(RecognitionConfig.newBuilder()
+                                .setLanguageCode(getDefaultLanguageCode())
+                                //.setLanguageCode("en-US")
+                                //.setLanguageCode("cmn-Hans-CN")
+                                .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
+                                .setSampleRateHertz(16000)
+                                .build())
+                        .setInterimResults(true)
+                        .setSingleUtterance(true)
+                        .build())
+                .build());
+    }
+
+
+    private String getDefaultLanguageCode() {
+        final Locale locale = Locale.getDefault();
+        final StringBuilder language = new StringBuilder(locale.getLanguage());
+        final String country = locale.getCountry();
+        if (!TextUtils.isEmpty(country)) {
+            language.append("-");
+            language.append(country);
+        }
+        return language.toString();
+    }
+
+
+    /**
+     * Recognizes the speech audio. This method should be called every time a chunk of byte buffer
+     * is ready.
+     *
+     * @param data The audio data.
+     * @param size The number of elements that are actually relevant in the {@code data}.
+     */
+    public void recognize(byte[] data, int size) {
+
+        if (mRequestObserver == null) {
+            return;
+        }
+
+        Log.w(TAG, "recognize(byte[] data, int size):" + size);
+
+        // Call the streaming recognition API
+        mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
+                .setAudioContent(ByteString.copyFrom(data, 0, size))
+                .build());
+    }
+
+
+    public void finishRecognizing() {
+
+        Log.w(TAG, "finishRecognizing.");
+
+
+        if (mRequestObserver == null) {
+            return;
+        }
+        mRequestObserver.onCompleted();
+        mRequestObserver = null;
+    }
+
+
+    public void onVoiceStart() {
+
+        Log.e(TAG, "onVoiceStart");
+        startRecognizing();
+
+    }
+
+    public void onVoice(byte[] data, int size) {
+        Log.e(TAG, "onVoice");
+        recognize(data, size);
+
+    }
+
+    public void onVoiceEnd() {
+        Log.e(TAG, "onVoiceEnd");
+        finishRecognizing();
+
+    }
+
+
+    private static final int AMPLITUDE_THRESHOLD = 1500;
+    private static final int SPEECH_TIMEOUT_MILLIS = 2000;
+    private static final int MAX_SPEECH_LENGTH_MILLIS = 30 * 1000;
+
+    /**
+     * Continuously processes the captured audio and notifies  of corresponding
+     * events.
+     */
+    private void checkDataHearing(byte[] mBuffer) {
+        synchronized (mLock) {
+
+            final int size = mBuffer.length;
+            //Log.e(TAG,"ProcessVoice  read size="+size);
+
+            final long now = System.currentTimeMillis();
+
+            if (isHearingVoice(mBuffer, size)) {
+                if (mLastVoiceHeardMillis == Long.MAX_VALUE) {
+                    mVoiceStartedMillis = now;
+                    onVoiceStart();
+                }
+                onVoice(mBuffer, size);
+                mLastVoiceHeardMillis = now;
+                if (now - mVoiceStartedMillis > MAX_SPEECH_LENGTH_MILLIS) {
+                    end();
+                }
+            } else if (mLastVoiceHeardMillis != Long.MAX_VALUE) {
+                onVoice(mBuffer, size);
+                if (now - mLastVoiceHeardMillis > SPEECH_TIMEOUT_MILLIS) {
+                    end();
+                }
+            }
+        }
+    }
+
+    private void end() {
+        mLastVoiceHeardMillis = Long.MAX_VALUE;
+        onVoiceEnd();
+    }
+
+    private boolean isHearingVoice(byte[] buffer, int size) {
+        for (int i = 0; i < size - 1; i += 2) {
+            // The buffer has LINEAR16 in little endian.
+            int s = buffer[i + 1];
+            if (s < 0) s *= -1;
+            s <<= 8;
+            s += Math.abs(buffer[i]);
+            if (s > AMPLITUDE_THRESHOLD) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

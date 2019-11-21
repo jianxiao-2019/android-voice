@@ -1,6 +1,6 @@
 package com.kikatech.voice.core.recorder.executor;
 
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,7 +18,7 @@ public class AudioRecordExecutor extends BaseExecutor {
 
     @Override
     protected boolean isLogAvailable() {
-        return Logger.DEBUG;
+        return LogUtils.enableLog;
     }
 
     @Override

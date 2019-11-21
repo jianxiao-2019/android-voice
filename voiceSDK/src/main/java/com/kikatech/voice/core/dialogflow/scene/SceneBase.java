@@ -2,11 +2,12 @@ package com.kikatech.voice.core.dialogflow.scene;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.kikatech.voice.core.dialogflow.DialogObserver;
 import com.kikatech.voice.core.dialogflow.intent.Intent;
 import com.kikatech.voice.service.conf.AsrConfiguration;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 /**
  * Created by tianli on 17-11-10.
@@ -83,14 +84,14 @@ public abstract class SceneBase implements DialogObserver {
         if (TextUtils.isEmpty(action)) {
             return;
         }
-        if (Logger.DEBUG) {
-            Logger.w(TAG, "Current:" + this);
-            Logger.w(TAG, "onIntent : [" + intent.getScene() + "-" + intent.getAction() + "]" + intent.getBundleDetail());
-        }
+
+            LogUtils.w(TAG, "Current:" + this);
+        LogUtils.w(TAG, "onIntent : [" + intent.getScene() + "-" + intent.getAction() + "]" + intent.getBundleDetail());
+
         if (Intent.ACTION_EXIT.equals(action)) {
             onExit();
             mStage = idle();
-            if (Logger.DEBUG) Logger.w(TAG, "set mStage:" + mStage);
+            LogUtils.w(TAG, "set mStage:" + mStage);
         } else {
             boolean isDefaultScene = Intent.DEFAULT_SCENE.equals(scene());
             boolean isUnknownIntent = Intent.ACTION_UNKNOWN.equals(action);
@@ -113,14 +114,14 @@ public abstract class SceneBase implements DialogObserver {
                 nextStage = mStage.next(action, intent.getExtra());
             }
 
-            if (Logger.DEBUG) {
-                Logger.w(TAG, "mStage:" + mStage + ", toStayCurrentStage:" + toStayCurrentStage);
-                Logger.w(TAG, "nextStage:" + nextStage);
-                Logger.w(TAG, "isDefaultUncaught:" + isDefaultUncaught);
-            }
+
+                LogUtils.w(TAG, "mStage:" + mStage + ", toStayCurrentStage:" + toStayCurrentStage);
+                LogUtils.w(TAG, "nextStage:" + nextStage);
+                LogUtils.w(TAG, "isDefaultUncaught:" + isDefaultUncaught);
+
 
             if (nextStage == null) {
-                Logger.w(TAG, "[Warning] nextStage is null !!");
+                LogUtils.w(TAG, "[Warning] nextStage is null !!");
                 return;
             }
 
@@ -134,7 +135,7 @@ public abstract class SceneBase implements DialogObserver {
             }
 
             mStage = nextStage;
-            if (Logger.DEBUG) Logger.w(TAG, "set mStage:" + mStage);
+          LogUtils.w(TAG, "set mStage:" + mStage);
             mStage.isUncaughtLoop = isUncaughtIntent && !isOverrideUncaughtAction;
             mStage.isDefaultUncaught = isDefaultUncaught;
             mStage.prepareAction(scene(), action, mStage);
@@ -144,9 +145,9 @@ public abstract class SceneBase implements DialogObserver {
     private boolean isOverCounts(SceneStage nextStage) {
         boolean enterAgain = mStage.getClass().equals(nextStage.getClass());
         mStageCondCount = enterAgain ? mStageCondCount + 1 : 1;
-        if (Logger.DEBUG) {
-            Logger.v(TAG, String.format("mStage: %1$s, nextStage: %2$s, EnterCount: %3$s", mStage.getClass().getSimpleName(), nextStage.getClass().getSimpleName(), mStageCondCount));
-        }
+
+            LogUtils.v(TAG, String.format("mStage: %1$s, nextStage: %2$s, EnterCount: %3$s", mStage.getClass().getSimpleName(), nextStage.getClass().getSimpleName(), mStageCondCount));
+
         return mStageCondCount > BACK_TO_MAIN_ERR_COUNT;
     }
 
@@ -156,7 +157,7 @@ public abstract class SceneBase implements DialogObserver {
     public void nextStage(SceneStage stage) {
         if (stage != null) {
             mStage = stage;
-            if (Logger.DEBUG) Logger.w(TAG, "set mStage:" + mStage);
+          LogUtils.w(TAG, "set mStage:" + mStage);
             stage.prepareAction(scene(), "", stage);
         }
     }

@@ -22,7 +22,7 @@ import com.kikatech.voice.service.conf.AsrConfiguration;
 import com.kikatech.voice.service.conf.VoiceConfiguration;
 import com.kikatech.voice.service.event.EventMsg;
 import com.kikatech.voice.util.VoicePathConnector;
-import com.kikatech.voice.util.log.Logger;
+import com.kikatech.voice.util.log.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -40,6 +40,8 @@ import java.util.Arrays;
 
 public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         VoiceRecorder.IRecorderListener {
+
+    private static final String TAG = "VoiceService";
 
     public static final int ERR_REASON_NOT_CREATED = 1;
     public static final int ERR_CONNECTION_ERROR = 2;
@@ -89,12 +91,12 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                     } else if (errorCode == VoiceRecorder.ERR_RECORD_FAIL) {
                         handleError(ERR_RECORD_DATA_FAIL);
                     } else {
-                        Logger.e("onRecorderError : Not supported error code : " + errorCode);
+                        LogUtils.e(TAG,"onRecorderError : Not supported error code : " + errorCode);
                     }
                 }
             });
         } else {
-            Logger.d("Don't invoke this method after destroyed.");
+            LogUtils.d(TAG,"Don't invoke this method after destroyed.");
         }
     }
 
@@ -108,7 +110,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     @Override
     public void onDetected() {
-        Logger.d("onDetected");
+        LogUtils.d(TAG,"onDetected");
         startVadBosTimer();
         if (mMainThreadHandler != null) {
             mMainThreadHandler.post(new Runnable() {
@@ -120,7 +122,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                 }
             });
         } else {
-            Logger.d("Don't invoke this method after destroyed.");
+            LogUtils.d(TAG,"Don't invoke this method after destroyed.");
         }
     }
 
@@ -154,7 +156,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void create() {
-        Logger.d(Logger.TAG, "create", 1);
+        LogUtils.d(TAG, "create"+ 1);
+
         if (mWebService != null) {
             mWebService.release();
         }
@@ -174,10 +177,13 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         mWebService.connect(mConf);
 
         IDataPath finalPath = new VoiceService.VoiceDataSender(null);
+
         mWakeUpDetector = mConf.getWakeUpDetector();
         if (mWakeUpDetector != null) {
             mWakeUpDetector.setOnHotWordDetectListener(this);
         }
+
+        //创建的时候，包装fileWriter,写data,没有文件后缀名
         IDataPath dataPath = VoicePathConnector.genDataPath(mConf, finalPath);
         mVoiceRecorder = new VoiceRecorder(VoicePathConnector.genVoiceSource(mConf), dataPath, this);
 
@@ -189,6 +195,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
 
         mVoiceRecorder.open();
+
+
         EventBus.getDefault().register(this);
 
         DebugUtil.updateCacheDir(mConf);
@@ -210,10 +218,10 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void start(int bosDuration) {
-        Logger.d(Logger.TAG, "start", 1);
+        LogUtils.d(TAG, "start"+1);
         if (mMainThreadHandler == null) {
             handleError(ERR_REASON_NOT_CREATED);
-            Logger.e("Check the voice service was been created before started it.");
+            LogUtils.e(TAG,"Check the voice service was been created before started it.");
             return;
         }
 
@@ -245,7 +253,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void stop(StopType stopType) {
-        Logger.d(Logger.TAG, "stop, type = " + stopType, 1);
+        LogUtils.d(TAG, "stop, type = " + stopType+1);
+
         mIsStarting = false;
 
         if (stopType == StopType.COMPLETE) {
@@ -271,21 +280,23 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         mVoiceRecorder.stop();
 
+        //停止的时候，源文件加wav头
         DebugUtil.convertCurrentPcmToWav();
+
         ReportUtil.getInstance().stopTimeStamp("stop record");
 
         DebugUtil.setStarCid(0);
     }
 
     private void cleanVadBosTimer() {
-        Logger.v("cleanVadBosTimer");
+        LogUtils.v(TAG,"cleanVadBosTimer");
         if (mTimerHandler != null) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
         }
     }
 
     private void cleanVadEosTimer() {
-        Logger.v("cleanVadEosTimer");
+        LogUtils.v(TAG,"cleanVadEosTimer");
         if (mTimerHandler != null) {
             mTimerHandler.removeMessages(MSG_VAD_EOS);
         }
@@ -296,7 +307,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     private void startVadBosTimer(int bosDuration) {
-        Logger.v("startVadBosTimer bosDuration = " + bosDuration);
+        LogUtils.v(TAG,"startVadBosTimer bosDuration = " + bosDuration);
         if (mTimerHandler != null && bosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_BOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_BOS, bosDuration);
@@ -305,7 +316,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
     private void startVadEosTimer() {
         int eosDuration = mConf.getEosDuration();
-        Logger.v("startVadEosTimer eosDuration = " + eosDuration);
+        LogUtils.v(TAG,"startVadEosTimer eosDuration = " + eosDuration);
         if (mTimerHandler != null && eosDuration > 0) {
             mTimerHandler.removeMessages(MSG_VAD_EOS);
             mTimerHandler.sendEmptyMessageDelayed(MSG_VAD_EOS, eosDuration);
@@ -321,7 +332,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void sleep() {
-        Logger.d("sleep");
+        LogUtils.d(TAG,"sleep");
         if (mWakeUpDetector != null && mWakeUpDetector.isAwake()) {
             mWakeUpDetector.goSleep();
             if (mVoiceWakeUpListener != null) {
@@ -333,7 +344,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void wakeUp() {
-        Logger.d("wake up");
+        LogUtils.d(TAG,"wake up");
         if (mWakeUpDetector != null && !mWakeUpDetector.isAwake()) {
             mWakeUpDetector.wakeUp();
             startVadBosTimer();
@@ -344,7 +355,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     }
 
     public void destroy() {
-        Logger.d(Logger.TAG, "destroy", 1);
+        LogUtils.d(TAG, "destroy"+ 1);
         stop(StopType.CANCEL);
         EventBus.getDefault().unregister(this);
         mVoiceRecorder.close();
@@ -380,7 +391,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         if (mWebService != null) {
             mWebService.sendCommand(command, payload);
         } else {
-            Logger.w("Don't send command after destroyed");
+            LogUtils.w(TAG,"Don't send command after destroyed");
         }
     }
 
@@ -407,22 +418,25 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
     private IWebSocket.OnWebSocketListener mWebSocketListener = new IWebSocket.OnWebSocketListener() {
         @Override
         public void onMessage(final Message message) {
+
+
             if (mMainThreadHandler != null) {
                 mMainThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
+
                         if (mCurrentSpeechMode == VoiceConfiguration.SpeechMode.AUDIO_UPLOAD) {
                             return;
                         }
 
                         if (message instanceof BosMessage) {
-                            Logger.d("[WebSocketListener] onMessage:" + message);
+                            LogUtils.d(TAG,"[WebSocketListener] onMessage:" + message);
                             mLastBosMessage = (BosMessage) message;
                             return;
                         }
 
                         long messageCid = getMessageCid(message);
-                        Logger.d("[WebSocketListener] onMessage:" + message + (mSkippedCid == messageCid ? "  <Skipped>" : ""));
+                        LogUtils.d(TAG,"[WebSocketListener] onMessage:" + message + (mSkippedCid == messageCid ? "  <Skipped>" : ""));
                         if (mSkippedCid != messageCid) {
                             if (message instanceof TextMessage) {
                                 mLastIntermediateMessage = null;
@@ -433,8 +447,8 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                                         stop(StopType.CANCEL);
                                         break;
                                     case CONVERSATION:
-                                        mWebService.onStop();
-                                        mWebService.onStart();
+                                        //mWebService.onStop();
+                                        //mWebService.onStart();
                                         break;
                                 }
                             } else {
@@ -447,6 +461,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                                     startVadEosTimer();
                                 }
                             }
+
+
+
                             if (message instanceof IntermediateMessage) {
                                 mLastIntermediateMessage = (IntermediateMessage) message;
                             }
@@ -459,16 +476,16 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                     }
                 });
             } else {
-                Logger.d("Don't invoke this method after destroyed.");
+                LogUtils.d(TAG,"Don't invoke this method after destroyed.");
             }
             DebugUtil.logResultToFile(message);
         }
 
         @Override
         public void onError(int errorCode) {
-            Logger.d(String.format("[WebSocketListener] onError: %s", errorCode));
+            LogUtils.d(TAG,String.format("[WebSocketListener] onError: %s", errorCode));
             if (mMainThreadHandler == null) {
-                Logger.w("Don't invoke this method after destroyed.");
+                LogUtils.w(TAG,"Don't invoke this method after destroyed.");
                 return;
             }
             switch (errorCode) {
@@ -493,7 +510,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                     });
                     break;
                 case IWebSocket.WebSocketError.EMPTY_RESULT:
-                    handleError(ERR_NO_SPEECH);
+                    //handleError(ERR_NO_SPEECH);
                     break;
             }
         }
@@ -553,9 +570,9 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
 
         @Override
         public void onData(byte[] data, int length) {
-            Logger.v("[VoiceDataSender] onData");
+            LogUtils.v(TAG,"[VoiceDataSender] onData");
             if (mWebService == null) {
-                Logger.w("invalid WebService");
+                LogUtils.w(TAG,"invalid WebService");
                 return;
             }
             if (ReportUtil.getInstance().isEverDetectedVad()
@@ -570,15 +587,21 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
         }
     }
 
+
+
+
+
     private class TimerHandler extends Handler {
+
         private TimerHandler(Looper looper) {
+
             super(looper);
         }
 
         @Override
         public void handleMessage(android.os.Message msg) {
             if (msg.what == MSG_VAD_BOS) {
-                Logger.d("onBos");
+                LogUtils.d(TAG,"onBos");
                 if (mWebService != null && !mWebService.isConnected()) {
                     handleError(ERR_CONNECTION_ERROR);
                 } else {
@@ -587,7 +610,7 @@ public class VoiceService implements WakeUpDetector.OnHotWordDetectListener,
                 mLastIntermediateMessage = null;
                 return;
             } else if (msg.what == MSG_VAD_EOS) {
-                Logger.d("onEos");
+                LogUtils.d(TAG,"onEos");
                 stop(StopType.CANCEL);
                 TextMessage finalResult = new TextMessage(mLastIntermediateMessage);
                 mLastIntermediateMessage = null;

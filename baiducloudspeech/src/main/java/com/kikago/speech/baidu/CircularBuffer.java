@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 
 public class CircularBuffer {
+
     private static final String TAG = "CircularBuffer";
 
     private final byte[] mBuffer;
