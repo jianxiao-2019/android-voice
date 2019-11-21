@@ -79,13 +79,13 @@ public class DebugUtil {
         } else if (source.getClass().getSimpleName().contains("Local")) {
             if (status.contains("VL630-PM-0")){
                 return PRE_LOCAL_PM0;
-            } else if (status.contains("VL630-PM-180")){
+            } else if (status.contains("VL630-PM-180") || status.contains("VL632-PM-180")){
                 return PRE_LOCAL_PM180;
-            } else if (status.contains("VL630-BTB-0")) {
+            } else if (status.contains("VL630-BTB-0") || status.contains("VL632-BTB-0")) {
                 return PRE_LOCAL_BTB0;
-            } else if (status.contains("VL630-BTB-180")) {
+            } else if (status.contains("VL630-BTB-180") || status.contains("VL632-BTB-180")) {
                 return PRE_LOCAL_BTB180;
-            } else if (status.contains("VL630-MS-MS")) {
+            } else if (status.contains("VL630-MS-MS") || status.contains("VL632-MS-MS")) {
                 return PRE_LOCAL_MS;
             }
             return PRE_UNKNOWN;
