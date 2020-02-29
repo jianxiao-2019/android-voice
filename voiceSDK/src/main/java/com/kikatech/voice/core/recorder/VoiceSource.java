@@ -28,8 +28,7 @@ public class VoiceSource implements IVoiceSource {
     private AcousticEchoCanceler mCanceler;
 
     public VoiceSource() {
-        mBufferSizeInBytes = AudioRecord.getMinBufferSize(
-                AUDIO_SAMPLE_RATE, AUDIO_FORMAT_CHANNEL, AUDIO_FORMAT_ENCODING);
+        mBufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE, AUDIO_FORMAT_CHANNEL, AUDIO_FORMAT_ENCODING);
     }
 
     @Override

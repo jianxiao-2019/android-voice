@@ -7,6 +7,8 @@ import com.kikatech.voice.core.recorder.executor.DataPathExecutor;
 import com.kikatech.voice.core.recorder.executor.IRunnable;
 import com.kikatech.voice.util.log.LogUtils;
 
+import java.io.IOException;
+
 /**
  * @author SkeeterWang Created on 2018/6/4.
  */
@@ -92,8 +94,13 @@ public class AudioRecordTask implements IRunnable {
 
 
             final byte[] audioData = new byte[BUFFER_SIZE];
-            final int readSize = mVoiceSource.read(audioData, 0, BUFFER_SIZE);
-
+            int tempSize=0;
+            try {
+                tempSize = mVoiceSource.read(audioData, 0, BUFFER_SIZE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            final int readSize=tempSize;
             LogUtils.e(TAG, "readSize=" + readSize);
             if (mListener != null) {
                 mListener.onData(audioData, readSize);
